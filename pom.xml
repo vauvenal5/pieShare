@@ -12,7 +12,7 @@
 
     <modules>
         <module>piePlate</module>
-        <module>pieUtiles</module>
+        <module>pieUtilities</module>
     </modules>
 
 
