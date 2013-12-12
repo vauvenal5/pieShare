@@ -16,4 +16,8 @@ public class BeanService implements IBeanService, ApplicationContextAware {
         return context.getBean(type);
     }
 
+    public Object getBean(String type) {
+        return context.getBean(type);
+    }
+
 }
