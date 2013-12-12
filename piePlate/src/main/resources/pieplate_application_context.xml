@@ -5,8 +5,17 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="beanService" class=" org.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
+    <bean id="beanService" class="org.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
+    </bean>
+    
+    <bean id="clusterService" class="org.pieTools.piePlate.service.cluster.ClusterService" lazy-init="true">
+        <property name="beanService" ref="beanService"/>
     </bean>
 
+    <bean id="simpleReceiver" class="org.pieTools.piePlate.service.cluster.SimpleReceiver" scope="prototype" lazy-init="true">
+        <property name="service" ref="clusterService"/>
+    </bean>
 
+    <bean id="messageTask" class="org.pieTools.piePlate.service.cluster.MessageTask" scope="prototype" lazy-init="true">
+    </bean>
 </beans>
