@@ -3,6 +3,7 @@ package org.pieTools.piePlate.service.integrationTests;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -29,4 +30,16 @@ public class ClusterServiceTest {
         Assert.assertEquals(2, service2.getMembersCount());
     }
 
+    @Test
+    public void testSendingMessage() throws Exception {
+        IClusterService service1 = (IClusterService)context.getBean("clusterService");
+        IClusterService service2 = (IClusterService)context.getBean("clusterService");
+
+        service1.connect("myTestCluster2");
+        service2.connect("myTestCluster2");
+
+        service1.sendMessage(new PieMessage("Hello World!".getBytes()));
+
+        Thread.sleep(2000);
+    }
 }
