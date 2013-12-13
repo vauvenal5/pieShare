@@ -1,12 +1,12 @@
 package org.pieTools.piePlate.service.cluster;
 
 import org.jgroups.Message;
-import org.pieTools.piePlate.service.api.IMsgTask;
+import org.pieTools.piePlate.service.cluster.api.IMessageTask;
 
 /**
  * Created by vauvenal5 on 12/12/13.
  */
-public class MessageTask implements IMsgTask {
+public class MessageTask implements IMessageTask {
 
     private Message msg;
 

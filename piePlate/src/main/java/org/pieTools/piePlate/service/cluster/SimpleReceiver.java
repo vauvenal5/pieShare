@@ -2,10 +2,10 @@ package org.pieTools.piePlate.service.cluster;
 
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
-import org.pieTools.piePlate.service.api.IClusterService;
-import org.pieTools.piePlate.service.api.IRecivier;
+import org.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieTools.piePlate.service.cluster.api.IReceiver;
 
-public class SimpleReceiver extends ReceiverAdapter implements IRecivier {
+public class SimpleReceiver extends ReceiverAdapter implements IReceiver {
 
     private IClusterService service;
 

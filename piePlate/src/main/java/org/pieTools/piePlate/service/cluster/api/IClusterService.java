@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.api;
+package org.pieTools.piePlate.service.cluster.api;
 
 import org.jgroups.JChannel;
 import org.jgroups.Message;
@@ -11,4 +11,8 @@ public interface IClusterService {
     void connect(String clusterName) throws ClusterServiceException;
 
     void handleMessage(Message msg);
+
+    void sendMessage(Message msg);
+
+    int getMembersCount();
 }

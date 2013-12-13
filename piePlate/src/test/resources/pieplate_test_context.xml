@@ -7,7 +7,7 @@
 
     <bean id="beanService" class="org.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
     </bean>
-    
+
     <bean id="clusterService" class="org.pieTools.piePlate.service.cluster.ClusterService" lazy-init="true">
         <property name="beanService" ref="beanService"/>
         <property name="channelFactory" ref="channelFactory"/>
