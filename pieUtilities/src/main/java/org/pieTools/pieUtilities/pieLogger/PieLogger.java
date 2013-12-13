@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieTools.pieUtiles.pieLogger;
+package org.pieTools.pieUtilities.pieLogger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

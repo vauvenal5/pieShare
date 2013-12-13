@@ -3,6 +3,7 @@ package org.pieTools.piePlate.service.cluster;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
+import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IChannelFactory;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieTools.piePlate.service.cluster.api.IMessageTask;
@@ -63,11 +64,16 @@ public class ClusterService implements IClusterService {
     @Override
     public void handleMessage(Message msg) {
         IMessageTask task = (IMessageTask)beanService.getBean("msgTask");
-        task.setMsg(msg);
+        task.setMsg(MessageConverter.convertMessageToPieMessage(msg));
         this.executor.submit(task);
     }
 
     @Override
-    public void sendMessage(Message msg) {
+    public void sendMessage(PieMessage msg) throws ClusterServiceException {
+        try {
+            this.channel.send(null, msg.getBuffer());
+        } catch (Exception e) {
+            throw new ClusterServiceException(e);
+        }
     }
 }
