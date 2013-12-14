@@ -1,10 +1,10 @@
-package org.pieTools.piePlate.service.api;
+package org.pieTools.piePlate.service.cluster.api;
 
 import org.jgroups.Receiver;
 
 /**
  * Created by vauvenal5 on 12/12/13.
  */
-public interface IRecivier extends Receiver {
+public interface IReceiver extends Receiver {
     void setClusterService(IClusterService service);
 }
