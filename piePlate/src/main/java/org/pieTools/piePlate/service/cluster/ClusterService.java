@@ -63,7 +63,7 @@ public class ClusterService implements IClusterService {
 
     @Override
     public void handleMessage(Message msg) {
-        IMessageTask task = (IMessageTask)beanService.getBean("msgTask");
+        IMessageTask task = (IMessageTask)beanService.getBean("messageTask");
         task.setMsg(MessageConverter.convertMessageToPieMessage(msg));
         this.executor.submit(task);
     }

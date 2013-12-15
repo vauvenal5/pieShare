@@ -5,8 +5,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieTools.piePlate.service.exception.ClusterServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.concurrent.ExecutorService;
 
 
 public class ClusterServiceTest {
@@ -32,14 +35,39 @@ public class ClusterServiceTest {
 
     @Test
     public void testSendingMessage() throws Exception {
-        IClusterService service1 = (IClusterService)context.getBean("clusterService");
-        IClusterService service2 = (IClusterService)context.getBean("clusterService");
 
-        service1.connect("myTestCluster2");
-        service2.connect("myTestCluster2");
+        ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
+            @Override
+            public void run() {
+                try {
+                    this.getService().connect("myTestCluster2");
+                    this.getService().sendMessage(new PieMessage("Hello Pie!".getBytes()));
+                    this.setDone();
+                } catch (ClusterServiceException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
 
-        service1.sendMessage(new PieMessage("Hello World!".getBytes()));
+        ClusterServiceTestHelper tester2 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
+            @Override
+            public void run() {
+                try {
+                    this.getService().connect("myTestCluster2");
+                } catch (ClusterServiceException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
 
-        Thread.sleep(2000);
+        new Thread(tester1).start();
+        new Thread(tester2).start();
+
+        while(!tester1.getDone()||!tester2.getDone()) {
+            Thread.sleep(500);
+        }
+
+        Assert.assertEquals(2, tester1.getService().getMembersCount());
+        Assert.assertEquals(2, tester1.getService().getMembersCount());
     }
 }
