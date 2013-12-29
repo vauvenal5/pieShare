@@ -3,6 +3,7 @@ package org.pieTools.piePlate.service.cluster;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
+import org.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
 import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IChannelFactory;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
@@ -12,10 +13,13 @@ import org.pieTools.piePlate.service.exception.ClusterServiceException;
 import org.pieTools.pieUtilities.beanService.IBeanService;
 
 import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ClusterService implements IClusterService {
+public class ClusterService implements IClusterService, IPieCeptionConnectorService {
 
     private ExecutorService executor;
     private JChannel channel;
@@ -74,6 +78,20 @@ public class ClusterService implements IClusterService {
             this.channel.send(null, msg.getBuffer());
         } catch (Exception e) {
             throw new ClusterServiceException(e);
+        }
+    }
+
+    @Override
+    public void connectToMaster(String serviceName) {
+        try {
+            String localName = InetAddress.getLocalHost().getHostName();
+            this.connect(serviceName + localName);
+        } catch (UnknownHostException e) {
+            //todo-sv: error handling
+            e.printStackTrace();
+        } catch (ClusterServiceException e) {
+            //todo-sv: error handling
+            e.printStackTrace();
         }
     }
 }
