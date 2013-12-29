@@ -54,20 +54,25 @@ public class ClusterServiceTest {
             public void run() {
                 try {
                     this.getService().connect("myTestCluster2");
+                    this.setDone();
                 } catch (ClusterServiceException e) {
                     e.printStackTrace();
                 }
             }
         };
 
-        new Thread(tester1).start();
         new Thread(tester2).start();
+        waitUntilDone(tester2);
+        new Thread(tester1).start();
+        waitUntilDone(tester1);
 
-        while(!tester1.getDone()||!tester2.getDone()) {
+        Assert.assertEquals(2, tester1.getService().getMembersCount());
+        Assert.assertEquals(2, tester2.getService().getMembersCount());
+    }
+
+    private void waitUntilDone(ClusterServiceTestHelper testee) throws InterruptedException {
+        while(!testee.getDone()){
             Thread.sleep(500);
         }
-
-        Assert.assertEquals(2, tester1.getService().getMembersCount());
-        Assert.assertEquals(2, tester1.getService().getMembersCount());
     }
 }
