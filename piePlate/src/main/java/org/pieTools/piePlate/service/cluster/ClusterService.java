@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ClusterService implements IClusterService, IPieCeptionConnectorService {
+public class ClusterService implements IClusterService {
 
     private ExecutorService executor;
     private JChannel channel;
@@ -66,6 +66,11 @@ public class ClusterService implements IClusterService, IPieCeptionConnectorServ
     }
 
     @Override
+    public boolean isConnectedToCluster() {
+        return this.channel.isConnected();
+    }
+
+    @Override
     public void handleMessage(Message msg) {
         IMessageTask task = (IMessageTask)beanService.getBean("messageTask");
         task.setMsg(MessageConverter.convertMessageToPieMessage(msg));
@@ -78,20 +83,6 @@ public class ClusterService implements IClusterService, IPieCeptionConnectorServ
             this.channel.send(null, msg.getBuffer());
         } catch (Exception e) {
             throw new ClusterServiceException(e);
-        }
-    }
-
-    @Override
-    public void connectToMaster(String serviceName) {
-        try {
-            String localName = InetAddress.getLocalHost().getHostName();
-            this.connect(serviceName + localName);
-        } catch (UnknownHostException e) {
-            //todo-sv: error handling
-            e.printStackTrace();
-        } catch (ClusterServiceException e) {
-            //todo-sv: error handling
-            e.printStackTrace();
         }
     }
 }
