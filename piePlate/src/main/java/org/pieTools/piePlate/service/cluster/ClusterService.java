@@ -12,6 +12,9 @@ import org.pieTools.piePlate.service.exception.ClusterServiceException;
 import org.pieTools.pieUtilities.beanService.IBeanService;
 
 import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,8 +65,13 @@ public class ClusterService implements IClusterService {
     }
 
     @Override
+    public boolean isConnectedToCluster() {
+        return this.channel.isConnected();
+    }
+
+    @Override
     public void handleMessage(Message msg) {
-        IMessageTask task = (IMessageTask)beanService.getBean("msgTask");
+        IMessageTask task = (IMessageTask)beanService.getBean("messageTask");
         task.setMsg(MessageConverter.convertMessageToPieMessage(msg));
         this.executor.submit(task);
     }
