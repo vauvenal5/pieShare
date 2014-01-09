@@ -13,6 +13,7 @@
     <modules>
         <module>piePlate</module>
         <module>pieUtilities</module>
+        <module>pieCeption</module>
     </modules>
 
 

@@ -16,4 +16,6 @@ public interface IClusterService {
     void sendMessage(PieMessage msg) throws ClusterServiceException;
 
     int getMembersCount();
+
+    boolean isConnectedToCluster();
 }
