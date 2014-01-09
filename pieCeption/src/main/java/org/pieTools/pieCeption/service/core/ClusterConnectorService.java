@@ -45,7 +45,7 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
     @Override
     public boolean isPieShareRunning() throws PieCeptionServiceException {
         if(!this.clusterService.isConnectedToCluster()){
-            this.connectToMaster();
+            throw new PieCeptionServiceException("You are not connected to the PieCeption channel!");
         }
 
         if(this.clusterService.getMembersCount() > 1){
