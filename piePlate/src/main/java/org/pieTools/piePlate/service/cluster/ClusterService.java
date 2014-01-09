@@ -3,7 +3,6 @@ package org.pieTools.piePlate.service.cluster;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
-import org.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
 import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IChannelFactory;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
