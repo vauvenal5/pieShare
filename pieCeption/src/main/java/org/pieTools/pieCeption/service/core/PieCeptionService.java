@@ -27,6 +27,10 @@ public class PieCeptionService implements IPieCeptionService {
         this.commandParserService = commandParserService;
     }
 
+    public void setStartupService(IStartupService startupService) {
+        this.startupService = startupService;
+    }
+
     @Override
     public void parseArgs(String[] args) throws PieCeptionServiceException {
 
@@ -35,6 +39,8 @@ public class PieCeptionService implements IPieCeptionService {
         if(!this.connectorService.isPieShareRunning()) {
             try {
                 this.startupService.startInstance();
+
+
                 //todo-sv: how to handle the startup time of master?
             } catch (StartupServiceException e1) {
                 throw new PieCeptionServiceException("Starting master failed!", e1);
