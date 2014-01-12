@@ -45,7 +45,8 @@ public class DatabaseTest {
 
 		loggerPropertiesDAO.setNewProperty(props, propName);
 
-		Properties fromDB = loggerPropertiesDAO.getPropertyByName(propName);
+		LoggerPropertiesDAO loggerPropertiesReader = context.getBean(LoggerPropertiesDAO.class);
+		Properties fromDB = loggerPropertiesReader.getPropertyByName(propName);
 
 		Assert.assertEquals(fromDB.getProperty("log4j.rootLogger"), "DEBUG, FILE");
 

@@ -1,5 +1,6 @@
 package org.pieTools.pieUtilities.pieIngredientsStore;
 
+import org.hibernate.Hibernate;
 import org.pieTools.pieUtilities.pieIngredientsStore.entities.LoggerPropertiesEntity;
 import org.pieTools.pieUtilities.pieIngredientsStore.repositories.LoggerPropertiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,10 @@ public class LoggerPropertiesDAO {
 		if (entities == null || entities.size() <= 0) {
 			return null;
 		}
-
+		//Hibernate.initialize(entities);
+		//entities.size();
 		Map<String, String> map = entities.get(0).getProperties();
+
 		Properties loggerPro = new Properties();
 
 		for (String key : map.keySet()) {

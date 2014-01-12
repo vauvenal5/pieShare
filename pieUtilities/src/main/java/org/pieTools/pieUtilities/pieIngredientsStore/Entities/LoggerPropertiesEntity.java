@@ -1,6 +1,7 @@
 package org.pieTools.pieUtilities.pieIngredientsStore.entities;
 
 import javax.persistence.*;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -17,9 +18,12 @@ public class LoggerPropertiesEntity {
 	@Column(name = "propertyname")
 	private String propertyname;
 
-	@ManyToMany
-	@Column(name="Properties")
-	private Map<String,String> properties;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@JoinTable(name="ATTRIBUTE_VALUE_RANGE", joinColumns=@JoinColumn(name="ID"))
+	@MapKeyColumn (name="RANGE_ID")
+	@Column(name="VALUE")
+	private Map<String, String> properties = new HashMap<String, String>();
+	//private Map<String,String> properties;
 
 	public Long getId() {
 		return id;
