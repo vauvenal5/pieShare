@@ -1,34 +1,30 @@
 package org.pieTools.piePlate.service.cluster;
 
-import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.jgroups.Message;
-import org.pieTools.piePlate.dto.PieMessage;
-import org.pieTools.piePlate.service.cluster.api.IChannelFactory;
-import org.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieTools.piePlate.service.cluster.api.IMessageTask;
-import org.pieTools.piePlate.service.cluster.api.IReceiver;
+import org.pieTools.piePlate.service.cluster.api.*;
 import org.pieTools.piePlate.service.exception.ClusterServiceException;
 import org.pieTools.pieUtilities.beanService.IBeanService;
 
 import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ClusterService implements IClusterService {
 
     private ExecutorService executor;
-    private JChannel channel;
 
     private IBeanService beanService;
     private IChannelFactory channelFactory;
     private IReceiver receiver;
 
+    private Map<String, JChannel> channels;
+
     public ClusterService() {
         this.executor = Executors.newCachedThreadPool();
+        this.channels = new HashMap<>();
     }
 
     @PostConstruct
@@ -49,24 +45,19 @@ public class ClusterService implements IClusterService {
     }
 
     @Override
-    public void connect(String clusterName) throws ClusterServiceException {
+    public IClusterWrapper connect(String clusterName) throws ClusterServiceException {
         try {
-            this.channel = this.channelFactory.getDefaultChannel();
-            this.channel.setReceiver(this.receiver);
-            this.channel.connect(clusterName);
+            JChannel channel = this.channelFactory.getDefaultChannel();
+            channel.setReceiver(this.receiver);
+            channel.connect(clusterName);
+
+            this.channels.put(clusterName, channel);
+            DefaultClusterWrapper wrapper = new DefaultClusterWrapper();
+            wrapper.setChannel(channel);
+            return wrapper;
         } catch (Exception e) {
             throw new ClusterServiceException(e);
         }
-    }
-
-    @Override
-    public int getMembersCount() {
-        return this.channel.getView().getMembers().size();
-    }
-
-    @Override
-    public boolean isConnectedToCluster() {
-        return this.channel.isConnected();
     }
 
     @Override
@@ -74,14 +65,5 @@ public class ClusterService implements IClusterService {
         IMessageTask task = (IMessageTask)beanService.getBean("messageTask");
         task.setMsg(MessageConverter.convertMessageToPieMessage(msg));
         this.executor.submit(task);
-    }
-
-    @Override
-    public void sendMessage(PieMessage msg) throws ClusterServiceException {
-        try {
-            this.channel.send(null, msg.getBuffer());
-        } catch (Exception e) {
-            throw new ClusterServiceException(e);
-        }
     }
 }
