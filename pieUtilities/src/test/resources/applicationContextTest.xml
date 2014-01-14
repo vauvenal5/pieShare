@@ -11,13 +11,13 @@
     <context:annotation-config />
 
     <!-- Defines where to search for annotated components -->
-    <context:component-scan base-package="org.pieTools.pieUtilities.pieIngredientsStore" />
+    <context:component-scan base-package="org.pieTools.pieUtilities.services.pieIngredientsStore" />
 
     <!-- Database connection -->
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.hsqldb.jdbcDriver" />
-        <property name="url" value="jdbc:hsqldb:mem:mydb" />
-        <property name="username" value="pieIngredients" /> <!-- Set your db user here -->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="org.hsqldb.jdbcDriver" />
+        <property name="jdbcUrl" value="jdbc:hsqldb:file:dataTest/testdb" />
+        <property name="user" value="sa" /> <!-- Set your db user here -->
         <property name="password" value="" /> <!-- Set your db password here -->
     </bean>
 
@@ -31,7 +31,7 @@
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="jpaVendorAdapter" ref="hibernateJpaVendorAdapter" />
-        <property name="packagesToScan" value="org.pieTools.pieUtilities.pieIngredientsStore.entities" /> <!-- Defines where the entity classes are placed -->
+        <property name="packagesToScan" value="org.pieTools.pieUtilities.services.pieIngredientsStore.entities" /> <!-- Defines where the entity classes are placed -->
     </bean>
 
     <!-- Configure transaction management -->
@@ -41,6 +41,6 @@
     <tx:annotation-driven transaction-manager="transactionManager" />
 
     <!-- Defines where repositories are placed -->
-    <jpa:repositories base-package="org.pieTools.pieUtilities.pieIngredientsStore.repositories" />
+    <jpa:repositories base-package="org.pieTools.pieUtilities.services.pieIngredientsStore.repositories" />
 
 </beans>

@@ -25,7 +25,11 @@ public class PieLogger {
 			context.registerShutdownHook();
 			LoggerPropertiesDAO loggerPropertiesReader = context.getBean(LoggerPropertiesDAO.class);
 			properties = loggerPropertiesReader.getPropertyByName("LoggerProperties_InFile");
-			PropertyConfigurator.configure(properties);
+			if(properties == null)
+            {
+                return;
+            }
+            PropertyConfigurator.configure(properties);
 		}
 	}
 

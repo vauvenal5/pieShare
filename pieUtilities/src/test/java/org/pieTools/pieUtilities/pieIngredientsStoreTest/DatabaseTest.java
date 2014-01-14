@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
 import org.pieTools.pieUtilities.services.pieIngredientsStore.LoggerPropertiesDAO;
+import org.pieTools.pieUtilities.services.pieLogger.PieLogger;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -51,6 +52,7 @@ public class DatabaseTest {
 		Assert.assertEquals(fromDB.getProperty("log4j.rootLogger"), "DEBUG, FILE");
 
 	}
+
 
 
 }
