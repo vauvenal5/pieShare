@@ -10,7 +10,7 @@ import java.util.*;
 /**
  * Created by Richard on 09.01.14.
  */
-@Component
+@Component("loggerPropertiesDAO")
 public class LoggerPropertiesDAO {
 
 	@Autowired
