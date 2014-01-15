@@ -10,8 +10,15 @@
     <!-- Activate Annotation based configuration -->
     <context:annotation-config />
 
+
     <!-- Defines where to search for annotated components -->
     <context:component-scan base-package="org.pieTools.pieUtilities.services" />
+
+    <bean id="pieLogger" class="org.pieTools.pieUtilities.services.pieLogger.PieLogger">
+    </bean>
+
+    <bean id="pieLoggerTestHelper" class="org.pieTools.pieUtilities.pieLoggerTest.LogAutoWireTestHelper">
+    </bean>
 
     <!-- Database connection -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
