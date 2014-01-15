@@ -51,8 +51,14 @@ public class PieLoggerTest {
     @Test
     public void test_pieLogger()
     {
+
+		final AbstractApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		context.registerShutdownHook();
+		PieLogger pieLogger = context.getBean(PieLogger.class);
+
         final String logMessage = "This is a Test log message " + DateFormat.getDateInstance().format(new Date());
-        PieLogger.debug(this.getClass(), logMessage);
+		pieLogger.setProperties();
+		pieLogger.debug(this.getClass(), logMessage);
 
         FileInputStream inputStream = null;
         String everything = "";

@@ -41,7 +41,7 @@ public class PieLogger {
 		}
 	}
 
-	public static void debug(Class clazz, String message) {
+	public void debug(Class clazz, String message) {
 		//setProperties();
 		if (mainLogger.isDebugEnabled()) {
 			Logger logger = LoggerFactory.getLogger(clazz);
@@ -49,7 +49,7 @@ public class PieLogger {
 		}
 	}
 
-	public static void error(Class clazz, String message) {
+	public void error(Class clazz, String message) {
 		//setProperties();
 		if (mainLogger.isErrorEnabled()) {
 			Logger logger = LoggerFactory.getLogger(clazz);
@@ -57,7 +57,7 @@ public class PieLogger {
 		}
 	}
 
-	public static void info(Class clazz, String message) {
+	public void info(Class clazz, String message) {
 		//setProperties();
 		if (mainLogger.isInfoEnabled()) {
 			Logger logger = LoggerFactory.getLogger(clazz);
