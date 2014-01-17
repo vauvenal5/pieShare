@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.cluster.api;
+package org.pieTools.piePlate.service.cluster.jgroupcluster.api;
 
 import org.jgroups.JChannel;
 

@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.cluster;
+package org.pieTools.piePlate.service.cluster.jgroupcluster.utility;
 
 import org.jgroups.Message;
 import org.pieTools.piePlate.dto.PieMessage;
