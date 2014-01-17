@@ -6,7 +6,7 @@ import org.pieTools.piePlate.service.cluster.api.IMessageTask;
 /**
  * Created by vauvenal5 on 12/12/13.
  */
-public class MessageTask implements IMessageTask {
+public class MessageTask implements IMessageTask<PieMessage> {
 
     private PieMessage msg;
 

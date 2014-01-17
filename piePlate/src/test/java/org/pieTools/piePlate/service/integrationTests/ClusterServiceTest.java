@@ -4,12 +4,11 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pieTools.piePlate.dto.PieMessage;
+import org.pieTools.piePlate.service.cluster.MessageTask;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieTools.piePlate.service.exception.ClusterServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.util.concurrent.ExecutorService;
 
 
 public class ClusterServiceTest {
@@ -40,6 +39,7 @@ public class ClusterServiceTest {
             @Override
             public void run() {
                 try {
+                    this.getService().registerTask(PieMessage.class, new MessageTask());
                     this.getService().connect("myTestCluster2");
                     this.getService().sendMessage(new PieMessage("Hello Pie!".getBytes()));
                     this.setDone();
@@ -48,7 +48,6 @@ public class ClusterServiceTest {
                 }
             }
         };
-
         ClusterServiceTestHelper tester2 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
             @Override
             public void run() {
