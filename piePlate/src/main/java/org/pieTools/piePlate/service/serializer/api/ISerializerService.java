@@ -1,6 +1,6 @@
 package org.pieTools.piePlate.service.serializer.api;
 
-import org.pieTools.piePlate.dto.api.IPieMessage;
+import org.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
 /**

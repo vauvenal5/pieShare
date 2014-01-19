@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.dto.api;
+package org.pieTools.piePlate.model.message.api;
 
 import java.io.Serializable;
 

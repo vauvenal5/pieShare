@@ -1,6 +1,6 @@
 package org.pieTools.piePlate.service.integrationTests;
 
-import org.pieTools.piePlate.dto.api.IPieMessage;
+import org.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  * Created by Svetoslav on 19.01.14.

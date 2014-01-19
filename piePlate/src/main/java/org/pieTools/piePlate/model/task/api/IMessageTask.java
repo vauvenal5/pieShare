@@ -1,4 +1,6 @@
-package org.pieTools.piePlate.dto.api;
+package org.pieTools.piePlate.model.task.api;
+
+import org.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  * Created by vauvenal5 on 12/12/13.

@@ -1,7 +1,7 @@
 package org.pieTools.piePlate.service.serializer;
 
 import org.jgroups.util.Util;
-import org.pieTools.piePlate.dto.api.IPieMessage;
+import org.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
