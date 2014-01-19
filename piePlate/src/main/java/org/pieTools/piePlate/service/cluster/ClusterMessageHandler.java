@@ -2,8 +2,8 @@ package org.pieTools.piePlate.service.cluster;
 
 import org.apache.commons.lang3.Validate;
 import org.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
-import org.pieTools.piePlate.dto.api.IMessageTask;
-import org.pieTools.piePlate.dto.api.IPieMessage;
+import org.pieTools.piePlate.model.task.api.IMessageTask;
+import org.pieTools.piePlate.model.message.api.IPieMessage;
 
 import java.util.HashMap;
 import java.util.Map;
