@@ -2,15 +2,14 @@ package org.pieTools.piePlate.service.cluster.jgroupcluster;
 
 import org.apache.commons.lang3.Validate;
 import org.jgroups.JChannel;
-import org.jgroups.util.Util;
-import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieTools.piePlate.service.cluster.api.IMessageTask;
-import org.pieTools.piePlate.service.cluster.api.IPieMessage;
+import org.pieTools.piePlate.dto.api.IMessageTask;
+import org.pieTools.piePlate.dto.api.IPieMessage;
 import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IChannelFactory;
 import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IReceiver;
-import org.pieTools.piePlate.service.exception.ClusterServiceException;
+import org.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieTools.piePlate.service.serializer.api.ISerializerService;
 
 import javax.annotation.PostConstruct;
 
@@ -19,6 +18,7 @@ public class JGroupsClusterService implements IClusterService {
     private IChannelFactory channelFactory;
     private IReceiver receiver;
     private IClusterMessageHandler clusterMessageHandler;
+    private ISerializerService serializerService;
 
     private JChannel channel;
 
@@ -39,6 +39,10 @@ public class JGroupsClusterService implements IClusterService {
 
     public void setClusterMessageHandler(IClusterMessageHandler handler) {
         this.clusterMessageHandler = handler;
+    }
+
+    public void setSerializerService(ISerializerService service) {
+        this.serializerService = service;
     }
 
     @Override
@@ -64,9 +68,9 @@ public class JGroupsClusterService implements IClusterService {
     }
 
     @Override
-    public void sendMessage(PieMessage msg) throws ClusterServiceException {
+    public void sendMessage(IPieMessage msg) throws ClusterServiceException {
         try {
-            this.channel.send(null, Util.objectToByteBuffer(msg));
+            this.channel.send(null, this.serializerService.serialize(msg));
         } catch (Exception e) {
             throw new ClusterServiceException(e);
         }

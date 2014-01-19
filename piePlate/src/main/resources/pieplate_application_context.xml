@@ -16,9 +16,5 @@
         <property name="receiver" ref="simpleReceiver"/>
     </bean>
 
-    <bean id="simpleReceiver" class="org.pieTools.piePlate.service.cluster.jgroupcluster.SimpleReceiver" scope="prototype" lazy-init="true"/>
-
-    <bean id="messageTask" class="org.pieTools.piePlate.service.cluster.MessageTask" scope="prototype" lazy-init="true"/>
-
     <bean id="channelFactory" class="org.pieTools.piePlate.service.cluster.jgroupcluster.ChannelFactory" lazy-init="true"></bean>
 </beans>

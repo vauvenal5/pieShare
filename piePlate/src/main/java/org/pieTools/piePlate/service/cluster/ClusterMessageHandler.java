@@ -1,9 +1,9 @@
-package org.pieTools.piePlate.service.cluster.jgroupcluster;
+package org.pieTools.piePlate.service.cluster;
 
 import org.apache.commons.lang3.Validate;
 import org.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
-import org.pieTools.piePlate.service.cluster.api.IMessageTask;
-import org.pieTools.piePlate.service.cluster.api.IPieMessage;
+import org.pieTools.piePlate.dto.api.IMessageTask;
+import org.pieTools.piePlate.dto.api.IPieMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,11 +13,11 @@ import java.util.concurrent.Executors;
 /**
  * Created by Svetoslav on 14.01.14.
  */
-public class JGroupsClusterMessageHandler implements IClusterMessageHandler {
+public class ClusterMessageHandler implements IClusterMessageHandler {
     private ExecutorService executor;
     private Map<Class, IMessageTask> tasks;
 
-    public JGroupsClusterMessageHandler() {
+    public ClusterMessageHandler() {
         this.executor = Executors.newCachedThreadPool();
         this.tasks = new HashMap<>();
     }

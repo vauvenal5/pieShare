@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.exception;
+package org.pieTools.piePlate.service.cluster.exception;
 
 /**
  * Created by vauvenal5 on 12/12/13.

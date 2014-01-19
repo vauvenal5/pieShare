@@ -1,9 +1,6 @@
 package org.pieTools.piePlate.service.integrationTests;
 
-import org.jgroups.Message;
-import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieTools.piePlate.service.exception.ClusterServiceException;
 
 /**
  * Created by Svetoslav on 14.12.13.
