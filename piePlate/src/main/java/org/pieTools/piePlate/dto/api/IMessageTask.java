@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.cluster.api;
+package org.pieTools.piePlate.dto.api;
 
 /**
  * Created by vauvenal5 on 12/12/13.
