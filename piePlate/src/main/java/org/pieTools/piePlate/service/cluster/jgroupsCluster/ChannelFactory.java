@@ -1,7 +1,7 @@
-package org.pieTools.piePlate.service.cluster.jgroupcluster;
+package org.pieTools.piePlate.service.cluster.jgroupsCluster;
 
 import org.jgroups.JChannel;
-import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IChannelFactory;
+import org.pieTools.piePlate.service.cluster.jgroupsCluster.api.IChannelFactory;
 
 /**
  * Created by Svetoslav on 13.12.13.

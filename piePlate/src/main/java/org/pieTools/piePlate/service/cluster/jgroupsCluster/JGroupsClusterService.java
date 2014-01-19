@@ -1,4 +1,4 @@
-package org.pieTools.piePlate.service.cluster.jgroupcluster;
+package org.pieTools.piePlate.service.cluster.jgroupsCluster;
 
 import org.apache.commons.lang3.Validate;
 import org.jgroups.JChannel;
@@ -6,8 +6,8 @@ import org.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieTools.piePlate.model.message.api.IPieMessage;
-import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IChannelFactory;
-import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IReceiver;
+import org.pieTools.piePlate.service.cluster.jgroupsCluster.api.IChannelFactory;
+import org.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieTools.piePlate.service.serializer.api.ISerializerService;
 
