@@ -1,11 +1,11 @@
-package org.pieTools.piePlate.service.cluster.jgroupcluster;
+package org.pieTools.piePlate.service.cluster.jgroupsCluster;
 
 import org.jgroups.Message;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
 import org.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
 import org.pieTools.piePlate.model.message.api.IPieMessage;
-import org.pieTools.piePlate.service.cluster.jgroupcluster.api.IReceiver;
+import org.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
