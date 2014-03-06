@@ -3,7 +3,7 @@ package org.pieTools.pieCeption.service.core;
 import org.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
 import org.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieTools.piePlate.service.exception.ClusterServiceException;
+import org.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

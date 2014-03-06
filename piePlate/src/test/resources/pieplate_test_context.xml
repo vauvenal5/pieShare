@@ -10,15 +10,23 @@
     <bean id="beanService" class="org.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
     </bean>
 
-    <bean id="clusterService" class="org.pieTools.piePlate.service.cluster.ClusterService" lazy-init="true">
-        <property name="beanService" ref="beanService"/>
+    <bean id="clusterService" class="org.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" lazy-init="true">
         <property name="channelFactory" ref="channelFactory"/>
-        <property name="receiver" ref="simpleReceiver"/>
+        <property name="receiver" ref="objectReceiver"/>
+        <property name="clusterMessageHandler" ref="clusterMessageHandler"/>
+        <property name="serializerService" ref="serializerService"/>
     </bean>
 
-    <bean id="simpleReceiver" class="org.pieTools.piePlate.service.cluster.SimpleReceiver" scope="prototype" lazy-init="true"/>
+    <bean id="serializerService" class="org.pieTools.piePlate.service.serializer.DefaultSerializerService" lazy-init="true">
+    </bean>
 
-    <bean id="messageTask" class="org.pieTools.piePlate.service.cluster.MessageTask" scope="prototype" lazy-init="true"/>
+    <bean id="clusterMessageHandler" class="org.pieTools.piePlate.service.cluster.ClusterMessageHandler" lazy-init="true">
+    </bean>
 
-    <bean id="channelFactory" class="org.pieTools.piePlate.service.cluster.ChannelFactory" lazy-init="true"></bean>
+    <bean id="objectReceiver" class="org.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" scope="prototype" lazy-init="true">
+        <property name="clusterMessageHandler" ref="clusterMessageHandler"/>
+        <property name="serializerService" ref="serializerService"/>
+    </bean>
+
+    <bean id="channelFactory" class="org.pieTools.piePlate.service.cluster.jgroupsCluster.ChannelFactory" lazy-init="true"></bean>
 </beans>
