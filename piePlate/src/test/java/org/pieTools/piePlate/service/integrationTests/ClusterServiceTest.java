@@ -3,13 +3,10 @@ package org.pieTools.piePlate.service.integrationTests;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pieTools.piePlate.dto.PieMessage;
 import org.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieTools.piePlate.service.exception.ClusterServiceException;
+import org.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import java.util.concurrent.ExecutorService;
 
 
 public class ClusterServiceTest {
@@ -36,12 +33,15 @@ public class ClusterServiceTest {
     @Test
     public void testSendingMessage() throws Exception {
 
+        final TestMessage msg = new TestMessage();
+        msg.setMsg("This is a msg!");
+
         ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
             @Override
             public void run() {
                 try {
                     this.getService().connect("myTestCluster2");
-                    this.getService().sendMessage(new PieMessage("Hello Pie!".getBytes()));
+                    this.getService().sendMessage(msg);
                     this.setDone();
                 } catch (ClusterServiceException e) {
                     e.printStackTrace();
@@ -49,10 +49,13 @@ public class ClusterServiceTest {
             }
         };
 
+        final TestTask task = new TestTask();
+
         ClusterServiceTestHelper tester2 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
             @Override
             public void run() {
                 try {
+                    this.getService().registerTask(TestMessage.class, task);
                     this.getService().connect("myTestCluster2");
                     this.setDone();
                 } catch (ClusterServiceException e) {
@@ -68,6 +71,8 @@ public class ClusterServiceTest {
 
         Assert.assertEquals(2, tester1.getService().getMembersCount());
         Assert.assertEquals(2, tester2.getService().getMembersCount());
+        Assert.assertEquals(msg.getMsg(), task.getMsg().getMsg());
+        Assert.assertEquals(true, task.getRun());
     }
 
     private void waitUntilDone(ClusterServiceTestHelper testee) throws InterruptedException {
