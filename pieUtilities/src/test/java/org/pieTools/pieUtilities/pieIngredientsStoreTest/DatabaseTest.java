@@ -4,8 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Assert;
-import org.pieTools.pieUtilities.services.pieIngredientsStore.LoggerPropertiesDAO;
-import org.pieTools.pieUtilities.services.pieLogger.PieLogger;
+import org.pieShare.framework.services.pieIngredientsStore.LoggerPropertiesDAO;
+import org.pieShare.framework.services.pieLogger.PieLogger;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

@@ -1,4 +1,4 @@
-package org.pieTools.pieUtilities.services.beanService;
+package org.pieShare.framework.services.beanService;
 
 
 import org.springframework.context.ApplicationContext;

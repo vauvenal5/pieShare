@@ -1,7 +1,7 @@
-package org.pieTools.pieUtilities.services.pieIngredientsStore;
+package org.pieShare.framework.services.pieIngredientsStore;
 
-import org.pieTools.pieUtilities.services.pieIngredientsStore.entities.LoggerPropertiesEntity;
-import org.pieTools.pieUtilities.services.pieIngredientsStore.repositories.LoggerPropertiesRepository;
+import org.pieShare.framework.services.pieIngredientsStore.entities.LoggerPropertiesEntity;
+import org.pieShare.framework.services.pieIngredientsStore.repositories.LoggerPropertiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
