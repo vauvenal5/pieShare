@@ -1,7 +1,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
-import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 
 /**

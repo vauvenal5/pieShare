@@ -6,9 +6,9 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterMessageHandler
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IChannelFactory;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 
 import javax.annotation.PostConstruct;
