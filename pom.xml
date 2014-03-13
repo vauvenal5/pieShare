@@ -7,6 +7,12 @@
     <groupId>org.pieShare</groupId>
     <artifactId>pieShare</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
+    <modules>
+        <module>pieCeption</module>
+        <module>piePlate</module>
+        <module>pieUtilities</module>
+    </modules>
 
 </project>
