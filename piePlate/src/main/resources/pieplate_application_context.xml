@@ -7,14 +7,14 @@
 
     <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
 
-    <bean id="beanService" class="org.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
+    <bean id="beanService" class="org.pieShare.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
     </bean>
     
-    <bean id="clusterService" class="org.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" scope="prototype" lazy-init="true">
+    <bean id="clusterService" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" scope="prototype" lazy-init="true">
         <property name="beanService" ref="beanService"/>
         <property name="channelFactory" ref="channelFactory"/>
         <property name="receiver" ref="simpleReceiver"/>
     </bean>
 
-    <bean id="channelFactory" class="org.pieTools.piePlate.service.cluster.jgroupsCluster.ChannelFactory" lazy-init="true"></bean>
+    <bean id="channelFactory" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ChannelFactory" lazy-init="true"></bean>
 </beans>
