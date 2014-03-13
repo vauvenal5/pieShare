@@ -1,16 +1,12 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.pieTools.pieUtilities.services.pieLogger;
+
+
+package org.pieShare.framework.services.pieLogger;
 
 import org.apache.log4j.PropertyConfigurator;
-import org.pieTools.pieUtilities.services.pieIngredientsStore.LoggerPropertiesDAO;
+import org.pieShare.framework.services.pieIngredientsStore.LoggerPropertiesDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import java.util.Properties;

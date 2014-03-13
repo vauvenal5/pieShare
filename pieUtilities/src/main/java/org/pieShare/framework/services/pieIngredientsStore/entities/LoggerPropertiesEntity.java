@@ -1,4 +1,4 @@
-package org.pieTools.pieUtilities.services.pieIngredientsStore.entities;
+package org.pieShare.framework.services.pieIngredientsStore.entities;
 
 import javax.persistence.*;
 import java.util.HashMap;
