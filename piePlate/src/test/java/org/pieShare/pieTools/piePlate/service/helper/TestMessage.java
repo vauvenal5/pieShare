@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.piePlate.service.integrationTests;
+package org.pieShare.pieTools.piePlate.service.helper;
 
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
@@ -7,6 +7,7 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
  */
 public class TestMessage implements IPieMessage {
     String msg;
+    String type;
 
     public TestMessage() {
     }
@@ -17,5 +18,15 @@ public class TestMessage implements IPieMessage {
 
     public String getMsg() {
         return this.msg;
+    }
+
+    @Override
+    public String getType() {
+        return this.type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
     }
 }
