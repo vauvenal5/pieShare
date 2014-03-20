@@ -5,6 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.helper.ClusterServiceTestHelper;
+import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
+import org.pieShare.pieTools.piePlate.service.helper.TestTask;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -19,7 +22,7 @@ public class ClusterServiceTest {
     }
 
     @Test
-    public void testClustering() throws Exception {
+    public void testSimpleClustering() throws Exception {
         IClusterService service1 = (IClusterService)context.getBean("clusterService");
         IClusterService service2 = (IClusterService)context.getBean("clusterService");
 
@@ -34,6 +37,7 @@ public class ClusterServiceTest {
     public void testSendingMessage() throws Exception {
 
         final TestMessage msg = new TestMessage();
+        msg.setType(TestMessage.class.getName());
         msg.setMsg("This is a msg!");
 
         ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
@@ -66,6 +70,7 @@ public class ClusterServiceTest {
 
         new Thread(tester2).start();
         waitUntilDone(tester2);
+        Assert.assertEquals(1, tester2.getService().getMembersCount());
         new Thread(tester1).start();
         waitUntilDone(tester1);
 
