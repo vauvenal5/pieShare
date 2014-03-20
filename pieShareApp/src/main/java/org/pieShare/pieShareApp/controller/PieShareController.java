@@ -32,7 +32,7 @@ public class PieShareController {
             e.printStackTrace();
         }
 
-        while(!this.clusterService.isConnectedToCluster() && this.clusterService.getMembersCount() < 2) {
+        while(!this.clusterService.isConnectedToCluster() || this.clusterService.getMembersCount() < 2) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -40,7 +40,10 @@ public class PieShareController {
             }
         }
 
+        System.out.println("CLUSTERCOUNT: " + this.clusterService.getMembersCount());
+
         SimpleMessage msg = new SimpleMessage();
+        //msg.setType(SimpleMessage.class.getName());
         try {
             msg.setMsg(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
