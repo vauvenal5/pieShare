@@ -7,7 +7,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IChannelFactory;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 
@@ -15,7 +14,6 @@ import javax.annotation.PostConstruct;
 
 public class JGroupsClusterService implements IClusterService {
 
-    private IChannelFactory channelFactory;
     private IReceiver receiver;
     private IClusterMessageHandler clusterMessageHandler;
     private ISerializerService serializerService;
@@ -29,8 +27,8 @@ public class JGroupsClusterService implements IClusterService {
     private void postClusterService() {
     }
 
-    public void setChannelFactory(IChannelFactory channelFactory) {
-        this.channelFactory = channelFactory;
+    public void setChannel(JChannel channel) {
+        this.channel = channel;
     }
 
     public void setReceiver(IReceiver receiver) {
@@ -56,7 +54,7 @@ public class JGroupsClusterService implements IClusterService {
         try {
             Validate.notNull(this.receiver);
 
-            this.channel = this.channelFactory.getDefaultChannel();
+            //this.channel = new JChannel();
             this.channel.setReceiver(this.receiver);
             this.channel.connect(clusterName);
 
