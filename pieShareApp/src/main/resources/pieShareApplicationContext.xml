@@ -5,8 +5,10 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <bean id="pieShareController" class="org.pieShare.pieShareApp.controller.PieShareController" lazy-init="true">
+    <import resource="classpath*:pieplate_application_context.xml" />
 
+    <bean id="pieShareController" class="org.pieShare.pieShareApp.controller.PieShareController" lazy-init="true">
+        <property name="clusterService" ref="clusterService"/>
     </bean>
 
 </beans>
