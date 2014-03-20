@@ -32,7 +32,7 @@ public class PieShareController {
             e.printStackTrace();
         }
 
-        while(!this.clusterService.isConnectedToCluster()) {
+        while(!this.clusterService.isConnectedToCluster() && this.clusterService.getMembersCount() < 2) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
