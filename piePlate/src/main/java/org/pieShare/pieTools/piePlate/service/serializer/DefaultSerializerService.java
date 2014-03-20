@@ -8,6 +8,7 @@ import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerSer
 /**
  * Created by Svetoslav on 19.01.14.
  */
+//TODO-sv: delete this?
 public class DefaultSerializerService implements ISerializerService {
     @Override
     public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
