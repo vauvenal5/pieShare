@@ -13,6 +13,7 @@
         <module>pieUtilities</module>
         <module>pieCeption</module>
         <module>piePlate</module>
+        <module>pieShareApp</module>
     </modules>
 
     <build>
