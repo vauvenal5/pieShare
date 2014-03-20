@@ -1,6 +1,7 @@
-package org.pieShare.pieTools.piePlate.service.integrationTests;
+package org.pieShare.pieTools.piePlate.service.helper;
 
 import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
+import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
 
 /**
  * Created by Svetoslav on 19.01.14.
