@@ -16,6 +16,11 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
     private IClusterService clusterService;
     private String serviceName = null;
 
+    public  void setClusterService(IClusterService clusterService)
+    {
+        this.clusterService = clusterService;
+    }
+
     public void setServiceName(String serviceName){
         this.serviceName = serviceName;
     }
@@ -26,6 +31,7 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
 
         try {
             String localName = InetAddress.getLocalHost().getHostName();
+            //todo check for security issues
             clusterService.connect(serviceName + localName);
         } catch (UnknownHostException e) {
             //todo-sv: error handling
