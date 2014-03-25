@@ -9,6 +9,7 @@ public class HeaderMessage implements IPieMessage {
     private String type;
 
     public HeaderMessage() {
+        this.setType(this.getClass().getName());
     }
 
     @Override
