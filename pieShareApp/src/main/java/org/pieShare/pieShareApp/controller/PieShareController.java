@@ -43,8 +43,10 @@ public class PieShareController {
             }
         }
 
+        System.out.println("CLUSTERCOUNT: " + this.clusterService.getMembersCount());
+
         SimpleMessage msg = new SimpleMessage();
-        msg.setType(SimpleMessage.class.getName());
+        //msg.setType(SimpleMessage.class.getName());
         try {
             msg.setMsg(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
