@@ -10,15 +10,11 @@
     <bean id="beanService" class="org.pieShare.pieTools.pieUtilities.beanService.BeanService" lazy-init="true">
     </bean>
     
-    <bean id="clusterService" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterService" scope="prototype" lazy-init="true">
+    <bean id="clusterService" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" scope="prototype" lazy-init="true">
         <property name="beanService" ref="beanService"/>
         <property name="channelFactory" ref="channelFactory"/>
         <property name="receiver" ref="simpleReceiver"/>
     </bean>
 
-    <bean id="simpleReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.SimpleReceiver" scope="prototype" lazy-init="true"/>
-
-    <bean id="messageTask" class="org.pieShare.pieTools.piePlate.service.cluster.MessageTask" scope="prototype" lazy-init="true"/>
-
-    <bean id="channelFactory" class="org.pieShare.pieTools.piePlate.service.cluster.ChannelFactory" lazy-init="true"></bean>
+    <bean id="channelFactory" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ChannelFactory" lazy-init="true"></bean>
 </beans>
