@@ -1,19 +1,18 @@
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
-import org.jgroups.JChannel;
-import org.jgroups.Message;
-import org.pieShare.pieTools.piePlate.dto.PieMessage;
-import org.pieShare.pieTools.piePlate.service.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 
 /**
  * Created by vauvenal5 on 12/12/13.
  */
 public interface IClusterService {
+    <P extends IPieMessage> void registerTask(Class<P> clazz, IMessageTask<P> task);
+
     void connect(String clusterName) throws ClusterServiceException;
 
-    void handleMessage(Message msg);
-
-    void sendMessage(PieMessage msg) throws ClusterServiceException;
+    void sendMessage(IPieMessage msg) throws ClusterServiceException;
 
     int getMembersCount();
 

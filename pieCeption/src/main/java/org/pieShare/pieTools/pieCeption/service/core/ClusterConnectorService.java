@@ -3,7 +3,7 @@ package org.pieShare.pieTools.pieCeption.service.core;
 import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
 import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -16,6 +16,11 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
     private IClusterService clusterService;
     private String serviceName = null;
 
+    public  void setClusterService(IClusterService clusterService)
+    {
+        this.clusterService = clusterService;
+    }
+
     public void setServiceName(String serviceName){
         this.serviceName = serviceName;
     }
@@ -26,6 +31,7 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
 
         try {
             String localName = InetAddress.getLocalHost().getHostName();
+            //todo check for security issues
             clusterService.connect(serviceName + localName);
         } catch (UnknownHostException e) {
             //todo-sv: error handling
