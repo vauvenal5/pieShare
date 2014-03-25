@@ -7,6 +7,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.pieShare.pieShareApp.model.task.FileChangedTask;
 
 /**
  * Created by vauvenal5 on 3/20/14.
@@ -23,7 +24,9 @@ public class PieShareController {
 
         //init program
         PrintTask printTask = new PrintTask();
-
+        FileChangedTask fileChangedTask = new FileChangedTask();
+        
+        
         this.clusterService.registerTask(SimpleMessage.class, printTask);
 
         try {
@@ -32,7 +35,7 @@ public class PieShareController {
             e.printStackTrace();
         }
 
-        while(!this.clusterService.isConnectedToCluster() && this.clusterService.getMembersCount() < 2) {
+        while(!this.clusterService.isConnectedToCluster() || this.clusterService.getMembersCount() < 2) {
             try {
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -41,6 +44,7 @@ public class PieShareController {
         }
 
         SimpleMessage msg = new SimpleMessage();
+        msg.setType(SimpleMessage.class.getName());
         try {
             msg.setMsg(InetAddress.getLocalHost().getHostName());
         } catch (UnknownHostException e) {
