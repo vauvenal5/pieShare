@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.piePlate.service.integrationTests;
+package org.pieShare.pieTools.piePlate.service.helper;
 
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 
