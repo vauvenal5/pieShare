@@ -17,69 +17,75 @@ import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
  */
 public class PieFile
 {
+	private File file;
+	private String md5 = "";
 
-    private FileService fileSrvice;
-    private FileWatcherService fileWatcher;
-    private File file;
-    private String md5 = "";
+	public PieFile(File file) throws IOException
+	{
+		this.file = file;
 
-    public PieFile(File file) throws IOException
-    {
-        this.file = file;
-        md5 = MD5Service.MD5(file);
-    }
+		if (file.exists())
+		{
+			md5 = MD5Service.MD5(file);
+		}
+	}
 
-    public String getFileName()
-    {
-        return file.getName();
-    }
+	public String getFileName()
+	{
+		return file.getName();
+	}
+	
+	public File getFile()
+	{
+		return file;
+	}
 
-    public String getMD5()
-    {
-        return md5;
-    }
+	public String getMD5()
+	{
+		return md5;
+	}
 
-    public long getLastModified()
-    {
-        return file.lastModified();
-    }
+	public long getLastModified()
+	{
+		return file.lastModified();
+	}
 
-    public String getRelativeFilePath()
-    {
-        File workingDir = Configuration.getWorkingDirectory();
+	public String getRelativeFilePath()
+	{
+		File workingDir = Configuration.getWorkingDirectory();
 
-        Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-        Path pathBase = workingDir.toPath(); // Paths.get("/var/data");
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-        return pathRelative.toString();
-    }
+		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		Path pathBase = workingDir.toPath(); // Paths.get("/var/data");
+		Path pathRelative = pathBase.relativize(pathAbsolute);
+		return pathRelative.toString();
+	}
 
-    @Override
-    public boolean equals(Object object)
-    {
-        if(!(object instanceof PieFile))
-        {
-            return false;
-        }
-            
-        PieFile pieFile = (PieFile)object;
-       
-        if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
-        {
-            return false;
-        }
+	@Override
+	public boolean equals(Object object)
+	{
+		if (!(object instanceof PieFile))
+		{
+			return false;
+		}
 
-        if (pieFile.getLastModified() != this.getLastModified())
-        {
-            return false;
-        }
+		PieFile pieFile = (PieFile) object;
 
-        if (!pieFile.getMD5().equals(this.getMD5()))
-        {
-            return false;
-        }
+		if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+		{
+			return false;
+		}
 
-        return true;
-    }
+		if (pieFile.getLastModified() != this.getLastModified())
+		{
+			return false;
+		}
+
+		if (!pieFile.getMD5().equals(this.getMD5()))
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 }
