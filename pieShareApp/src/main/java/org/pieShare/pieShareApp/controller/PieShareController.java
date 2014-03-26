@@ -8,55 +8,74 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
+import org.pieShare.pieShareApp.service.FileService;
 
 /**
  * Created by vauvenal5 on 3/20/14.
  */
-public class PieShareController {
+public class PieShareController
+{
 
-    private IClusterService clusterService;
+	private IClusterService clusterService;
 
-    public void setClusterService(IClusterService service) {
-        this.clusterService = service;
-    }
+	public void setClusterService(IClusterService service)
+	{
+		this.clusterService = service;
+	}
 
-    public void run(){
+	public void run()
+	{
 
-        //init program
-        PrintTask printTask = new PrintTask();
-        FileChangedTask fileChangedTask = new FileChangedTask();
-        
-        
-        this.clusterService.registerTask(SimpleMessage.class, printTask);
+		//init program
+		PrintTask printTask = new PrintTask();
+		FileChangedTask fileChangedTask = new FileChangedTask();
 
-        try {
-            this.clusterService.connect("testCloud");
-        } catch (ClusterServiceException e) {
-            e.printStackTrace();
-        }
+		FileService service = new FileService();
+		service.serClusterService(clusterService);
 
-        while(!this.clusterService.isConnectedToCluster() || this.clusterService.getMembersCount() < 2) {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+		this.clusterService.registerTask(SimpleMessage.class, printTask);
 
-        System.out.println("CLUSTERCOUNT: " + this.clusterService.getMembersCount());
+		try
+		{
+			this.clusterService.connect("testCloud");
+		}
+		catch (ClusterServiceException e)
+		{
+			e.printStackTrace();
+		}
 
-        SimpleMessage msg = new SimpleMessage();
-        //msg.setType(SimpleMessage.class.getName());
-        try {
-            msg.setMsg(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+		while (!this.clusterService.isConnectedToCluster() || this.clusterService.getMembersCount() < 2)
+		{
+			try
+			{
+				Thread.sleep(500);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
 
-        try {
-            this.clusterService.sendMessage(msg);
-        } catch (ClusterServiceException e) {
-            e.printStackTrace();
-        }
-    }
+		System.out.println("CLUSTERCOUNT: " + this.clusterService.getMembersCount());
+
+		SimpleMessage msg = new SimpleMessage();
+		//msg.setType(SimpleMessage.class.getName());
+		try
+		{
+			msg.setMsg(InetAddress.getLocalHost().getHostName());
+		}
+		catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		}
+
+		try
+		{
+			this.clusterService.sendMessage(msg);
+		}
+		catch (ClusterServiceException e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
