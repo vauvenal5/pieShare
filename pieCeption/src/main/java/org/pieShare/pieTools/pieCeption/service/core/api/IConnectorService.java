@@ -5,7 +5,7 @@ import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionService
 /**
  * Created by Svetoslav on 29.12.13.
  */
-public interface IPieCeptionConnectorService {
+public interface IConnectorService {
     /**
      * Connects to the already running pieInstance.
      */
