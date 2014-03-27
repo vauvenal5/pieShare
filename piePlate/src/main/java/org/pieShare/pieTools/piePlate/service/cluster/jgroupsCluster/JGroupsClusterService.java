@@ -20,10 +20,6 @@ public class JGroupsClusterService implements IClusterService {
     public JGroupsClusterService() {
     }
 
-    @PostConstruct
-    private void postClusterService() {
-    }
-
     public void setChannel(JChannel channel) {
         this.channel = channel;
     }

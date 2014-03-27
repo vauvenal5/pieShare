@@ -9,15 +9,11 @@
 
     <bean id="clusterService" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" scope="prototype" lazy-init="true">
         <property name="receiver" ref="objectReceiver"/>
-        <property name="clusterMessageHandler" ref="clusterMessageHandler"/>
         <property name="serializerService" ref="serializerService"/>
         <property name="channel" ref="channel"/>
     </bean>
 
     <bean id="serializerService" class="org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService" lazy-init="true">
-    </bean>
-
-    <bean id="clusterMessageHandler" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterMessageHandler" lazy-init="true">
     </bean>
 
     <bean id="objectReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" scope="prototype" lazy-init="true">
