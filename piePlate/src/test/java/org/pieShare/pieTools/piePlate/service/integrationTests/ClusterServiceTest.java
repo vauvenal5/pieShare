@@ -59,7 +59,7 @@ public class ClusterServiceTest {
             @Override
             public void run() {
                 try {
-                    this.getService().registerTask(TestMessage.class, task);
+                    this.getService().registerTask(TestMessage.class, TestTask.class);
                     this.getService().connect("myTestCluster2");
                     this.setDone();
                 } catch (ClusterServiceException e) {

@@ -1,12 +1,12 @@
 package org.pieShare.pieTools.piePlate.service.helper;
 
-import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 /**
  * Created by Svetoslav on 19.01.14.
  */
-public class TestTask implements IMessageTask<TestMessage> {
+public class TestTask implements IPieEventTask<TestMessage> {
     private TestMessage msg;
     private boolean run = false;
 
