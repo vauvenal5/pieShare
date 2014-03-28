@@ -7,6 +7,7 @@
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
 
 /**
  *
@@ -16,7 +17,7 @@ public interface IExecutorService {
     
     public void execute(IPieTask task);
     
-    <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> msg, Class<T> task);
+    <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
     
-    public void handlePieEvent(IPieEvent event);
+    public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException;
 }
