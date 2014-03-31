@@ -14,7 +14,6 @@ public class JGroupsClusterService implements IClusterService {
 
     private IReceiver receiver;
     private ISerializerService serializerService;
-
     private JChannel channel;
 
     public JGroupsClusterService() {

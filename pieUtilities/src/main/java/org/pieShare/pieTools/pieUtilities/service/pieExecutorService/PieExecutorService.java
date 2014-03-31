@@ -8,7 +8,10 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -33,6 +36,7 @@ public class PieExecutorService implements IExecutorService{
     
     public void setExecutorService(ExecutorService executor) {
         this.executor = executor;
+        this.executor = Executors.newCachedThreadPool();
     }
     
     public void setBeanService(IBeanService service) {
