@@ -81,13 +81,6 @@ public class CommandParserModuleTest {
 
         commandParserService.registerAction(action);
 
-        IClusterService clusterService = Mockito.mock(IClusterService.class);
-        Mockito.when(clusterService.isConnectedToCluster()).thenReturn(true);
-        Mockito.when(clusterService.getMembersCount()).thenReturn(2);
-
-        clusterConnectorService.setClusterService(clusterService);
-        clusterConnectorService.setServiceName("ServiceName");
-
         String[] args  = new String[4];
         args[0] = commandName;
         args[1] = "5";
