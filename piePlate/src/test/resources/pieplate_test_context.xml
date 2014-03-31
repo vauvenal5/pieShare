@@ -17,10 +17,32 @@
     </bean>
 
     <bean id="objectReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" scope="prototype" lazy-init="true">
-        <property name="clusterMessageHandler" ref="clusterMessageHandler"/>
+        <property name="executorService" ref="pieExecutorService"/>
         <property name="serializerService" ref="serializerService"/>
     </bean>
 
     <bean id="channel" class="org.jgroups.JChannel" scope="prototype" lazy-init="true">
+    </bean>
+    
+    <bean id="beanService" class="org.pieShare.pieTools.pieUtilities.service.beanService.BeanService" lazy-init="true">
+    </bean>
+    
+    <bean id="executorService" class="java.util.concurrent.Executors" lazy-init="true" factory-method="newCachedThreadPool">
+    </bean>
+    
+    <bean id="eventMap" class="java.util.HashMap" lazy-init="true">
+    </bean>
+    
+    <bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService" lazy-init="true">
+        <property name="beanService" ref="beanService"/>
+        <property name="executorService" ref="executorService"/>
+        <property name="map" ref="eventMap"/>            
+    </bean>
+    
+    <bean id="testTask" class="org.pieShare.pieTools.piePlate.service.helper.TestTask" lazy-init="true">
+        <property name="testServiceCallback" ref="testServiceCallback"/>
+    </bean>
+    
+    <bean id="testServiceCallback" class="org.pieShare.pieTools.piePlate.service.helper.TestServiceCallback" lazy-init="true">
     </bean>
 </beans>

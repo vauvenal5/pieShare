@@ -8,6 +8,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiv
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
 
 /**
  * Created by Svetoslav on 17.01.14.
@@ -26,7 +27,7 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
         try {
             IPieMessage pieMsg = this.serializerService.deserialize(msg.getBuffer());
             this.executorService.handlePieEvent(pieMsg);
-        } catch (SerializerServiceException e) {
+        } catch (SerializerServiceException | PieExecutorServiceException e) {
             //todo-sv: fix error handling!
             e.printStackTrace();
         }
