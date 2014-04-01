@@ -95,7 +95,7 @@ public class FileWatcherService implements IFileWatcherService
 
                 if (changedFile.isDirectory() && kind == ENTRY_CREATE)
                 {
-                    fileService.newFolderAdded(changedFile);
+                    fileService.registerAll(changedFile.toPath());
                 }
 
                 if (kind == ENTRY_CREATE)
