@@ -6,15 +6,11 @@
 
 package org.pieShare.pieShareApp.service;
 
-import java.io.File;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 
 /**
  *
@@ -53,8 +49,10 @@ public class FileServiceTest
     @Test
     public void testFileService()
     {
-        FileService 
+        FileService service = new FileService();
     
+		
+		String a = service.toString();
     }
     
 }

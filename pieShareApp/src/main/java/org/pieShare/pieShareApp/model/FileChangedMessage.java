@@ -1,7 +1,6 @@
 package org.pieShare.pieShareApp.model;
 
 import org.pieShare.pieShareApp.service.PieFile;
-import org.pieShare.pieShareApp.service.PieFileInfo;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
