@@ -144,7 +144,8 @@ public class FileService implements IFileService
 	}
 
 
-	private void registerAll(final Path start) throws IOException
+	@Override
+	public void registerAll(final Path start) throws IOException
 	{
 		// register directory and sub-directories
 		Files.walkFileTree(start, new SimpleFileVisitor<Path>()
