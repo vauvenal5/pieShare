@@ -21,5 +21,5 @@ public interface IFileService {
     public void localFileModified(PieFile fileInfo);
     public void localFileDeleted(PieFile fileInfo);
     
-     public void newFolderAdded(File folder);
+     public IFileWatcherService newFolderAdded(File folder);
 }
