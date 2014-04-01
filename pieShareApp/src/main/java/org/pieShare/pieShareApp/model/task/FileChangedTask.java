@@ -23,6 +23,6 @@ public class FileChangedTask implements IMessageTask {
 
     @Override
     public void run() {
-       fileService.remoteFileChanged(fileChangedMessage);
+      // fileService.remoteFileChanged(fileChangedMessage);
     }
 }
