@@ -29,14 +29,12 @@ public class FileService implements IFileService
 	private final PieLogger logger = new PieLogger(FileService.class);
 	private IClusterService clusterService;
 	private FileChangedTask fileChangedTask = null;
-	private HashMap<String, PieFile> files = null;
 	private HashMap<String, IFileWatcherService> watchServices = null;
 
 	public FileService()
 	{
 		fileChangedTask = new FileChangedTask();
 		fileChangedTask.setFileService(this);
-		files = new HashMap<String, PieFile>();
 		watchServices = new HashMap<>();
 
 		try
@@ -75,83 +73,6 @@ public class FileService implements IFileService
 		}
 	}
 
-	public void remoteFileChanged(FileChangedMessage message)
-	{
-		PieFile remoteFile = message.getPieFile();
-
-		if (message.getFileChangedType() == FileChangedTypes.FILE_CREATED)
-		{
-			remoteFileAdded(remoteFile);
-		}
-		if (message.getFileChangedType() == FileChangedTypes.FILE_MODIFIED)
-		{
-			remoteFileModified(remoteFile);
-		}
-		if (message.getFileChangedType() == FileChangedTypes.FILE_DELETED)
-		{
-			remoteFileDeleted(remoteFile);
-		}
-	}
-
-	private void remoteFileAdded(PieFile remoteFile)
-	{
-		if (files.containsKey(remoteFile.getRelativeFilePath()))
-		{
-			PieFile localFile = files.get(remoteFile.getRelativeFilePath());
-
-			if (localFile.equals(remoteFile))
-			{
-				//Conflict.... Error Error Error
-			}
-		}
-		else
-		{
-			//Retrieve file from Remote Host
-		}
-	}
-
-	private void remoteFileDeleted(PieFile remoteFile)
-	{
-		if (files.containsKey(remoteFile.getRelativeFilePath()))
-		{
-			PieFile localFile = files.get(remoteFile.getRelativeFilePath());
-
-			if (localFile.equals(remoteFile))
-			{
-				//Delete localfile
-			}
-			else
-			{
-				//Conflict ...
-			}
-		}
-	}
-
-	private void remoteFileModified(PieFile remoteFile)
-	{
-		if (files.containsKey(remoteFile.getRelativeFilePath()))
-		{
-			PieFile localFile = files.get(remoteFile.getRelativeFilePath());
-
-			if (remoteFile.getLastModified() > localFile.getLastModified())
-			{
-				//RemoteFile is newer, get the new file.
-			}
-			else if (remoteFile.getLastModified() < localFile.getLastModified())
-			{
-				//Conflict, local file is newer than remote
-			}
-			else if (remoteFile.equals(localFile))
-			{
-				//Strange, is same file... check for conflict
-			}
-		}
-		else
-		{
-			//File does no Exist, retrieve from remote
-		}
-	}
-
 	@Override
 	public void registerAll(File file) throws IOException
 	{
@@ -163,7 +84,6 @@ public class FileService implements IFileService
 					throws IOException
 			{
 				newFolderAdded(dir.toFile());
-				//dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 				return FileVisitResult.CONTINUE;
 			}
 
