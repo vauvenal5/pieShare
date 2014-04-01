@@ -127,7 +127,7 @@ public class FileWatcherService implements IFileWatcherService
 	{
 		for (File f : watchDir.listFiles())
 		{
-			if (f.isFile())
+			if (f.isFile() || f.isDirectory())
 			{
 				PieFile pieFile = new PieFile(f);
 				addNewFile(pieFile);
