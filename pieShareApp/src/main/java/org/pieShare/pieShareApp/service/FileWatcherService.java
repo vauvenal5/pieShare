@@ -193,6 +193,7 @@ public class FileWatcherService implements IFileWatcherService
 			fileService.folderRemoved(file);
 		}
 		files.clear();
+                 System.gc();
 	}
 
     @Override
