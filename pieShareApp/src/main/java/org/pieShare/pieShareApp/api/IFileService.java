@@ -6,6 +6,8 @@
 package org.pieShare.pieShareApp.api;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
 
 /**
@@ -18,4 +20,6 @@ public interface IFileService
 	public void remoteFileChanged(FileChangedMessage message);
 
 	public IFileWatcherService newFolderAdded(File folder);
+
+	public void registerAll(final Path start) throws IOException;
 }
