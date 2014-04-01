@@ -15,158 +15,191 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class FileWatcherService implements IFileWatcherService
 {
 
-    private PieLogger logger = new PieLogger(FileWatcherService.class);
-    private IFileService fileService;
-    private WatchService watchService;
-    private File watchDir;
-    private HashMap<String, PieFile> files = null;
-    private WatchKey key;
+	private PieLogger logger = new PieLogger(FileWatcherService.class);
+	private IFileService fileService;
+	private WatchService watchService;
+	private File watchDir;
+	private HashMap<String, PieFile> files = null;
+	private WatchKey key;
 
-    public FileWatcherService()
-    {
-	files = new HashMap<>();
-
-	try
+	public FileWatcherService()
 	{
-	    watchService = FileSystems.getDefault().newWatchService();
-	}
-	catch (IOException ex)
-	{
-	    logger.error("Not able to init a FileWatcher. " + ex.getMessage());
-	    //ToDo. Handle Exception
-	}
-    }
+		files = new HashMap<>();
 
-    @Override
-    public void setFileService(IFileService fileService)
-    {
-	this.fileService = fileService;
-    }
-
-    @Override
-    public void setWatchDir(File watchDir)
-    {
-	this.watchDir = watchDir;
-    }
-
-    @Override
-    public void watchDir() throws IOException
-    {
-	if (!watchDir.isDirectory())
-	{
-	    //ToDo: Exception Handling
-	    logger.error("Watchdir is no Directory");
-	    return;
+		try
+		{
+			watchService = FileSystems.getDefault().newWatchService();
+		}
+		catch (IOException ex)
+		{
+			logger.error("Not able to init a FileWatcher. " + ex.getMessage());
+			//ToDo. Handle Exception
+		}
 	}
 
-	watchDir.toPath().register(watchService,
-		StandardWatchEventKinds.ENTRY_CREATE,
-		StandardWatchEventKinds.ENTRY_MODIFY,
-		StandardWatchEventKinds.ENTRY_DELETE);	// Register the directory
+	@Override
+	public void setFileService(IFileService fileService)
+	{
+		this.fileService = fileService;
+	}
 
+	@Override
+	public void setWatchDir(File watchDir)
+	{
+		this.watchDir = watchDir;
+	}
+
+	@Override
+	public void watchDir() throws IOException
+	{
+		if (!watchDir.isDirectory())
+		{
+			//ToDo: Exception Handling
+			logger.error("Watchdir is no Directory");
+			return;
+		}
+
+		//Add all files in this folder to the file list.
+		addAllFilesToList();
+
+		watchDir.toPath().register(watchService,
+				StandardWatchEventKinds.ENTRY_CREATE,
+				StandardWatchEventKinds.ENTRY_MODIFY,
+				StandardWatchEventKinds.ENTRY_DELETE);	// Register the directory
+
+		while (true)
+		{
+			try
+			{
+				key = watchService.take();	// retrieve the watchkey
+			}
+			catch (InterruptedException ex)
+			{
+				logger.debug("Watcher Key Interrupted Dir: " + watchDir.getPath());
+			}
+
+			for (WatchEvent event : key.pollEvents())
+			{
+				WatchEvent.Kind<?> kind = event.kind();
+
+				if (kind == OVERFLOW)
+				{
+					continue;
+				}
+
+				//Changes in local directory. 
+				logger.debug(event.kind() + ": " + event.context());
+
+				String relativeFilePath = event.context().toString();
+				File changedFile = new File(watchDir, relativeFilePath);
+				PieFile pieFile = new PieFile(changedFile);
+				
+				if (changedFile.isDirectory() && kind == ENTRY_CREATE)
+				{
+					fileService.newFolderAdded(changedFile);
+				}
+
+				if (kind == ENTRY_CREATE)
+				{
+					System.gc();
+					addNewFile(pieFile);
+				}
+				else if (kind == ENTRY_MODIFY)
+				{
+					System.gc();
+					fileModified(pieFile);
+				}
+				else if (kind == ENTRY_DELETE)
+				{
+					System.gc();
+					fileDeleted(pieFile);
+				}
+			}
+			boolean valid = key.reset();
+			if (!valid)
+			{
+				break;	// Exit if directory is deleted
+			}
+		}
+	}
+
+	private void addAllFilesToList()
+	{
+		for (File f : watchDir.listFiles())
+		{
+			if (f.isFile())
+			{
+				PieFile pieFile = new PieFile(f);
+				addNewFile(pieFile);
+			}
+		}
+	}
+
+	private void addNewFile(PieFile newFile)
+	{
+		if (files.containsKey(newFile.getRelativeFilePath()))
+		{
+			if (files.get(newFile.getRelativeFilePath()).equals(newFile))
+			{
+				logger.debug("Added file is alredy in the list");
+			}
+		}
+		files.put(newFile.getRelativeFilePath(), newFile);
+		//Inform Cloud About new File or Folder
+	}
 	
-	registerAll(watchDir.toPath());
+	public void fileDeleted(PieFile localFile)
+	{
+		if (files.containsKey(localFile.getRelativeFilePath()))
+		{
+			files.remove(localFile.getRelativeFilePath());
+			//Inform Cloud About File or Folder Delete
+		}
+		else
+		{
+			//Deleted Directory .. Or Conflict
+		}
+	}
 	
-	while (true)
+	public void fileModified(PieFile localFile)
 	{
-	    try
-	    {
-		key = watchService.take();	// retrieve the watchkey
-	    }
-	    catch (InterruptedException ex)
-	    {
-		logger.debug("Watcher Key Interrupted Dir: " + watchDir.getPath());
-	    }
-
-	    // Path dir = keys.get(key);
-	    for (WatchEvent event : key.pollEvents())
-	    {
-		WatchEvent.Kind<?> kind = event.kind();
-
-		if (kind == OVERFLOW)
+		if (files.containsKey(localFile.getRelativeFilePath()))
 		{
-		    continue;
+			if (!localFile.getFile().exists())
+			{
+				fileDeleted(localFile);
+			}
+			else
+			{
+				files.remove(localFile.getRelativeFilePath());
+				files.put(localFile.getRelativeFilePath(), localFile);
+			}
 		}
-
-		//Changes in local directory. 
-		logger.debug(event.kind() + ": " + event.context());
-
-		String relativeFilePath = event.context().toString();
-
-		File changedFile = new File(watchDir, relativeFilePath);
-
-		if (changedFile.isDirectory())
+		else
 		{
-		   
+			//File does no Exist, how can that be? Strange ...
 		}
-
-		if (!changedFile.exists() && kind == ENTRY_CREATE)
-		{
-		    logger.debug("Watched File does not exist, maby triggered by an old watcher. " + event + ": File: " + changedFile.getPath());
-		    continue;
-		}
-
-		PieFile pieFile = new PieFile(changedFile);
-
-		if (kind == ENTRY_CREATE)
-		{
-		    System.gc();
-		    fileService.localFileAdded(pieFile);
-		}
-		if (kind == ENTRY_MODIFY)
-		{
-		    System.gc();
-		    fileService.localFileModified(pieFile);
-		}
-		if (kind == ENTRY_DELETE)
-		{
-		    System.gc();
-		    fileService.localFileDeleted(pieFile);
-		}
-	    }
-	    boolean valid = key.reset();
-	    if (!valid)
-	    {
-		break;	// Exit if directory is deleted
-	    }
 	}
-    }
 
-    private void registerAll(final Path start) throws IOException
-    {
-	// register directory and sub-directories
-	Files.walkFileTree(start, new SimpleFileVisitor<Path>()
+	@Override
+	public void cancel()
 	{
-	    @Override
-	    public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-		    throws IOException
-	    {
-		fileService.newFolderAdded(dir.toFile());
-		//dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
-		return FileVisitResult.CONTINUE;
-	    }
-	});
-    }
+		if (key != null)
+		{
+			key.cancel();
+		}
+	}
 
-    @Override
-    public void cancel()
-    {
-	if (key != null)
+	@Override
+	public void run()
 	{
-	    key.cancel();
+		try
+		{
+			watchDir();
+		}
+		catch (IOException ex)
+		{
+			logger.error("WatchService throwed an exception. " + ex.getMessage());
+		}
 	}
-    }
-
-    @Override
-    public void run()
-    {
-	try
-	{
-	    watchDir();
-	}
-	catch (IOException ex)
-	{
-	    logger.error("WatchService throwed an exception. " + ex.getMessage());
-	}
-    }
 }
