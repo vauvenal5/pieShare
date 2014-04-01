@@ -185,12 +185,14 @@ public class FileWatcherService implements IFileWatcherService
         }
     }
 	
+	@Override
 	public void deleteAll()
 	{
 		for(PieFile file : files.values())
 		{
-			fileDeleted(file);
+			fileService.folderRemoved(file);
 		}
+		files.clear();
 	}
 
     @Override
