@@ -22,4 +22,6 @@ public interface IFileWatcherService extends Runnable
     public void watchDir() throws IOException;
 
     public void cancel();
+	
+	public void deleteAll();
 }

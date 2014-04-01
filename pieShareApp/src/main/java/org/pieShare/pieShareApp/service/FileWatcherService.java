@@ -95,7 +95,7 @@ public class FileWatcherService implements IFileWatcherService
 
                 if (changedFile.isDirectory() && kind == ENTRY_CREATE)
                 {
-                    fileService.registerAll(changedFile.toPath());
+                    fileService.registerAll(changedFile);
                 }
 
                 if (kind == ENTRY_CREATE)
@@ -153,7 +153,10 @@ public class FileWatcherService implements IFileWatcherService
         if (files.containsKey(localFile.getRelativeFilePath()))
         {
             logger.debug("File deleted from list: " + localFile.getFile().getPath());
-            files.remove(localFile.getRelativeFilePath());
+            
+			fileService.folderRemoved(localFile);
+			
+			files.remove(localFile.getRelativeFilePath());
             //Inform Cloud About File or Folder Delete
         }
         else
@@ -181,6 +184,14 @@ public class FileWatcherService implements IFileWatcherService
             //File does no Exist, how can that be? Strange ...
         }
     }
+	
+	public void deleteAll()
+	{
+		for(PieFile file : files.values())
+		{
+			fileDeleted(file);
+		}
+	}
 
     @Override
     public void cancel()
