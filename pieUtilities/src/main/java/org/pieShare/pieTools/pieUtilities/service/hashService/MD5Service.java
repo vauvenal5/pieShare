@@ -17,11 +17,10 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class MD5Service
 {
+    private static final PieLogger  md5Logger =  new PieLogger(MD5Service.class);
 
     public static String MD5(File file) throws IOException
     {
-	PieLogger logger = new PieLogger(MD5Service.class);
-
 	MessageDigest messageDigest = null;
 	try
 	{
@@ -29,7 +28,7 @@ public class MD5Service
 	}
 	catch (NoSuchAlgorithmException ex)
 	{
-	    logger.error("Error in MD5 Hash Algorithm, this shold no happen. Message: " + ex.getMessage());
+	    md5Logger.error("Error in MD5 Hash Algorithm, this shold no happen. Message: " + ex.getMessage());
 	    return null;
 	}
 	messageDigest.reset();
