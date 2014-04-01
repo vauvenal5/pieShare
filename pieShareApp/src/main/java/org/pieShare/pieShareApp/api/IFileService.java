@@ -7,19 +7,15 @@ package org.pieShare.pieShareApp.api;
 
 import java.io.File;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieShareApp.service.PieFile;
 
 /**
  *
  * @author richy
  */
-public interface IFileService {
+public interface IFileService
+{
 
-    public void remoteFileChanged(FileChangedMessage message);
+	public void remoteFileChanged(FileChangedMessage message);
 
-    public void localFileAdded(PieFile fileInfo);
-    public void localFileModified(PieFile fileInfo);
-    public void localFileDeleted(PieFile fileInfo);
-    
-     public void newFolderAdded(File folder);
+	public IFileWatcherService newFolderAdded(File folder);
 }

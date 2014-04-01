@@ -8,6 +8,8 @@ package org.pieShare.pieShareApp.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.configuration.Configuration;
 import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
 
@@ -18,68 +20,82 @@ import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
 public class PieFile
 {
 
-    private FileService fileSrvice;
-    private FileWatcherService fileWatcher;
     private File file;
     private String md5 = "";
 
-    public PieFile(File file) throws IOException
+    public PieFile(File file)
     {
-        this.file = file;
-        md5 = MD5Service.MD5(file);
+	this.file = file;
+
+	if (file.exists() && !file.isDirectory())
+	{
+	    try
+	    {
+		md5 = MD5Service.MD5(file);
+	    }
+	    catch (IOException ex)
+	    {
+		//ToDo: Error Handling
+	    }
+	}
     }
 
     public String getFileName()
     {
-        return file.getName();
+	return file.getName();
+    }
+
+    public File getFile()
+    {
+	return file;
     }
 
     public String getMD5()
     {
-        return md5;
+	return md5;
     }
 
     public long getLastModified()
     {
-        return file.lastModified();
+	return file.lastModified();
     }
 
     public String getRelativeFilePath()
     {
-        File workingDir = Configuration.getWorkingDirectory();
+	File workingDir = Configuration.getWorkingDirectory();
 
-        Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-        Path pathBase = workingDir.toPath(); // Paths.get("/var/data");
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-        return pathRelative.toString();
+	Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+	Path pathBase = workingDir.toPath(); // Paths.get("/var/data");
+	Path pathRelative = pathBase.relativize(pathAbsolute);
+	return pathRelative.toString();
     }
 
     @Override
     public boolean equals(Object object)
     {
-        if(!(object instanceof PieFile))
-        {
-            return false;
-        }
-            
-        PieFile pieFile = (PieFile)object;
-       
-        if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
-        {
-            return false;
-        }
+	if (!(object instanceof PieFile))
+	{
+	    return false;
+	}
 
-        if (pieFile.getLastModified() != this.getLastModified())
-        {
-            return false;
-        }
+	PieFile pieFile = (PieFile) object;
 
-        if (!pieFile.getMD5().equals(this.getMD5()))
-        {
-            return false;
-        }
+	if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+	{
+	    return false;
+	}
 
-        return true;
+	if (pieFile.getLastModified() != this.getLastModified())
+	{
+	    return false;
+	}
+
+	if (!pieFile.getMD5().equals(this.getMD5()))
+	{
+	    return false;
+	}
+
+	return true;
     }
 
 }
