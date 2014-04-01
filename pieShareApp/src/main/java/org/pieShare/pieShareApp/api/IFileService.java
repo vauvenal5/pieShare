@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.service.PieFile;
 
 /**
  *
@@ -17,9 +18,10 @@ import org.pieShare.pieShareApp.model.FileChangedMessage;
 public interface IFileService
 {
 
-	public void remoteFileChanged(FileChangedMessage message);
+	//public void remoteFileChanged(FileChangedMessage message);
+	public void registerAll(File file) throws IOException;
 
-	public IFileWatcherService newFolderAdded(File folder);
-
-	public void registerAll(final Path start) throws IOException;
+	public void newFolderAdded(File file);
+	
+	public void folderRemoved(PieFile file);
 }

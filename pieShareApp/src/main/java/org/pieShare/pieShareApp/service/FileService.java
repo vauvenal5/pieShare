@@ -10,8 +10,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieShareApp.configuration.Configuration;
@@ -32,16 +30,18 @@ public class FileService implements IFileService
 	private IClusterService clusterService;
 	private FileChangedTask fileChangedTask = null;
 	private HashMap<String, PieFile> files = null;
+	private HashMap<String, IFileWatcherService> watchServices = null;
 
 	public FileService()
 	{
 		fileChangedTask = new FileChangedTask();
 		fileChangedTask.setFileService(this);
 		files = new HashMap<String, PieFile>();
+		watchServices = new HashMap<>();
 
 		try
 		{
-			registerAll(Configuration.getWorkingDirectory().toPath());
+			registerAll(Configuration.getWorkingDirectory());
 		}
 		catch (IOException ex)
 		{
@@ -56,16 +56,25 @@ public class FileService implements IFileService
 	}
 
 	@Override
-	public IFileWatcherService newFolderAdded(File folder)
+	public void newFolderAdded(File file)
 	{
 		IFileWatcherService service = new FileWatcherService();//new FileWatcherService();
 		service.setFileService(this);
-		service.setWatchDir(folder);
+		service.setWatchDir(file);
 		executor.execute(service);
-		return service;
+		watchServices.put(new PieFile(file).getRelativeFilePath(), service);
 	}
 
 	@Override
+	public void folderRemoved(PieFile file)
+	{
+		if (watchServices.containsKey(file.getRelativeFilePath()))
+		{
+			watchServices.get(file.getRelativeFilePath()).deleteAll();
+			watchServices.remove(file.getRelativeFilePath());
+		}
+	}
+
 	public void remoteFileChanged(FileChangedMessage message)
 	{
 		PieFile remoteFile = message.getPieFile();
@@ -143,12 +152,11 @@ public class FileService implements IFileService
 		}
 	}
 
-
 	@Override
-	public void registerAll(final Path start) throws IOException
+	public void registerAll(File file) throws IOException
 	{
 		// register directory and sub-directories
-		Files.walkFileTree(start, new SimpleFileVisitor<Path>()
+		Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>()
 		{
 			@Override
 			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
@@ -158,6 +166,8 @@ public class FileService implements IFileService
 				//dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY);
 				return FileVisitResult.CONTINUE;
 			}
+
 		});
+
 	}
 }
