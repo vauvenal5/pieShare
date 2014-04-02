@@ -55,7 +55,7 @@ public class FileService implements IFileService
 	@Override
 	public void newFolderAdded(File file)
 	{
-		IFileWatcherService service = new FileWatcherService();//new FileWatcherService();
+		IFileWatcherService service = new ApacheFileWatcher();//new FileWatcherService();
 		service.setFileService(this);
 		service.setWatchDir(file);
 		executor.execute(service);
