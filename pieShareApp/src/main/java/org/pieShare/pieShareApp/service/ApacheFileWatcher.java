@@ -26,132 +26,81 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class ApacheFileWatcher implements IFileWatcherService
 {
 
-	private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
-	private IFileService fileService;
-	private File watchDir;
-	private HashMap<String, PieFile> files;
+    private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
+    private IFileService fileService;
+    private File watchDir;
 
-	@Override
-	public void setFileService(IFileService fileService)
-	{
-		this.fileService = fileService;
-	}
+    @Override
+    public void setFileService(IFileService fileService)
+    {
+	this.fileService = fileService;
+    }
 
-	@Override
-	public void setWatchDir(File watchDir)
-	{
-		this.watchDir = watchDir;
-	}
+    @Override
+    public void setWatchDir(File watchDir)
+    {
+	this.watchDir = watchDir;
+    }
 
-	@Override
-	public void watchDir() throws IOException
-	{
-		files = new HashMap<>();
-		
-		FileSystemManager fileSystemManager = VFS.getManager();
-		FileObject dirToWatchFO = null;
-		dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
-
-		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
-		{
-
-			@Override
-			public void fileCreated(FileChangeEvent fce) throws Exception
-			{
-				
-				fce.getFile().
-			}
-
-			@Override
-			public void fileDeleted(FileChangeEvent fce) throws Exception
-			{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-
-			@Override
-			public void fileChanged(FileChangeEvent fce) throws Exception
-			{
-				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-			}
-		});
-
-		fileMonitor.setRecursive(false);
-		fileMonitor.addFile(dirToWatchFO);
-		fileMonitor.start();
-
-	}
+    @Override
+    public void watchDir() throws IOException
+    {
 	
-	 private void addNewFile(PieFile newFile)
-    {
-        if (files.containsKey(newFile.getRelativeFilePath()))
-        {
-            if (files.get(newFile.getRelativeFilePath()).equals(newFile))
-            {
-                logger.debug("Added file is alredy in the list");
-            }
-        }
-        logger.debug("File added to list: " + newFile.getFile().getPath());
-        files.put(newFile.getRelativeFilePath(), newFile);
-        //Inform Cloud About new File or Folder
+	FileSystemManager fileSystemManager = VFS.getManager();
+	FileObject dirToWatchFO = null;
+	dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
+
+	DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
+	{
+
+	    @Override
+	    public void fileCreated(FileChangeEvent fce) throws Exception
+	    {
+		String filePath = fce.getFile().getURL().getFile();
+		PieFile pieFile = new PieFile(filePath);
+	    }
+
+	    @Override
+	    public void fileDeleted(FileChangeEvent fce) throws Exception
+	    {
+		String file = fce.getFile().getURL().getFile();
+	    }
+
+	    @Override
+	    public void fileChanged(FileChangeEvent fce) throws Exception
+	    {
+		String file = fce.getFile().getURL().getFile();
+	    }
+	});
+
+	fileMonitor.setRecursive(false);
+	fileMonitor.addFile(dirToWatchFO);
+	fileMonitor.start();
+
     }
 
-    public void fileDeleted(PieFile localFile)
+    
+
+    @Override
+    public void cancel()
     {
-        if (files.containsKey(localFile.getRelativeFilePath()))
-        {
-            logger.debug("File deleted from list: " + localFile.getFile().getPath());
-            
-			fileService.folderRemoved(localFile);
-			
-			files.remove(localFile.getRelativeFilePath());
-            //Inform Cloud About File or Folder Delete
-        }
-        else
-        {
-            //Deleted Directory .. Or Conflict
-        }
     }
 
-    public void fileModified(PieFile localFile)
+    @Override
+    public void deleteAll()
     {
-        if (files.containsKey(localFile.getRelativeFilePath()))
-        {
-            if (!localFile.getFile().exists())
-            {
-                fileDeleted(localFile);
-            }
-            else
-            {
-                files.remove(localFile.getRelativeFilePath());
-                files.put(localFile.getRelativeFilePath(), localFile);
-            }
-        }
-        else
-        {
-            //File does no Exist, how can that be? Strange ...
-        }
     }
 
-	@Override
-	public void cancel()
+    @Override
+    public void run()
+    {
+	try
+	{
+	    watchDir();
+	}
+	catch (IOException ex)
 	{
 	}
-
-	@Override
-	public void deleteAll()
-	{
-	}
-
-	@Override
-	public void run()
-	{
-		try
-		{
-			watchDir();
-		}
-		catch (IOException ex)
-		{
-		}
-	}
+    }
 
 }
