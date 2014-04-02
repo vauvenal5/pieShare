@@ -17,7 +17,6 @@ import org.pieShare.pieShareApp.model.FileChangedMessage;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  * @author richy

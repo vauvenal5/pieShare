@@ -106,7 +106,7 @@ public class FileWatcherService implements IFileWatcherService
                 else if (kind == ENTRY_MODIFY)
                 {
                     System.gc();
-                    fileModified(pieFile);
+                    //fileModified(pieFile);
                 }
                 else if (kind == ENTRY_DELETE)
                 {
@@ -193,7 +193,7 @@ public class FileWatcherService implements IFileWatcherService
 			fileService.folderRemoved(file);
 		}
 		files.clear();
-                 System.gc();
+        System.gc();
 	}
 
     @Override
