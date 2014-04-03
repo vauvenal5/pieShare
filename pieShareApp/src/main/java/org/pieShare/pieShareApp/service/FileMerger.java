@@ -7,11 +7,11 @@ package org.pieShare.pieShareApp.service;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
+import org.pieShare.pieShareApp.model.FileChangedMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  *
@@ -28,7 +28,7 @@ public class FileMerger implements IFileMerger
     {
 	dirs = new HashMap<>();
     }
-    
+
     @Override
     public void setFileService(IFileService fileService)
     {
@@ -95,12 +95,12 @@ public class FileMerger implements IFileMerger
 	    //If not in  dir list it is a file, get parent folder.
 	    PieDirectory dir = new PieDirectory(file.getParentFile());
 
-	    if(!dirs.containsKey(dir.getRelativeFilePath()))
+	    if (!dirs.containsKey(dir.getRelativeFilePath()))
 	    {
-		logger.debug("Cannot find folder from file to delete!");
+		logger.debug("File Delete: Cannot find folder from file to delete, is alredy delted!");
 		return;
 	    }
-	    
+
 	    deleteFileFromList(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
 	}
     }
@@ -109,58 +109,68 @@ public class FileMerger implements IFileMerger
     public void fileChanged(File file)
     {
 	PieFile pieFile = new PieFile(file);
-	
-	if(dirs.containsKey(pieFile.getRelativeFilePath()))
+
+	if (dirs.containsKey(pieFile.getRelativeFilePath()))
 	{
-	    logger.debug("Changed File is a Folder.");
+	    logger.debug("ChangedFile: Changed File is a Folder. Do nothing!!. ");
 	    //Changed File is a Folder. 
 	    //Ignore
 	    return;
 	}
-	
+
 	PieDirectory dir = new PieDirectory(file.getParentFile());
-	
-	if(!dirs.containsKey(dir.getRelativeFilePath()))
+
+	if (!dirs.containsKey(dir.getRelativeFilePath()))
 	{
 	    //The folder from changed file is not in the folder list. Error.
-	    logger.debug("The folder from changed file is not in the folder list.");
+	    logger.debug("File Changed: The folder from changed file is not in the folder list, add foder to list!!.");
+	    
+	    dirs.put(dir.getRelativeFilePath(), dir);
+	    
 	    return;
 	}
-	
+
 	checkListForChangedFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
     }
 
     private void checkListForChangedFile(HashMap<String, PieFile> files, PieFile pieFile)
     {
-	if(files.containsKey(pieFile.getRelativeFilePath()))
-	{
-	    files.remove(pieFile.getRelativeFilePath());
-	    files.put(pieFile.getRelativeFilePath(), pieFile);
-	}
-	else
-	{
-	    fileCreated(pieFile.getFile());
-	}
-    
-    }    
-    
-    private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
-    {
 	if (files.containsKey(pieFile.getRelativeFilePath()))
 	{
 	    if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
 	    {
+		logger.debug("Changed File: File is exactly same. Do not Change.");
 		//Is Exectly same file, do nothing
+		return;
 	    }
-	    else
-	    {
-		files.remove(pieFile.getRelativeFilePath());
-		files.put(pieFile.getRelativeFilePath(), pieFile);
-	    }
+
+	    logger.debug("Changed File: Remove old and add new file");
+
+	    files.remove(pieFile.getRelativeFilePath());
+	    files.put(pieFile.getRelativeFilePath(), pieFile);
+
+	    sendNewMessage(FileChangedTypes.FILE_MODIFIED, pieFile);
 	}
 	else
 	{
+	    logger.debug("Changed File: File does not exist call fileCreated()");
+	    fileCreated(pieFile.getFile());
+	}
+
+    }
+
+    private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
+    {
+	if (files.containsKey(pieFile.getRelativeFilePath()))
+	{
+	    logger.debug("Created File: File is alrey in list, call fileChanged().");
+	    checkListForChangedFile(files, pieFile);
+	}
+	else
+	{
+	    logger.debug("Created File: Add new created file");
 	    files.put(pieFile.getRelativeFilePath(), pieFile);
+	    sendNewMessage(FileChangedTypes.FILE_CREATED, pieFile);
 	}
     }
 
@@ -170,16 +180,29 @@ public class FileMerger implements IFileMerger
 	{
 	    if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
 	    {
+		logger.debug("Deleted File: Delete file from list");
 		files.remove(pieFile.getRelativeFilePath());
+		sendNewMessage(FileChangedTypes.FILE_DELETED, pieFile);
 	    }
 	    else
 	    {
-		//File not the same. 
+		logger.debug("Deleted File: Files are not equal, do not remove file");
 	    }
 	}
 	else
 	{
-	    //File is not in list
+	    logger.debug("Deleted File: File to delete does not exist.");
 	}
+    }
+
+    private void sendNewMessage(FileChangedTypes type, PieFile file)
+    {
+	FileChangedMessage msg = new FileChangedMessage();
+	msg.setChangedType(type);
+	msg.setLastModified(file.getLastModified());
+	msg.setMd5(file.getMD5());
+	msg.setRelativeFilePath(msg.getRelativeFilePath());
+
+	fileService.localFileChange(msg);
     }
 }

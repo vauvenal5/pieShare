@@ -21,6 +21,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  * @author richy
@@ -42,7 +43,7 @@ public class FileService implements IFileService
 	}
 	catch (IOException ex)
 	{
-	  logger.error("Error parsing workingDir at startup");
+	    logger.error("Error parsing workingDir at startup");
 	}
 
 	addWatchDirectory(Configuration.getWorkingDirectory());
@@ -52,20 +53,19 @@ public class FileService implements IFileService
     {
 	this.clusterService = clusterService;
     }
-    
-    public  void setExecutorService(IExecutorService executorService)
+
+    public void setExecutorService(IExecutorService executorService)
     {
 	this.executorService = executorService;
 	this.executorService.registerTask(FileChangedMessage.class, FileChangedTask.class);
     }
 
-    public  void setFileMerger(IFileMerger fileMerger)
+    public void setFileMerger(IFileMerger fileMerger)
     {
 	this.fileMerger = fileMerger;
 	fileMerger.setFileService(this);
     }
 
-    
     private void addWatchDirectory(File file)
     {
 	IFileWatcherService service = new ApacheFileWatcher();//new FileWatcherService();
@@ -99,7 +99,21 @@ public class FileService implements IFileService
     @Override
     public void remoteFileChange(FileChangedMessage message)
     {
-	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	File wdir = Configuration.getWorkingDirectory();
+	File newFile = new File(wdir, message.getRelativeFilePath());
+
+	if (message.getChangedType() == FileChangedTypes.FILE_CREATED)
+	{
+	    fileMerger.fileCreated(newFile);
+	}
+	else if (message.getChangedType() == FileChangedTypes.FILE_DELETED)
+	{
+	    fileMerger.fileDeleted(newFile);
+	}
+	else if (message.getChangedType() == FileChangedTypes.FILE_MODIFIED)
+	{
+	    fileMerger.fileChanged(newFile);
+	}
     }
 
     @Override
@@ -111,7 +125,7 @@ public class FileService implements IFileService
 	}
 	catch (ClusterServiceException ex)
 	{
-	   logger.error("Error sending file changed message: " + ex.getMessage());
+	    logger.error("Error sending file changed message: " + ex.getMessage());
 	}
     }
 }
