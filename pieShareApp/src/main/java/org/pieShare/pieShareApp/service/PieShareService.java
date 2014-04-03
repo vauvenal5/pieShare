@@ -9,8 +9,9 @@ package org.pieShare.pieShareApp.service;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieShareApp.model.action.SimpleMessageAction;
-import org.pieShare.pieShareApp.model.task.PrintTask;
+import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.IPrintableEvent;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -33,7 +34,7 @@ public class PieShareService {
     
     @PostConstruct
     public void start() {
-        this.executorService.registerTask(SimpleMessage.class, PrintTask.class);
+        this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
         
         try {
             this.parserService.registerAction(new SimpleMessageAction());

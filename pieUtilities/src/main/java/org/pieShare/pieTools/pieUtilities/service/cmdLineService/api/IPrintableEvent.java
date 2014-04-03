@@ -6,10 +6,12 @@
 
 package org.pieShare.pieTools.pieUtilities.service.cmdLineService.api;
 
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
+
 /**
  *
  * @author Svetoslav
  */
-public interface IPrintableMessage {
+public interface IPrintableEvent extends IPieEvent {
     public String getText();
 }
