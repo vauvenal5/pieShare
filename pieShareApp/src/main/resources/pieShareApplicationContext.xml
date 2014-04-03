@@ -8,9 +8,10 @@
     <import resource="classpath*:piePlateApplicationContext.xml" />
     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
     
-    <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService" lazy-init="ture">
+    <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService" lazy-init="true">
         <property name="executorService" ref="pieExecutorService"/>
         <property name="parserService" ref="pieCommandParser"/>
+        <property name="commandLineService" ref="cmdLineService"/>
     </bean>
 
     <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">

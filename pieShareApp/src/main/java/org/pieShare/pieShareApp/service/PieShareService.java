@@ -37,6 +37,10 @@ public class PieShareService {
         this.parserService = service;
     }
     
+    public void setCommandLineService(ICmdLineService service) {
+        this.cmdLineService = service;
+    }
+    
     @PostConstruct
     public void start() {
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
