@@ -16,6 +16,7 @@ import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.IPrintableE
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -52,8 +53,10 @@ public class PieShareService {
         
         try {
             //todo-sv: change this!!! (new should not be used here)
-            this.parserService.registerAction(this.beanService.getBean(SimpleMessageAction.class));
+            SimpleMessageAction action = this.beanService.getBean(SimpleMessageAction.class);
+            this.parserService.registerAction(action);
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
         
         SimpleMessage msg = new SimpleMessage();

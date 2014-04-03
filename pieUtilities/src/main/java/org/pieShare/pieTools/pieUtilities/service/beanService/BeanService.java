@@ -8,6 +8,8 @@ import org.springframework.context.ApplicationContextAware;
 public class BeanService implements IBeanService, ApplicationContextAware {
     ApplicationContext context;
 
+    //is autoset
+    @Override
     public void setApplicationContext(ApplicationContext context) {
         this.context = context;
     }

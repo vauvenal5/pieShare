@@ -6,9 +6,10 @@
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <import resource="classpath*:piePlateApplicationContext.xml" />
+    <import resource="classpath*:pieCeptionApplicationContext.xml" />
     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
     
-    <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService" lazy-init="true">
+    <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService">
         <property name="executorService" ref="pieExecutorService"/>
         <property name="parserService" ref="pieCommandParser"/>
         <property name="commandLineService" ref="cmdLineService"/>
