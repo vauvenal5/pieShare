@@ -25,6 +25,7 @@ public class PieShareService {
     private IExecutorService executorService;
     private ICommandParserService parserService;
     private ICmdLineService cmdLineService;
+    private IBeanService beanService;
     
     public PieShareService() {
     }
@@ -41,14 +42,18 @@ public class PieShareService {
         this.cmdLineService = service;
     }
     
+    public void setBeanService(IBeanService service) {
+        this.beanService = service;
+    }
+    
     @PostConstruct
     public void start() {
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
         
         try {
             //todo-sv: change this!!! (new should not be used here)
-            this.parserService.registerAction(new SimpleMessageAction());
-        } catch (CommandParserServiceException ex) {
+            this.parserService.registerAction(this.beanService.getBean(SimpleMessageAction.class));
+        } catch (Exception ex) {
         }
         
         SimpleMessage msg = new SimpleMessage();
