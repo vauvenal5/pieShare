@@ -5,12 +5,6 @@
  */
 package org.pieShare.pieShareApp.api;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieShareApp.service.PieFile;
-
 /**
  *
  * @author richy
@@ -18,10 +12,4 @@ import org.pieShare.pieShareApp.service.PieFile;
 public interface IFileService
 {
 
-	//public void remoteFileChanged(FileChangedMessage message);
-	public void registerAll(File file) throws IOException;
-
-	public void newFolderAdded(File file);
-	
-	public void folderRemoved(PieFile file);
 }

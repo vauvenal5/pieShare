@@ -15,13 +15,13 @@ import java.io.IOException;
 public interface IFileWatcherService extends Runnable
 {
 
-    public void setFileService(IFileService fileService);
+	public void setFileMerger(IFileMerger fileMerger);
 
-    public void setWatchDir(File watchDir);
+	public void setWatchDir(File watchDir);
 
-    public void watchDir() throws IOException;
+	public void watchDir() throws IOException;
 
-    public void cancel();
-	
+	public void cancel();
+
 	public void deleteAll();
 }
