@@ -23,7 +23,9 @@ public class Configuration
             watchDir.mkdirs();
         }
 
-        return watchDir;
+		File conf = new File(watchDir.getAbsolutePath());
+		
+        return conf;
 
     }
 }
