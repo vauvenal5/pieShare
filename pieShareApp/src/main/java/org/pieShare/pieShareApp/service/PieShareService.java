@@ -69,6 +69,7 @@ public class PieShareService {
         
         try {
             //todo-sv: change this!!! (new should not be used here)
+            //getbean per class ist dumm... zerstört unabhängigkeit
             SimpleMessageAction action = this.beanService.getBean(SimpleMessageAction.class);
             this.parserService.registerAction(action);
         } catch (Exception ex) {

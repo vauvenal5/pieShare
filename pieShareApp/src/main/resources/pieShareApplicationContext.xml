@@ -26,6 +26,6 @@
     </bean>
     
     <bean id="simpleMessageAction" class="org.pieShare.pieShareApp.model.action.SimpleMessageAction" lazy-init="true">
-        <property name="pieCeptionService" ref="pieCeptionService"/>
+        <property name="clusterService" ref="clusterService"/>
     </bean>
 </beans>
