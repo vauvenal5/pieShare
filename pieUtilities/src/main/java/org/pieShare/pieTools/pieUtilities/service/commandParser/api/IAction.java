@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.pieCeption.service.commandParser.api;
+package org.pieShare.pieTools.pieUtilities.service.commandParser.api;
 
 import java.util.Map;
 

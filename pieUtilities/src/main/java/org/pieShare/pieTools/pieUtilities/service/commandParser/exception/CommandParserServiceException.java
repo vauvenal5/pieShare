@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.pieCeption.service.commandParser.exception;
+package org.pieShare.pieTools.pieUtilities.service.commandParser.exception;
 
 /**
  * Created by Svetoslav on 29.12.13.
