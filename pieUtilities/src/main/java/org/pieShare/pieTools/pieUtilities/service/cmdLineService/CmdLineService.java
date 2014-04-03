@@ -27,10 +27,21 @@ public class CmdLineService implements ICmdLineService {
     
     private IExecutorService executor;
     private IBeanService beanService;
-    
     private ICommandParserService parserService;
     
     private String linePrefix = "pieShare> ";
+    
+    public void setExecutorService(IExecutorService executor) {
+        this.executor = executor;
+    }
+    
+    public void setBeanService(IBeanService service) {
+        this.beanService = service;
+    }
+    
+    public void setCommandParserService(ICommandParserService service) {
+        this.parserService = service;
+    }
 
     @Override
     public void writeLine(IPrintableEvent msg) {

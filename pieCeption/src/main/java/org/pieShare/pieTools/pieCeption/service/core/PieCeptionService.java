@@ -25,6 +25,10 @@ public class PieCeptionService implements IPieCeptionService {
     public void setConnectorService(IConnectorService connectorService) {
         this.connectorService = connectorService;
     }
+    
+    public void setExecutorService(IExecutorService service) {
+        this.executorService = service;
+    }
 
     @PostConstruct
     public void start() throws PieCeptionServiceException {
