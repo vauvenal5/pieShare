@@ -7,7 +7,9 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.helper.ClusterServiceTestHelper;
 import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
+import org.pieShare.pieTools.piePlate.service.helper.TestServiceCallback;
 import org.pieShare.pieTools.piePlate.service.helper.TestTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -33,12 +35,15 @@ public class ClusterServiceTest {
         Assert.assertEquals(2, service2.getMembersCount());
     }
 
-    @Test
+    @Test(timeout = 5000)
     public void testSendingMessage() throws Exception {
 
         final TestMessage msg = new TestMessage();
         msg.setType(TestMessage.class.getName());
         msg.setMsg("This is a msg!");
+        
+        PieExecutorService executor = (PieExecutorService)context.getBean("pieExecutorService");
+        executor.registerTask(TestMessage.class, TestTask.class);
 
         ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
             @Override
@@ -53,13 +58,10 @@ public class ClusterServiceTest {
             }
         };
 
-        final TestTask task = new TestTask();
-
         ClusterServiceTestHelper tester2 = new ClusterServiceTestHelper((IClusterService)context.getBean("clusterService")) {
             @Override
             public void run() {
                 try {
-                    this.getService().registerTask(TestMessage.class, task);
                     this.getService().connect("myTestCluster2");
                     this.setDone();
                 } catch (ClusterServiceException e) {
@@ -73,6 +75,13 @@ public class ClusterServiceTest {
         Assert.assertEquals(1, tester2.getService().getMembersCount());
         new Thread(tester1).start();
         waitUntilDone(tester1);
+        
+        TestTask task = ((TestServiceCallback)context.getBean("testServiceCallback")).getTask();
+        
+        while(task == null){
+            Thread.sleep(500);
+            task = ((TestServiceCallback)context.getBean("testServiceCallback")).getTask();
+        }
 
         Assert.assertEquals(2, tester1.getService().getMembersCount());
         Assert.assertEquals(2, tester2.getService().getMembersCount());

@@ -1,32 +1,48 @@
-package org.pieShare.pieTools.pieCeption.service.core;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mockito;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IAction;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
-import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+package org.pieShare.pieTools.pieUtilities.service.commandParser;
 
 import java.util.HashMap;
 import java.util.Map;
+import junit.framework.Assert;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
+import org.mockito.Mockito;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IAction;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 
 /**
- * Created by Richard on 19.03.14.
+ *
+ * @author vauvenal5
  */
-public class PieCeptionServiceIntegrationTest {
-
-    private ApplicationContext context = null;
-
-    @Before
-    public void before() {
-        context = new ClassPathXmlApplicationContext("pieCeption_test_context_file.xml");
+public class CommandParserModuleTest {
+    
+    public CommandParserModuleTest() {
     }
-
+    
+    @BeforeClass
+    public static void setUpClass() {
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+    }
+    
+    @Before
+    public void setUp() {
+    }
+    
+    @After
+    public void tearDown() {
+    }
 
     @Test
     public void testParseArgs() throws Exception {
@@ -34,9 +50,7 @@ public class PieCeptionServiceIntegrationTest {
         final String programmName = "pieTest";
         final String commandName = "pieDo";
 
-        IPieCeptionService pieCeptionService = context.getBean(PieCeptionService.class);
-        ClusterConnectorService clusterConnectorService = context.getBean(ClusterConnectorService.class);
-        ICommandParserService commandParserService = context.getBean(Argparse4jService.class);
+        ICommandParserService commandParserService = new Argparse4jService();
 
         IAction action = new IAction() {
             @Override
@@ -67,13 +81,6 @@ public class PieCeptionServiceIntegrationTest {
 
         commandParserService.registerAction(action);
 
-        IClusterService clusterService = Mockito.mock(IClusterService.class);
-        Mockito.when(clusterService.isConnectedToCluster()).thenReturn(true);
-        Mockito.when(clusterService.getMembersCount()).thenReturn(2);
-
-        clusterConnectorService.setClusterService(clusterService);
-        clusterConnectorService.setServiceName("ServiceName");
-
         String[] args  = new String[4];
         args[0] = commandName;
         args[1] = "5";
@@ -82,6 +89,4 @@ public class PieCeptionServiceIntegrationTest {
         
         commandParserService.parseArgs(args);
     }
-
-
 }

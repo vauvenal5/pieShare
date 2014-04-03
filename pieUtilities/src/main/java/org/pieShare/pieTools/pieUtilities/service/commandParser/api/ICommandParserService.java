@@ -1,6 +1,6 @@
-package org.pieShare.pieTools.pieCeption.service.commandParser.api;
+package org.pieShare.pieTools.pieUtilities.service.commandParser.api;
 
-import org.pieShare.pieTools.pieCeption.service.commandParser.exception.CommandParserServiceException;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
 
 /**
  * Created by Svetoslav on 29.12.13.

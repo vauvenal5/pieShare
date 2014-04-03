@@ -1,14 +1,15 @@
 package org.pieShare.pieTools.piePlate.service.helper;
 
-import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 /**
  * Created by Svetoslav on 19.01.14.
  */
-public class TestTask implements IMessageTask<TestMessage> {
+public class TestTask implements IPieEventTask<TestMessage> {
     private TestMessage msg;
     private boolean run = false;
+    private TestServiceCallback service;
 
     @Override
     public void setMsg(TestMessage msg) {
@@ -26,5 +27,10 @@ public class TestTask implements IMessageTask<TestMessage> {
     @Override
     public void run() {
         this.run = true;
+        this.service.setTask(this);
+    }
+    
+    public void setTestServiceCallback(TestServiceCallback service) {
+        this.service = service;
     }
 }
