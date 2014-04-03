@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.api.IFileMerger;
+import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -20,11 +21,18 @@ public class FileMerger implements IFileMerger
 {
 
     private final PieLogger logger = new PieLogger(FileMerger.class);
+    private IFileService fileService;
     private HashMap<String, PieDirectory> dirs;
 
     public FileMerger()
     {
 	dirs = new HashMap<>();
+    }
+    
+    @Override
+    public void setFileService(IFileService fileService)
+    {
+	this.fileService = fileService;
     }
 
     @Override
