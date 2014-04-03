@@ -5,11 +5,14 @@
  */
 package org.pieShare.pieShareApp.api;
 
+import org.pieShare.pieShareApp.model.FileChangedMessage;
+
 /**
  *
  * @author richy
  */
 public interface IFileService
 {
-
+    public void remoteFileChange(FileChangedMessage message);
+    public void localFileChange(FileChangedMessage message);
 }
