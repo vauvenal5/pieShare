@@ -32,8 +32,9 @@ public class PieCeptionService implements IPieCeptionService {
 
     @PostConstruct
     public void start() throws PieCeptionServiceException {
-        this.connectorService.connectToMaster("pieShare");
-        this.isMaster = !this.connectorService.isPieShareRunning();
+        //this.connectorService.connectToMaster("pieShare");
+        //this.isMaster = !this.connectorService.isPieShareRunning();
+        this.isMaster = true;
     }
 
     @Override 
