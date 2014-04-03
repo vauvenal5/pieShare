@@ -15,6 +15,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
+import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -26,81 +27,83 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class ApacheFileWatcher implements IFileWatcherService
 {
 
-    private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
-    private IFileService fileService;
-    private File watchDir;
+	private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
+	private IFileMerger fileMerger;
+	private File watchDir;
 
-    @Override
-    public void setFileService(IFileService fileService)
-    {
-	this.fileService = fileService;
-    }
-
-    @Override
-    public void setWatchDir(File watchDir)
-    {
-	this.watchDir = watchDir;
-    }
-
-    @Override
-    public void watchDir() throws IOException
-    {
-	
-	FileSystemManager fileSystemManager = VFS.getManager();
-	FileObject dirToWatchFO = null;
-	dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
-
-	DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
+	@Override
+	public void setFileMerger(IFileMerger fileMerger)
 	{
-
-	    @Override
-	    public void fileCreated(FileChangeEvent fce) throws Exception
-	    {
-		String filePath = fce.getFile().getURL().getFile();
-		PieFile pieFile = new PieFile(filePath);
-	    }
-
-	    @Override
-	    public void fileDeleted(FileChangeEvent fce) throws Exception
-	    {
-		String file = fce.getFile().getURL().getFile();
-	    }
-
-	    @Override
-	    public void fileChanged(FileChangeEvent fce) throws Exception
-	    {
-		String file = fce.getFile().getURL().getFile();
-	    }
-	});
-
-	fileMonitor.setRecursive(false);
-	fileMonitor.addFile(dirToWatchFO);
-	fileMonitor.start();
-
-    }
-
-    
-
-    @Override
-    public void cancel()
-    {
-    }
-
-    @Override
-    public void deleteAll()
-    {
-    }
-
-    @Override
-    public void run()
-    {
-	try
-	{
-	    watchDir();
+		this.fileMerger = fileMerger;
 	}
-	catch (IOException ex)
+
+	@Override
+	public void setWatchDir(File watchDir)
+	{
+		this.watchDir = watchDir;
+	}
+
+	@Override
+	public void watchDir() throws IOException
+	{
+
+		FileSystemManager fileSystemManager = VFS.getManager();
+		FileObject dirToWatchFO = null;
+		dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
+
+		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
+		{
+
+			@Override
+			public void fileCreated(FileChangeEvent fce) throws Exception
+			{
+				String filePath = fce.getFile().getURL().getFile();
+				PieFile pieFile = new PieFile(filePath);
+				
+				fileMerger.fileCreated(new File(filePath));
+				
+			}
+
+			@Override
+			public void fileDeleted(FileChangeEvent fce) throws Exception
+			{
+				String filePath = fce.getFile().getURL().getFile();
+				fileMerger.fileDeleted(new File(filePath));
+			}
+
+			@Override
+			public void fileChanged(FileChangeEvent fce) throws Exception
+			{
+				String file = fce.getFile().getURL().getFile();
+			}
+		});
+
+		fileMonitor.setRecursive(false);
+		fileMonitor.addFile(dirToWatchFO);
+		fileMonitor.start();
+
+	}
+
+	@Override
+	public void cancel()
 	{
 	}
-    }
+
+	@Override
+	public void deleteAll()
+	{
+	}
+
+	@Override
+	public void run()
+	{
+		try
+		{
+			watchDir();
+		}
+		catch (IOException ex)
+		{
+		}
+	}
 
 }

@@ -10,6 +10,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieShareApp.configuration.Configuration;
@@ -28,13 +31,14 @@ public class FileService implements IFileService
 	private final PieLogger logger = new PieLogger(FileService.class);
 	private IClusterService clusterService;
 	private FileChangedTask fileChangedTask = null;
-	private HashMap<String, IFileWatcherService> watchServices = null;
+	private IFileMerger fileMerger = null;
 
 	public FileService()
 	{
 		fileChangedTask = new FileChangedTask();
 		fileChangedTask.setFileService(this);
-		watchServices = new HashMap<>();
+
+		fileMerger = new FileMerger();
 
 		try
 		{
@@ -42,8 +46,10 @@ public class FileService implements IFileService
 		}
 		catch (IOException ex)
 		{
-			logger.debug("Exception while registering Folders.");
+			Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
 		}
+		
+		addWatchDirectory(Configuration.getWorkingDirectory());
 	}
 
 	public void serClusterService(IClusterService clusterService)
@@ -52,41 +58,33 @@ public class FileService implements IFileService
 		clusterService.registerTask(FileChangedMessage.class, fileChangedTask);
 	}
 
-	@Override
-	public void newFolderAdded(File file)
+	private void addWatchDirectory(File file)
 	{
 		IFileWatcherService service = new ApacheFileWatcher();//new FileWatcherService();
-		service.setFileService(this);
+		service.setFileMerger(fileMerger);
 		service.setWatchDir(file);
 		executor.execute(service);
-		watchServices.put(new PieFile(file).getRelativeFilePath(), service);
 	}
 
-	@Override
-	public void folderRemoved(PieFile file)
+	private void registerAll(File file) throws IOException
 	{
-		if (watchServices.containsKey(file.getRelativeFilePath()))
-		{
-			watchServices.get(file.getRelativeFilePath()).deleteAll();
-			watchServices.remove(file.getRelativeFilePath());
-		}
-	}
 
-	@Override
-	public void registerAll(File file) throws IOException
-	{
-		// register directory and sub-directories
 		Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>()
 		{
 			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
-					throws IOException
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
 			{
-				newFolderAdded(dir.toFile());
+				fileMerger.fileCreated(file.toFile());
 				return FileVisitResult.CONTINUE;
 			}
 
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
+			{
+				fileMerger.fileCreated(dir.toFile());
+				return FileVisitResult.CONTINUE;
+			}
+			
 		});
-
 	}
 }
