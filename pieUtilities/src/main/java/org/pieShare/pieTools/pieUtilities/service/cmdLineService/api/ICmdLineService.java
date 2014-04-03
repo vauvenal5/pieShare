@@ -11,6 +11,6 @@ package org.pieShare.pieTools.pieUtilities.service.cmdLineService.api;
  * @author Svetoslav
  */
 public interface ICmdLineService {
-    public void writeLine(IPrintableMessage msg);
+    public void writeLine(IPrintableEvent msg);
     public void readCommand();
 }
