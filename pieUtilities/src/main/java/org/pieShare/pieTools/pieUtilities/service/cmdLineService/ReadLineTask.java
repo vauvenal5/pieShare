@@ -17,9 +17,13 @@ public class ReadLineTask implements IPieTask {
     
     private ICmdLineService cmdService;
     
+    public void setCmdLineService(ICmdLineService service) {
+        this.cmdService = service;
+    }
+    
     @Override
     public void run() {
-        
+        this.cmdService.readCommand();
     }
     
 }
