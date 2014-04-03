@@ -43,4 +43,29 @@
     <!-- Defines where repositories are placed -->
     <jpa:repositories base-package="org.pieShare.pieTools.pieUtilities.service.pieIngredientsStore.repositories" />
 
+    
+    <!-- PieExecutorService -->
+    <bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService">
+        <prproperty name="executorService" ref="javaExecutorService"/>
+        <property name="map" ref="javaExecutorMap"/>
+        <property name="beanService" ref="pieBeanService"/>
+    </bean>
+    
+    <bean id="javaExecutorMap" class="java.util.HashMap"></bean>
+    
+    <bean id="javaExecutorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"></bean>
+    
+    <!-- PieBeanService -->
+    <bean id="pieBeanService" class="org.pieShare.pieTools.pieUtilities.service.beanService.BeanService"></bean>
+    
+    <!-- PieCommandParserService -->
+    <bean id="pieCommandParser" class="org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService">
+    </bean>
+    
+    <!-- CommandLineService -->
+    <bean id="cmdLineService" class="org.pieShare.pieTools.pieUtilities.service.cmdLineService.CmdLineService">
+        <property name="beanService" ref="pieBeanService"/>
+        <property name="commandParserService" ref="pieCommandParser"/>
+        <property name="executorService" ref="pieExecutorService"/>
+    </bean>
 </beans>
