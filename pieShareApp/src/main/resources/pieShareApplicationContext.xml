@@ -5,11 +5,16 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-    <import resource="classpath*:pieplate_application_context.xml" />
-     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
+    <import resource="classpath*:piePlateApplicationContext.xml" />
+    <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
+    
+    <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService" lazy-init="ture">
+        <property name="executorService" ref="pieExecutorService"/>
+        <property name="parserService" ref="pieCommandParser"/>
+    </bean>
 
     <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">
-        <property name="executorService" ref="  "/>
+        <property name="executorService" ref="pieExecutorService"/>
         <property name="clusterService" ref="clusterService"/>
     </bean>
     
