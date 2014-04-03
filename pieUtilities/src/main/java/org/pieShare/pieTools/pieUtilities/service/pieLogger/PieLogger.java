@@ -1,13 +1,10 @@
 package org.pieShare.pieTools.pieUtilities.service.pieLogger;
 
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PieLogger  {
 
-    private static final Logger mainLogger = LoggerFactory.getLogger(PieLogger.class);
-
+    public static final Logger mainLogger = LoggerGetter.getInstance().getLogger();
     
     
     public PieLogger(Class clazz) {
