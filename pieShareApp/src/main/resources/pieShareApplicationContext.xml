@@ -6,9 +6,14 @@
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <import resource="classpath*:pieplate_application_context.xml" />
+     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
 
-    <bean id="pieShareController" class="org.pieShare.pieShareApp.controller.PieShareController" lazy-init="true">
+    <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">
+        <property name="executorService" ref="  "/>
         <property name="clusterService" ref="clusterService"/>
+    </bean>
+    
+     <bean id="fileMerger" class="org.pieShare.pieShareApp.service.FileMerger" lazy-init="true">
     </bean>
 
 </beans>
