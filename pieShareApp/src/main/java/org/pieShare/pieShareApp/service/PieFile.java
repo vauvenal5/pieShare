@@ -20,103 +20,104 @@ import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
  */
 public class PieFile
 {
-    private File file;
-    private String md5 = "";
 
-    public PieFile(File file)
-    {
-	
-	
-	this.file = file;
+	private File file;
+	private String md5 = "";
 
-	if (file.exists() && !file.isDirectory())
+	public PieFile(File file)
 	{
-	    try
-	    {
-		md5 = MD5Service.MD5(file);
-	    }
-	    catch (IOException ex)
-	    {
-		//ToDo: Error Handling
-	    }
-	}
-    }
 
-    public PieFile(String filePath)
-    {
-	
-	this.file = new File(filePath);
+		this.file = file;
 
-	if (file.exists() && !file.isDirectory())
-	{
-	    try
-	    {
-		md5 = MD5Service.MD5(file);
-	    }
-	    catch (IOException ex)
-	    {
-		//ToDo: Error Handling
-	    }
-	}
-    }
-
-    
-    public String getFileName()
-    {
-	return file.getName();
-    }
-
-    public File getFile()
-    {
-	return file;
-    }
-
-    public String getMD5()
-    {
-	return md5;
-    }
-
-    public long getLastModified()
-    {
-	return file.lastModified();
-    }
-
-    public String getRelativeFilePath()
-    {
-	File workingDir = Configuration.getWorkingDirectory();
-
-	Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-	Path pathBase = workingDir.toPath(); // Paths.get("/var/data");
-	Path pathRelative = pathBase.relativize(pathAbsolute);
-	return pathRelative.toString();
-    }
-
-    @Override
-    public boolean equals(Object object)
-    {
-	if (!(object instanceof PieFile))
-	{
-	    return false;
+		if (file.exists() && !file.isDirectory())
+		{
+			try
+			{
+				md5 = MD5Service.MD5(file);
+			}
+			catch (IOException ex)
+			{
+				//ToDo: Error Handling
+			}
+		}
 	}
 
-	PieFile pieFile = (PieFile) object;
-
-	if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+	public PieFile(String filePath)
 	{
-	    return false;
+
+		this.file = new File(filePath);
+
+		if (file.exists() && !file.isDirectory())
+		{
+			try
+			{
+				md5 = MD5Service.MD5(file);
+			}
+			catch (IOException ex)
+			{
+				//ToDo: Error Handling
+			}
+		}
 	}
 
-	if (pieFile.getLastModified() != this.getLastModified())
+	public String getFileName()
 	{
-	    return false;
+		return file.getName();
 	}
 
-	if (!pieFile.getMD5().equals(this.getMD5()))
+	public File getFile()
 	{
-	    return false;
+		return file;
 	}
 
-	return true;
-    }
+	public String getMD5()
+	{
+		return md5;
+	}
+
+	public long getLastModified()
+	{
+		return file.lastModified();
+	}
+
+	public String getRelativeFilePath()
+	{
+		File workingDir = Configuration.getWorkingDirectory();
+
+		Path pathBase = new File(workingDir.getAbsolutePath()).toPath(); // Paths.get("/var/data");
+		
+		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		
+		Path pathRelative = pathBase.relativize(pathAbsolute);
+		return pathRelative.toString();
+	}
+
+	@Override
+	public boolean equals(Object object)
+	{
+		if (!(object instanceof PieFile))
+		{
+			return false;
+		}
+
+		PieFile pieFile = (PieFile) object;
+
+		if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+		{
+			return false;
+		}
+
+		if (pieFile.getLastModified() != this.getLastModified())
+		{
+			return false;
+		}
+
+		if (!pieFile.getMD5().equals(this.getMD5()))
+		{
+			return false;
+		}
+
+		return true;
+	}
 
 }
