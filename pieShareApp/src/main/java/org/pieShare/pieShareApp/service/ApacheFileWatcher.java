@@ -53,7 +53,6 @@ public class ApacheFileWatcher implements IFileWatcherService
 
 		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
 		{
-
 			@Override
 			public void fileCreated(FileChangeEvent fce) throws Exception
 			{
@@ -74,11 +73,12 @@ public class ApacheFileWatcher implements IFileWatcherService
 			@Override
 			public void fileChanged(FileChangeEvent fce) throws Exception
 			{
-				String file = fce.getFile().getURL().getFile();
+				String filePath = fce.getFile().getURL().getFile();
+				fileMerger.fileChanged(new File(filePath));
 			}
 		});
 
-		fileMonitor.setRecursive(false);
+		fileMonitor.setRecursive(true);
 		fileMonitor.addFile(dirToWatchFO);
 		fileMonitor.start();
 
