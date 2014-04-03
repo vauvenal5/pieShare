@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieTools.pieCeption.service.action.CommandAction;
-import org.springframework.beans.factory.support.ManagedMap;
 
 /**
  *

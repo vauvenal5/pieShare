@@ -12,6 +12,7 @@
         <property name="executorService" ref="pieExecutorService"/>
         <property name="parserService" ref="pieCommandParser"/>
         <property name="commandLineService" ref="cmdLineService"/>
+        <property name="beanService" ref="pieBeanService"/>
     </bean>
 
     <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">
@@ -21,5 +22,8 @@
     
      <bean id="fileMerger" class="org.pieShare.pieShareApp.service.FileMerger" lazy-init="true">
     </bean>
-
+    
+    <bean id="simpleMessageAction" class="org.pieShare.pieShareApp.model.action.SimpleMessageAction" lazy-init="true">
+        <property name="pieCeptionService" ref="pieCeptionService"/>
+    </bean>
 </beans>

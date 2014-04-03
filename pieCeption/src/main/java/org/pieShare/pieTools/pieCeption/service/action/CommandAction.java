@@ -18,6 +18,10 @@ public abstract class CommandAction implements IAction {
 
     private IPieCeptionService pieCeptionService;
     
+    public void setPieCeptionService(IPieCeptionService service) {
+        this.pieCeptionService = service;
+    }
+    
     protected void commitPieMessage(IPieMessage message) {
         this.pieCeptionService.handlePieMessage(message);
     }
