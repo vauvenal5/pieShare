@@ -1,5 +1,6 @@
 package org.pieShare.pieShareApp;
 
+import org.pieShare.pieShareApp.service.PieShareService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -9,6 +10,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class App {
     public static void main(String[] args) {
         ApplicationContext context = new ClassPathXmlApplicationContext("pieShareApplicationContext.xml");
+        PieShareService service = (PieShareService)context.getBean("pieShareService");
+        service.start();
         //PieShareController controller = (PieShareController)context.getBean("pieShareController");
         //controller.run();
     }
