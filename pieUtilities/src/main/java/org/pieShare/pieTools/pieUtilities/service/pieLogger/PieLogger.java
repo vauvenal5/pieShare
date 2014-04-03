@@ -1,25 +1,27 @@
 package org.pieShare.pieTools.pieUtilities.service.pieLogger;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class PieLogger {
+public class PieLogger  {
 
-    private static Logger mainLogger;
-
+    public static final Logger mainLogger = LoggerGetter.getInstance().getLogger();
+    private Class clazz;
+    
     public PieLogger(Class clazz) {
-        mainLogger = LoggerFactory.getLogger(clazz);
+	this.clazz = clazz;
+        //mainLogger = LoggerFactory.getLogger(clazz);
+	// PropertyConfigurator.configure("log4j.properties");
     }
 
     public void debug(String message) {
-        mainLogger.debug(message);
+        mainLogger.debug(clazz.toString() + " || " + message);
     }
 
     public void error(String message) {
-        mainLogger.error(message);
+        mainLogger.debug(clazz.toString() + " || " + message);
     }
 
     public void info(String message) {
-        mainLogger.info(message);
+        mainLogger.debug(clazz.toString() + " || " + message);
     }
 }
