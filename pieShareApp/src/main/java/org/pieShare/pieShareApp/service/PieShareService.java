@@ -6,9 +6,13 @@
 
 package org.pieShare.pieShareApp.service;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieShareApp.model.action.SimpleMessageAction;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
@@ -27,6 +31,7 @@ public class PieShareService {
     private ICommandParserService parserService;
     private ICmdLineService cmdLineService;
     private IBeanService beanService;
+    private IClusterService clusterService;
     
     public PieShareService() {
     }
@@ -47,8 +52,19 @@ public class PieShareService {
         this.beanService = service;
     }
     
+    public void setClusterService(IClusterService service) {
+        this.clusterService = service;
+    }
+    
     @PostConstruct
     public void start() {
+        
+        try {
+            this.clusterService.connect("ourFirstCluster");
+        } catch (ClusterServiceException ex) {
+            ex.printStackTrace();
+        }
+        
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
         
         try {
