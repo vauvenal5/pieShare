@@ -46,7 +46,7 @@
     
     <!-- PieExecutorService -->
     <bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService">
-        <prproperty name="executorService" ref="javaExecutorService"/>
+        <property name="executorService" ref="javaExecutorService"/>
         <property name="map" ref="javaExecutorMap"/>
         <property name="beanService" ref="pieBeanService"/>
     </bean>
