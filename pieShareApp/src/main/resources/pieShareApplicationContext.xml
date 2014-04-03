@@ -14,6 +14,7 @@
         <property name="parserService" ref="pieCommandParser"/>
         <property name="commandLineService" ref="cmdLineService"/>
         <property name="beanService" ref="pieBeanService"/>
+        <property name="clusterService" ref="clusterService"/>
     </bean>
 
     <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">
