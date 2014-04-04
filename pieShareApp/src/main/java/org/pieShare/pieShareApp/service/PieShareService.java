@@ -6,9 +6,8 @@
 
 package org.pieShare.pieShareApp.service;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieShareApp.model.action.SimpleMessageAction;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
@@ -16,11 +15,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
-import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.IPrintableEvent;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -32,8 +28,14 @@ public class PieShareService {
     private ICmdLineService cmdLineService;
     private IBeanService beanService;
     private IClusterService clusterService;
+    private IFileService fileService;
     
     public PieShareService() {
+    }
+    
+    public void setFileService(IFileService fileService)
+    {
+	this.fileService = fileService;
     }
     
     public void setExecutorService(IExecutorService service) {

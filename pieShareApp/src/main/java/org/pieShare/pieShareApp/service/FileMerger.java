@@ -40,8 +40,9 @@ public class FileMerger implements IFileMerger
     {
 	if (!file.exists())
 	{
-	    logger.debug("Chreated file does not exist");
-	    return;
+	    //ToDo: It must not exist, because it can be from an remote location. But check this when we insert remote merger.
+	    logger.debug("Create File: File does not exist, maybe from remote location.");
+	    //return;
 	}
 
 	if (file.isDirectory())
@@ -156,7 +157,6 @@ public class FileMerger implements IFileMerger
 	    logger.debug("Changed File: File does not exist call fileCreated()");
 	    fileCreated(pieFile.getFile());
 	}
-
     }
 
     private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
@@ -201,8 +201,10 @@ public class FileMerger implements IFileMerger
 	msg.setChangedType(type);
 	msg.setLastModified(file.getLastModified());
 	msg.setMd5(file.getMD5());
-	msg.setRelativeFilePath(msg.getRelativeFilePath());
+	msg.setRelativeFilePath(file.getRelativeFilePath());
 
+	logger.debug("Send Messahe: Send " + type.FILE_CREATED.toString() + " event. FileName: " + file.getFile().getName());
+	
 	fileService.localFileChange(msg);
     }
 }

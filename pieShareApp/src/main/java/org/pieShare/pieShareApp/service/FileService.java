@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
@@ -28,14 +29,17 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
  */
 public class FileService implements IFileService
 {
-
-    private final ExecutorService executor = Executors.newCachedThreadPool();
     private final PieLogger logger = new PieLogger(FileService.class);
     private IClusterService clusterService;
     private IFileMerger fileMerger = null;
     private IExecutorService executorService = null;
 
     public FileService()
+    {
+    }
+
+    @PostConstruct
+    public void initFileService()
     {
 	try
 	{
@@ -71,12 +75,12 @@ public class FileService implements IFileService
 	IFileWatcherService service = new ApacheFileWatcher();//new FileWatcherService();
 	service.setFileMerger(fileMerger);
 	service.setWatchDir(file);
-	executor.execute(service);
+	
+	executorService.execute(service);
     }
 
     private void registerAll(File file) throws IOException
     {
-
 	Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>()
 	{
 	    @Override
@@ -92,7 +96,6 @@ public class FileService implements IFileService
 		fileMerger.fileCreated(dir.toFile());
 		return FileVisitResult.CONTINUE;
 	    }
-
 	});
     }
 
