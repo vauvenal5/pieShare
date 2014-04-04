@@ -30,13 +30,8 @@ public class PieDirectory
 	private IFileWatcherService watcherService;
 	private File dir;
 
-	public PieDirectory(File dir) throws Exception
+	public PieDirectory(File dir)
 	{
-		if (!dir.exists() || !dir.isDirectory())
-		{
-			throw new Exception("Is no Directory, or does not exist.");
-		}
-
 		this.dir = dir;
 		this.files = new HashMap<>();
 	}

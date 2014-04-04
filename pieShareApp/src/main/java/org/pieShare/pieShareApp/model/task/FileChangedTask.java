@@ -2,27 +2,36 @@ package org.pieShare.pieShareApp.model.task;
 
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
-import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
-
-public class FileChangedTask implements IMessageTask {
+@Component
+public class FileChangedTask implements IPieEventTask<FileChangedMessage>
+{
 
     private FileChangedMessage fileChangedMessage;
     private IFileService fileService;
- 
+
+    @Autowired
+    @Qualifier("fileService")
     public void setFileService(IFileService fileService)
     {
-        this.fileService = fileService;
-    }
-    
-    @Override
-    public void setMsg(IPieMessage msg) {
-        this.fileChangedMessage = (FileChangedMessage)msg;
+	this.fileService = fileService;
     }
 
     @Override
-    public void run() {
-      // fileService.remoteFileChanged(fileChangedMessage);
+    public void setMsg(FileChangedMessage msg)
+    {
+	this.fileChangedMessage = msg;
     }
+
+    @Override
+    public void run()
+    {
+	fileService.remoteFileChange(fileChangedMessage);
+    }
+
 }

@@ -1,6 +1,6 @@
 package org.pieShare.pieTools.pieCeption.service.core;
 
-import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
+import org.pieShare.pieTools.pieCeption.service.core.api.IConnectorService;
 import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 /**
  * Created by Svetoslav on 30.12.13.
  */
-public class ClusterConnectorService implements IPieCeptionConnectorService {
+public class ClusterConnectorService implements IConnectorService {
 
     private IClusterService clusterService;
     private String serviceName = null;
@@ -50,7 +50,8 @@ public class ClusterConnectorService implements IPieCeptionConnectorService {
 
     @Override
     public boolean isPieShareRunning() throws PieCeptionServiceException {
-        if(!this.clusterService.isConnectedToCluster()){
+        if(!this.clusterService.isConnectedToCluster()) {
+            //todo-sv: internal error
             throw new PieCeptionServiceException("You are not connected to the PieCeption channel!");
         }
 
