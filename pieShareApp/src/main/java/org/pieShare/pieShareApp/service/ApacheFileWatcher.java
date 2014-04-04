@@ -7,8 +7,6 @@ package org.pieShare.pieShareApp.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemException;
-import java.util.HashMap;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.apache.commons.vfs2.FileObject;
@@ -16,7 +14,6 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.api.IFileMerger;
-import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -53,7 +50,6 @@ public class ApacheFileWatcher implements IFileWatcherService
 
 		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(new FileListener()
 		{
-
 			@Override
 			public void fileCreated(FileChangeEvent fce) throws Exception
 			{
@@ -74,11 +70,12 @@ public class ApacheFileWatcher implements IFileWatcherService
 			@Override
 			public void fileChanged(FileChangeEvent fce) throws Exception
 			{
-				String file = fce.getFile().getURL().getFile();
+				String filePath = fce.getFile().getURL().getFile();
+				fileMerger.fileChanged(new File(filePath));
 			}
 		});
 
-		fileMonitor.setRecursive(false);
+		fileMonitor.setRecursive(true);
 		fileMonitor.addFile(dirToWatchFO);
 		fileMonitor.start();
 
@@ -103,7 +100,7 @@ public class ApacheFileWatcher implements IFileWatcherService
 		}
 		catch (IOException ex)
 		{
+		    logger.debug("Watcher error: Message: " + ex.getMessage());
 		}
 	}
-
 }

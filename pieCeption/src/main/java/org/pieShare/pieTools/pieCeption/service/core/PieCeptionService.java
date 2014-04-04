@@ -1,56 +1,53 @@
 package org.pieShare.pieTools.pieCeption.service.core;
 
-import org.pieShare.pieTools.pieCeption.service.commandParser.api.ICommandParserService;
-import org.pieShare.pieTools.pieCeption.service.commandParser.exception.CommandParserServiceException;
-import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionConnectorService;
+import javax.annotation.PostConstruct;
+import org.pieShare.pieTools.pieCeption.service.core.api.IConnectorService;
 import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionService;
-import org.pieShare.pieTools.pieCeption.service.core.api.IStartupService;
 import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
-import org.pieShare.pieTools.pieCeption.service.core.exception.StartupServiceException;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
 
 /**
  * Created by Svetoslav on 29.12.13.
  */
 public class PieCeptionService implements IPieCeptionService {
-    private IPieCeptionConnectorService connectorService;
-    private ICommandParserService commandParserService;
-    private IStartupService startupService;
+    private IConnectorService connectorService;
+    private IExecutorService executorService;
+    private boolean isMaster;
 
     public PieCeptionService(){
     }
 
-    public void setConnectorService(IPieCeptionConnectorService connectorService) {
+    public void setConnectorService(IConnectorService connectorService) {
         this.connectorService = connectorService;
     }
-
-    public void setCommandParserService(ICommandParserService commandParserService){
-        this.commandParserService = commandParserService;
+    
+    public void setExecutorService(IExecutorService service) {
+        this.executorService = service;
     }
 
-    public void setStartupService(IStartupService startupService) {
-        this.startupService = startupService;
+    @PostConstruct
+    public void start() throws PieCeptionServiceException {
+        //this.connectorService.connectToMaster("pieShare");
+        //this.isMaster = !this.connectorService.isPieShareRunning();
+        this.isMaster = true;
     }
 
-    @Override
-    public void parseArgs(String[] args) throws PieCeptionServiceException {
-
-        this.connectorService.connectToMaster();
-
-        if(!this.connectorService.isPieShareRunning()) {
+    @Override 
+   public void handlePieMessage(IPieMessage message) {
+        if(this.isMaster) {
             try {
-                this.startupService.startInstance();
-
-
-                //todo-sv: how to handle the startup time of master?
-            } catch (StartupServiceException e1) {
-                throw new PieCeptionServiceException("Starting master failed!", e1);
+                this.executorService.handlePieEvent(message);
+            } catch(PieExecutorServiceException ex) {
+                //todo-sv: command doesn't exist therefore print usage!
             }
+            return;
         }
-
-        try {
-            this.commandParserService.parseArgs(args);
-        } catch (CommandParserServiceException e) {
-            throw new PieCeptionServiceException(e);
-        }
+        
+        //todo-sv: send to master via cluster
     }
 }

@@ -18,4 +18,6 @@ public interface IFileMerger
     public void fileDeleted(File file);
 
     public void fileChanged(File file);
+    
+    public void setFileService(IFileService fileService);
 }
