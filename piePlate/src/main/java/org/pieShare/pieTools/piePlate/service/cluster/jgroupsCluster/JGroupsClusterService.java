@@ -37,7 +37,7 @@ public class JGroupsClusterService implements IClusterService {
             Validate.notNull(this.receiver);
 
             this.channel.setReceiver(this.receiver);
-           // this.channel.setDiscardOwnMessages(true);
+            this.channel.setDiscardOwnMessages(true);
             this.channel.connect(clusterName);
 
         } catch (NullPointerException e) {
