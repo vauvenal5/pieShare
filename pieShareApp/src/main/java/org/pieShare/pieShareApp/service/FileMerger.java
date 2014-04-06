@@ -65,7 +65,7 @@ public class FileMerger implements IFileMerger
 			}
 
 		}
-		else if (file.isFile())
+		else
 		{
 			PieFile pieFile = new PieFile(file);
 
