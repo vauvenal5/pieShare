@@ -18,8 +18,9 @@ import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieShareApp.configuration.Configuration;
-import org.pieShare.pieShareApp.model.AllFilesMessage;
+import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.task.AllFilesSyncTask;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
@@ -47,7 +48,7 @@ public class FileService implements IFileService
 	public void initFileService()
 	{
 		pendingTasks = new ArrayList<>();
-		
+
 		try
 		{
 			registerAll(Configuration.getWorkingDirectory());
@@ -69,6 +70,7 @@ public class FileService implements IFileService
 	{
 		this.executorService = executorService;
 		this.executorService.registerTask(FileChangedMessage.class, FileChangedTask.class);
+		this.executorService.registerTask(AllFilesSyncMessage.class, AllFilesSyncTask.class);
 	}
 
 	public void setFileMerger(IFileMerger fileMerger)
@@ -140,7 +142,7 @@ public class FileService implements IFileService
 	}
 
 	@Override
-	public void remoteAllFilesRequestArrvied(AllFilesMessage msg)
+	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg)
 	{
 		if (msg.isIsRequest())
 		{
@@ -151,10 +153,23 @@ public class FileService implements IFileService
 				logger.debug("File Service: Arrived AllFilesMessage request had no ID. Return.");
 			}
 
-			AllFilesMessage sendMsg = new AllFilesMessage();
+			AllFilesSyncMessage sendMsg = new AllFilesSyncMessage();
 			sendMsg.setId(msg.getId());
 			sendMsg.setIsRequest(false);
-			sendMsg.setDirs(fileMerger.getDirs());
+
+			for (PieDirectory dir : fileMerger.getDirs().values())
+			{
+				for (PieFile file : dir.getFiles().values())
+				{
+					FileChangedMessage fileChangedMessage = new FileChangedMessage();
+					fileChangedMessage.setChangedType(FileChangedTypes.FILE_MODIFIED);
+					fileChangedMessage.setLastModified(file.getLastModified());
+					fileChangedMessage.setMd5(file.getMD5());
+					fileChangedMessage.setRelativeFilePath(file.getRelativeFilePath());
+					sendMsg.getList().add(fileChangedMessage);
+				}
+			}
+
 			try
 			{
 				clusterService.sendMessage(sendMsg);
@@ -169,41 +184,36 @@ public class FileService implements IFileService
 		else
 		{
 			logger.debug("File Service: New AllFilesMessage arrvied");
-			
-			if(msg.getId() == null || msg.getDirs() == null)
+
+			if (msg.getId() == null)
 			{
 				//ToDo: When id not null, but dirs, check if id is in pending tasks.
-				logger.debug("File Service: Error in Message, either no ID or Dirs. Return");
+				logger.debug("File Service: Error in Message: No ID. Return");
 				return;
 			}
-			
-			if(!pendingTasks.contains(msg.getId()))
-			{
-				return;
-			}
-			
-			pendingTasks.remove(msg.getId());
-			
-			for(PieDirectory dir : msg.getDirs().values())
-			{
-				for(PieFile file : dir.getFiles().values())
-				{
-					File newFile = new File(Configuration.getWorkingDirectory(), file.getRelativeFilePath());
-					fileMerger.fileChanged(newFile);
-				}
-			}
-			
-		}
 
+			if (!pendingTasks.contains(msg.getId()))
+			{
+				return;
+			}
+
+			pendingTasks.remove(msg.getId());
+
+			for (FileChangedMessage fileChangedMsg : msg.getList())
+			{
+				//File newFile = new File(Configuration.getWorkingDirectory(), fileChangedMsg.getRelativeFilePath());
+				fileMerger.remoteFileChanged(fileChangedMsg);
+			}
+		}
 	}
 
 	@Override
-	public void sendAllFilesRequest()
+	public void sendAllFilesSyncRequest()
 	{
 		logger.debug("File Service: Send new AllFilesRequest");
 		UUID id = UUID.randomUUID();
-		
-		AllFilesMessage msg = new AllFilesMessage();
+
+		AllFilesSyncMessage msg = new AllFilesSyncMessage();
 		msg.setIsRequest(true);
 		msg.setId(id);
 		pendingTasks.add(id);

@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.api;
 
-import org.pieShare.pieShareApp.model.AllFilesMessage;
+import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
 
 /**
@@ -19,7 +19,7 @@ public interface IFileService
 
 	public void localFileChange(FileChangedMessage message);
 
-	public void remoteAllFilesRequestArrvied(AllFilesMessage msg);
+	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 
-	public void sendAllFilesRequest();
+	public void sendAllFilesSyncRequest();
 }
