@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.HashMap;
 import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
+import org.pieShare.pieShareApp.configuration.Configuration;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
@@ -114,7 +115,7 @@ public class FileMerger implements IFileMerger
 		if (dirs.containsKey(pieFile.getRelativeFilePath()))
 		{
 			logger.debug("ChangedFile: Changed File is a Folder. Do nothing!!. ");
-	    //Changed File is a Folder. 
+			//Changed File is a Folder. 
 			//Ignore
 			return;
 		}
@@ -145,8 +146,6 @@ public class FileMerger implements IFileMerger
 				return;
 			}
 
-			
-			
 			logger.debug("Changed File: Remove old and add new file");
 
 			files.remove(pieFile.getRelativeFilePath());
@@ -208,6 +207,51 @@ public class FileMerger implements IFileMerger
 		logger.debug("Send Messahe: Send " + type.FILE_CREATED.toString() + " event. FileName: " + file.getFile().getName());
 
 		fileService.localFileChange(msg);
+	}
+
+	@Override
+	public void remoteFileChanged(FileChangedMessage fileChangedMessage)
+	{
+		logger.debug("Remote File Changed: Remote file has changed. Check if needed.");
+		if (dirs.containsKey(fileChangedMessage.getRelativeFilePath()))
+		{
+			logger.debug("Remote File Changed: File is Dir. Do nothing.");
+			return;
+		}
+
+		File file = new File(Configuration.getWorkingDirectory(), fileChangedMessage.getRelativeFilePath());
+		PieFile createdFile = new PieFile(file);
+
+		PieDirectory dir = new PieDirectory(file.getParentFile());
+
+		if (dirs.containsKey(dir.getRelativeFilePath()))
+		{
+			if (dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(createdFile.getRelativeFilePath()))
+			{
+				PieFile localFile = dirs.get(dir.getRelativeFilePath()).getFiles().get(createdFile.getRelativeFilePath());
+				
+				if(localFile.getLastModified() < fileChangedMessage.getLastModified())
+				{
+					fileChanged(file);
+				}
+				else
+				{
+					//Local File is newer than remote file, so do nothing:
+					//ToDo: Check this when implementing an better file merger for remote file.
+					logger.debug("Remote File Changed: Remote file is older then local. Do nothing.");
+				}
+				
+			}
+			else
+			{
+				fileCreated(file);
+			}
+		}
+		else
+		{
+			fileCreated(file);
+		}
+
 	}
 
 	@Override

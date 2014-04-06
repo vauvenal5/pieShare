@@ -1,24 +1,26 @@
 package org.pieShare.pieShareApp.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import org.pieShare.pieShareApp.service.PieDirectory;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
-public class AllFilesMessage extends HeaderMessage
+public class AllFilesSyncMessage extends HeaderMessage
 {
-	private HashMap<String, PieDirectory> dirs;
+
+	private ArrayList<FileChangedMessage> dirs;
 	private UUID id;
 	private boolean isRequest;
 
-	public HashMap<String, PieDirectory> getDirs()
+	public ArrayList<FileChangedMessage> getList()
 	{
-		return dirs;
-	}
+		if (dirs == null)
+		{
+			dirs = new ArrayList<>();
+		}
 
-	public void setDirs(HashMap<String, PieDirectory> dirs)
-	{
-		this.dirs = dirs;
+		return dirs;
 	}
 
 	public UUID getId()
@@ -40,6 +42,5 @@ public class AllFilesMessage extends HeaderMessage
 	{
 		this.isRequest = isRequest;
 	}
-	
-	
+
 }
