@@ -20,191 +20,199 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 public class FileMerger implements IFileMerger
 {
 
-    private final PieLogger logger = new PieLogger(FileMerger.class);
-    private IFileService fileService;
-    private HashMap<String, PieDirectory> dirs;
+	private final PieLogger logger = new PieLogger(FileMerger.class);
+	private IFileService fileService;
+	private HashMap<String, PieDirectory> dirs;
 
-    public FileMerger()
-    {
-	dirs = new HashMap<>();
-    }
-
-    @Override
-    public void setFileService(IFileService fileService)
-    {
-	this.fileService = fileService;
-    }
-
-    @Override
-    public void fileCreated(File file)
-    {
-	if (!file.exists())
+	public FileMerger()
 	{
-	    //ToDo: It must not exist, because it can be from an remote location. But check this when we insert remote merger.
-	    logger.debug("Create File: File does not exist, maybe from remote location.");
-	    //return;
+		dirs = new HashMap<>();
 	}
 
-	if (file.isDirectory())
+	@Override
+	public void setFileService(IFileService fileService)
 	{
-	    PieDirectory dir = null;
-	    try
-	    {
-		dir = new PieDirectory(file);
-	    }
-	    catch (Exception ex)
-	    {
-		logger.debug("Error in directory check: Message:" + ex.getMessage());
-		return;
-	    }
-
-	    if (!dirs.containsKey(dir.getRelativeFilePath()))
-	    {
-		dirs.put(dir.getRelativeFilePath(), dir);
-	    }
-
+		this.fileService = fileService;
 	}
-	else if (file.isFile())
+
+	@Override
+	public void fileCreated(File file)
 	{
-	    PieFile pieFile = new PieFile(file);
+		if (!file.exists())
+		{
+			//ToDo: It must not exist, because it can be from an remote location. But check this when we insert remote merger.
+			logger.debug("Create File: File does not exist, maybe from remote location.");
+			//return;
+		}
 
-	    PieDirectory dir = null;
+		if (file.isDirectory())
+		{
+			PieDirectory dir = null;
+			try
+			{
+				dir = new PieDirectory(file);
+			}
+			catch (Exception ex)
+			{
+				logger.debug("Error in directory check: Message:" + ex.getMessage());
+				return;
+			}
 
-	    dir = new PieDirectory(pieFile.getFile().getParentFile());
+			if (!dirs.containsKey(dir.getRelativeFilePath()))
+			{
+				dirs.put(dir.getRelativeFilePath(), dir);
+			}
 
-	    if (!dirs.containsKey(dir.getRelativeFilePath()))
-	    {
-		dirs.put(dir.getRelativeFilePath(), dir);
-	    }
+		}
+		else if (file.isFile())
+		{
+			PieFile pieFile = new PieFile(file);
 
-	    checkListForNewFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
+			PieDirectory dir = null;
+
+			dir = new PieDirectory(pieFile.getFile().getParentFile());
+
+			if (!dirs.containsKey(dir.getRelativeFilePath()))
+			{
+				dirs.put(dir.getRelativeFilePath(), dir);
+			}
+
+			checkListForNewFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
+		}
 	}
-    }
 
-    @Override
-    public void fileDeleted(File file)
-    {
-	PieFile pieFile = new PieFile(file);
-
-	//If file is in Direcotry list it is an Dir, so we delete it and OK
-	if (dirs.containsKey(pieFile.getRelativeFilePath()))
+	@Override
+	public void fileDeleted(File file)
 	{
-	    dirs.remove(pieFile.getRelativeFilePath());
+		PieFile pieFile = new PieFile(file);
+
+		//If file is in Direcotry list it is an Dir, so we delete it and OK
+		if (dirs.containsKey(pieFile.getRelativeFilePath()))
+		{
+			dirs.remove(pieFile.getRelativeFilePath());
+		}
+		else
+		{
+			//If not in  dir list it is a file, get parent folder.
+			PieDirectory dir = new PieDirectory(file.getParentFile());
+
+			if (!dirs.containsKey(dir.getRelativeFilePath()))
+			{
+				logger.debug("File Delete: Cannot find folder from file to delete, is alredy delted!");
+				return;
+			}
+
+			deleteFileFromList(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
+		}
 	}
-	else
+
+	@Override
+	public void fileChanged(File file)
 	{
-	    //If not in  dir list it is a file, get parent folder.
-	    PieDirectory dir = new PieDirectory(file.getParentFile());
+		PieFile pieFile = new PieFile(file);
 
-	    if (!dirs.containsKey(dir.getRelativeFilePath()))
-	    {
-		logger.debug("File Delete: Cannot find folder from file to delete, is alredy delted!");
-		return;
-	    }
-
-	    deleteFileFromList(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
-	}
-    }
-
-    @Override
-    public void fileChanged(File file)
-    {
-	PieFile pieFile = new PieFile(file);
-
-	if (dirs.containsKey(pieFile.getRelativeFilePath()))
-	{
-	    logger.debug("ChangedFile: Changed File is a Folder. Do nothing!!. ");
+		if (dirs.containsKey(pieFile.getRelativeFilePath()))
+		{
+			logger.debug("ChangedFile: Changed File is a Folder. Do nothing!!. ");
 	    //Changed File is a Folder. 
-	    //Ignore
-	    return;
+			//Ignore
+			return;
+		}
+
+		PieDirectory dir = new PieDirectory(file.getParentFile());
+
+		if (!dirs.containsKey(dir.getRelativeFilePath()))
+		{
+			//The folder from changed file is not in the folder list. Error.
+			logger.debug("File Changed: The folder from changed file is not in the folder list, add foder to list!!.");
+
+			dirs.put(dir.getRelativeFilePath(), dir);
+
+			return;
+		}
+
+		checkListForChangedFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
 	}
 
-	PieDirectory dir = new PieDirectory(file.getParentFile());
-
-	if (!dirs.containsKey(dir.getRelativeFilePath()))
+	private void checkListForChangedFile(HashMap<String, PieFile> files, PieFile pieFile)
 	{
-	    //The folder from changed file is not in the folder list. Error.
-	    logger.debug("File Changed: The folder from changed file is not in the folder list, add foder to list!!.");
-	    
-	    dirs.put(dir.getRelativeFilePath(), dir);
-	    
-	    return;
+		if (files.containsKey(pieFile.getRelativeFilePath()))
+		{
+			if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
+			{
+				logger.debug("Changed File: File is exactly same. Do not Change.");
+				//Is Exectly same file, do nothing
+				return;
+			}
+
+			
+			
+			logger.debug("Changed File: Remove old and add new file");
+
+			files.remove(pieFile.getRelativeFilePath());
+			files.put(pieFile.getRelativeFilePath(), pieFile);
+
+			sendNewMessage(FileChangedTypes.FILE_MODIFIED, pieFile);
+		}
+		else
+		{
+			logger.debug("Changed File: File does not exist call fileCreated()");
+			fileCreated(pieFile.getFile());
+		}
 	}
 
-	checkListForChangedFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
-    }
-
-    private void checkListForChangedFile(HashMap<String, PieFile> files, PieFile pieFile)
-    {
-	if (files.containsKey(pieFile.getRelativeFilePath()))
+	private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
 	{
-	    if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
-	    {
-		logger.debug("Changed File: File is exactly same. Do not Change.");
-		//Is Exectly same file, do nothing
-		return;
-	    }
-
-	    logger.debug("Changed File: Remove old and add new file");
-
-	    files.remove(pieFile.getRelativeFilePath());
-	    files.put(pieFile.getRelativeFilePath(), pieFile);
-
-	    sendNewMessage(FileChangedTypes.FILE_MODIFIED, pieFile);
+		if (files.containsKey(pieFile.getRelativeFilePath()))
+		{
+			logger.debug("Created File: File is alrey in list, call fileChanged().");
+			checkListForChangedFile(files, pieFile);
+		}
+		else
+		{
+			logger.debug("Created File: Add new created file");
+			files.put(pieFile.getRelativeFilePath(), pieFile);
+			sendNewMessage(FileChangedTypes.FILE_CREATED, pieFile);
+		}
 	}
-	else
+
+	private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile)
 	{
-	    logger.debug("Changed File: File does not exist call fileCreated()");
-	    fileCreated(pieFile.getFile());
+		if (files.containsKey(pieFile.getRelativeFilePath()))
+		{
+			if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
+			{
+				logger.debug("Deleted File: Delete file from list");
+				files.remove(pieFile.getRelativeFilePath());
+				sendNewMessage(FileChangedTypes.FILE_DELETED, pieFile);
+			}
+			else
+			{
+				logger.debug("Deleted File: Files are not equal, do not remove file");
+			}
+		}
+		else
+		{
+			logger.debug("Deleted File: File to delete does not exist.");
+		}
 	}
-    }
 
-    private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
-    {
-	if (files.containsKey(pieFile.getRelativeFilePath()))
+	private void sendNewMessage(FileChangedTypes type, PieFile file)
 	{
-	    logger.debug("Created File: File is alrey in list, call fileChanged().");
-	    checkListForChangedFile(files, pieFile);
-	}
-	else
-	{
-	    logger.debug("Created File: Add new created file");
-	    files.put(pieFile.getRelativeFilePath(), pieFile);
-	    sendNewMessage(FileChangedTypes.FILE_CREATED, pieFile);
-	}
-    }
+		FileChangedMessage msg = new FileChangedMessage();
+		msg.setChangedType(type);
+		msg.setLastModified(file.getLastModified());
+		msg.setMd5(file.getMD5());
+		msg.setRelativeFilePath(file.getRelativeFilePath());
 
-    private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile)
-    {
-	if (files.containsKey(pieFile.getRelativeFilePath()))
-	{
-	    if (files.get(pieFile.getRelativeFilePath()).equals(pieFile))
-	    {
-		logger.debug("Deleted File: Delete file from list");
-		files.remove(pieFile.getRelativeFilePath());
-		sendNewMessage(FileChangedTypes.FILE_DELETED, pieFile);
-	    }
-	    else
-	    {
-		logger.debug("Deleted File: Files are not equal, do not remove file");
-	    }
-	}
-	else
-	{
-	    logger.debug("Deleted File: File to delete does not exist.");
-	}
-    }
+		logger.debug("Send Messahe: Send " + type.FILE_CREATED.toString() + " event. FileName: " + file.getFile().getName());
 
-    private void sendNewMessage(FileChangedTypes type, PieFile file)
-    {
-	FileChangedMessage msg = new FileChangedMessage();
-	msg.setChangedType(type);
-	msg.setLastModified(file.getLastModified());
-	msg.setMd5(file.getMD5());
-	msg.setRelativeFilePath(file.getRelativeFilePath());
+		fileService.localFileChange(msg);
+	}
 
-	logger.debug("Send Messahe: Send " + type.FILE_CREATED.toString() + " event. FileName: " + file.getFile().getName());
-	
-	fileService.localFileChange(msg);
-    }
+	@Override
+	public HashMap<String, PieDirectory> getDirs()
+	{
+		return dirs;
+	}
 }
