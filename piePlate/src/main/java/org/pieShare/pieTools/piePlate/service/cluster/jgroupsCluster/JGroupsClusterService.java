@@ -2,9 +2,7 @@ package org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster;
 
 import org.apache.commons.lang3.Validate;
 import org.jgroups.JChannel;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.model.task.api.IMessageTask;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
@@ -15,16 +13,10 @@ import javax.annotation.PostConstruct;
 public class JGroupsClusterService implements IClusterService {
 
     private IReceiver receiver;
-    private IClusterMessageHandler clusterMessageHandler;
     private ISerializerService serializerService;
-
     private JChannel channel;
 
     public JGroupsClusterService() {
-    }
-
-    @PostConstruct
-    private void postClusterService() {
     }
 
     public void setChannel(JChannel channel) {
@@ -35,18 +27,8 @@ public class JGroupsClusterService implements IClusterService {
         this.receiver = receiver;
     }
 
-    public void setClusterMessageHandler(IClusterMessageHandler handler) {
-        this.clusterMessageHandler = handler;
-    }
-
     public void setSerializerService(ISerializerService service) {
         this.serializerService = service;
-    }
-
-    @Override
-    public <P extends IPieMessage> void registerTask(Class<P> clazz, IMessageTask<P> task) {
-        Validate.notNull(this.clusterMessageHandler);
-        this.clusterMessageHandler.registerTask(clazz, task);
     }
 
     @Override
@@ -54,8 +36,8 @@ public class JGroupsClusterService implements IClusterService {
         try {
             Validate.notNull(this.receiver);
 
-            //this.channel = new JChannel();
             this.channel.setReceiver(this.receiver);
+            this.channel.setDiscardOwnMessages(true);
             this.channel.connect(clusterName);
 
         } catch (NullPointerException e) {

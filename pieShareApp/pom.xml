@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>pieShare</artifactId>
+		<groupId>org.pieShare</groupId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pieShareApp</artifactId>
+
+	<dependencies>
+      
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-vfs2</artifactId>
+			<version>2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.2.RELEASE</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>org.pieShare.pieTools</groupId>
+			<artifactId>piePlate</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+                
+                <dependency>
+			<groupId>org.pieShare.pieTools</groupId>
+			<artifactId>pieCeption</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+        
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+            
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>1.9.5</version>
+			<scope>test</scope>
+		</dependency>
+        
+	</dependencies>
+   
+</project>
