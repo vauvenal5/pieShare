@@ -63,7 +63,6 @@ public class FileMerger implements IFileMerger
 			{
 				dirs.put(dir.getRelativeFilePath(), dir);
 			}
-
 		}
 		else
 		{

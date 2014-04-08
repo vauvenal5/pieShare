@@ -9,10 +9,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
@@ -38,6 +34,7 @@ public class FileService implements IFileService
 	private IClusterService clusterService;
 	private IFileMerger fileMerger = null;
 	private IExecutorService executorService = null;
+        private IFileWatcherService fileWatcher;
 	private ArrayList<UUID> pendingTasks;
 
 	public FileService()
@@ -65,6 +62,11 @@ public class FileService implements IFileService
 	{
 		this.clusterService = clusterService;
 	}
+        
+        public void setFileWatcher(IFileWatcherService fileWatcher)
+        {
+            this.fileWatcher = fileWatcher;
+        }
 
 	public void setExecutorService(IExecutorService executorService)
 	{
@@ -81,11 +83,8 @@ public class FileService implements IFileService
 
 	private void addWatchDirectory(File file)
 	{
-		IFileWatcherService service = new ApacheFileWatcher();//new FileWatcherService();
-		service.setFileMerger(fileMerger);
-		service.setWatchDir(file);
-
-		executorService.execute(service);
+		fileWatcher.setWatchDir(file);
+		executorService.execute(fileWatcher);
 	}
 
 	private void registerAll(File file) throws IOException
