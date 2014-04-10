@@ -34,6 +34,12 @@
                 <version>2.2.0</version>
                 <configuration>
                     <sourceEncoding>utf8</sourceEncoding>
+                    <sourceDirectories>
+                        <file>pieUtilities/src/main/java</file>
+                        <file>pieCeption/src/main/java</file>
+                        <file>piePlate/src/main/java</file>
+                        <file>pieShareApp/src/main/java</file>
+                    </sourceDirectories>
                 </configuration>
             </plugin>
             
