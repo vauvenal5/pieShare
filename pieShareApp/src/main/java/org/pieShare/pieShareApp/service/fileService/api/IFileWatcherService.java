@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.api;
+package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;

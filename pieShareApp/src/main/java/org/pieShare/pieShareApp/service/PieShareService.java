@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service;
 
 import javax.annotation.PostConstruct;
-import org.pieShare.pieShareApp.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieShareApp.model.action.SimpleMessageAction;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
