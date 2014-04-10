@@ -58,7 +58,7 @@
                 <artifactId>replacer</artifactId>
                 <version>1.5.2</version>
                 <configuration>
-                    <file>target/site/cobertura/coverage.xml</file>
+                    <file>$TRAVIS_BUILD_DIR/target/site/cobertura/coverage.xml</file>
                     <regex>true</regex>
                     <replacements>
                         <replacement>
