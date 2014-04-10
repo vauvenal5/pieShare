@@ -35,10 +35,10 @@
                 <configuration>
                     <sourceEncoding>utf8</sourceEncoding>
                     <sourceDirectories>
-                        <file>pieUtilities/src/main/java</file>
-                        <file>pieCeption/src/main/java</file>
-                        <file>piePlate/src/main/java</file>
-                        <file>pieShareApp/src/main/java</file>
+                        <sourceDirectory>pieUtilities/src/main/java</sourceDirectory>
+                        <sourceDirectory>pieCeption/src/main/java</sourceDirectory>
+                        <sourceDirectory>piePlate/src/main/java</sourceDirectory>
+                        <sourceDirectory>pieShareApp/src/main/java</sourceDirectory>
                     </sourceDirectories>
                 </configuration>
             </plugin>
