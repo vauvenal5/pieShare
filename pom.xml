@@ -32,6 +32,9 @@
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>2.2.0</version>
+                <configuration>
+                    <sourceEncoding>utf8</sourceEncoding>
+                </configuration>
             </plugin>
             
             <plugin>
@@ -39,7 +42,10 @@
                 <artifactId>cobertura-maven-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <format>xml</format>
+                    <formats>
+                        <format>xml</format>
+                        <format>html</format>
+                    </formats>
                     <maxmem>256m</maxmem>
                     <!-- aggregated reports for multi-module projects -->
                     <aggregate>true</aggregate>
