@@ -3,7 +3,7 @@ package org.pieShare.pieShareApp.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import org.pieShare.pieShareApp.service.PieDirectory;
+import org.pieShare.pieShareApp.service.fileService.PieDirectory;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 public class AllFilesSyncMessage extends HeaderMessage

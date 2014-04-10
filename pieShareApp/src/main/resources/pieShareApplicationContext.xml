@@ -17,10 +17,16 @@
     
     <!-- Defines where to search for annotated components -->
     <context:component-scan base-package="org.pieShare.pieShareApp.model.task" />
+    <context:component-scan base-package="org.pieShare.pieShareApp.service.configurationService" />
     
-   
   
+    <bean id="pieFile" class="org.pieShare.pieShareApp.service.fileService.PieFile" scope="prototype">
+    </bean> 
+ 
+    <bean id="pieDir" class="org.pieShare.pieShareApp.service.fileService.PieDirectory" scope="prototype">
+    </bean> 
     
+          
     <bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService">
         <property name="executorService" ref="pieExecutorService"/>
         <property name="parserService" ref="pieCommandParser"/>
@@ -31,22 +37,23 @@
     </bean>
 
   
-    <bean id="fileService" class="org.pieShare.pieShareApp.service.FileService" lazy-init="true">
+    <bean id="fileService" class="org.pieShare.pieShareApp.service.fileService.FileService" lazy-init="true">
         <property name="executorService" ref="pieExecutorService"/>
         <property name="clusterService" ref="clusterService"/>
         <property name="fileMerger" ref="fileMerger"/>
         <property name="fileWatcher" ref="fileWatcher"/>
     </bean>
     
-    <bean id="fileMerger" class="org.pieShare.pieShareApp.service.FileMerger" lazy-init="true">
+    <bean id="fileMerger" class="org.pieShare.pieShareApp.service.fileService.FileMerger" lazy-init="true">
+        <property name="beanService" ref="pieBeanService"/>
     </bean>
     
-    <bean id="fileWatcher" class="org.pieShare.pieShareApp.service.ApacheFileWatcher" lazy-init="true">
+    <bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileService.ApacheFileWatcher" lazy-init="true">
         <property name="fileMerger" ref="fileMerger"/>    
         <property name="fileListener" ref="fileListener"/>
     </bean>
     
-    <bean id="fileListener" class="org.pieShare.pieShareApp.service.ApacheDefaultFileListener" lazy-init="true">
+    <bean id="fileListener" class="org.pieShare.pieShareApp.service.fileService.ApacheDefaultFileListener" lazy-init="true">
         <property name="fileMerger" ref="fileMerger"/>    
     </bean>
     
