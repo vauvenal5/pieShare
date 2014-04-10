@@ -34,12 +34,6 @@
                 <version>2.2.0</version>
                 <configuration>
                     <sourceEncoding>utf8</sourceEncoding>
-                    <sourceDirectories>
-                        <sourceDirectory>pieUtilities/src/main/java</sourceDirectory>
-                        <sourceDirectory>pieCeption/src/main/java</sourceDirectory>
-                        <sourceDirectory>piePlate/src/main/java</sourceDirectory>
-                        <sourceDirectory>pieShareApp/src/main/java</sourceDirectory>
-                    </sourceDirectories>
                 </configuration>
             </plugin>
             
@@ -53,10 +47,40 @@
                         <format>html</format>
                     </formats>
                     <maxmem>256m</maxmem>
+                    
                     <!-- aggregated reports for multi-module projects -->
                     <aggregate>true</aggregate>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <configuration>
+                    <file>target/site/cobertura/coverage.xml</file>
+                    <regex>true</regex>
+                    <replacements>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/pieUtilities)</token>
+                            <value>filename=\"pieUtilities/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/pieCeption)</token>
+                            <value>filename=\"pieCeption/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/piePlate)</token>
+                            <value>filename=\"piePlate/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieShareApp)</token>
+                            <value>filename=\"pieShareApp/src/main/java/</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
