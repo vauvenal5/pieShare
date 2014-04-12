@@ -58,6 +58,9 @@
     </bean>
     
     
+    <bean id="fileChangedMessage" class="org.pieShare.pieShareApp.model.FileChangedMessage" scope="prototype">
+    </bean>
+    
     <bean id="simpleMessageAction" class="org.pieShare.pieShareApp.model.action.SimpleMessageAction" lazy-init="true">
         <property name="clusterService" ref="clusterService"/>
     </bean>
