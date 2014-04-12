@@ -7,8 +7,6 @@ package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
@@ -103,6 +101,12 @@ public class FileMerger implements IFileMerger
         //If file is in Direcotry list it is an Dir, so we delete it and OK
         if (dirs.containsKey(pieFile.getRelativeFilePath()))
         {
+            PieDirectory dir = dirs.get(pieFile.getRelativeFilePath());
+            for (PieFile f : dir.getFiles().values())
+            {
+                sendNewMessage(FileChangedTypes.FILE_DELETED, f);
+            }
+
             dirs.remove(pieFile.getRelativeFilePath());
         }
         else
@@ -118,6 +122,11 @@ public class FileMerger implements IFileMerger
             }
 
             deleteFileFromList(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
+
+            if (dirs.get(dir.getRelativeFilePath()).getFiles().isEmpty())
+            {
+                dirs.remove(dir.getRelativeFilePath());
+            }
         }
     }
 
@@ -137,7 +146,7 @@ public class FileMerger implements IFileMerger
 
         PieDirectory dir = beanService.getBean(PieDirectory.class);
         dir.init(file.getParentFile());
-        
+
         if (!dirs.containsKey(dir.getRelativeFilePath()))
         {
             //The folder from changed file is not in the folder list. Error.
@@ -191,7 +200,7 @@ public class FileMerger implements IFileMerger
         }
     }
 
-    private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile)
+    private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile) throws BeanServiceException
     {
         if (files.containsKey(pieFile.getRelativeFilePath()))
         {
@@ -200,6 +209,7 @@ public class FileMerger implements IFileMerger
                 logger.debug("Deleted File: Delete file from list");
                 files.remove(pieFile.getRelativeFilePath());
                 sendNewMessage(FileChangedTypes.FILE_DELETED, pieFile);
+
             }
             else
             {
@@ -212,15 +222,15 @@ public class FileMerger implements IFileMerger
         }
     }
 
-    private void sendNewMessage(FileChangedTypes type, PieFile file)
+    private void sendNewMessage(FileChangedTypes type, PieFile file) throws BeanServiceException
     {
-        FileChangedMessage msg = new FileChangedMessage();
+        FileChangedMessage msg = beanService.getBean(FileChangedMessage.class);
         msg.setChangedType(type);
         msg.setLastModified(file.getLastModified());
         msg.setMd5(file.getMD5());
         msg.setRelativeFilePath(file.getRelativeFilePath());
 
-        logger.debug("Send Messahe: Send " + type.FILE_CREATED.toString() + " event. FileName: " + file.getFile().getName());
+        logger.debug("Send Message: Send " + type.toString() + " event. FileName: " + file.getFile().getName());
 
         fileService.localFileChange(msg);
     }
@@ -239,7 +249,7 @@ public class FileMerger implements IFileMerger
 
         PieFile createdFile = beanService.getBean(PieFile.class);
         createdFile.Init(file);
-        
+
         PieDirectory dir = beanService.getBean(PieDirectory.class);
         dir.init(file.getParentFile());
 
@@ -252,6 +262,7 @@ public class FileMerger implements IFileMerger
                 if (localFile.getLastModified() < fileChangedMessage.getLastModified())
                 {
                     fileChanged(file);
+                    //Copy This Shit
                 }
                 else
                 {
@@ -277,19 +288,5 @@ public class FileMerger implements IFileMerger
     public HashMap<String, PieDirectory> getDirs()
     {
         return dirs;
-    }
-
-    private PieFile getNewPieFile(File file)
-    {
-        PieFile pieFile = null;
-        try
-        {
-            pieFile = beanService.getBean(PieFile.class);
-        }
-        catch (BeanServiceException ex)
-        {
-            logger.debug("Error creating been PieFile");
-        }
-        return pieFile;
     }
 }
