@@ -6,22 +6,13 @@
 package org.pieShare.pieShareApp.api;
 
 import java.io.File;
-import java.io.IOException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 
 /**
  *
  * @author Richard
  */
-public interface IFileWatcherService extends Runnable
+public interface IFileWatcherService extends IPieTask
 {
-
-	public void setFileMerger(IFileMerger fileMerger);
-
 	public void setWatchDir(File watchDir);
-
-	public void watchDir() throws IOException;
-
-	public void cancel();
-
-	public void deleteAll();
 }

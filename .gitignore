@@ -3,3 +3,7 @@ target/
 *.iml
 out/
 *.jar
+*.out
+workingDir/
+database/
+nbactions.xml

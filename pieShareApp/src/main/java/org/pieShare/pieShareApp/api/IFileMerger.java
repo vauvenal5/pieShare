@@ -6,6 +6,9 @@
 package org.pieShare.pieShareApp.api;
 
 import java.io.File;
+import java.util.HashMap;
+import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.service.PieDirectory;
 
 /**
  *
@@ -20,4 +23,8 @@ public interface IFileMerger
     public void fileChanged(File file);
     
     public void setFileService(IFileService fileService);
+	
+	public HashMap<String, PieDirectory> getDirs();
+	
+	public void remoteFileChanged(FileChangedMessage fileChangedMessage);
 }
