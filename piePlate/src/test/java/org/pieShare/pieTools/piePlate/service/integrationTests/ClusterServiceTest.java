@@ -35,7 +35,7 @@ public class ClusterServiceTest {
         Assert.assertEquals(2, service2.getMembersCount());
     }
 
-    @Test(timeout = 5000)
+    @Test(timeout = 50000)
     public void testSendingMessage() throws Exception {
 
         final TestMessage msg = new TestMessage();

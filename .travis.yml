@@ -8,3 +8,8 @@ branches:
   only:
     - master
     - development
+
+after_success:
+  - mvn clean cobertura:cobertura 
+  - mvn replacer:replace 
+  - mvn coveralls:cobertura
