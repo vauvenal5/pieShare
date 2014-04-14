@@ -244,7 +244,7 @@ public class FileMerger implements IFileMerger
         logger.debug("Remote File Changed: Remote file has changed. Check if needed.");
         if (dirs.containsKey(fileChangedMessage.getRelativeFilePath()))
         {
-            logger.debug("Remote File Changed: File is Dir. Do nothing.");
+            logger.debug("Remote File Changed: Strange. Should not happen. Do nothing.");
             return;
         }
 
@@ -256,35 +256,50 @@ public class FileMerger implements IFileMerger
         PieDirectory dir = beanService.getBean(PieDirectory.class);
         dir.init(file.getParentFile());
 
-        if (dirs.containsKey(dir.getRelativeFilePath()))
+        if (fileChangedMessage.getChangedType() == FileChangedTypes.FILE_CREATED)
         {
-            if (dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(createdFile.getRelativeFilePath()))
-            {
-                PieFile localFile = dirs.get(dir.getRelativeFilePath()).getFiles().get(createdFile.getRelativeFilePath());
+            fileService.sendFileTransferRequenst(createdFile);
+        }
+        else if (fileChangedMessage.getChangedType() == FileChangedTypes.FILE_DELETED)
+        {
 
-                if (localFile.getLastModified() < fileChangedMessage.getLastModified())
+        }
+        else if (fileChangedMessage.getChangedType() == FileChangedTypes.FILE_MODIFIED)
+        {
+
+        }
+        else if (fileChangedMessage.getChangedType() == FileChangedTypes.SNYC_ALL)
+        {
+
+            if (dirs.containsKey(dir.getRelativeFilePath()))
+            {
+                if (dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(createdFile.getRelativeFilePath()))
                 {
-                    fileChanged(file);
-                    //Copy This Shit
+                    PieFile localFile = dirs.get(dir.getRelativeFilePath()).getFiles().get(createdFile.getRelativeFilePath());
+
+                    if (localFile.getLastModified() < fileChangedMessage.getLastModified())
+                    {
+                        fileChanged(file);
+                        //Copy This Shit
+                    }
+                    else
+                    {
+                        //Local File is newer than remote file, so do nothing:
+                        //ToDo: Check this when implementing an better file merger for remote file.
+                        logger.debug("Remote File Changed: Remote file is older then local. Do nothing.");
+                    }
+
                 }
                 else
                 {
-                    //Local File is newer than remote file, so do nothing:
-                    //ToDo: Check this when implementing an better file merger for remote file.
-                    logger.debug("Remote File Changed: Remote file is older then local. Do nothing.");
+                    fileCreated(file);
                 }
-
             }
             else
             {
                 fileCreated(file);
             }
         }
-        else
-        {
-            fileCreated(file);
-        }
-
     }
 
     @Override
@@ -298,14 +313,14 @@ public class FileMerger implements IFileMerger
     {
         Validate.notNull(relativeFilePath);
         Validate.notEmpty(relativeFilePath);
-        
+
         File file = new File(pieAppConfig.getWorkingDirectory(), relativeFilePath);
         PieDirectory dir = beanService.getBean(PieDirectory.class);
         dir.init(file.getParentFile());
 
         if (dirs.containsKey(dir.getRelativeFilePath()))
         {
-            if(dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(relativeFilePath))
+            if (dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(relativeFilePath))
             {
                 logger.debug("File: " + relativeFilePath + " found. Returning PieFile");
                 return dirs.get(dir.getRelativeFilePath()).getFiles().get(relativeFilePath);

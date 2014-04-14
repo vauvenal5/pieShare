@@ -13,23 +13,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import sun.audio.AudioDataStream;
 
 /**
  *
  * @author richy
  */
-public class FileRemoteCopyJob
+public class FileRemoteCopyJob implements IFileRemoteCopyJob
 {
 
+    private PieLogger logger = new PieLogger(FileRemoteCopyJob.class);
     private String relativeFilePath;
     private int actualBlockNumber;
     private HashMap<Integer, File> cachedBlocks;
@@ -39,6 +40,7 @@ public class FileRemoteCopyJob
     private String fileName;
     private ICompressor compressor;
     private int lastBlockNumber = Integer.MAX_VALUE;
+    private boolean isInitialized = false;
 
     @Autowired
     @Qualifier("compressor")
@@ -54,7 +56,11 @@ public class FileRemoteCopyJob
         this.pieAppConfig = pieShareAppConfiguration;
     }
 
-    public FileRemoteCopyJob(FileTransferMessageBlocked msg)
+    public FileRemoteCopyJob()
+    {
+    }
+
+    private void init(FileTransferMessageBlocked msg)
     {
         actualBlockNumber = 0;
         cachedBlocks = new HashMap<>();
@@ -89,17 +95,25 @@ public class FileRemoteCopyJob
         }
         catch (FileNotFoundException ex)
         {
-
+            //ToDo Handle Error
         }
         catch (IOException ex)
         {
-            
+            //ToDo Handle Error
         }
+
+        isInitialized = true;
 
     }
 
+    @Override
     public void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException
     {
+        if (!isInitialized)
+        {
+            init(msg);
+        }
+
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
         ByteArrayInputStream byteInStream = new ByteArrayInputStream(msg.getBlock());
 
@@ -142,7 +156,25 @@ public class FileRemoteCopyJob
         {
             //Ende
         }
+    }
 
+    @Override
+    public void cleanUP()
+    {
+
+        if (!blockDir.exists())
+        {
+            return;
+        }
+
+        try
+        {
+            FileUtils.deleteRecursive(blockDir);
+        }
+        catch (FileNotFoundException ex)
+        {
+            logger.debug("Error clean up FileRemoteCopy. Message:" + ex.getMessage());
+        }
     }
 
 }
