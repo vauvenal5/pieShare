@@ -68,4 +68,8 @@
         <property name="commandParserService" ref="pieCommandParser"/>
         <property name="executorService" ref="pieExecutorService"/>
     </bean>
+    
+    <!-- Compressor Service -->
+    <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor">
+    </bean>
 </beans>

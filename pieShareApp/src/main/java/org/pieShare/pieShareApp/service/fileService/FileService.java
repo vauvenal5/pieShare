@@ -1,6 +1,10 @@
 package org.pieShare.pieShareApp.service.fileService;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -13,6 +17,8 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.model.task.AllFilesSyncTask;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -22,6 +28,9 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
+import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
@@ -41,6 +50,8 @@ public class FileService implements IFileService
     private IFileWatcherService fileWatcher;
     private ArrayList<UUID> pendingTasks;
     private IPieShareAppConfiguration pieAppConfig;
+    private IBeanService beanService;
+    private ICompressor compressor;
 
     public FileService()
     {
@@ -51,6 +62,18 @@ public class FileService implements IFileService
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
+    }
+
+    @Autowired
+    @Qualifier("compressor")
+    public void setCompressor(ICompressor compresor)
+    {
+        this.compressor = compresor;
+    }
+
+    public void setBeanService(IBeanService beanService)
+    {
+        this.beanService = beanService;
     }
 
     @PostConstruct
@@ -135,7 +158,7 @@ public class FileService implements IFileService
     }
 
     @Override
-    public void remoteFileChange(FileChangedMessage message)
+    public synchronized void remoteFileChange(FileChangedMessage message)
     {
         if (message == null)
         {
@@ -282,4 +305,87 @@ public class FileService implements IFileService
         }
         logger.debug("File Service: AllFilesRequest sended");
     }
+
+    public void fileTransferRequest(FileTransferRequestMessage msg)
+    {
+        Validate.notNull(msg);
+
+        PieFile file = null;
+
+        try
+        {
+            file = fileMerger.getFile(msg.getRelativeFilePath());
+        }
+        catch (BeanServiceException | FileNotFoundException ex)
+        {
+            logger.error("Error reading file from merger. Message: " + ex.getMessage());
+            return;
+        }
+
+        int buffSize = pieAppConfig.getFileSendBufferSize();
+        byte[] sendBuffer = new byte[buffSize];
+
+        FileInputStream fileStream = null;
+        try
+        {
+            fileStream = new FileInputStream(file.getFile());
+        }
+        catch (FileNotFoundException ex)
+        {
+            logger.error("Requested file is not avalible ob HDD. Message: " + ex.getMessage());
+            return;
+        }
+
+        int readBytes = 0;
+        int count = 0;
+
+        try
+        {
+            while ((readBytes = fileStream.read(sendBuffer)) != -1)
+            {
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                ByteArrayInputStream inStream = new ByteArrayInputStream(sendBuffer, 0, readBytes);
+                compressor.compressStream(inStream, outStream);
+
+                FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
+                sendMessage.setId(msg.getId());
+                sendMessage.setIsLastEmptyMessage(false);
+                sendMessage.setBlockNumber(count++);
+                sendMessage.setBlock(outStream.toByteArray());
+                sendMessage.setRelativeFilePath(file.getRelativeFilePath());
+                clusterService.sendMessage(sendMessage);
+            }
+
+            FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
+            sendMessage.setIsLastEmptyMessage(true);
+            sendMessage.setId(msg.getId());
+            sendMessage.setRelativeFilePath(file.getRelativeFilePath());
+            sendMessage.setBlockNumber(count);
+            clusterService.sendMessage(sendMessage);
+        }
+        catch (IOException ex)
+        {
+            logger.error("Error in Comressor Service. Message: " + ex.getMessage());
+        }
+        catch (ClusterServiceException ex)
+        {
+            logger.error("Error in Cluster Service. Message: " + ex.getMessage());
+        }
+
+    }
+
+    public void fileTransfereMessage(FileTransferMessageBlocked msg)
+    {
+        Validate.notNull(msg);
+        Validate.notNull(msg.getId());
+
+        if (!pendingTasks.contains(msg.getId()))
+        {
+            logger.debug("File Trasfere Message Recieved. Task id not avalible in task list. Return.");
+            return;
+        }
+
+        //pendingTasks.remove(msg.getId());
+    }
+
 }

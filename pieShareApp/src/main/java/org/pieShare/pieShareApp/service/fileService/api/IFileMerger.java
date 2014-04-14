@@ -6,9 +6,11 @@
 package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
 import org.pieShare.pieShareApp.service.fileService.PieDirectory;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
 
 /**
@@ -29,4 +31,6 @@ public interface IFileMerger
     public HashMap<String, PieDirectory> getDirs();
 
     public void remoteFileChanged(FileChangedMessage fileChangedMessage) throws BeanServiceException;
+    
+    public PieFile getFile(String relativeFilePath) throws BeanServiceException, FileNotFoundException;
 }

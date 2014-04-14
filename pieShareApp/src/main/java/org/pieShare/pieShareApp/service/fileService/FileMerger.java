@@ -6,8 +6,11 @@
 package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
+import org.apache.commons.lang3.Validate;
 import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -288,5 +291,27 @@ public class FileMerger implements IFileMerger
     public HashMap<String, PieDirectory> getDirs()
     {
         return dirs;
+    }
+
+    @Override
+    public PieFile getFile(String relativeFilePath) throws BeanServiceException, FileNotFoundException
+    {
+        Validate.notNull(relativeFilePath);
+        Validate.notEmpty(relativeFilePath);
+        
+        File file = new File(pieAppConfig.getWorkingDirectory(), relativeFilePath);
+        PieDirectory dir = beanService.getBean(PieDirectory.class);
+        dir.init(file.getParentFile());
+
+        if (dirs.containsKey(dir.getRelativeFilePath()))
+        {
+            if(dirs.get(dir.getRelativeFilePath()).getFiles().containsKey(relativeFilePath))
+            {
+                logger.debug("File: " + relativeFilePath + " found. Returning PieFile");
+                return dirs.get(dir.getRelativeFilePath()).getFiles().get(relativeFilePath);
+            }
+        }
+        logger.error("File: " + relativeFilePath + " not in file list");
+        throw new FileNotFoundException("File: " + relativeFilePath + " not in file list");
     }
 }
