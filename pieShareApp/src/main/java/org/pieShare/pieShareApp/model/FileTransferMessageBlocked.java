@@ -3,6 +3,7 @@ package org.pieShare.pieShareApp.model;
 public class FileTransferMessageBlocked extends FileTransferMessage
 {
     private int blockNumber;
+    private boolean isLastEmptyMessage = false;
 
     public int getBlockNumber()
     {
@@ -13,5 +14,17 @@ public class FileTransferMessageBlocked extends FileTransferMessage
     {
         this.blockNumber = blockNumber;
     }
+
+    public boolean isIsLastEmptyMessage()
+    {
+        return isLastEmptyMessage;
+    }
+
+    public void setIsLastEmptyMessage(boolean isLastEmptyMessage)
+    {
+        this.isLastEmptyMessage = isLastEmptyMessage;
+    }
+    
+    
     
 }

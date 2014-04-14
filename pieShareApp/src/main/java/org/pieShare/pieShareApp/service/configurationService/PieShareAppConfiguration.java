@@ -48,7 +48,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
     public File getWorkingDirectory()
     {
         Validate.notNull(conf);
-        
+
         File watchDir = new File(conf.getProperty("workingDir"));
 
         if (!watchDir.exists())
@@ -57,5 +57,35 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
         }
 
         return new File(watchDir.getAbsolutePath());
+    }
+
+    @Override
+    public int getFileSendBufferSize()
+    {
+        Validate.notNull(conf);
+
+        try
+        {
+            return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
+        }
+        catch (NumberFormatException ex)
+        {
+            return 2048;
+        }
+    }
+
+    @Override
+    public File getTempCopyDirectory()
+    {
+        Validate.notNull(conf);
+
+        File tempCopyDir = new File(conf.getProperty("tempCopyDir"));
+
+        if (!tempCopyDir.exists())
+        {
+            tempCopyDir.mkdirs();
+        }
+
+        return new File(tempCopyDir.getAbsolutePath());
     }
 }

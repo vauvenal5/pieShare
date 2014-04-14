@@ -319,12 +319,11 @@ public class FileMergerTest
         fileList.put("workingDir/newFile2", newFile2);
 
         FileChangedMessage message = Mockito.mock(FileChangedMessage.class);
-        FileChangedMessage message2 = Mockito.mock(FileChangedMessage.class);
         
         BeanService beanService = Mockito.mock(BeanService.class);
-        Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile1, newFile2);
+        Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile3);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class)).thenReturn(message, message2);
+        Mockito.when(beanService.getBean(FileChangedMessage.class)).thenReturn(message);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -334,39 +333,17 @@ public class FileMergerTest
 
         instance.getDirs().put("workingDir", wDir);
 
-        //Delete First file
-        instance.fileDeleted(file);
         
-        //Delete Second File.
-        instance.fileDeleted(file);
+        instance.fileChanged(file);
         
-        //Folder should now also be deleted
-        Assert.assertTrue(instance.getDirs().isEmpty());
-        
-        Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
+        Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_MODIFIED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        Mockito.verify(message, Mockito.times(1)).setMd5("NewMD5");
         Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("workingDir/newFile1");
         
-        Mockito.verify(message2, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
-        Mockito.verify(message2, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
-        Mockito.verify(message2, Mockito.times(1)).setRelativeFilePath("workingDir/newFile2");
+        Assert.assertEquals(newFile3, wDir.getFiles().get("workingDir/newFile1"));
     }
     
-    
-    /**
-     * Test of fileChanged method, of class FileMerger.
-     */
-    public void testFileChanged() throws Exception
-    {
-        System.out.println("fileChanged");
-        File file = null;
-        FileMerger instance = new FileMerger();
-        instance.fileChanged(file);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
 
     /**
      * Test of remoteFileChanged method, of class FileMerger.
