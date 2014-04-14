@@ -49,6 +49,9 @@
         <property name="beanService" ref="pieBeanService"/>
     </bean>
     
+    <bean id="fileRemoteCopyJob" class="org.pieShare.pieShareApp.service.fileService.FileRemoteCopyJob" scope="prototype">
+    </bean>
+    
     <bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileService.ApacheFileWatcher" lazy-init="true">
         <property name="fileMerger" ref="fileMerger"/>    
         <property name="fileListener" ref="fileListener"/>
@@ -60,6 +63,9 @@
     
     
     <bean id="fileChangedMessage" class="org.pieShare.pieShareApp.model.FileChangedMessage" scope="prototype">
+    </bean>
+    
+    <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.FileTransferRequestMessage" scope="prototype">
     </bean>
     
     <bean id="simpleMessageAction" class="org.pieShare.pieShareApp.model.action.SimpleMessageAction" lazy-init="true">

@@ -1,6 +1,6 @@
 package org.pieShare.pieShareApp.model.task;
 
-import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,15 +8,15 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FileTransferTask implements IPieEventTask<FileTransferMessageBlocked>
+public class FileTransferRequestTask implements IPieEventTask<FileTransferRequestMessage>
 {
 
-    private FileTransferMessageBlocked fileTransferMessageBlocked;
+    private FileTransferRequestMessage fileTransferRequestMessage;
     private IFileService fileService;
 
-    public FileTransferMessageBlocked getFileTransferMessageBlocked()
+    public FileTransferRequestMessage getFileTransferMessageBlocked()
     {
-        return fileTransferMessageBlocked;
+        return fileTransferRequestMessage;
     }
 
     @Autowired
@@ -27,15 +27,15 @@ public class FileTransferTask implements IPieEventTask<FileTransferMessageBlocke
     }
 
     @Override
-    public void setMsg(FileTransferMessageBlocked msg)
+    public void setMsg(FileTransferRequestMessage msg)
     {
-        this.fileTransferMessageBlocked = msg;
+        this.fileTransferRequestMessage = msg;
     }
 
     @Override
     public void run()
     {
-        fileService.fileTransfereMessage(fileTransferMessageBlocked);
+        fileService.fileTransferRequestReceived(fileTransferRequestMessage);
     }
 
 }
