@@ -96,6 +96,6 @@ public class PieShareService
         msg.setMsg("PieShare awaits your command:");
 
         this.cmdLineService.writeLine(msg);
-        this.fileService.sendAllFilesSyncRequest();
+        //this.fileService.sendAllFilesSyncRequest();
     }
 }
