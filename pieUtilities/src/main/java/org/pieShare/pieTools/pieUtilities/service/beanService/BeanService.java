@@ -22,4 +22,14 @@ public class BeanService implements IBeanService, ApplicationContextAware {
             throw new BeanServiceException(e);
         }
     }
+    
+    @Override
+    public <T> T getBean(Class<T> type, String beanID) throws BeanServiceException {
+        try {
+            Object o = context.getBean(beanID);
+            return (T)o;
+        } catch(Exception e) {
+            throw new BeanServiceException(e);
+        }
+    }
 }

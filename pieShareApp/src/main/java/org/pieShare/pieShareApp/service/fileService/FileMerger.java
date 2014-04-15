@@ -227,7 +227,7 @@ public class FileMerger implements IFileMerger
 
     private void sendNewMessage(FileChangedTypes type, PieFile file) throws BeanServiceException
     {
-        FileChangedMessage msg = beanService.getBean(FileChangedMessage.class);
+        FileChangedMessage msg = beanService.getBean(FileChangedMessage.class, "fileChangedMessage");
         msg.setChangedType(type);
         msg.setLastModified(file.getLastModified());
         msg.setMd5(file.getMD5());
