@@ -10,20 +10,13 @@ import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.SimpleMessage;
 import org.pieShare.pieTools.pieCeption.service.action.CommandAction;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
  * @author Svetoslav
  */
 public class SimpleMessageAction extends CommandAction {
-
-    @Override
-    public void doAction(Map<String, Object> args) {
-        SimpleMessage msg = new SimpleMessage();
-        msg.setMsg((String)args.get("msg"));
-        this.commitPieMessage(msg);
-    }
-
     @Override
     public String getCommandName() {
         return "sendMsg";
@@ -41,5 +34,11 @@ public class SimpleMessageAction extends CommandAction {
         
         return args;
     }
-    
+
+    @Override
+    public IPieMessage getMessage() {
+        SimpleMessage msg = new SimpleMessage();
+        msg.setMsg((String)this.args.get("msg"));
+        return msg;
+    }
 }

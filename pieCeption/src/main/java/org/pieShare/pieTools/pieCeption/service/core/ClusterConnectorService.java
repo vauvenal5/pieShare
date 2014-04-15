@@ -1,12 +1,19 @@
 package org.pieShare.pieTools.pieCeption.service.core;
 
-import org.pieShare.pieTools.pieCeption.service.core.api.IConnectorService;
-import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import org.apache.commons.lang3.Validate;
+import org.pieShare.pieTools.pieCeption.service.action.CommandAction;
+import org.pieShare.pieTools.pieCeption.service.action.ICommand;
+import org.pieShare.pieTools.pieCeption.service.core.api.IConnectorService;
+import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 
 /**
  * Created by Svetoslav on 30.12.13.
@@ -14,57 +21,42 @@ import java.net.UnknownHostException;
 public class ClusterConnectorService implements IConnectorService {
 
     private IClusterService clusterService;
-    private String serviceName = null;
-
-    public  void setClusterService(IClusterService clusterService)
-    {
-        this.clusterService = clusterService;
-    }
-
-    public void setServiceName(String serviceName){
-        this.serviceName = serviceName;
-    }
-
-    @Override
-    public void connectToMaster() throws PieCeptionServiceException {
-        this.checkServiceName();
-
+    private IClusterManagementService clusterManagementService;
+    
+    @PostConstruct
+    public void init() {
         try {
-            String localName = InetAddress.getLocalHost().getHostName();
-            //todo check for security issues
-            clusterService.connect(serviceName + localName);
-        } catch (UnknownHostException e) {
+            String serviceName = InetAddress.getLocalHost().getHostName();
+            this.clusterService = this.clusterManagementService.connect(serviceName);
+        } catch (UnknownHostException ex) {
             //todo-sv: error handling
-            e.printStackTrace();
-        } catch (ClusterServiceException e) {
+        } catch (ClusterManagmentServiceException ex) {
             //todo-sv: error handling
-            e.printStackTrace();
         }
+    }
+    
+    public void setClusterManagementService(IClusterManagementService service) {
+        this.clusterManagementService = service;
     }
 
     @Override
-    public void connectToMaster(String serviceName) throws PieCeptionServiceException {
-        this.setServiceName(serviceName);
-        this.connectToMaster();
-    }
-
-    @Override
-    public boolean isPieShareRunning() throws PieCeptionServiceException {
-        if(!this.clusterService.isConnectedToCluster()) {
-            //todo-sv: internal error
-            throw new PieCeptionServiceException("You are not connected to the PieCeption channel!");
+    public boolean isPieShareRunning() {
+        if(this.clusterService == null) {
+            this.init();
         }
-
+        
         if(this.clusterService.getMembersCount() > 1){
             return true;
         }
-
         return false;
     }
 
-    private void checkServiceName() throws PieCeptionServiceException {
-        if(this.serviceName == null){
-            throw new PieCeptionServiceException("Service name not set!");
+    @Override
+    public void sendToMaster(ICommand command) {
+        try {
+            this.clusterService.sendMessage(command.getMessage());
+        } catch (ClusterServiceException ex) {
+            //todo-sv error handling
         }
     }
 }
