@@ -6,6 +6,7 @@
 
 package org.pieShare.pieTools.pieCeption.service.action;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieTools.pieCeption.service.core.api.IPieCeptionService;
@@ -18,28 +19,19 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IAction;
  *
  * @author Svetoslav
  */
-public abstract class CommandAction implements IAction {
-
-    private IPieCeptionService pieCeptionService;
+public abstract class CommandAction implements IAction, ICommand {
     
-    private IClusterService clusterService;
+    private IPieCeptionService pieCeptionService;
+    protected Map<String, Object> args;
     
     public void setPieCeptionService(IPieCeptionService service) {
         this.pieCeptionService = service;
     }
     
-    public void setClusterService(IClusterService service) {
-        this.clusterService = service;
+    @Override
+    public final void doAction(Map<String, Object> args) {
+        this.args = args;
+        
+        this.pieCeptionService.handleCommand(this);
     }
-    
-    protected void commitPieMessage(IPieMessage message) {
-        //todo-sv: rething this
-        try {
-            //this.pieCeptionService.handlePieMessage(message);
-            this.clusterService.sendMessage(message);
-        } catch (ClusterServiceException ex) {
-            ex.printStackTrace();
-        }
-    }
-    
 }
