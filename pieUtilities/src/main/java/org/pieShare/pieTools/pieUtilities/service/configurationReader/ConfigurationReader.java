@@ -46,7 +46,7 @@ public class ConfigurationReader implements IConfigurationReader
     {
         File config = new File(configFolder, pathToConfig);
 
-        if(config.getParentFile().exists())
+        if(!config.getParentFile().exists())
         {
             config.getParentFile().mkdirs();
         }
