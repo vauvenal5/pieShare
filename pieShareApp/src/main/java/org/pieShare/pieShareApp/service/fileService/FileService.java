@@ -25,6 +25,8 @@ import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.model.task.AllFilesSyncTask;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
+import org.pieShare.pieShareApp.model.task.FileTransferRequestTask;
+import org.pieShare.pieShareApp.model.task.FileTransferTask;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
@@ -116,6 +118,8 @@ public class FileService implements IFileService
         this.executorService = executorService;
         this.executorService.registerTask(FileChangedMessage.class, FileChangedTask.class);
         this.executorService.registerTask(AllFilesSyncMessage.class, AllFilesSyncTask.class);
+        this.executorService.registerTask(FileTransferRequestMessage.class, FileTransferRequestTask.class);
+        this.executorService.registerTask(FileTransferMessageBlocked.class, FileTransferTask.class);
     }
 
     public void setFileMerger(IFileMerger fileMerger)
@@ -175,7 +179,6 @@ public class FileService implements IFileService
 
         //File wdir = pieAppConfig.getWorkingDirectory();
         //File newFile = new File(wdir, message.getRelativeFilePath());
-        
         try
         {
             fileMerger.remoteFileChanged(message);
