@@ -44,10 +44,16 @@ public class Compressor implements ICompressor
             {
                 int count = deflater.deflate(buffer); // returns the generated code... index  
                 out.write(buffer, 0, count);
-            }
 
+                if (deflater.needsInput())
+                {
+                    break;
+                }
+
+            }
         }
-        deflater.end();
+        deflater.reset();
+        //deflater.end();
     }
 
     @Override
@@ -65,13 +71,13 @@ public class Compressor implements ICompressor
             byte[] buffer = new byte[1024];
             while (!inflater.finished())
             {
+                int count = inflater.inflate(buffer);
+                out.write(buffer, 0, count);
+
                 if (inflater.needsInput())
                 {
                     break;
                 }
-
-                int count = inflater.inflate(buffer);
-                out.write(buffer, 0, count);
 
                 if (inflater.needsDictionary())
                 {
@@ -79,7 +85,8 @@ public class Compressor implements ICompressor
                 }
             }
         }
-        inflater.end();
+        //inflater.end();
+        inflater.reset();
     }
 
     @Override

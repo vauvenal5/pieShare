@@ -70,6 +70,6 @@
     </bean>
     
     <!-- Compressor Service -->
-    <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor">
+    <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor" scope="prototype">
     </bean>
 </beans>

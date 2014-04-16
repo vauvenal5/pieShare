@@ -397,38 +397,43 @@ public class FileService implements IFileService
     }
 
     @Override
-    public void fileTransfereMessage(FileTransferMessageBlocked msg)
+    public synchronized void fileTransfereMessage(FileTransferMessageBlocked msg)
     {
         Validate.notNull(msg);
         Validate.notNull(msg.getId());
 
         IFileRemoteCopyJob fileRemoteCopyJob = null;
 
-        if (pendingTasks.contains(msg.getId()))
+        synchronized (this)
         {
-            logger.debug("File Trasfere Message Recieved. Task id not avalible in task list. Return.");
+            if (pendingTasks.contains(msg.getId()))
+            {
+                logger.debug("File Trasfere Message Recieved. Start new FileCopyJob.");
 
-            try
-            {
-                fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
-                fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
-            }
-            catch (BeanServiceException ex)
-            {
-                logger.debug("Error getting new fileRemoteCopyJob from beanService. Message: " + ex.getMessage());
-                return;
-            }
-        }
-        else
-        {
-            if (fileCopyJobs.containsKey(msg.getId()))
-            {
-                fileRemoteCopyJob = fileCopyJobs.get(msg.getId());
+                pendingTasks.remove(msg.getId());
+
+                try
+                {
+                    fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
+                    fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
+                }
+                catch (BeanServiceException ex)
+                {
+                    logger.debug("Error getting new fileRemoteCopyJob from beanService. Message: " + ex.getMessage());
+                    return;
+                }
             }
             else
             {
-                logger.debug("No fileCopyJob for this ID in list. Return:");
-                return;
+                if (fileCopyJobs.containsKey(msg.getId()))
+                {
+                    fileRemoteCopyJob = fileCopyJobs.get(msg.getId());
+                }
+                else
+                {
+                    logger.debug("No fileCopyJob for this ID in list. Return:");
+                    return;
+                }
             }
         }
 
