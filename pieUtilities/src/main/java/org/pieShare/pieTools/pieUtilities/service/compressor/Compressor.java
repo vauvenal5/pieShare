@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.compressor;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,14 +42,12 @@ public class Compressor implements ICompressor
 
         }
         deflater.reset();
-        //deflater.end();
+        deflater.end();
     }
 
     @Override
     public void decompressStream(byte[] data, OutputStream out) throws IOException, DataFormatException
     {
-        byte[] buff = new byte[1024];
-       
         Inflater inflater = new Inflater();
 
         inflater.setInput(data);
@@ -71,8 +70,8 @@ public class Compressor implements ICompressor
             }
         }
 
-        //inflater.end();
         inflater.reset();
+        inflater.end();
     }
 
 }
