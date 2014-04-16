@@ -86,7 +86,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
             }
         }
 
-        File fileToWrite = new File(blokDirName, fileName);
+        File fileToWrite = new File(blockDir, fileName);
 
         try
         {
@@ -107,17 +107,14 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     }
 
     @Override
-    public void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException
+    public synchronized void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException
     {
         if (!isInitialized)
         {
             init(msg);
         }
 
-        ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(msg.getBlock());
-
-        compressor.decompressStream(byteInStream, byteOutStream);
+        logger.info("FilePart Recieved: Number :" + msg.getBlockNumber());
 
         if (msg.isIsLastEmptyMessage())
         {
@@ -125,36 +122,58 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         }
         else
         {
+            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+            ByteArrayInputStream byteInStream = new ByteArrayInputStream(msg.getBlock());
+
+            compressor.decompressStream(byteInStream, byteOutStream);
+
             if (msg.getBlockNumber() == actualBlockNumber)
             {
-                outStream.write(byteOutStream.toByteArray());
+                byte[] toWrite = byteOutStream.toByteArray();
+                outStream.write(toWrite);
+                outStream.flush();
                 actualBlockNumber++;
             }
             else
             {
                 File cachedFile = new File(blockDir, fileName + "_Part_" + msg.getBlockNumber());
                 cachedFile.createNewFile();
-                FileOutputStream ff = new FileOutputStream(cachedFile);
-                ff.write(byteOutStream.toByteArray());
+                try (FileOutputStream ff = new FileOutputStream(cachedFile))
+                {
+                    ff.write(byteOutStream.toByteArray());
+                    ff.flush();
+                    ff.close();
+                }
                 cachedBlocks.put(msg.getBlockNumber(), cachedFile);
             }
-
-            while (cachedBlocks.containsKey(actualBlockNumber))
+        }
+        
+        while (cachedBlocks.containsKey(actualBlockNumber))
+        {
+            try (FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber)))
             {
-                FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber));
                 byte[] block = new byte[1024];
 
                 int readBytes = 0;
                 while ((readBytes = ff.read(block)) != -1)
                 {
                     outStream.write(block, 0, readBytes);
+                    outStream.flush();
                 }
-                actualBlockNumber++;
+                ff.close();
             }
+            if (cachedBlocks.get(actualBlockNumber).delete())
+            {
+                logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
+            }
+
+            cachedBlocks.remove(actualBlockNumber);
+            actualBlockNumber++;
         }
+
         if (actualBlockNumber == lastBlockNumber)
         {
-            //Ende
+            String a = "";
         }
     }
 
@@ -176,5 +195,4 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
             logger.debug("Error clean up FileRemoteCopy. Message:" + ex.getMessage());
         }
     }
-
 }
