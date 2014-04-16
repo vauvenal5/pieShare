@@ -123,9 +123,8 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         else
         {
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ByteArrayInputStream byteInStream = new ByteArrayInputStream(msg.getBlock());
-
-            compressor.decompressStream(byteInStream, byteOutStream);
+            
+            compressor.decompressStream(msg.getBlock(), byteOutStream);
 
             if (msg.getBlockNumber() == actualBlockNumber)
             {

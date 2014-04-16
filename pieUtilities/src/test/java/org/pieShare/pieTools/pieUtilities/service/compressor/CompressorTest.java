@@ -57,18 +57,16 @@ public class CompressorTest
     public void testCompressStream() throws Exception
     {
         String data = "Zu Tyonis dem T?rannen, schlich Damon, den Dolche im gewande. Ihn schlugen die H?scher in Bande. Was wolltest du mit dem Dolche, Sprich!";
-        InputStream in = new ByteArrayInputStream(data.getBytes("UTF-8"));
         OutputStream out = new ByteArrayOutputStream();
         Compressor instance = new Compressor();
-        instance.compressStream(in, out);
+        instance.compressStream(data.getBytes(), out);
 
         byte[] byteResult = ((ByteArrayOutputStream) out).toByteArray();
         String erg = new String(byteResult);
         
-        InputStream inDe = new ByteArrayInputStream(byteResult);
         OutputStream outDe = new ByteArrayOutputStream();
 
-        instance.decompressStream(inDe, outDe);
+        instance.decompressStream(byteResult, outDe);
         String decErg = new String(((ByteArrayOutputStream) outDe).toByteArray(), "UTF-8");
 
         Assert.assertEquals(data, decErg);
@@ -80,13 +78,7 @@ public class CompressorTest
      */
     public void testDecompressStream() throws Exception
     {
-        System.out.println("decompressStream");
-        InputStream in = null;
-        OutputStream out = null;
-        Compressor instance = new Compressor();
-        instance.decompressStream(in, out);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+       
     }
 
 }

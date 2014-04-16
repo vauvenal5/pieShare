@@ -366,9 +366,11 @@ public class FileService implements IFileService
             while ((readBytes = fileStream.read(sendBuffer)) != -1)
             {
                 ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-                ByteArrayInputStream inStream = new ByteArrayInputStream(sendBuffer, 0, readBytes);
-                compressor.compressStream(inStream, outStream);
 
+                byte[] sendArr = new byte[readBytes];
+                System.arraycopy(sendBuffer, 0, sendArr, 0, readBytes);
+                compressor.compressStream(sendArr, outStream);
+                
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);

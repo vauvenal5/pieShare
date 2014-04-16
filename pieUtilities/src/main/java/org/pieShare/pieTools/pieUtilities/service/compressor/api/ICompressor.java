@@ -15,14 +15,10 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  *
  * @author richy
  */
-public interface ICompressor extends IPieTask
+public interface ICompressor
 {
 
-    public void setNewCompressJob(InputStream in, OutputStream out) throws IOException;
+    public void compressStream(byte[] data, OutputStream out) throws IOException;
 
-    public void setNewDeCompressJob(InputStream in, OutputStream out) throws IOException;
-
-    public void compressStream(InputStream in, OutputStream out) throws IOException;
-
-    public void decompressStream(InputStream in, OutputStream out) throws IOException, DataFormatException;
+    public void decompressStream(byte[] data, OutputStream out) throws IOException, DataFormatException;
 }
