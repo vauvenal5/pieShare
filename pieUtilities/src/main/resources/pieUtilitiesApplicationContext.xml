@@ -47,11 +47,11 @@
     <!-- PieExecutorService -->
     <bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService">
         <property name="executorService" ref="javaExecutorService"/>
-        <property name="map" ref="javaExecutorMap"/>
+        <property name="map" ref="javaMap"/>
         <property name="beanService" ref="pieBeanService"/>
     </bean>
     
-    <bean id="javaExecutorMap" class="java.util.HashMap"></bean>
+    <bean id="javaMap" scope="prototype" class="java.util.HashMap"></bean>
     
     <bean id="javaExecutorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"></bean>
     

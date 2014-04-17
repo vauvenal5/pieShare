@@ -1,15 +1,10 @@
-package org.pieShare.pieTools.pieCeption.service.core;
+package org.pieShare.pieTools.pieCeption.service;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieCeption.service.action.CommandAction;
-import org.pieShare.pieTools.pieCeption.service.action.ICommand;
-import org.pieShare.pieTools.pieCeption.service.core.api.IConnectorService;
-import org.pieShare.pieTools.pieCeption.service.core.exception.PieCeptionServiceException;
+import org.pieShare.pieTools.pieCeption.model.action.ICommandMessage;
+import org.pieShare.pieTools.pieCeption.service.api.IConnectorService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -41,10 +36,6 @@ public class ClusterConnectorService implements IConnectorService {
 
     @Override
     public boolean isPieShareRunning() {
-        if(this.clusterService == null) {
-            this.init();
-        }
-        
         if(this.clusterService.getMembersCount() > 1){
             return true;
         }
@@ -52,11 +43,13 @@ public class ClusterConnectorService implements IConnectorService {
     }
 
     @Override
-    public void sendToMaster(ICommand command) {
+    public void sendToMaster(ICommandMessage command) {
+        //todo-sv: write an integration or module test!!!
+        //quite useless as unit test!!!
         try {
-            this.clusterService.sendMessage(command.getMessage());
+            this.clusterService.sendMessage(command);
         } catch (ClusterServiceException ex) {
-            //todo-sv error handling
+            //todo-sv: error handling
         }
     }
 }

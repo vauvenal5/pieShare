@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieTools.pieCeption.service.action;
+package org.pieShare.pieShareApp.controller.api;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieShareApp.service.commandService.ICommand;
 
 /**
  *
  * @author Svetoslav
  */
-public interface ICommand {
-    IPieMessage getMessage();
+public interface ICommandController<T extends ICommand> {
+    void handleCommand(T command);
 }
