@@ -19,23 +19,23 @@ public class BeanService implements IBeanService, ApplicationContextAware {
      * @param <T>
      * @param type
      * @return
-     * @throws BeanServiceException 
+     * @throws BeanServiceError 
      */
     @Override
-    public <T> T getBean(Class<T> type) throws BeanServiceException {
+    public <T> T getBean(Class<T> type) throws BeanServiceError {
         try {
             return context.getBean(type);
         } catch(Exception e) {
-            throw new BeanServiceException(e);
+            throw new BeanServiceError(e);
         }
     }
 
     @Override
-    public Object getBean(String name) throws BeanServiceException {
+    public Object getBean(String name) throws BeanServiceError {
         try {
             return context.getBean(name);
         } catch(Exception e) {
-            throw new BeanServiceException(e);
+            throw new BeanServiceError(e);
         }
     }
 }

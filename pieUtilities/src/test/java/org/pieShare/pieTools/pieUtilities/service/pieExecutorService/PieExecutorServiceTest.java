@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
@@ -86,7 +86,7 @@ public class PieExecutorServiceTest {
         IBeanService beanService = Mockito.mock(IBeanService.class);
         
         Mockito.when(map.get(event.getClass())).thenReturn(IPieEventTask.class);
-        Mockito.when(beanService.getBean(IPieEventTask.class)).thenThrow(BeanServiceException.class);
+        Mockito.when(beanService.getBean(IPieEventTask.class)).thenThrow(BeanServiceError.class);
         
         PieExecutorService instance = new PieExecutorService();
         instance.setBeanService(beanService);

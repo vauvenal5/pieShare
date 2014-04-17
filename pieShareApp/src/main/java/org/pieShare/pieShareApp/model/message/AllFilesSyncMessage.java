@@ -1,4 +1,4 @@
-package org.pieShare.pieShareApp.model;
+package org.pieShare.pieShareApp.model.message;
 
 import java.util.ArrayList;
 import java.util.HashMap;

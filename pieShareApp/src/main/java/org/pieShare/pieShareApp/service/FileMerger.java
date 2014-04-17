@@ -10,7 +10,7 @@ import java.util.HashMap;
 import org.pieShare.pieShareApp.api.IFileMerger;
 import org.pieShare.pieShareApp.api.IFileService;
 import org.pieShare.pieShareApp.configuration.Configuration;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
