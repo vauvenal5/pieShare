@@ -4,12 +4,12 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.service.commandService;
+package org.pieShare.pieTools.pieUtilities.model.command;
 
 /**
  *
  * @author Svetoslav
  */
-public interface ICommandService<T extends ICommand> {
-    public void executeCommand(T command);
+public interface ICommand {
+    
 }

@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.api.IFileService;
-import org.pieShare.pieShareApp.model.SimpleMessage;
+import org.pieShare.pieShareApp.model.message.SimpleMessage;
 import org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;

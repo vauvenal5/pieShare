@@ -7,7 +7,7 @@
 package org.pieShare.pieShareApp.controller.api;
 
 import org.pieShare.pieShareApp.controller.api.ICommandController;
-import org.pieShare.pieShareApp.model.SimpleMessageCommand;
+import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
 
 /**
  *

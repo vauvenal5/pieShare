@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.controller.api;
+package org.pieShare.pieTools.pieUtilities.service.commandService.api;
 
 import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
 
@@ -12,6 +12,6 @@ import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
  *
  * @author Svetoslav
  */
-public interface ICommandController<T extends ICommand> {
-    void handleCommand(T command);
+public interface ICommandService<T extends ICommand> {
+    public void executeCommand(T command);
 }

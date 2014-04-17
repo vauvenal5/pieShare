@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.IPrintableEvent;
@@ -50,7 +50,7 @@ public class CmdLineService implements ICmdLineService {
         
         try {
             this.executor.execute(beanService.getBean(ReadLineTask.class));
-        } catch (BeanServiceException ex) {
+        } catch (BeanServiceError ex) {
             //todo-sv: error handling
             //should never happen!!!
         }

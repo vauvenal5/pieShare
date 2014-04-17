@@ -6,41 +6,33 @@
 
 package org.pieShare.pieShareApp.service.actionService;
 
+import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionService;
 import java.util.HashMap;
 import java.util.Map;
-import org.pieShare.pieShareApp.model.SimpleMessage;
-import org.pieShare.pieShareApp.model.SimpleMessageCommand;
-import org.pieShare.pieTools.pieCeption.model.action.CommandAction;
-import org.pieShare.pieTools.pieCeption.model.action.ICommandMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
+import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
 
 /**
  *
  * @author Svetoslav
  */
-public class SimpleMessageActionService extends CommandAction {
+public class SimpleMessageActionService extends AbstractActionService<SimpleMessageCommand, ICommandService<SimpleMessageCommand>> {
     @Override
     public String getCommandName() {
         return "sendMsg";
     }
 
     @Override
-    public String getProgramName() {
-        return "pieShare";
-    }
-
-    @Override
     public Map<String, Class> getArguments() {
         Map<String, Class> args = new HashMap<>();
         args.put("msg", String.class);
-        
         return args;
     }
 
     @Override
-    public ICommandMessage getCommandMessage() {
-        SimpleMessageCommand command = null;
-        command.setMsg((String)this.args.get("msg"));
+    public SimpleMessageCommand getCommand(Map<String, Object> args) {
+        SimpleMessageCommand command = (SimpleMessageCommand)this.beanService.getBean("simpleMessageCommand");
+        command.setMsg((String)args.get("msg"));
         return command;
     }
 }

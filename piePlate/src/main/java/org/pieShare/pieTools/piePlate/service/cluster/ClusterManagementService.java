@@ -12,7 +12,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
@@ -43,7 +43,7 @@ public class ClusterManagementService implements IClusterManagementService {
             cluster.connect(id);
             this.clusters.put(id, cluster);
             return cluster;
-        } catch (BeanServiceException ex) {
+        } catch (BeanServiceError ex) {
             //should never happen
             throw new ClusterManagmentServiceException(ex);
         } catch (ClusterServiceException ex) {
