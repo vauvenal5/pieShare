@@ -4,19 +4,21 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.action;
+package org.pieShare.pieShareApp.service.actionService;
 
 import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.SimpleMessage;
-import org.pieShare.pieTools.pieCeption.service.action.CommandAction;
+import org.pieShare.pieShareApp.model.SimpleMessageCommand;
+import org.pieShare.pieTools.pieCeption.model.action.CommandAction;
+import org.pieShare.pieTools.pieCeption.model.action.ICommandMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class SimpleMessageAction extends CommandAction {
+public class SimpleMessageActionService extends CommandAction {
     @Override
     public String getCommandName() {
         return "sendMsg";
@@ -36,9 +38,9 @@ public class SimpleMessageAction extends CommandAction {
     }
 
     @Override
-    public IPieMessage getMessage() {
-        SimpleMessage msg = new SimpleMessage();
-        msg.setMsg((String)this.args.get("msg"));
-        return msg;
+    public ICommandMessage getCommandMessage() {
+        SimpleMessageCommand command = null;
+        command.setMsg((String)this.args.get("msg"));
+        return command;
     }
 }
