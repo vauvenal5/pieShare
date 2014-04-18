@@ -73,11 +73,11 @@ public class PieShareService
     @PostConstruct
     public void start()
     {
-        try {
+        /*try {
             this.clusterService = this.clusterManagementService.connect("ourFirstCluster");
         } catch (ClusterManagmentServiceException ex) {
             ex.printStackTrace();
-        }
+        }*/
 
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
 
