@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieShareApp.api;
 
-import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 
 /**
  *

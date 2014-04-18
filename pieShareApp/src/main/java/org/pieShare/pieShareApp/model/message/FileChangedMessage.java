@@ -1,4 +1,4 @@
-package org.pieShare.pieShareApp.model;
+package org.pieShare.pieShareApp.model.message;
 
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;

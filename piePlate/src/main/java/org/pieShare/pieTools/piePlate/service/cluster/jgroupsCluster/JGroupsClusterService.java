@@ -8,8 +8,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 
-import javax.annotation.PostConstruct;
-
 public class JGroupsClusterService implements IClusterService {
 
     private IReceiver receiver;

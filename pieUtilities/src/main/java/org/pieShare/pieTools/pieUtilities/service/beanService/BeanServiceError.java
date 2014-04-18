@@ -10,13 +10,13 @@ package org.pieShare.pieTools.pieUtilities.service.beanService;
  *
  * @author Svetoslav
  */
-public class BeanServiceException extends Exception {
+public class BeanServiceError extends Error {
 
     /**
      * Creates a new instance of <code>BeanServiceException</code> without
      * detail message.
      */
-    public BeanServiceException(Throwable ex) {
+    public BeanServiceError(Throwable ex) {
         super(ex);
     }
 
@@ -26,7 +26,7 @@ public class BeanServiceException extends Exception {
      *
      * @param msg the detail message.
      */
-    public BeanServiceException(String msg) {
+    public BeanServiceError(String msg) {
         super(msg);
     }
 }

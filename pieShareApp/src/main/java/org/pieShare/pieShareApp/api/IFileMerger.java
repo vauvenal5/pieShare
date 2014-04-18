@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.api;
 
 import java.io.File;
 import java.util.HashMap;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.PieDirectory;
 
 /**
