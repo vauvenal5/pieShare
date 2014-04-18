@@ -9,14 +9,13 @@
 
    
     <import resource="classpath*:piePlateApplicationContext.xml" />
-    <import resource="classpath*:pieCeptionApplicationContext.xml" />
     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
      
     <!-- Activate Annotation based configuration -->
     <context:annotation-config />
     
     <!-- Defines where to search for annotated components -->
-    <context:component-scan base-package="org.pieShare.pieShareApp.model.task" />
+    <context:component-scan base-package="org.pieShare.pieShareApp" />
     
    
   
@@ -26,7 +25,6 @@
         <property name="parserService" ref="pieCommandParser"/>
         <property name="commandLineService" ref="cmdLineService"/>
         <property name="beanService" ref="pieBeanService"/>
-        <property name="clusterService" ref="clusterService"/>
         <property name="fileService" ref="fileService"/>
     </bean>
 
@@ -50,8 +48,11 @@
         <property name="fileMerger" ref="fileMerger"/>    
     </bean>
     
+    <bean id="simpleMessageCommandService" lazy-init="true" class="org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService">
+    </bean>
     
-    <bean id="simpleMessageAction" class="org.pieShare.pieShareApp.model.action.SimpleMessageAction" lazy-init="true">
-        <property name="clusterService" ref="clusterService"/>
+    <bean id="simpleMessageActionService" class="org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService" lazy-init="true">
+        <property name="beanService" ref="pieBeanService"/>
+        <property name="commandService" ref="simpleMessageCommandService"/>
     </bean>
 </beans>
