@@ -7,8 +7,7 @@
 package org.pieShare.pieShareApp.service.commandService;
 
 import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import org.pieShare.pieShareApp.model.message.SimpleMessage;
 import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
@@ -30,7 +29,8 @@ public class SimpleMessageCommandService implements ICommandService<SimpleMessag
             
             this.clusterService.sendMessage(msg);
         } catch (ClusterServiceException ex) {
-            Logger.getLogger(SimpleMessageCommandService.class.getName()).log(Level.SEVERE, null, ex);
+            //todo-sv: error handling
+            ex.printStackTrace();
         }
     }
 }
