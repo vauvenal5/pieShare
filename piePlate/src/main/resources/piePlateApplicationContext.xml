@@ -26,8 +26,12 @@
     <bean id="objectReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" lazy-init="true">
         <property name="executorService" ref="pieExecutorService"/>
         <property name="serializerService" ref="serializerService"/>
+        <property name="beanService" ref="pieBeanService"/>
     </bean>
 
     <bean id="channel" scope="prototype" class="org.jgroups.JChannel" lazy-init="true">
+    </bean>
+    
+    <bean id="jgroupsPieAddress" lazy-init="true" class="org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress">
     </bean>
 </beans>

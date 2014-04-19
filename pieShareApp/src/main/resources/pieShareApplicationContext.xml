@@ -55,4 +55,7 @@
         <property name="beanService" ref="pieBeanService"/>
         <property name="commandService" ref="simpleMessageCommandService"/>
     </bean>
+    
+    <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">
+    </bean>
 </beans>

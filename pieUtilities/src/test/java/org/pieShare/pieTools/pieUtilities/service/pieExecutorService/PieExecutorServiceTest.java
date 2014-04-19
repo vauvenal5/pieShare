@@ -130,7 +130,7 @@ public class PieExecutorServiceTest {
         instance.setMap(map);
         instance.registerTask(IPieEvent.class, IPieEventTask.class);
         
-        Mockito.verify(map, Mockito.timeout(1)).put(IPieEvent.class, IPieEventTask.class);
+        Mockito.verify(map, Mockito.times(1)).put(IPieEvent.class, IPieEventTask.class);
     }
     
     /**
