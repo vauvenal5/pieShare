@@ -1,5 +1,9 @@
 package org.pieShare.pieTools.piePlate.service.moduleTests;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import junit.framework.Assert;
 import org.jgroups.JChannel;
 import org.junit.Before;
@@ -183,6 +187,81 @@ public class ClusterServiceTest {
         
         waitUntilDone(tester2);
         Mockito.verify(this.executor3, Mockito.times(0)).handlePieEvent(Mockito.any(TestMessage.class));
+    }
+    
+    @Test(timeout = 50000)
+    public void testSendingManyMessagesToSingle() throws Exception {
+        final String clusterName = "myTestCluster4";
+        
+        final TestMessage msg = new TestMessage();
+        msg.setType(TestMessage.class.getName());
+        
+        final String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+        Integer expectedCountPerLetter = 2;
+        final char[] values = value.toCharArray();
+        
+        Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(new JGroupsPieAddress());
+
+        ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper(this.service1) {
+            @Override
+            public void run() {
+                try {
+                    this.getService().connect(clusterName);
+                    
+                    for(int i = 0; i < values.length; i++) {
+                        msg.setMsg(String.valueOf(values[i]));
+                        this.getService().sendMessage(msg);
+                    }
+                    
+                    this.setDone(true);
+                } catch (ClusterServiceException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        
+        final ClusterServiceTestHelper tester2 = prepareSimpleConnectionHelper(service2, clusterName);
+        
+        startTester(tester2, true);
+        
+        final Map<String, Integer> rec = new HashMap<String, Integer>();
+        
+        Mockito.doAnswer(new Answer() {
+            private int numRec = 0;
+            
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                TestMessage targetMsg = (TestMessage)invocation.getArguments()[0];
+                //System.out.println(targetMsg.getMsg());
+                Integer num = 1;
+                numRec++;
+                if(rec.containsKey(targetMsg.getMsg())) {
+                    num = rec.get(targetMsg.getMsg())+1;
+                }
+                
+                rec.put(targetMsg.getMsg(), num);
+                
+                if(numRec == values.length) {
+                    tester2.setDone(true);
+                }
+                
+                return null;
+            }
+        }).when(this.executor2).handlePieEvent(Mockito.<TestMessage>any());
+        
+        JGroupsPieAddress ad = new JGroupsPieAddress();
+        ad.setAddress(this.channel2.getAddress());
+        msg.setAddress(ad);
+        
+        startTester(tester1, false);
+        
+        waitUntilDone(tester2);
+        
+        for(int i = 0; i<values.length; i++) {
+            String key = String.valueOf(values[i]);
+            Assert.assertTrue("Failed on letter: " + values[i], rec.containsKey(key));
+            Assert.assertEquals(expectedCountPerLetter, rec.get(key));
+        }
     }
     
     private void startTester(ClusterServiceTestHelper tester, boolean resetDone) throws Exception {
