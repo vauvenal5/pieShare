@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.service.fileService.api;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
-import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 
 /**
  *

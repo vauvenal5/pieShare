@@ -5,15 +5,11 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.compressor;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterInputStream;
 import java.util.zip.Inflater;
-import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 

@@ -1,6 +1,6 @@
 package org.pieShare.pieShareApp.model.task;
 
-import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.springframework.beans.factory.annotation.Autowired;

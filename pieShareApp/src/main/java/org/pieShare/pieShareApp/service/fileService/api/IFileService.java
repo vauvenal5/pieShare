@@ -5,10 +5,10 @@
  */
 package org.pieShare.pieShareApp.service.fileService.api;
 
-import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
-import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
+import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
