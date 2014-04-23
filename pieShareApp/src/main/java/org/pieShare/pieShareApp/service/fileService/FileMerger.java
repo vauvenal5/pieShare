@@ -9,12 +9,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
@@ -58,7 +56,7 @@ public class FileMerger implements IFileMerger
     }
 
     @Override
-    public void fileCreated(File file) throws BeanServiceException
+    public void fileCreated(File file)
     {
         if (!file.exists())
         {
@@ -96,7 +94,7 @@ public class FileMerger implements IFileMerger
     }
 
     @Override
-    public void fileDeleted(File file) throws BeanServiceException
+    public void fileDeleted(File file)
     {
         PieFile pieFile = beanService.getBean(PieFile.class);
         pieFile.Init(file);
@@ -134,7 +132,7 @@ public class FileMerger implements IFileMerger
     }
 
     @Override
-    public void fileChanged(File file) throws BeanServiceException
+    public void fileChanged(File file)
     {
         PieFile pieFile = beanService.getBean(PieFile.class);
         pieFile.Init(file);
@@ -163,7 +161,7 @@ public class FileMerger implements IFileMerger
         checkListForChangedFile(dirs.get(dir.getRelativeFilePath()).getFiles(), pieFile);
     }
 
-    private void checkListForChangedFile(HashMap<String, PieFile> files, PieFile pieFile) throws BeanServiceException
+    private void checkListForChangedFile(HashMap<String, PieFile> files, PieFile pieFile)
     {
         if (files.containsKey(pieFile.getRelativeFilePath()))
         {
@@ -188,7 +186,7 @@ public class FileMerger implements IFileMerger
         }
     }
 
-    private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile) throws BeanServiceException
+    private void checkListForNewFile(HashMap<String, PieFile> files, PieFile pieFile)
     {
         if (files.containsKey(pieFile.getRelativeFilePath()))
         {
@@ -203,7 +201,7 @@ public class FileMerger implements IFileMerger
         }
     }
 
-    private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile) throws BeanServiceException
+    private void deleteFileFromList(HashMap<String, PieFile> files, PieFile pieFile)
     {
         if (files.containsKey(pieFile.getRelativeFilePath()))
         {
@@ -225,7 +223,7 @@ public class FileMerger implements IFileMerger
         }
     }
 
-    private void sendNewMessage(FileChangedTypes type, PieFile file) throws BeanServiceException
+    private void sendNewMessage(FileChangedTypes type, PieFile file)
     {
         FileChangedMessage msg = beanService.getBean(FileChangedMessage.class, "fileChangedMessage");
         msg.setChangedType(type);
@@ -239,7 +237,7 @@ public class FileMerger implements IFileMerger
     }
 
     @Override
-    public void remoteFileChanged(FileChangedMessage fileChangedMessage) throws BeanServiceException
+    public void remoteFileChanged(FileChangedMessage fileChangedMessage)
     {
         logger.debug("Remote File Changed: Remote file has changed. Check if needed.");
         if (dirs.containsKey(fileChangedMessage.getRelativeFilePath()))
@@ -309,7 +307,7 @@ public class FileMerger implements IFileMerger
     }
 
     @Override
-    public PieFile getFile(String relativeFilePath) throws BeanServiceException, FileNotFoundException
+    public PieFile getFile(String relativeFilePath) throws FileNotFoundException
     {
         Validate.notNull(relativeFilePath);
         Validate.notEmpty(relativeFilePath);

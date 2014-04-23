@@ -14,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.zip.DataFormatException;
-import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;

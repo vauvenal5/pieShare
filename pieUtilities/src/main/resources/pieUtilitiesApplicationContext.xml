@@ -47,11 +47,11 @@
     <!-- PieExecutorService -->
     <bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService">
         <property name="executorService" ref="javaExecutorService"/>
-        <property name="map" ref="javaExecutorMap"/>
+        <property name="map" ref="javaMap"/>
         <property name="beanService" ref="pieBeanService"/>
     </bean>
     
-    <bean id="javaExecutorMap" class="java.util.HashMap"></bean>
+    <bean id="javaMap" scope="prototype" class="java.util.HashMap"></bean>
     
     <bean id="javaExecutorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"></bean>
     
@@ -69,7 +69,21 @@
         <property name="executorService" ref="pieExecutorService"/>
     </bean>
     
+    <bean id="printEventTask" class="org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask" lazy-init="true">
+        <property name="commandLineService" ref="cmdLineService"/>
+    </bean>
+    
+    <bean id="readLineTask" class="org.pieShare.pieTools.pieUtilities.service.cmdLineService.ReadLineTask" lazy-init="true">
+        <property name="cmdLineService" ref="cmdLineService"/>
+    </bean>
+    
     <!-- Compressor Service -->
     <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor" scope="prototype">
     </bean>
+    
+    
+    <!-- Base64 Service -->
+    <bean id="base64Service" class="org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service" lazy-init="true">
+    </bean>
+    
 </beans>

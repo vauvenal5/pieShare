@@ -8,10 +8,9 @@ package org.pieShare.pieShareApp.service.fileService.api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.fileService.PieDirectory;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
 
 /**
  *
@@ -20,17 +19,17 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceExcepti
 public interface IFileMerger
 {
 
-    public void fileCreated(File file) throws BeanServiceException;
+    public void fileCreated(File file);
 
-    public void fileDeleted(File file) throws BeanServiceException;
+    public void fileDeleted(File file);
 
-    public void fileChanged(File file) throws BeanServiceException;
+    public void fileChanged(File file);
 
     public void setFileService(IFileService fileService);
 
     public HashMap<String, PieDirectory> getDirs();
 
-    public void remoteFileChanged(FileChangedMessage fileChangedMessage) throws BeanServiceException;
+    public void remoteFileChanged(FileChangedMessage fileChangedMessage);
     
-    public PieFile getFile(String relativeFilePath) throws BeanServiceException, FileNotFoundException;
+    public PieFile getFile(String relativeFilePath) throws FileNotFoundException;
 }

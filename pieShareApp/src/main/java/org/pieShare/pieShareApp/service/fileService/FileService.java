@@ -1,6 +1,5 @@
 package org.pieShare.pieShareApp.service.fileService;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,10 +18,10 @@ import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
-import org.pieShare.pieShareApp.model.FileTransferMessageBlocked;
-import org.pieShare.pieShareApp.model.FileTransferRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
+import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.model.task.AllFilesSyncTask;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
 import org.pieShare.pieShareApp.model.task.FileTransferRequestTask;
@@ -34,7 +33,6 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -141,28 +139,16 @@ public class FileService implements IFileService
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
             {
-                try
-                {
-                    fileMerger.fileCreated(file.toFile());
-                }
-                catch (BeanServiceException ex)
-                {
-                    logger.error("Error adding File at startup register");
-                }
+                fileMerger.fileCreated(file.toFile());
+
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
             {
-                try
-                {
-                    fileMerger.fileCreated(dir.toFile());
-                }
-                catch (BeanServiceException ex)
-                {
-                    logger.error("Error adding File at startup register");
-                }
+                fileMerger.fileCreated(dir.toFile());
+
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -179,15 +165,7 @@ public class FileService implements IFileService
 
         //File wdir = pieAppConfig.getWorkingDirectory();
         //File newFile = new File(wdir, message.getRelativeFilePath());
-        try
-        {
-            fileMerger.remoteFileChanged(message);
-
-        }
-        catch (BeanServiceException ex)
-        {
-            logger.error("Error adding remote file. Mesage: " + ex.getMessage());
-        }
+        fileMerger.remoteFileChanged(message);
 
         /*        try
          {
@@ -293,15 +271,8 @@ public class FileService implements IFileService
 
             for (FileChangedMessage fileChangedMsg : msg.getList())
             {
-                try
-                {
-                    //File newFile = new File(Configuration.getWorkingDirectory(), fileChangedMsg.getRelativeFilePath());
-                    fileMerger.remoteFileChanged(fileChangedMsg);
-                }
-                catch (BeanServiceException ex)
-                {
-                    logger.error("Error calling function remoteFileChanged in FileMerger. Message: " + ex.getMessage());
-                }
+                //File newFile = new File(Configuration.getWorkingDirectory(), fileChangedMsg.getRelativeFilePath());
+                fileMerger.remoteFileChanged(fileChangedMsg);
             }
         }
     }
@@ -338,7 +309,7 @@ public class FileService implements IFileService
         {
             file = fileMerger.getFile(msg.getRelativeFilePath());
         }
-        catch (BeanServiceException | FileNotFoundException ex)
+        catch (FileNotFoundException ex)
         {
             logger.error("Error reading file from merger. Message: " + ex.getMessage());
             return;
@@ -370,7 +341,7 @@ public class FileService implements IFileService
                 byte[] sendArr = new byte[readBytes];
                 System.arraycopy(sendBuffer, 0, sendArr, 0, readBytes);
                 compressor.compressStream(sendArr, outStream);
-                
+
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);
@@ -399,7 +370,7 @@ public class FileService implements IFileService
     }
 
     @Override
-    public synchronized void fileTransfereMessage(FileTransferMessageBlocked msg)
+    public void fileTransfereMessage(FileTransferMessageBlocked msg)
     {
         Validate.notNull(msg);
         Validate.notNull(msg.getId());
@@ -414,16 +385,9 @@ public class FileService implements IFileService
 
                 pendingTasks.remove(msg.getId());
 
-                try
-                {
-                    fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
-                    fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
-                }
-                catch (BeanServiceException ex)
-                {
-                    logger.debug("Error getting new fileRemoteCopyJob from beanService. Message: " + ex.getMessage());
-                    return;
-                }
+                fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
+                fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
+
             }
             else
             {
@@ -474,16 +438,8 @@ public class FileService implements IFileService
     public void sendFileTransferRequenst(PieFile piefile)
     {
         FileTransferRequestMessage requestMsg = null;
-        try
-        {
-            requestMsg = beanService.getBean(FileTransferRequestMessage.class);
-        }
-        catch (BeanServiceException ex)
-        {
-            //ToDo: Handle file lists.
-            logger.error("Error getting new FileTransferRewuestMessage from beans. Message: " + ex.getMessage());
-            return;
-        }
+
+        requestMsg = beanService.getBean(FileTransferRequestMessage.class);
 
         UUID id = UUID.randomUUID();
         requestMsg.setId(id);
@@ -496,8 +452,7 @@ public class FileService implements IFileService
         }
         catch (ClusterServiceException ex)
         {
-            //ToDo: Handle file lists.
-            logger.error("Error sending FileTransferMessage. Message: " + ex.getMessage());
+            logger.error("Error sending FileTransferRequest. Message: " + ex.getMessage());
         }
     }
 

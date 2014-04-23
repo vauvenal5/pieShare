@@ -1,7 +1,7 @@
 package org.pieShare.pieShareApp.model.task;
 
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 import org.springframework.beans.factory.annotation.Autowired;
