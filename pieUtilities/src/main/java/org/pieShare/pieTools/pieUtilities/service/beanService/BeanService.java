@@ -14,12 +14,28 @@ public class BeanService implements IBeanService, ApplicationContextAware {
         this.context = context;
     }
 
+    /**
+     * DEPRECATED! DO NOT USE! WILL BE REMOVED!
+     * @param <T>
+     * @param type
+     * @return
+     * @throws BeanServiceError 
+     */
     @Override
-    public <T> T getBean(Class<T> type) throws BeanServiceException {
+    public <T> T getBean(Class<T> type) throws BeanServiceError {
         try {
             return context.getBean(type);
         } catch(Exception e) {
-            throw new BeanServiceException(e);
+            throw new BeanServiceError(e);
+        }
+    }
+
+    @Override
+    public Object getBean(String name) throws BeanServiceError {
+        try {
+            return context.getBean(name);
+        } catch(Exception e) {
+            throw new BeanServiceError(e);
         }
     }
 }
