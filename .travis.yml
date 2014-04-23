@@ -2,3 +2,17 @@ language: java
 jdk:
   - oraclejdk7
   - openjdk7
+
+# whitelist
+branches:
+  only:
+    - master
+    - development
+
+before_install:
+  - mvn clean
+
+after_success:
+  - mvn clean cobertura:cobertura 
+  - mvn replacer:replace 
+  - mvn coveralls:cobertura

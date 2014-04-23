@@ -1,11 +1,11 @@
 package org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api;
 
 import org.jgroups.Receiver;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterMessageHandler;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 
 /**
  * Created by vauvenal5 on 12/12/13.
  */
 public interface IReceiver extends Receiver {
-    void setClusterMessageHandler(IClusterMessageHandler handler);
+    void setExecutorService(IExecutorService service);
 }
