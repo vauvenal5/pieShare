@@ -16,7 +16,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.mockito.Mockito;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IAction;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IActionService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 
 /**
@@ -52,7 +52,7 @@ public class CommandParserModuleTest {
 
         ICommandParserService commandParserService = new Argparse4jService();
 
-        IAction action = new IAction() {
+        IActionService action = new IActionService() {
             @Override
             public void doAction(Map<String, Object> args) {
                 Assert.assertEquals(((String)args.get("foo")), "MieMie");

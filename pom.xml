@@ -11,7 +11,6 @@
 
     <modules>
         <module>pieUtilities</module>
-        <module>pieCeption</module>
         <module>piePlate</module>
         <module>pieShareApp</module>
     </modules>
@@ -34,6 +33,9 @@
                 <version>2.2.0</version>
                 <configuration>
                     <sourceEncoding>utf8</sourceEncoding>
+                    <sourceDirectories>
+                        <sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
+                     </sourceDirectories>
                 </configuration>
             </plugin>
             
@@ -58,7 +60,7 @@
                 <artifactId>replacer</artifactId>
                 <version>1.5.2</version>
                 <configuration>
-                    <file>$TRAVIS_BUILD_DIR/$TRAVIS_REPO_SLUG/target/site/cobertura/coverage.xml</file>
+                    <file>/home/travis/build/vauvenal5/pieShare/target/site/cobertura/coverage.xml</file>
                     <regex>true</regex>
                     <replacements>
                         <replacement>
