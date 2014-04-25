@@ -8,7 +8,7 @@ package org.pieShare.pieTools.pieUtilities.utils;
 
 import java.io.File;
 import java.io.IOException;
-import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
+import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 
 /**
  *

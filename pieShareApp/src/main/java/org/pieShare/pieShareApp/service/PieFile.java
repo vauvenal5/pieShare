@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.api.IFileWatcherService;
 import org.pieShare.pieShareApp.configuration.Configuration;
-import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
+import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 
 /**
  *
