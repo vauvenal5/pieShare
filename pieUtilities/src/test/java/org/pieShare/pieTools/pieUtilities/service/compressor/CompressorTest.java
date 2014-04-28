@@ -53,7 +53,7 @@ public class CompressorTest
     /**
      * Test of compressStream method, of class Compressor.
      */
-    @Test
+    
     public void testCompressStream() throws Exception
     {
         String data = "Zu Tyonis dem T?rannen, schlich Damon, den Dolche im gewande. Ihn schlugen die H?scher in Bande. Was wolltest du mit dem Dolche, Sprich!";

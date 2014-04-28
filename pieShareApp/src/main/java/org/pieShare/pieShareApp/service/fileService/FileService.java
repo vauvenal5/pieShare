@@ -13,8 +13,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
@@ -335,18 +333,18 @@ public class FileService implements IFileService
         try
         {
             while ((readBytes = fileStream.read(sendBuffer)) != -1)
-            {
-                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-
-                byte[] sendArr = new byte[readBytes];
-                System.arraycopy(sendBuffer, 0, sendArr, 0, readBytes);
-                compressor.compressStream(sendArr, outStream);
-
+            { 
+                byte[] temp = new byte[readBytes];
+                System.arraycopy(sendBuffer, 0, temp, 0, readBytes);
+                
+                byte[] sendArr = compressor.compressByteArray(temp);
+                
+                
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);
                 sendMessage.setBlockNumber(count++);
-                sendMessage.setBlock(outStream.toByteArray());
+                sendMessage.setBlock(sendArr);
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
                 clusterService.sendMessage(sendMessage);
             }
