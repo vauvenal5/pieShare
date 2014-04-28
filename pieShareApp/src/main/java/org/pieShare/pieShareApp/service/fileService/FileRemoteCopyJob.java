@@ -122,13 +122,13 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         }
         else
         {
-            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+           //ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
             
-            compressor.decompressStream(msg.getBlock(), byteOutStream);
+            byte[] toWrite = compressor.decompressByteArray(msg.getBlock());//.decompressStream(msg.getBlock(), byteOutStream);
 
             if (msg.getBlockNumber() == actualBlockNumber)
             {
-                byte[] toWrite = byteOutStream.toByteArray();
+                //byte[] toWrite = byteOutStream.toByteArray();
                 outStream.write(toWrite);
                 outStream.flush();
                 actualBlockNumber++;
@@ -139,7 +139,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                 cachedFile.createNewFile();
                 try (FileOutputStream ff = new FileOutputStream(cachedFile))
                 {
-                    ff.write(byteOutStream.toByteArray());
+                    ff.write(toWrite);
                     ff.flush();
                     ff.close();
                 }

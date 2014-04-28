@@ -21,4 +21,8 @@ public interface ICompressor
     public void compressStream(byte[] data, OutputStream out) throws IOException;
 
     public void decompressStream(byte[] data, OutputStream out) throws IOException, DataFormatException;
+
+    public byte[] compressByteArray(byte[] data) throws IOException;
+
+    public byte[] decompressByteArray(byte[] data) throws IOException, DataFormatException;
 }
