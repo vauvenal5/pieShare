@@ -60,14 +60,7 @@
         <property name="fileMerger" ref="fileMerger"/>    
     </bean>
     
-    
-    <bean id="fileChangedMessage" class="org.pieShare.pieShareApp.model.message.FileChangedMessage" scope="prototype">
-    </bean>
-    
     <bean id="simpleMessageCommandService" lazy-init="true" class="org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService">
-    </bean>
-    
-    <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
     </bean>
     
     <bean id="simpleMessageActionService" class="org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService" lazy-init="true">
@@ -77,4 +70,8 @@
     
     <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">
     </bean>
+
+    <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
+    </bean>
+
 </beans>

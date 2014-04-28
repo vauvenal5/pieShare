@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.piePlate.service.integrationTests;
+package org.pieShare.pieTools.piePlate.service.unitTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
