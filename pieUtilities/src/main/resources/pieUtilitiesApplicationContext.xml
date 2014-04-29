@@ -77,7 +77,7 @@
         <property name="cmdLineService" ref="cmdLineService"/>
     </bean>
     
-    
+  
     <!-- Compressor Service -->
     <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor" scope="prototype">
         <property name="base64Service" ref="base64Service"/>
