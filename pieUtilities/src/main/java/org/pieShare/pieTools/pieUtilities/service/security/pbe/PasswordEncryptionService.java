@@ -25,7 +25,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
  *
  * @author Svetoslav
  */
-public class PasswordEncryptionService {
+public class PasswordEncryptionService implements IPasswordEncryptionService {
     
     public byte[] salt;
     public int iterations;
@@ -36,7 +36,7 @@ public class PasswordEncryptionService {
         
     }
     
-    
+    @Override
     public EncryptedPassword encryptPassword(PlainTextPassword plainTextPassword) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(plainTextPassword.password, salt, iterations);
