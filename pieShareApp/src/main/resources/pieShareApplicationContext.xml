@@ -77,4 +77,9 @@
     <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
     </bean>
 
+    <bean id="fileTransferTask" class="org.pieShare.pieShareApp.model.task.FileTransferTask" scope="prototype">
+         <property name="fileService" ref="fileService"/>
+    </bean>
+
+
 </beans>
