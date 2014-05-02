@@ -42,8 +42,6 @@ public class FileMerger implements IFileMerger
         this.beanService = beanService;
     }
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
