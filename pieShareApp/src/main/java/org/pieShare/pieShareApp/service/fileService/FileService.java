@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
@@ -93,7 +95,12 @@ public class FileService implements IFileService
 
         try
         {
-            this.clusterService = clusterManagementService.connect("Hurlibu");
+            PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+
+            Validate.notNull(user.getCloudName());
+            //ToDo: Handle when user cloud name = null;
+
+            this.clusterService = clusterManagementService.connect(user.getCloudName());
         }
         catch (ClusterManagmentServiceException ex)
         {
@@ -181,30 +188,7 @@ public class FileService implements IFileService
             return;
         }
 
-        //File wdir = pieAppConfig.getWorkingDirectory();
-        //File newFile = new File(wdir, message.getRelativeFilePath());
         fileMerger.remoteFileChanged(message);
-
-        /*        try
-         {
-         if (message.getChangedType() == FileChangedTypes.FILE_CREATED)
-            
-            
-         fileMerger.fileCreated(newFile);
-         }
-         else if (message.getChangedType() == FileChangedTypes.FILE_DELETED)
-         {
-         fileMerger.fileDeleted(newFile);
-         }
-         else if (message.getChangedType() == FileChangedTypes.FILE_MODIFIED)
-         {
-         fileMerger.fileChanged(newFile);
-         }
-         }
-         catch (BeanServiceException ex)
-         {
-         logger.error("Error adding remote file. Mesage: " + ex.getMessage());
-         }*/
     }
 
     @Override
@@ -367,7 +351,7 @@ public class FileService implements IFileService
                 sendMessage.setBlock(sendArr);
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
                 clusterService.sendMessage(sendMessage);
-                logger.error("FileService: Sended Number: " + count);
+                //logger.error("FileService: Sended Number: " + count);
                 count++;
             }
 
@@ -377,7 +361,7 @@ public class FileService implements IFileService
             sendMessage.setRelativeFilePath(file.getRelativeFilePath());
             sendMessage.setBlockNumber(count);
             clusterService.sendMessage(sendMessage);
-            logger.error("FileService: Sended Number: " + count);
+            //logger.error("FileService: Sended Number: " + count);
         }
         catch (IOException ex)
         {
@@ -438,7 +422,6 @@ public class FileService implements IFileService
                 fileCopyJobs.get(msg.getId()).cleanUP();
                 fileCopyJobs.remove(msg.getId());
             }
-            return;
         }
         catch (DataFormatException ex)
         {
@@ -450,7 +433,6 @@ public class FileService implements IFileService
                 fileCopyJobs.get(msg.getId()).cleanUP();
                 fileCopyJobs.remove(msg.getId());
             }
-            return;
         }
 
     }

@@ -5,13 +5,13 @@
  */
 package org.pieShare.pieShareApp.service.fileService;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
@@ -31,11 +31,11 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 {
 
     private PieLogger logger = new PieLogger(FileRemoteCopyJob.class);
-    private String relativeFilePath;
     private int actualBlockNumber;
     private HashMap<Integer, File> cachedBlocks;
     private FileOutputStream outStream;
     private File blockDir;
+    private File fileToWrite;
     private IPieShareAppConfiguration pieAppConfig;
     private String fileName;
     private ICompressor compressor;
@@ -60,7 +60,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     {
     }
 
-    private void init(FileTransferMessageBlocked msg)
+    private void init(FileTransferMessageBlocked msg) throws FileNotFoundException, IOException
     {
         actualBlockNumber = 0;
         cachedBlocks = new HashMap<>();
@@ -86,28 +86,17 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
             }
         }
 
-        File fileToWrite = new File(blockDir, fileName);
+        fileToWrite = new File(blockDir, fileName);
 
-        try
-        {
-            fileToWrite.createNewFile();
-            outStream = new FileOutputStream(fileToWrite);
-        }
-        catch (FileNotFoundException ex)
-        {
-            //ToDo Handle Error
-        }
-        catch (IOException ex)
-        {
-            //ToDo Handle Error
-        }
+        fileToWrite.createNewFile();
+        outStream = new FileOutputStream(fileToWrite);
 
         isInitialized = true;
 
     }
 
     @Override
-    public synchronized void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException
+    public synchronized void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FileNotFoundException
     {
         if (!isInitialized)
         {
@@ -122,8 +111,6 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         }
         else
         {
-           //ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            
             byte[] toWrite = compressor.decompressByteArray(msg.getBlock());//.decompressStream(msg.getBlock(), byteOutStream);
 
             if (msg.getBlockNumber() == actualBlockNumber)
@@ -146,7 +133,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                 cachedBlocks.put(msg.getBlockNumber(), cachedFile);
             }
         }
-        
+
         while (cachedBlocks.containsKey(actualBlockNumber))
         {
             try (FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber)))
@@ -172,7 +159,13 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
         if (actualBlockNumber == lastBlockNumber)
         {
-            String a = "";
+            outStream.close();
+
+            File newFile = new File(pieAppConfig.getWorkingDirectory(), msg.getRelativeFilePath());
+
+            Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            cleanUP();
         }
     }
 
