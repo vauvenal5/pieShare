@@ -6,8 +6,10 @@
 package org.pieShare.pieShareApp.service;
 
 import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.model.message.SimpleMessage;
+import org.pieShare.pieShareApp.service.actionService.LoginActionService;
 import org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
@@ -84,6 +86,8 @@ public class PieShareService
             //getbean per class ist dumm... zerst?rt unabh?ngigkeit
             SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
             this.parserService.registerAction(action);
+            LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
+            this.parserService.registerAction(laction);
         }
         catch (Exception ex)
         {
