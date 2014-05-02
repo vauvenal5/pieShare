@@ -230,7 +230,7 @@ public class FileService implements IFileService
                     FileChangedMessage fileChangedMessage = new FileChangedMessage();
                     fileChangedMessage.setChangedType(FileChangedTypes.SNYC_ALL);
                     fileChangedMessage.setLastModified(file.getLastModified());
-                    fileChangedMessage.setMd5(file.getMD5());
+                    //fileChangedMessage.setMd5(file.getMD5());
                     fileChangedMessage.setRelativeFilePath(file.getRelativeFilePath());
                     sendMsg.getList().add(fileChangedMessage);
                 }
