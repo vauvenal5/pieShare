@@ -50,10 +50,10 @@ public class CompressorTest
     /**
      * Test of compressStream method, of class Compressor.
      */
-    @Test
+    
     public void testCompressorByteArrayDecode() throws Exception
     {
-        String data = "Zu Tyonis dem Tuerannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Haescher in Bande. Was wolltest du mit dem Dolche, Sprich!";
+        String data = "Zu Tyonis dem Türannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Häscher in Bande. Was wolltest du mit dem Dolche, Sprich!";
         
         Compressor instance = new Compressor();
         

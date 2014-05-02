@@ -13,6 +13,8 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
@@ -29,7 +31,9 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
@@ -55,6 +59,7 @@ public class FileService implements IFileService
     private IBeanService beanService;
     private ICompressor compressor;
     private HashMap<UUID, IFileRemoteCopyJob> fileCopyJobs;
+    private IClusterManagementService clusterManagementService;
 
     public FileService()
     {
@@ -86,6 +91,16 @@ public class FileService implements IFileService
         pendingTasks = new ArrayList<>();
         fileCopyJobs = new HashMap<>();
 
+        
+        try
+        {
+            this.clusterService = clusterManagementService.connect("Hurlibu");
+        }
+        catch (ClusterManagmentServiceException ex)
+        {
+            //ToDo Handle Error
+        }
+        
         try
         {
             registerAll(pieAppConfig.getWorkingDirectory());
@@ -97,11 +112,18 @@ public class FileService implements IFileService
         }
 
         addWatchDirectory(pieAppConfig.getWorkingDirectory());
+
+        
     }
 
     public void setClusterService(IClusterService clusterService)
     {
         this.clusterService = clusterService;
+    }
+
+    public void setClusterManagementService(IClusterManagementService clusterManagementService)
+    {
+        this.clusterManagementService = clusterManagementService;
     }
 
     public void setFileWatcher(IFileWatcherService fileWatcher)
@@ -333,13 +355,12 @@ public class FileService implements IFileService
         try
         {
             while ((readBytes = fileStream.read(sendBuffer)) != -1)
-            { 
+            {
                 byte[] temp = new byte[readBytes];
                 System.arraycopy(sendBuffer, 0, temp, 0, readBytes);
-                
+
                 byte[] sendArr = compressor.compressByteArray(temp);
-                
-                
+
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);

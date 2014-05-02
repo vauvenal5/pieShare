@@ -225,7 +225,7 @@ public class FileMerger implements IFileMerger
 
     private void sendNewMessage(FileChangedTypes type, PieFile file)
     {
-        FileChangedMessage msg = beanService.getBean(FileChangedMessage.class, "fileChangedMessage");
+        FileChangedMessage msg = beanService.getBean("fileChangedMessage");
         msg.setChangedType(type);
         msg.setLastModified(file.getLastModified());
         msg.setMd5(file.getMD5());

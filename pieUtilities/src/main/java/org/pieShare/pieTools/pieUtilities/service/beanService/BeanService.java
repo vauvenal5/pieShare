@@ -30,18 +30,21 @@ public class BeanService implements IBeanService, ApplicationContextAware {
         }
     }
 
-    @Override
+    /*@Override
     public Object getBean(String name) throws BeanServiceError {
         try {
             return context.getBean(name);
         } catch(Exception e) {
             throw new BeanServiceError(e);
         }
-    }
+    }*/
     
     @Override
-    public <T> T getBean(Class<T> type, String beanID)  {
+    public <T> T getBean(String beanID)  {
         try {
+            
+            
+            
             Object o = context.getBean(beanID);
             return (T)o;
         } catch(Exception e) {

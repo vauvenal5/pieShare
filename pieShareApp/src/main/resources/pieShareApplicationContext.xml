@@ -38,7 +38,7 @@
   
     <bean id="fileService" class="org.pieShare.pieShareApp.service.fileService.FileService" lazy-init="true">
         <property name="executorService" ref="pieExecutorService"/>
-        <property name="clusterService" ref="clusterService"/>
+        <property name="clusterManagementService" ref="clusterManagementService"/>
         <property name="fileMerger" ref="fileMerger"/>
         <property name="fileWatcher" ref="fileWatcher"/>
         <property name="beanService" ref="pieBeanService"/>
@@ -68,7 +68,10 @@
         <property name="commandService" ref="simpleMessageCommandService"/>
     </bean>
     
-    <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">
+    <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">  
+    </bean>
+
+    <bean id="fileChangedMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.FileChangedMessage">
     </bean>
 
     <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
