@@ -91,7 +91,6 @@ public class FileService implements IFileService
         pendingTasks = new ArrayList<>();
         fileCopyJobs = new HashMap<>();
 
-        
         try
         {
             this.clusterService = clusterManagementService.connect("Hurlibu");
@@ -100,7 +99,7 @@ public class FileService implements IFileService
         {
             //ToDo Handle Error
         }
-        
+
         try
         {
             registerAll(pieAppConfig.getWorkingDirectory());
@@ -113,7 +112,6 @@ public class FileService implements IFileService
 
         addWatchDirectory(pieAppConfig.getWorkingDirectory());
 
-        
     }
 
     public void setClusterService(IClusterService clusterService)
@@ -361,13 +359,16 @@ public class FileService implements IFileService
 
                 byte[] sendArr = compressor.compressByteArray(temp);
 
+                //ToDo: Get from beand (Do not forget prototype)
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);
-                sendMessage.setBlockNumber(count++);
+                sendMessage.setBlockNumber(count);
                 sendMessage.setBlock(sendArr);
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
                 clusterService.sendMessage(sendMessage);
+                logger.error("FileService: Sended Number: " + count);
+                count++;
             }
 
             FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
@@ -376,6 +377,7 @@ public class FileService implements IFileService
             sendMessage.setRelativeFilePath(file.getRelativeFilePath());
             sendMessage.setBlockNumber(count);
             clusterService.sendMessage(sendMessage);
+            logger.error("FileService: Sended Number: " + count);
         }
         catch (IOException ex)
         {
