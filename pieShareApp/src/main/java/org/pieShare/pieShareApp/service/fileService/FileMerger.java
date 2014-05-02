@@ -42,8 +42,6 @@ public class FileMerger implements IFileMerger
         this.beanService = beanService;
     }
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
@@ -228,7 +226,7 @@ public class FileMerger implements IFileMerger
         FileChangedMessage msg = beanService.getBean("fileChangedMessage");
         msg.setChangedType(type);
         msg.setLastModified(file.getLastModified());
-        msg.setMd5(file.getMD5());
+        //msg.setMd5(file.getMD5());
         msg.setRelativeFilePath(file.getRelativeFilePath());
 
         logger.debug("Send Message: Send " + type.toString() + " event. FileName: " + file.getFile().getName());
