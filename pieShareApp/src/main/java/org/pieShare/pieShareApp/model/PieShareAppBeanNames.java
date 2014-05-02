@@ -18,4 +18,8 @@ public class PieShareAppBeanNames {
     public static String getPieUser() {
         return "pieUser";
     }
+    
+    public static String getLoginActionServiceName() {
+        return "loginActionService";
+    }
 }
