@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
  *
  * @author richy
  */
-@Component("configurationReader")
 public class ConfigurationReader implements IConfigurationReader
 {
 
