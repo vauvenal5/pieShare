@@ -27,13 +27,18 @@ import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
  */
 public class PasswordEncryptionService implements IPasswordEncryptionService {
     
-    public byte[] salt;
-    public int iterations;
+    //todo-sv: change this
+    public byte[] salt = "changeThis".getBytes();
+    public int iterations = 5000;
     
     private IProviderService providerService;
     
     public PasswordEncryptionService() {
         
+    }
+    
+    public void setProviderService(IProviderService service) {
+        this.providerService = service;
     }
     
     @Override

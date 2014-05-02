@@ -7,19 +7,8 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
-    <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">  
+    <bean id="loginActionService" class="org.pieShare.pieShareApp.service.actionService.LoginActionService">
+        <property name="beanService" ref="pieBeanService"/>
+        <property name="commandService" ref="loginCommandService"/>
     </bean>
-
-    <bean id="fileChangedMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.FileChangedMessage">
-    </bean>
-
-    <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
-    </bean>
-
-    <bean id="loginCommand" class="org.pieShare.pieShareApp.model.command.LoginCommand">
-    </bean>
-    
-    <bean id="pieUser" class="org.pieShare.pieShareApp.model.PieUser">
-    </bean>
-    
 </beans>
