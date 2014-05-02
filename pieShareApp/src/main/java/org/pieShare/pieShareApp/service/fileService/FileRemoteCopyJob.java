@@ -42,15 +42,11 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     private int lastBlockNumber = Integer.MAX_VALUE;
     private boolean isInitialized = false;
 
-    @Autowired
-    @Qualifier("compressor")
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
     }
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
