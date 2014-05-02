@@ -131,7 +131,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile1);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message);
 
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -193,7 +193,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(wdirFile);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message, message2);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message, message2);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -251,7 +251,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile1, newFile2);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message, message2);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message, message2);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -323,7 +323,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile3);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message);
         
         FileService fileService = Mockito.mock(FileService.class);
 
