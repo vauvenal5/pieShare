@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.utils;
+package org.pieShare.pieTools.pieUtilities.service.base64Service.api;
 
 /**
  *
  * @author richy
  */
-    public enum FileChangedTypes
-    {
-        FILE_CREATED,
-        FILE_DELETED,
-        FILE_MODIFIED,
-        SNYC_ALL
-    }
+public interface IBase64Service
+{
+
+    public byte[] encode(byte[] in);
+
+    public byte[] decode(byte[] in);
+}

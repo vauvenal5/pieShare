@@ -14,4 +14,8 @@ public class PieShareAppBeanNames {
     public static String getLoginCommmandName() {
         return "loginCommand";
     }
+    
+    public static String getPieUser() {
+        return "pieUser";
+    }
 }

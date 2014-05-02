@@ -6,7 +6,6 @@
 
 package org.pieShare.pieShareApp.service.actionService;
 
-import java.io.Console;
 import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -14,7 +13,6 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionService;
-import sun.security.util.Password;
 
 /**
  *

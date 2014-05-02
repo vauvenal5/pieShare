@@ -76,4 +76,16 @@
     <bean id="readLineTask" class="org.pieShare.pieTools.pieUtilities.service.cmdLineService.ReadLineTask" lazy-init="true">
         <property name="cmdLineService" ref="cmdLineService"/>
     </bean>
+    
+  
+    <!-- Compressor Service -->
+    <bean id="compressor" class="org.pieShare.pieTools.pieUtilities.service.compressor.Compressor" scope="prototype">
+        <property name="base64Service" ref="base64Service"/>
+    </bean>
+    
+    
+    <!-- Base64 Service -->
+    <bean id="base64Service" class="org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service" lazy-init="true">
+    </bean>
+    
 </beans>
