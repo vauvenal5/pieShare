@@ -11,6 +11,7 @@
     <import resource="classpath*:piePlateApplicationContext.xml" />
     <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
     <import resource="classpath*:pieShareAppModel.xml" />
+    <import resource="classpath*:service/pieShareAppAction.xml" />
     
   
     <bean id="pieFile" class="org.pieShare.pieShareApp.service.fileService.PieFile" scope="prototype">
@@ -85,6 +86,11 @@
     
     <bean id="fileTransferRequestTask" class="org.pieShare.pieShareApp.model.task.FileTransferRequestTask" scope="prototype">
         <property name="fileService" ref="fileService"/>
+    </bean>
+    
+    <bean id="loginCommandService" class="org.pieShare.pieShareApp.service.commandService.LoginCommandService">
+        <property name="beanService" ref="pieBeanService"/>
+        <property name="passwordEncryptionService" ref="passwordEncryptionService"/>
     </bean>
 
 </beans>
