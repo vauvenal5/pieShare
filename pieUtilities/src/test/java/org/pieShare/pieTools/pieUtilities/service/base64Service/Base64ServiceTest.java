@@ -5,11 +5,13 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.base64Service;
 
+import java.io.UnsupportedEncodingException;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 
 /**
@@ -46,32 +48,36 @@ public class Base64ServiceTest
     /**
      * Test of encode method, of class Base64Service.
      */
-    
-    public void testEncode()
+    @Test
+    public void testEncode() throws UnsupportedEncodingException
     {
         String data = "Zu Tyonis dem Türannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Häscher in Bande. Was wolltest du mit dem Dolche, Sprich!";
-        String base64Data = "WnUgVHlvbmlzIGRlbSBUP3Jhbm5lbiwgc2NobGljaCBEYW1vbiwgZGVuIERvbGNoZSBpbSBnZXdhbmRlLiBJaG4gc2NobHVnZW4gZGllIEg/c2NoZXIgaW4gQmFuZGUuIFdhcyB3b2xsdGVzdCBkdSBtaXQgZGVtIERvbGNoZSwgU3ByaWNoIQ==";
+        String base64Data = "WnUgVHlvbmlzIGRlbSBUw7xyYW5uZW4sIHNjaGxpY2ggRGFtb24sIGRlbiBEb2xjaGUgaW0gZ2V3YW5kZS4gSWhuIHNjaGx1Z2VuIGRpZSBIw6RzY2hlciBpbiBCYW5kZS4gV2FzIHdvbGx0ZXN0IGR1IG1pdCBkZW0gRG9sY2hlLCBTcHJpY2gh";
 
         IBase64Service service = new Base64Service();
 
-        byte[] erg = service.encode(data.getBytes());
+        byte[] erg = service.encode(data.getBytes("UTF-8"));
         String stg = new String(erg);
 
         Assert.assertEquals(base64Data, stg);
     }
-    
-    public void testDecode()
+
+    @Test
+    public void testDecode() throws UnsupportedEncodingException
     {
         String data = "Zu Tyonis dem Türannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Häscher in Bande. Was wolltest du mit dem Dolche, Sprich!";
-        String base64Data = "WnUgVHlvbmlzIGRlbSBU/HJhbm5lbiwgc2NobGljaCBEYW1vbiwgZGVuIERvbGNoZSBpbSBnZXdhbmRlLiBJaG4gc2NobHVnZW4gZGllIEjkc2NoZXIgaW4gQmFuZGUuIFdhcyB3b2xsdGVzdCBkdSBtaXQgZGVtIERvbGNoZSwgU3ByaWNoIQ==";
+
+        String base64Data = "WnUgVHlvbmlzIGRlbSBUw7xyYW5uZW4sIHNjaGxpY2ggRGFtb24sIGRlbiBEb2xjaGUgaW0gZ2V3YW5kZS4gSWhuIHNjaGx1Z2VuIGRpZSBIw6RzY2hlciBpbiBCYW5kZS4gV2FzIHdvbGx0ZXN0IGR1IG1pdCBkZW0gRG9sY2hlLCBTcHJpY2gh";
+
         IBase64Service service = new Base64Service();
 
         byte[] erg = service.decode(base64Data.getBytes());
-        String stg = new String(erg);
-
-        Assert.assertEquals(data, stg);
+        String stg = new String(erg, "UTF-8");
+        
+         Assert.assertEquals(data, stg);
+        
+        
     }
-
     /**
      * Test of decode method, of class Base64Service.
      */

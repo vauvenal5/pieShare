@@ -22,4 +22,8 @@ public class PieShareAppBeanNames {
     public static String getLoginActionServiceName() {
         return "loginActionService";
     }
+    
+    public static String getFileServiceName() {
+        return "fileService";
+    }
 }

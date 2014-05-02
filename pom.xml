@@ -15,6 +15,17 @@
         <module>pieShareApp</module>
     </modules>
 
+    <dependencies>
+        		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.2.RELEASE</version>
+                </dependency>
+    </dependencies>
+
+
+
     <build>
         <plugins>
             <plugin>
@@ -36,7 +47,7 @@
                     <sourceEncoding>utf8</sourceEncoding>
                     <sourceDirectories>
                         <sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
-                     </sourceDirectories>
+                    </sourceDirectories>
                 </configuration>
             </plugin>
             
@@ -100,7 +111,7 @@
                     <sourceEncoding>utf8</sourceEncoding>
                     <sourceDirectories>
                         <sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
-                     </sourceDirectories>
+                    </sourceDirectories>
                 </configuration>
             </plugin>
             
@@ -147,6 +158,20 @@
                     </replacements>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.pieShare.pieShareApp.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
 
         </plugins>
     </build>
