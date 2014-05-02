@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service;
 
 import javax.annotation.PostConstruct;
-import org.pieShare.pieShareApp.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.model.message.SimpleMessage;
 import org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -94,6 +94,6 @@ public class PieShareService
         msg.setMsg("PieShare awaits your command:");
 
         this.cmdLineService.writeLine(msg);
-        this.fileService.sendAllFilesSyncRequest();
+        //this.fileService.sendAllFilesSyncRequest();
     }
 }
