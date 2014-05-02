@@ -26,7 +26,6 @@
         <property name="parserService" ref="pieCommandParser"/>
         <property name="commandLineService" ref="cmdLineService"/>
         <property name="beanService" ref="pieBeanService"/>
-        <property name="fileService" ref="fileService"/>
         <property name="clusterManagementService" ref="clusterManagementService"/>
     </bean>
 

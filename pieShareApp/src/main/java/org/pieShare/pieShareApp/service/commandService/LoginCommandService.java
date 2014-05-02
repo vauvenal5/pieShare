@@ -41,6 +41,8 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
         user.setPassword(pwd);
         user.setUserName(command.getUserName());
         user.setIsLoggedIn(true);
+        
+        this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
     }
     
 }
