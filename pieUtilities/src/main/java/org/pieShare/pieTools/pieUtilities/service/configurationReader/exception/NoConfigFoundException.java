@@ -3,16 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.utils;
+
+package org.pieShare.pieTools.pieUtilities.service.configurationReader.exception;
 
 /**
  *
  * @author richy
  */
-    public enum FileChangedTypes
+public class NoConfigFoundException extends Exception
+{
+
+    public NoConfigFoundException(String message)
     {
-        FILE_CREATED,
-        FILE_DELETED,
-        FILE_MODIFIED,
-        SNYC_ALL
+        super(message);
     }
+    
+}

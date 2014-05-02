@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service;
+package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
-import org.pieShare.pieShareApp.api.IFileMerger;
+import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 
 /**
  *
