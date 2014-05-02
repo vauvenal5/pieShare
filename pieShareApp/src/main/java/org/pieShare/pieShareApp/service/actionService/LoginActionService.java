@@ -6,7 +6,9 @@
 
 package org.pieShare.pieShareApp.service.actionService;
 
+import java.io.BufferedReader;
 import java.io.Console;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -14,7 +16,6 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionService;
-import sun.security.util.Password;
 
 /**
  *
@@ -29,7 +30,10 @@ public class LoginActionService extends AbstractActionService<LoginCommand, Logi
         
         System.out.println("Enter password:");
         PlainTextPassword pwd = new PlainTextPassword();
-        pwd.password = System.console().readPassword();
+        
+        //Console console = System.console();
+        //pwd.password = console.readPassword();
+        pwd.password = "test".toCharArray();
         command.setPlainTextPassword(pwd);
         
         return command;

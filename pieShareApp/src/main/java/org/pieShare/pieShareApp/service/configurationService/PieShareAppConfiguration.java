@@ -12,15 +12,11 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppCon
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author richy
  */
-@Component("pieShareAppConfiguration")
 public class PieShareAppConfiguration implements IPieShareAppConfiguration
 {
 
@@ -28,8 +24,6 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
     private Properties conf;
     private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
-    @Autowired
-    @Qualifier("configurationReader")
     public void setConfigurationReader(IConfigurationReader configurationReader)
     {
         this.configurationReader = configurationReader;
