@@ -32,15 +32,9 @@ public class PieShareService
     private ICmdLineService cmdLineService;
     private IBeanService beanService;
     private IClusterManagementService clusterManagementService;
-    private IFileService fileService;
 
     public PieShareService()
     {
-    }
-
-    public void setFileService(IFileService fileService)
-    {
-        this.fileService = fileService;
     }
 
     public void setExecutorService(IExecutorService service)
@@ -71,13 +65,6 @@ public class PieShareService
     @PostConstruct
     public void start()
     {
-        try {
-            this.clusterManagementService.connect(null);
-        } catch (ClusterManagmentServiceException ex) {
-            //todo-sv: error handling
-            ex.printStackTrace();
-        }
-
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
 
         try

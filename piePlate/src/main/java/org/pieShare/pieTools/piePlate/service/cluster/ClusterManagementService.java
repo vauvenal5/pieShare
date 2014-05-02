@@ -49,11 +49,6 @@ public class ClusterManagementService implements IClusterManagementService {
 
     @Override
     public IClusterService connect(String id) throws ClusterManagmentServiceException {
-        //todo-sv: only while DB not ready
-        if(id==null) {
-            id = "pieTestCluster";
-        }
-        
         if(this.clusters.containsKey(id)) {
             return this.clusters.get(id);
         }
