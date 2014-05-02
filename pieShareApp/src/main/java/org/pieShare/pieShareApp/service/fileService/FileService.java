@@ -42,8 +42,6 @@ import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author richy
@@ -68,15 +66,11 @@ public class FileService implements IFileService
 
     }
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
     }
 
-    @Autowired
-    @Qualifier("compressor")
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;

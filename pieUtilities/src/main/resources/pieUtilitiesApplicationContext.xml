@@ -88,4 +88,7 @@
     <bean id="base64Service" class="org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service" lazy-init="true">
     </bean>
     
+    <bean id="configurationReader" class="org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader" lazy-init="true">
+    </bean>
+    
 </beans>
