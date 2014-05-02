@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
+import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
