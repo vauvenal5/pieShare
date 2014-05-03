@@ -64,11 +64,11 @@ public class CompressorTest
         
         instance.setBase64Service(base64Service);
         
-        byte[] out = instance.compressByteArray(data.getBytes("UTF-8"));
+        byte[] out = instance.compressByteArray(data.getBytes("UTF-8"), data.length());
 
         //String erg = new String(out);
         
-        byte[] decText = instance.decompressByteArray(out);
+        byte[] decText = instance.decompressByteArray(out, out.length);
         String decErg = new String(decText, "UTF-8");
         
         Assert.assertEquals(data, decErg);

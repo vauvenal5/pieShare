@@ -107,7 +107,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         }
         else
         {
-            byte[] toWrite = compressor.decompressByteArray(msg.getBlock());//.decompressStream(msg.getBlock(), byteOutStream);
+            byte[] toWrite = compressor.decompressByteArray(msg.getBlock(), msg.getBlockSize());//.decompressStream(msg.getBlock(), byteOutStream);
 
             if (msg.getBlockNumber() == actualBlockNumber)
             {
@@ -159,6 +159,11 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
             File newFile = new File(pieAppConfig.getWorkingDirectory(), msg.getRelativeFilePath());
 
+            if(!newFile.getParentFile().exists())
+            {
+                newFile.getParentFile().mkdirs();
+            }
+            
             Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             cleanUP();
