@@ -297,6 +297,7 @@ public class FileService implements IFileService
     @Override
     public void fileTransferRequestReceived(FileTransferRequestMessage msg)
     {
+
         Validate.notNull(msg);
 
         PieFile file = null;
@@ -321,7 +322,7 @@ public class FileService implements IFileService
         }
         catch (FileNotFoundException ex)
         {
-            logger.error("Requested file is not avalible ob HDD. Message: " + ex.getMessage());
+            logger.error("Requested file is not avalible on HDD. Message: " + ex.getMessage());
             return;
         }
 
@@ -335,7 +336,7 @@ public class FileService implements IFileService
                 byte[] temp = new byte[readBytes];
                 System.arraycopy(sendBuffer, 0, temp, 0, readBytes);
 
-                byte[] sendArr = compressor.compressByteArray(temp);
+                byte[] sendArr = compressor.compressByteArray(temp, readBytes);
 
                 //ToDo: Get from beand (Do not forget prototype)
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
@@ -344,8 +345,12 @@ public class FileService implements IFileService
                 sendMessage.setBlockNumber(count);
                 sendMessage.setBlock(sendArr);
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
+                sendMessage.setAddress(msg.getAddress());
+                sendMessage.setBlockSize(sendArr.length);
+               
+                
                 clusterService.sendMessage(sendMessage);
-                //logger.error("FileService: Sended Number: " + count);
+                logger.error("FileService: Sent Number: " + count);
                 count++;
             }
 
@@ -354,8 +359,10 @@ public class FileService implements IFileService
             sendMessage.setId(msg.getId());
             sendMessage.setRelativeFilePath(file.getRelativeFilePath());
             sendMessage.setBlockNumber(count);
+            sendMessage.setAddress(msg.getAddress());
+            
             clusterService.sendMessage(sendMessage);
-            //logger.error("FileService: Sended Number: " + count);
+            logger.error("FileService: Sending Complete. Sent Number: " + count);
         }
         catch (IOException ex)
         {

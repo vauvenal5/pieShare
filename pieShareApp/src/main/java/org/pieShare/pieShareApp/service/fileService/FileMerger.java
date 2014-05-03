@@ -254,7 +254,8 @@ public class FileMerger implements IFileMerger
 
         if (fileChangedMessage.getChangedType() == FileChangedTypes.FILE_CREATED)
         {
-            fileService.sendFileTransferRequenst(createdFile);
+            fileCreated(file);
+            //fileService.sendFileTransferRequenst(createdFile);
         }
         else if (fileChangedMessage.getChangedType() == FileChangedTypes.FILE_DELETED)
         {
