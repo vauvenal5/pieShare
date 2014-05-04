@@ -195,7 +195,15 @@ public class FileMerger implements IFileMerger
         {
             logger.debug("Created File: Add new created file");
             files.put(pieFile.getRelativeFilePath(), pieFile);
-            sendNewMessage(FileChangedTypes.FILE_CREATED, pieFile);
+
+            if (pieFile.getFile().exists())
+            {
+                sendNewMessage(FileChangedTypes.FILE_CREATED, pieFile);
+            }
+            else
+            {
+                fileService.sendFileTransferRequenst(pieFile);
+            }
         }
     }
 
