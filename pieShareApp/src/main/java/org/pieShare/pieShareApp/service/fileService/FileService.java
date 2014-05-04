@@ -458,6 +458,8 @@ public class FileService implements IFileService
         {
             logger.error("Error sending FileTransferRequest. Message: " + ex.getMessage());
         }
+        
+        
     }
 
 }
