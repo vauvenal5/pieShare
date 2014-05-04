@@ -32,7 +32,7 @@ public class Compressor implements ICompressor
 
     
     @Override
-    public byte[] compressByteArray(byte[] data, int size) throws IOException
+    public byte[] compressByteArray(byte[] data) throws IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
@@ -42,7 +42,7 @@ public class Compressor implements ICompressor
 
         
         deflater.finish();
-        byte[] buffer = new byte[size];
+        byte[] buffer = new byte[data.length];
         while (!deflater.finished())
         {
             int count = deflater.deflate(buffer); // returns the generated code... index  
@@ -57,7 +57,7 @@ public class Compressor implements ICompressor
     }
 
     @Override
-    public byte[] decompressByteArray(byte[] data, int size) throws IOException, DataFormatException
+    public byte[] decompressByteArray(byte[] data) throws IOException, DataFormatException
     {
         
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -67,7 +67,7 @@ public class Compressor implements ICompressor
         inflater.setInput(base64Service.decode(data));
 
         // ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[size];
+        byte[] buffer = new byte[data.length];
         while (!inflater.finished())
         {
             int count = inflater.inflate(buffer);
