@@ -63,4 +63,9 @@ public class PieDirectory
     {
         return relativeFilePath;
     }
+	
+	public File getFile()
+	{
+		return dir;
+	}
 }
