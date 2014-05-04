@@ -372,6 +372,15 @@ public class FileService implements IFileService
         {
             logger.error("Error in Cluster Service. Message: " + ex.getMessage());
         }
+		
+		try
+        {
+            fileStream.close();
+        }
+        catch (IOException ex)
+        {
+            logger.error("Error closing file stream for sent file: " + ex.getMessage());
+        }
 
     }
 
