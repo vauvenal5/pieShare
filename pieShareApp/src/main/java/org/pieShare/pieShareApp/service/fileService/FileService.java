@@ -439,16 +439,16 @@ public class FileService implements IFileService
     }
 
     @Override
-    public void sendFileTransferRequenst(PieFile piefile)
+    public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg)
     {
-        FileTransferRequestMessage requestMsg = null;
+       // FileTransferRequestMessage requestMsg = null;
 
-        requestMsg = beanService.getBean(FileTransferRequestMessage.class);
+        //requestMsg = beanService.getBean(FileTransferRequestMessage.class);
 
         UUID id = UUID.randomUUID();
         requestMsg.setId(id);
         pendingTasks.add(id);
-        requestMsg.setRelativeFilePath(piefile.getRelativeFilePath());
+        //requestMsg.setRelativeFilePath(piefile.getRelativeFilePath());
 
         try
         {
