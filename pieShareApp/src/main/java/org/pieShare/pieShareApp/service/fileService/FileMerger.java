@@ -215,7 +215,6 @@ public class FileMerger implements IFileMerger
 				logger.debug("Deleted File: Delete file from list");
 				files.remove(pieFile.getRelativeFilePath());
 				sendNewMessage(FileChangedTypes.FILE_DELETED, pieFile);
-
 			}
 			else
 			{
