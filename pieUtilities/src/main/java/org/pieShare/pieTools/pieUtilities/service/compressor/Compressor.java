@@ -30,58 +30,9 @@ public class Compressor implements ICompressor
         this.base64Service = base64Service;
     }
 
+    
     @Override
-    public void compressStream(byte[] data, OutputStream out) throws IOException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        /*Deflater deflater = new Deflater();
-
-        deflater.setInput(data);
-
-        deflater.finish();
-        byte[] buffer = new byte[1024];
-        while (!deflater.finished())
-        {
-            int count = deflater.deflate(buffer); // returns the generated code... index  
-            out.write(buffer, 0, count);
-
-        }
-        deflater.reset();
-        deflater.end();*/
-    }
-
-    @Override
-    public void decompressStream(byte[] data, OutputStream out) throws IOException, DataFormatException
-    {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        /*Inflater inflater = new Inflater();
-
-        inflater.setInput(data);
-
-        // ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
-        while (!inflater.finished())
-        {
-            int count = inflater.inflate(buffer);
-            out.write(buffer, 0, count);
-
-            if (inflater.needsInput())
-            {
-                break;
-            }
-
-            if (inflater.needsDictionary())
-            {
-                //ToDo: Check Problem with speziel chars (sonderzeichen);
-            }
-        }
-
-        inflater.reset();
-        inflater.end();*/
-    }
-
-    @Override
-    public byte[] compressByteArray(byte[] data) throws IOException
+    public byte[] compressByteArray(byte[] data, int size) throws IOException
     {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
@@ -89,8 +40,9 @@ public class Compressor implements ICompressor
 
         deflater.setInput(base64Service.encode(data));
 
+        
         deflater.finish();
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[size];
         while (!deflater.finished())
         {
             int count = deflater.deflate(buffer); // returns the generated code... index  
@@ -105,8 +57,9 @@ public class Compressor implements ICompressor
     }
 
     @Override
-    public byte[] decompressByteArray(byte[] data) throws IOException, DataFormatException
+    public byte[] decompressByteArray(byte[] data, int size) throws IOException, DataFormatException
     {
+        
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
         Inflater inflater = new Inflater();
@@ -114,7 +67,7 @@ public class Compressor implements ICompressor
         inflater.setInput(base64Service.decode(data));
 
         // ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[size];
         while (!inflater.finished())
         {
             int count = inflater.inflate(buffer);
