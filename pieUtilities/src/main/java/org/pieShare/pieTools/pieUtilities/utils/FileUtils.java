@@ -31,5 +31,15 @@ public class FileUtils
         }
         return ret && path.delete();
     }
+	
+	public static boolean deleteOneFile(File file) throws FileNotFoundException
+    {
+        if (!file.exists() || file.isDirectory())
+        {
+            throw new FileNotFoundException(file.getAbsolutePath());
+        }
+        
+		return file.delete();
+    }
 
 }
