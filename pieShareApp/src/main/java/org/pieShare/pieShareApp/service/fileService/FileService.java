@@ -13,9 +13,13 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.Validate;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
@@ -29,15 +33,15 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * @author richy
@@ -55,21 +59,18 @@ public class FileService implements IFileService
     private IBeanService beanService;
     private ICompressor compressor;
     private HashMap<UUID, IFileRemoteCopyJob> fileCopyJobs;
+    private IClusterManagementService clusterManagementService;
 
     public FileService()
     {
 
     }
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
         this.pieAppConfig = pieShareAppConfiguration;
     }
 
-    @Autowired
-    @Qualifier("compressor")
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
@@ -88,6 +89,20 @@ public class FileService implements IFileService
 
         try
         {
+            PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+
+            Validate.notNull(user.getCloudName());
+            //ToDo: Handle when user cloud name = null;
+
+            this.clusterService = clusterManagementService.connect(user.getCloudName());
+        }
+        catch (ClusterManagmentServiceException ex)
+        {
+            //ToDo Handle Error
+        }
+
+        try
+        {
             registerAll(pieAppConfig.getWorkingDirectory());
 
         }
@@ -97,11 +112,17 @@ public class FileService implements IFileService
         }
 
         addWatchDirectory(pieAppConfig.getWorkingDirectory());
+
     }
 
     public void setClusterService(IClusterService clusterService)
     {
         this.clusterService = clusterService;
+    }
+
+    public void setClusterManagementService(IClusterManagementService clusterManagementService)
+    {
+        this.clusterManagementService = clusterManagementService;
     }
 
     public void setFileWatcher(IFileWatcherService fileWatcher)
@@ -161,30 +182,7 @@ public class FileService implements IFileService
             return;
         }
 
-        //File wdir = pieAppConfig.getWorkingDirectory();
-        //File newFile = new File(wdir, message.getRelativeFilePath());
         fileMerger.remoteFileChanged(message);
-
-        /*        try
-         {
-         if (message.getChangedType() == FileChangedTypes.FILE_CREATED)
-            
-            
-         fileMerger.fileCreated(newFile);
-         }
-         else if (message.getChangedType() == FileChangedTypes.FILE_DELETED)
-         {
-         fileMerger.fileDeleted(newFile);
-         }
-         else if (message.getChangedType() == FileChangedTypes.FILE_MODIFIED)
-         {
-         fileMerger.fileChanged(newFile);
-         }
-         }
-         catch (BeanServiceException ex)
-         {
-         logger.error("Error adding remote file. Mesage: " + ex.getMessage());
-         }*/
     }
 
     @Override
@@ -232,7 +230,7 @@ public class FileService implements IFileService
                     FileChangedMessage fileChangedMessage = new FileChangedMessage();
                     fileChangedMessage.setChangedType(FileChangedTypes.SNYC_ALL);
                     fileChangedMessage.setLastModified(file.getLastModified());
-                    fileChangedMessage.setMd5(file.getMD5());
+                    //fileChangedMessage.setMd5(file.getMD5());
                     fileChangedMessage.setRelativeFilePath(file.getRelativeFilePath());
                     sendMsg.getList().add(fileChangedMessage);
                 }
@@ -299,6 +297,7 @@ public class FileService implements IFileService
     @Override
     public void fileTransferRequestReceived(FileTransferRequestMessage msg)
     {
+
         Validate.notNull(msg);
 
         PieFile file = null;
@@ -323,7 +322,7 @@ public class FileService implements IFileService
         }
         catch (FileNotFoundException ex)
         {
-            logger.error("Requested file is not avalible ob HDD. Message: " + ex.getMessage());
+            logger.error("Requested file is not avalible on HDD. Message: " + ex.getMessage());
             return;
         }
 
@@ -333,20 +332,26 @@ public class FileService implements IFileService
         try
         {
             while ((readBytes = fileStream.read(sendBuffer)) != -1)
-            { 
+            {
                 byte[] temp = new byte[readBytes];
                 System.arraycopy(sendBuffer, 0, temp, 0, readBytes);
-                
-                byte[] sendArr = compressor.compressByteArray(temp);
-                
-                
+
+                byte[] sendArr = compressor.compressByteArray(temp, readBytes);
+
+                //ToDo: Get from beand (Do not forget prototype)
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
                 sendMessage.setId(msg.getId());
                 sendMessage.setIsLastEmptyMessage(false);
-                sendMessage.setBlockNumber(count++);
+                sendMessage.setBlockNumber(count);
                 sendMessage.setBlock(sendArr);
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
+                sendMessage.setAddress(msg.getAddress());
+                sendMessage.setBlockSize(sendArr.length);
+               
+                
                 clusterService.sendMessage(sendMessage);
+                logger.error("FileService: Sent Number: " + count);
+                count++;
             }
 
             FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
@@ -354,7 +359,10 @@ public class FileService implements IFileService
             sendMessage.setId(msg.getId());
             sendMessage.setRelativeFilePath(file.getRelativeFilePath());
             sendMessage.setBlockNumber(count);
+            sendMessage.setAddress(msg.getAddress());
+            
             clusterService.sendMessage(sendMessage);
+            logger.error("FileService: Sending Complete. Sent Number: " + count);
         }
         catch (IOException ex)
         {
@@ -415,7 +423,6 @@ public class FileService implements IFileService
                 fileCopyJobs.get(msg.getId()).cleanUP();
                 fileCopyJobs.remove(msg.getId());
             }
-            return;
         }
         catch (DataFormatException ex)
         {
@@ -427,7 +434,6 @@ public class FileService implements IFileService
                 fileCopyJobs.get(msg.getId()).cleanUP();
                 fileCopyJobs.remove(msg.getId());
             }
-            return;
         }
 
     }
@@ -452,6 +458,8 @@ public class FileService implements IFileService
         {
             logger.error("Error sending FileTransferRequest. Message: " + ex.getMessage());
         }
+        
+        
     }
 
 }

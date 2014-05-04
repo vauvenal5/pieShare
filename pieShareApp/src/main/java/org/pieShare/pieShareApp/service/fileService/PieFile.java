@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.hashService.MD5Service;
+import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -35,7 +35,7 @@ public class PieFile
     {
         this.file = file;
 
-        if (file.exists() && !file.isDirectory())
+       /* if (file.exists() && !file.isDirectory())
         {
             try
             {
@@ -45,7 +45,7 @@ public class PieFile
             {
                 //ToDo: Error Handling
             }
-        }
+        }*/
 
         Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
         Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
@@ -70,10 +70,10 @@ public class PieFile
         return file;
     }
 
-    public String getMD5()
+    /*public String getMD5()
     {
         return md5;
-    }
+    }*/
 
     public long getLastModified()
     {
@@ -115,10 +115,10 @@ public class PieFile
             return false;
         }
 
-        if (!pieFile.getMD5().equals(this.getMD5()))
+       /* if (!pieFile.getMD5().equals(this.getMD5()))
         {
             return false;
-        }
+        }*/
 
         return true;
     }

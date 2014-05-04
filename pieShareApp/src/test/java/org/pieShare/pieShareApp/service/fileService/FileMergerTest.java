@@ -120,7 +120,7 @@ public class FileMergerTest
         Mockito.when(newFile1.getRelativeFilePath()).thenReturn("newFile1");
         Mockito.when(newFile1.getFile()).thenReturn(file1);
         Mockito.when(newFile1.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
 
         PieDirectory wDir = Mockito.mock(PieDirectory.class);
         Mockito.when(wDir.getRelativeFilePath()).thenReturn("workingDir");
@@ -131,7 +131,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile1);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message);
 
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -150,7 +150,7 @@ public class FileMergerTest
 
         Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_CREATED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        //Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
         Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("newFile1");
 
     }
@@ -176,13 +176,13 @@ public class FileMergerTest
         Mockito.when(newFile1.getRelativeFilePath()).thenReturn("folder1/newFile1");
         Mockito.when(newFile1.getFile()).thenReturn(file);
         Mockito.when(newFile1.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
         
         PieFile newFile2 = Mockito.mock(PieFile.class);
         Mockito.when(newFile2.getRelativeFilePath()).thenReturn("folder1/newFile2");
         Mockito.when(newFile2.getFile()).thenReturn(file);
         Mockito.when(newFile2.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
 
         fileList.put("folder1/newFile1", newFile1);
         fileList.put("folder1/newFile2", newFile2);
@@ -193,7 +193,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(wdirFile);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message, message2);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message, message2);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -207,12 +207,12 @@ public class FileMergerTest
         
         Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        //Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
         Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("folder1/newFile2");
         
         Mockito.verify(message2, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message2, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        //Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
         Mockito.verify(message2, Mockito.times(1)).setRelativeFilePath("folder1/newFile1");
     }
 
@@ -234,13 +234,13 @@ public class FileMergerTest
         Mockito.when(newFile1.getRelativeFilePath()).thenReturn("workingDir/newFile1");
         Mockito.when(newFile1.getFile()).thenReturn(file);
         Mockito.when(newFile1.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
         
         PieFile newFile2 = Mockito.mock(PieFile.class);
         Mockito.when(newFile2.getRelativeFilePath()).thenReturn("workingDir/newFile2");
         Mockito.when(newFile2.getFile()).thenReturn(file);
         Mockito.when(newFile2.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
 
         fileList.put("workingDir/newFile1", newFile1);
         fileList.put("workingDir/newFile2", newFile2);
@@ -251,7 +251,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile1, newFile2);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message, message2);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message, message2);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -272,12 +272,12 @@ public class FileMergerTest
         
         Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        //Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
         Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("workingDir/newFile1");
         
         Mockito.verify(message2, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message2, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
+        //Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
         Mockito.verify(message2, Mockito.times(1)).setRelativeFilePath("workingDir/newFile2");
     }
 
@@ -299,20 +299,20 @@ public class FileMergerTest
         Mockito.when(newFile1.getRelativeFilePath()).thenReturn("workingDir/newFile1");
         Mockito.when(newFile1.getFile()).thenReturn(file);
         Mockito.when(newFile1.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile1.getMD5()).thenReturn("SuperDuperMD5Sum");
         
         PieFile newFile2 = Mockito.mock(PieFile.class);
         Mockito.when(newFile2.getRelativeFilePath()).thenReturn("workingDir/newFile2");
         Mockito.when(newFile2.getFile()).thenReturn(file);
         Mockito.when(newFile2.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
+        //Mockito.when(newFile2.getMD5()).thenReturn("SuperDuperMD5Sum");
 
         
         PieFile newFile3 = Mockito.mock(PieFile.class);
         Mockito.when(newFile3.getRelativeFilePath()).thenReturn("workingDir/newFile1");
         Mockito.when(newFile3.getFile()).thenReturn(file);
         Mockito.when(newFile3.getLastModified()).thenReturn((long) 10);
-        Mockito.when(newFile3.getMD5()).thenReturn("NewMD5");
+        //Mockito.when(newFile3.getMD5()).thenReturn("NewMD5");
 
         
         fileList.put("workingDir/newFile1", newFile1);
@@ -323,7 +323,7 @@ public class FileMergerTest
         BeanService beanService = Mockito.mock(BeanService.class);
         Mockito.when(beanService.getBean(PieFile.class)).thenReturn(newFile3);
         Mockito.when(beanService.getBean(PieDirectory.class)).thenReturn(wDir);
-        Mockito.when(beanService.getBean(FileChangedMessage.class, "fileChangedMessage")).thenReturn(message);
+        Mockito.when(beanService.getBean("fileChangedMessage")).thenReturn(message);
         
         FileService fileService = Mockito.mock(FileService.class);
 
@@ -338,7 +338,7 @@ public class FileMergerTest
         
         Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_MODIFIED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
-        Mockito.verify(message, Mockito.times(1)).setMd5("NewMD5");
+        //Mockito.verify(message, Mockito.times(1)).setMd5("NewMD5");
         Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("workingDir/newFile1");
         
         Assert.assertEquals(newFile3, wDir.getFiles().get("workingDir/newFile1"));
