@@ -48,7 +48,6 @@ public class Base64ServiceTest
     /**
      * Test of encode method, of class Base64Service.
      */
-    @Test
     public void testEncode() throws UnsupportedEncodingException
     {
         String data = "Zu Tyonis dem Türannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Häscher in Bande. Was wolltest du mit dem Dolche, Sprich!";
@@ -62,7 +61,7 @@ public class Base64ServiceTest
         Assert.assertEquals(base64Data, stg);
     }
 
-    @Test
+	
     public void testDecode() throws UnsupportedEncodingException
     {
         String data = "Zu Tyonis dem Türannen, schlich Damon, den Dolche im gewande. Ihn schlugen die Häscher in Bande. Was wolltest du mit dem Dolche, Sprich!";
