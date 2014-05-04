@@ -15,7 +15,7 @@ import java.util.zip.DataFormatException;
 public interface ICompressor
 {
 
-    public byte[] compressByteArray(byte[] data, int size) throws IOException;
+    public byte[] compressByteArray(byte[] data) throws IOException;
 
-    public byte[] decompressByteArray(byte[] data, int size) throws IOException, DataFormatException;
+    public byte[] decompressByteArray(byte[] data) throws IOException, DataFormatException;
 }
