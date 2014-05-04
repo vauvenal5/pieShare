@@ -336,7 +336,7 @@ public class FileService implements IFileService
                 byte[] temp = new byte[readBytes];
                 System.arraycopy(sendBuffer, 0, temp, 0, readBytes);
 
-                byte[] sendArr = compressor.compressByteArray(temp, readBytes);
+                byte[] sendArr = compressor.compressByteArray(temp);
 
                 //ToDo: Get from beand (Do not forget prototype)
                 FileTransferMessageBlocked sendMessage = new FileTransferMessageBlocked();
