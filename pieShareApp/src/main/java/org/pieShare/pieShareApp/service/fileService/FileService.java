@@ -33,6 +33,7 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.fileService.exceptions.FilePartMissingException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -297,7 +298,6 @@ public class FileService implements IFileService
     @Override
     public void fileTransferRequestReceived(FileTransferRequestMessage msg)
     {
-
         Validate.notNull(msg);
 
         PieFile file = null;
@@ -347,8 +347,7 @@ public class FileService implements IFileService
                 sendMessage.setRelativeFilePath(file.getRelativeFilePath());
                 sendMessage.setAddress(msg.getAddress());
                 sendMessage.setBlockSize(sendArr.length);
-               
-                
+
                 clusterService.sendMessage(sendMessage);
                 logger.error("FileService: Sent Number: " + count);
                 count++;
@@ -360,7 +359,7 @@ public class FileService implements IFileService
             sendMessage.setRelativeFilePath(file.getRelativeFilePath());
             sendMessage.setBlockNumber(count);
             sendMessage.setAddress(msg.getAddress());
-            
+
             clusterService.sendMessage(sendMessage);
             logger.error("FileService: Sending Complete. Sent Number: " + count);
         }
@@ -372,8 +371,8 @@ public class FileService implements IFileService
         {
             logger.error("Error in Cluster Service. Message: " + ex.getMessage());
         }
-		
-		try
+
+        try
         {
             fileStream.close();
         }
@@ -381,7 +380,6 @@ public class FileService implements IFileService
         {
             logger.error("Error closing file stream for sent file: " + ex.getMessage());
         }
-
     }
 
     @Override
@@ -390,19 +388,18 @@ public class FileService implements IFileService
         Validate.notNull(msg);
         Validate.notNull(msg.getId());
 
-        IFileRemoteCopyJob fileRemoteCopyJob = null;
+        IFileRemoteCopyJob fileRemoteCopyJob;
 
         synchronized (this)
         {
             if (pendingTasks.contains(msg.getId()))
             {
                 logger.debug("File Trasfere Message Recieved. Start new FileCopyJob.");
-
+                
                 pendingTasks.remove(msg.getId());
-
+                
                 fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
                 fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
-
             }
             else
             {
@@ -420,44 +417,38 @@ public class FileService implements IFileService
 
         try
         {
-            fileRemoteCopyJob.newDataArrived(msg);
+            //fileRemoteCopyJob.newDataArrived(msg);
+            fileRemoteCopyJob.copyFilePartToTemp(msg);
         }
         catch (IOException ex)
         {
-            //Handle File Lists
             logger.debug("IO Error in fileCopyJob. Message: " + ex.getMessage());
-
-            if (fileCopyJobs.containsKey(msg.getId()))
-            {
-                fileCopyJobs.get(msg.getId()).cleanUP();
-                fileCopyJobs.remove(msg.getId());
-            }
         }
         catch (DataFormatException ex)
         {
-            //Handle File Lists
-            logger.debug("Error Compressor Message: " + ex.getMessage());
-
+            logger.debug("Compressor Error in fileCopyJob. Message: " + ex.getMessage());
+        }
+        catch (FilePartMissingException ex)
+        {
+            logger.debug("Missing Paart in fileCopyJob. Message:" + ex.getMessage());
+        }
+        finally
+        {
+            fileRemoteCopyJob.cleanUP();
             if (fileCopyJobs.containsKey(msg.getId()))
             {
                 fileCopyJobs.get(msg.getId()).cleanUP();
                 fileCopyJobs.remove(msg.getId());
             }
         }
-
     }
 
     @Override
     public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg)
     {
-       // FileTransferRequestMessage requestMsg = null;
-
-        //requestMsg = beanService.getBean(FileTransferRequestMessage.class);
-
         UUID id = UUID.randomUUID();
         requestMsg.setId(id);
         pendingTasks.add(id);
-        //requestMsg.setRelativeFilePath(piefile.getRelativeFilePath());
 
         try
         {
@@ -467,8 +458,5 @@ public class FileService implements IFileService
         {
             logger.error("Error sending FileTransferRequest. Message: " + ex.getMessage());
         }
-        
-        
     }
-
 }
