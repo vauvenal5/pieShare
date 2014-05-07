@@ -21,6 +21,7 @@ import org.pieShare.pieShareApp.service.fileService.exceptions.FilePartMissingEx
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
+import static org.pieShare.pieTools.pieUtilities.utils.FileUtils.copyFileUsingStream;
 
 /**
  *
@@ -275,8 +276,8 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
             newFile.getParentFile().mkdirs();
         }
 
-        Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
+        //Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		copyFileUsingStream(fileToWrite, newFile);
         cleanUP();
 
     }
