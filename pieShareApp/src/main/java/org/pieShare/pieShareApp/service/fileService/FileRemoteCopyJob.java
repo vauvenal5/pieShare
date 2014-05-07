@@ -12,10 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -24,8 +21,6 @@ import org.pieShare.pieShareApp.service.fileService.exceptions.FilePartMissingEx
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  *
@@ -44,11 +39,11 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     private IPieShareAppConfiguration pieAppConfig;
     private String fileName;
     private ICompressor compressor;
-    private int lastBlockNumber = Integer.MAX_VALUE;
+    private long lastBlockNumber = Long.MAX_VALUE;
     private boolean isInitialized = false;
     private String relativeFilePath;
-    private boolean isAlive = true;
-
+    long long ff;
+    
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
@@ -188,6 +183,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     @Override
     public void copyFilePartToTemp(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FilePartMissingException
     {
+        
         if (!isInitialized)
         {
             init(msg);
@@ -222,7 +218,6 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     @Override
     public void cleanUP()
     {
-        isAlive = false;
         if (!blockDir.exists())
         {
             return;
