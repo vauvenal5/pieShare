@@ -395,9 +395,9 @@ public class FileService implements IFileService
             if (pendingTasks.contains(msg.getId()))
             {
                 logger.debug("File Trasfere Message Recieved. Start new FileCopyJob.");
-                
+
                 pendingTasks.remove(msg.getId());
-                
+
                 fileRemoteCopyJob = beanService.getBean(FileRemoteCopyJob.class);
                 fileCopyJobs.put(msg.getId(), fileRemoteCopyJob);
             }
@@ -415,6 +415,7 @@ public class FileService implements IFileService
             }
         }
 
+        boolean errorOccurred = false;
         try
         {
             //fileRemoteCopyJob.newDataArrived(msg);
@@ -422,23 +423,29 @@ public class FileService implements IFileService
         }
         catch (IOException ex)
         {
+            errorOccurred = true;
             logger.debug("IO Error in fileCopyJob. Message: " + ex.getMessage());
         }
         catch (DataFormatException ex)
         {
+            errorOccurred = true;
             logger.debug("Compressor Error in fileCopyJob. Message: " + ex.getMessage());
         }
         catch (FilePartMissingException ex)
         {
+            errorOccurred = true;
             logger.debug("Missing Paart in fileCopyJob. Message:" + ex.getMessage());
         }
         finally
         {
-            fileRemoteCopyJob.cleanUP();
-            if (fileCopyJobs.containsKey(msg.getId()))
+            if (errorOccurred)
             {
-                fileCopyJobs.get(msg.getId()).cleanUP();
-                fileCopyJobs.remove(msg.getId());
+                fileRemoteCopyJob.cleanUP();
+                if (fileCopyJobs.containsKey(msg.getId()))
+                {
+                    fileCopyJobs.get(msg.getId()).cleanUP();
+                    fileCopyJobs.remove(msg.getId());
+                }
             }
         }
     }
