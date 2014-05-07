@@ -12,16 +12,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileRemoteCopyJob;
+import org.pieShare.pieShareApp.service.fileService.exceptions.FilePartMissingException;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  *
@@ -32,16 +31,19 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     private PieLogger logger = new PieLogger(FileRemoteCopyJob.class);
     private int actualBlockNumber;
-    private HashMap<Integer, File> cachedBlocks;
+    // List<String> list = Collections.synchronizedList(new ArrayList<String>());
+    private final ConcurrentHashMap<Integer, File> cachedBlocks;
     private FileOutputStream outStream;
     private File blockDir;
     private File fileToWrite;
     private IPieShareAppConfiguration pieAppConfig;
     private String fileName;
     private ICompressor compressor;
-    private int lastBlockNumber = Integer.MAX_VALUE;
+    private long lastBlockNumber = Long.MAX_VALUE;
     private boolean isInitialized = false;
-
+    private String relativeFilePath;
+    long long ff;
+    
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
@@ -54,12 +56,20 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     public FileRemoteCopyJob()
     {
+        cachedBlocks = new ConcurrentHashMap<>();
+        //cachedBlocks = new HashMap<>();
     }
 
-    private void init(FileTransferMessageBlocked msg) throws FileNotFoundException, IOException
+    private synchronized void init(FileTransferMessageBlocked msg) throws FileNotFoundException, IOException
     {
+        if (isInitialized)
+        {
+            return;
+        }
+
         actualBlockNumber = 0;
-        cachedBlocks = new HashMap<>();
+
+        this.relativeFilePath = msg.getRelativeFilePath();
 
         File f = new File(msg.getRelativeFilePath());
         fileName = f.getName();
@@ -91,7 +101,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     }
 
-    @Override
+    //  @Override
     public synchronized void newDataArrived(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FileNotFoundException
     {
         if (!isInitialized)
@@ -144,7 +154,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                 }
                 ff.close();
             }
-            if (cachedBlocks.get(actualBlockNumber).delete())
+            if (!cachedBlocks.get(actualBlockNumber).delete())
             {
                 logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
             }
@@ -159,11 +169,11 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
             File newFile = new File(pieAppConfig.getWorkingDirectory(), msg.getRelativeFilePath());
 
-            if(!newFile.getParentFile().exists())
+            if (!newFile.getParentFile().exists())
             {
                 newFile.getParentFile().mkdirs();
             }
-            
+
             Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
             cleanUP();
@@ -171,9 +181,43 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     }
 
     @Override
+    public void copyFilePartToTemp(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FilePartMissingException
+    {
+        
+        if (!isInitialized)
+        {
+            init(msg);
+        }
+
+        if (msg.isIsLastEmptyMessage())
+        {
+            lastBlockNumber = msg.getBlockNumber();
+        }
+        else
+        {
+            logger.info("FilePart Recieved: Number :" + msg.getBlockNumber());
+            byte[] toWrite = compressor.decompressByteArray(msg.getBlock());
+            File cachedFile = new File(blockDir, fileName + "_Part_" + msg.getBlockNumber());
+            cachedFile.createNewFile();
+            try (FileOutputStream ff = new FileOutputStream(cachedFile))
+            {
+                ff.write(toWrite);
+                ff.flush();
+                ff.close();
+            }
+            cachedBlocks.put(msg.getBlockNumber(), cachedFile);
+        }
+
+        if (cachedBlocks.size() == lastBlockNumber - 1)
+        {
+            buildFileAndCopyToWorkDir();
+        }
+
+    }
+
+    @Override
     public void cleanUP()
     {
-
         if (!blockDir.exists())
         {
             return;
@@ -187,5 +231,54 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         {
             logger.debug("Error clean up FileRemoteCopy. Message:" + ex.getMessage());
         }
+    }
+
+    private void buildFileAndCopyToWorkDir() throws IOException, FilePartMissingException
+    {
+        while (cachedBlocks.containsKey(actualBlockNumber))
+        {
+            try (FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber)))
+            {
+                byte[] block = new byte[1024];
+
+                int readBytes = 0;
+                while ((readBytes = ff.read(block)) != -1)
+                {
+                    outStream.write(block, 0, readBytes);
+                    outStream.flush();
+                }
+                ff.close();
+            }
+
+            if (!cachedBlocks.get(actualBlockNumber).delete())
+            {
+                logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
+            }
+
+            cachedBlocks.remove(actualBlockNumber);
+            actualBlockNumber++;
+
+        }
+
+        if (!cachedBlocks.isEmpty())
+        {
+            throw new FilePartMissingException("One File party is Missing. Last written Partnumber is: " + actualBlockNumber);
+        }
+
+        logger.info("All parts arrived. Copy file to workingDir.");
+
+        outStream.close();
+
+        File newFile = new File(pieAppConfig.getWorkingDirectory(), relativeFilePath);
+
+        if (!newFile.getParentFile().exists())
+        {
+            newFile.getParentFile().mkdirs();
+        }
+
+        Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+        cleanUP();
+
     }
 }
