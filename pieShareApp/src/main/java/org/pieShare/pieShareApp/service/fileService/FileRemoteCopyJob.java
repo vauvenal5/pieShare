@@ -42,7 +42,6 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     private long lastBlockNumber = Long.MAX_VALUE;
     private boolean isInitialized = false;
     private String relativeFilePath;
-    long long ff;
     
     public void setCompressor(ICompressor compresor)
     {
