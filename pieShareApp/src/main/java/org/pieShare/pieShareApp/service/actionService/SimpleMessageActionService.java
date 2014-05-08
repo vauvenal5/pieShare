@@ -6,17 +6,17 @@
 
 package org.pieShare.pieShareApp.service.actionService;
 
-import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionService;
 import java.util.HashMap;
 import java.util.Map;
 import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
-import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
+import org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionService;
 
 /**
  *
  * @author Svetoslav
  */
-public class SimpleMessageActionService extends AbstractActionService<SimpleMessageCommand, ICommandService<SimpleMessageCommand>> {
+public class SimpleMessageActionService extends AbstractActionService<SimpleMessageCommand, SimpleMessageCommandService> {
     @Override
     public String getCommandName() {
         return "sendMsg";
