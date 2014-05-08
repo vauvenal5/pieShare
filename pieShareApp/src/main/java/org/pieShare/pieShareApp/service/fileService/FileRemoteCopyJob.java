@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
@@ -33,17 +34,17 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     private PieLogger logger = new PieLogger(FileRemoteCopyJob.class);
     private int actualBlockNumber;
     // List<String> list = Collections.synchronizedList(new ArrayList<String>());
-    private final ConcurrentHashMap<Integer, File> cachedBlocks;
+    private final HashMap<Integer, File> cachedBlocks;
     private FileOutputStream outStream;
     private File blockDir;
     private File fileToWrite;
     private IPieShareAppConfiguration pieAppConfig;
     private String fileName;
     private ICompressor compressor;
-    private long lastBlockNumber = Long.MAX_VALUE;
+    private int lastBlockNumber = Integer.MAX_VALUE;
     private boolean isInitialized = false;
     private String relativeFilePath;
-    
+
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
@@ -56,7 +57,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     public FileRemoteCopyJob()
     {
-        cachedBlocks = new ConcurrentHashMap<>();
+        cachedBlocks = new HashMap<>();
         //cachedBlocks = new HashMap<>();
     }
 
@@ -183,7 +184,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     @Override
     public void copyFilePartToTemp(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FilePartMissingException
     {
-        
+
         if (!isInitialized)
         {
             init(msg);
@@ -205,10 +206,18 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                 ff.flush();
                 ff.close();
             }
-            cachedBlocks.put(msg.getBlockNumber(), cachedFile);
+            synchronized (cachedBlocks)
+            {
+                cachedBlocks.put(msg.getBlockNumber(), cachedFile);
+            }
         }
 
-        if (cachedBlocks.size() == lastBlockNumber - 1)
+        int size = 0;
+        synchronized (cachedBlocks)
+        {
+            size = cachedBlocks.size();
+        }
+        if (size == lastBlockNumber - 1)
         {
             buildFileAndCopyToWorkDir();
         }
@@ -235,10 +244,13 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     private void buildFileAndCopyToWorkDir() throws IOException, FilePartMissingException
     {
-        while (cachedBlocks.containsKey(actualBlockNumber))
+        synchronized (cachedBlocks)
         {
-            try (FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber)))
+
+            while (cachedBlocks.containsKey(actualBlockNumber))
             {
+                FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber));
+
                 byte[] block = new byte[1024];
 
                 int readBytes = 0;
@@ -248,16 +260,16 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                     outStream.flush();
                 }
                 ff.close();
+
+                if (!cachedBlocks.get(actualBlockNumber).delete())
+                {
+                    logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
+                }
+
+                cachedBlocks.remove(actualBlockNumber);
+                actualBlockNumber++;
+
             }
-
-            if (!cachedBlocks.get(actualBlockNumber).delete())
-            {
-                logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
-            }
-
-            cachedBlocks.remove(actualBlockNumber);
-            actualBlockNumber++;
-
         }
 
         if (!cachedBlocks.isEmpty())
@@ -277,7 +289,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         }
 
         //Files.copy(fileToWrite.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		copyFileUsingStream(fileToWrite, newFile);
+        copyFileUsingStream(fileToWrite, newFile);
         cleanUP();
 
     }
