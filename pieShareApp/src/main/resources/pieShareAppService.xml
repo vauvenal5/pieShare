@@ -57,7 +57,8 @@
     
     <bean id="fileListener" class="org.pieShare.pieShareApp.service.fileService.ApacheDefaultFileListener" lazy-init="true">
         <property name="fileObserver" ref="fileObserver"/>   
-		<property name="executorService" ref="pieExecutorService"/>     
+        <property name="executorService" ref="pieExecutorService"/> 
+        <property name="fileMerger" ref="fileMerger"/>     
     </bean>
     
     <bean id="simpleMessageCommandService" lazy-init="true" class="org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService">
@@ -93,7 +94,7 @@
         <property name="passwordEncryptionService" ref="passwordEncryptionService"/>
     </bean>
 
-	<bean id="fileObserver" class="org.pieShare.pieShareApp.service.fileService.FileObserver" scope="prototype">
+    <bean id="fileObserver" class="org.pieShare.pieShareApp.service.fileService.FileObserver" scope="prototype">
         <property name="fileMerger" ref="fileMerger"/>
     </bean>
 

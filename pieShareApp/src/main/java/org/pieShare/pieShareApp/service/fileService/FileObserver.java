@@ -41,9 +41,8 @@ public class FileObserver implements IFileObserver
     public void run()
     {
 
-        if (event == FileChangedTypes.FILE_DELETED)
+        if (!(event == FileChangedTypes.FILE_CREATED || event == FileChangedTypes.FILE_MODIFIED))
         {
-            fileMerger.fileDeleted(file);
             return;
         }
 
