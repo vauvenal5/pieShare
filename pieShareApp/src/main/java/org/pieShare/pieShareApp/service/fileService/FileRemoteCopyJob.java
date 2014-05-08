@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.zip.DataFormatException;
 import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -34,17 +36,19 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     private PieLogger logger = new PieLogger(FileRemoteCopyJob.class);
     private int actualBlockNumber;
     // List<String> list = Collections.synchronizedList(new ArrayList<String>());
-    private final HashMap<Integer, File> cachedBlocks;
+    private final ConcurrentHashMap<Integer, File> cachedBlocks;
     private FileOutputStream outStream;
     private File blockDir;
     private File fileToWrite;
     private IPieShareAppConfiguration pieAppConfig;
     private String fileName;
     private ICompressor compressor;
-    private int lastBlockNumber = Integer.MAX_VALUE;
+    private int lastBlockNumber = Integer.MIN_VALUE;
+    private int arrivedBlocks = 0;
     private boolean isInitialized = false;
     private String relativeFilePath;
 
+    //private final AtomicInteger arrivedBlocks = new AtomicInteger();
     public void setCompressor(ICompressor compresor)
     {
         this.compressor = compresor;
@@ -57,7 +61,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     public FileRemoteCopyJob()
     {
-        cachedBlocks = new HashMap<>();
+        cachedBlocks = new ConcurrentHashMap<>();
         //cachedBlocks = new HashMap<>();
     }
 
@@ -184,7 +188,6 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
     @Override
     public void copyFilePartToTemp(FileTransferMessageBlocked msg) throws IOException, DataFormatException, FilePartMissingException
     {
-
         if (!isInitialized)
         {
             init(msg);
@@ -193,6 +196,7 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
         if (msg.isIsLastEmptyMessage())
         {
             lastBlockNumber = msg.getBlockNumber();
+            logger.info("Final Filepart arrived Number: " + msg.getBlockNumber());
         }
         else
         {
@@ -206,22 +210,19 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
                 ff.flush();
                 ff.close();
             }
-            synchronized (cachedBlocks)
+
+            cachedBlocks.put(msg.getBlockNumber(), cachedFile);
+
+        }
+
+        synchronized (this)
+        {
+            arrivedBlocks++;
+            if (lastBlockNumber == arrivedBlocks - 1)
             {
-                cachedBlocks.put(msg.getBlockNumber(), cachedFile);
+                buildFileAndCopyToWorkDir();
             }
         }
-
-        int size = 0;
-        synchronized (cachedBlocks)
-        {
-            size = cachedBlocks.size();
-        }
-        if (size == lastBlockNumber - 1)
-        {
-            buildFileAndCopyToWorkDir();
-        }
-
     }
 
     @Override
@@ -244,32 +245,29 @@ public class FileRemoteCopyJob implements IFileRemoteCopyJob
 
     private void buildFileAndCopyToWorkDir() throws IOException, FilePartMissingException
     {
-        synchronized (cachedBlocks)
+
+        while (cachedBlocks.containsKey(actualBlockNumber))
         {
+            FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber));
 
-            while (cachedBlocks.containsKey(actualBlockNumber))
+            byte[] block = new byte[1024];
+
+            int readBytes = 0;
+            while ((readBytes = ff.read(block)) != -1)
             {
-                FileInputStream ff = new FileInputStream(cachedBlocks.get(actualBlockNumber));
-
-                byte[] block = new byte[1024];
-
-                int readBytes = 0;
-                while ((readBytes = ff.read(block)) != -1)
-                {
-                    outStream.write(block, 0, readBytes);
-                    outStream.flush();
-                }
-                ff.close();
-
-                if (!cachedBlocks.get(actualBlockNumber).delete())
-                {
-                    logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
-                }
-
-                cachedBlocks.remove(actualBlockNumber);
-                actualBlockNumber++;
-
+                outStream.write(block, 0, readBytes);
+                outStream.flush();
             }
+            ff.close();
+
+            if (!cachedBlocks.get(actualBlockNumber).delete())
+            {
+                logger.error("Cannot delete file part. Part Nr: " + actualBlockNumber);
+            }
+
+            cachedBlocks.remove(actualBlockNumber);
+            actualBlockNumber++;
+
         }
 
         if (!cachedBlocks.isEmpty())

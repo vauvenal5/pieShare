@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
@@ -22,61 +20,64 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 public class FileObserver implements IFileObserver
 {
 
-	private IFileMerger fileMerger;
-	private File file;
-	private FileChangedTypes event;
-	private final long TIME_OUT_SEC = 60 * 60;
+    private IFileMerger fileMerger;
+    private File file;
+    private FileChangedTypes event;
+    private final long TIME_OUT_SEC = 60 * 60;
 
-	public void setFileMerger(IFileMerger fileMerger)
-	{
-		this.fileMerger = fileMerger;
-	}
+    public void setFileMerger(IFileMerger fileMerger)
+    {
+        this.fileMerger = fileMerger;
+    }
 
-	@Override
-	public void setData(File file, FileChangedTypes event)
-	{
-		this.file = file;
-		this.event = event;
-	}
+    @Override
+    public void setData(File file, FileChangedTypes event)
+    {
+        this.file = file;
+        this.event = event;
+    }
 
-	@Override
-	public void run()
-	{
-		FileInputStream st;
+    @Override
+    public void run()
+    {
 
-		boolean isCopying = true;
+        if (event == FileChangedTypes.FILE_DELETED)
+        {
+            fileMerger.fileDeleted(file);
+            return;
+        }
 
-		while (isCopying)
-		{
+        FileInputStream st;
 
-			try
-			{
-				st = new FileInputStream(file);
-				isCopying = false;
-				st.close();
-			}
-			catch (FileNotFoundException ex)
-			{
-				
-			}
-			catch (IOException ex)
-			{
-				
-			}
-		}
+        boolean isCopying = true;
 
-		if (event == FileChangedTypes.FILE_CREATED)
-		{
-			fileMerger.fileCreated(file);
-		}
-		else if (event == FileChangedTypes.FILE_DELETED)
-		{
-			fileMerger.fileDeleted(file);
-		}
-		else if (event == FileChangedTypes.FILE_MODIFIED)
-		{
-			fileMerger.fileChanged(file);
-		}
-	}
+        while (isCopying)
+        {
+
+            try
+            {
+                st = new FileInputStream(file);
+                isCopying = false;
+                st.close();
+            }
+            catch (FileNotFoundException ex)
+            {
+
+            }
+            catch (IOException ex)
+            {
+
+            }
+        }
+
+        if (event == FileChangedTypes.FILE_CREATED)
+        {
+            fileMerger.fileCreated(file);
+        }
+        else if (event == FileChangedTypes.FILE_MODIFIED)
+        {
+            fileMerger.fileChanged(file);
+        }
+    }
 
 }
