@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
@@ -25,10 +24,11 @@ import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
  *
  * @author Svetoslav
  */
-public class PasswordEncryptionService {
+public class PasswordEncryptionService implements IPasswordEncryptionService {
     
-    public byte[] salt;
-    public int iterations;
+    //todo-sv: change this
+    public byte[] salt = "changeThis".getBytes();
+    public int iterations = 5000;
     
     private IProviderService providerService;
     
@@ -36,7 +36,11 @@ public class PasswordEncryptionService {
         
     }
     
+    public void setProviderService(IProviderService service) {
+        this.providerService = service;
+    }
     
+    @Override
     public EncryptedPassword encryptPassword(PlainTextPassword plainTextPassword) {
         try {
             PBEKeySpec keySpec = new PBEKeySpec(plainTextPassword.password, salt, iterations);
