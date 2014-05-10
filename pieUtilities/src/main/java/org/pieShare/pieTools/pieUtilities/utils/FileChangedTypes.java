@@ -13,5 +13,6 @@ package org.pieShare.pieTools.pieUtilities.utils;
     {
         FILE_CREATED,
         FILE_DELETED,
-        FILE_MODIFIED
+        FILE_MODIFIED,
+        SNYC_ALL
     }
