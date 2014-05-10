@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.api;
+package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
-import java.io.IOException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 
 /**
@@ -15,14 +14,5 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  */
 public interface IFileWatcherService extends IPieTask
 {
-
-	public void setFileMerger(IFileMerger fileMerger);
-
 	public void setWatchDir(File watchDir);
-
-	public void watchDir() throws IOException;
-
-	public void cancel();
-
-	public void deleteAll();
 }
