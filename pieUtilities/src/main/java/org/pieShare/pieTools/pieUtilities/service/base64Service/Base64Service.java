@@ -18,13 +18,13 @@ public class Base64Service implements IBase64Service
     @Override
     public byte[] encode(byte[] in)
     {
-        return Base64.encodeBase64(in);
+        return in;//Base64.encodeBase64(in);
     }
 
     @Override
     public byte[] decode(byte[] in)
     {
-        return Base64.decodeBase64(in);
+        return in;// Base64.decodeBase64(in);
     }
 
 }

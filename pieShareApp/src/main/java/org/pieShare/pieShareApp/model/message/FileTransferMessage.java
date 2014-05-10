@@ -17,7 +17,18 @@ public class FileTransferMessage extends FileChangedMessage
 {
     private UUID id;
     private byte[] block;
+    private int blockSize;
 
+    public int getBlockSize()
+    {
+        return blockSize;
+    }
+
+    public void setBlockSize(int blockSize)
+    {
+        this.blockSize = blockSize;
+    }
+    
     public byte[] getBlock()
     {
         return block;
