@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.security.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 
@@ -23,23 +26,28 @@ public class MD5Service
     
     private IProviderService provider;
     
-    public MD5Service() {
+    public void setProviderService(IProviderService service) {
+        this.provider = service;
+        
         try
         {
-            messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm());
+            messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
         }
         catch (NoSuchAlgorithmException ex)
         {
             md5Logger.error("Error in MD5 Hash Algorithm, this shold no happen. Message: " + ex.getMessage());
+        } catch (NoSuchProviderException ex) {
+            //todo: error handling
         }
     }
+    
+    public MD5Service() {
+        
+    }
 
-    public byte[] hash(byte[] data) throws IOException
-    {
-        if(this.messageDigest == null)
-        {
-            //todo-sv: throw exception
-        }
+    public byte[] hash(byte[] data)
+    {   
+        Validate.notNull(this.messageDigest);
 
 	messageDigest.update(data);
 	byte[] resultByte = messageDigest.digest();
