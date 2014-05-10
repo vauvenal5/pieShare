@@ -11,10 +11,20 @@
 
     <modules>
         <module>pieUtilities</module>
-        <module>pieCeption</module>
         <module>piePlate</module>
         <module>pieShareApp</module>
     </modules>
+
+    <dependencies>
+        		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.2.RELEASE</version>
+                </dependency>
+    </dependencies>
+
+
 
     <build>
         <plugins>
@@ -25,6 +35,7 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             
@@ -36,7 +47,71 @@
                     <sourceEncoding>utf8</sourceEncoding>
                     <sourceDirectories>
                         <sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
-                     </sourceDirectories>
+                    </sourceDirectories>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <formats>
+                        <format>xml</format>
+                        <format>html</format>
+                    </formats>
+                    <maxmem>256m</maxmem>
+                    
+                    <!-- aggregated reports for multi-module projects -->
+                    <aggregate>true</aggregate>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <configuration>
+                    <file>/home/travis/build/vauvenal5/pieShare/target/site/cobertura/coverage.xml</file>
+                    <regex>true</regex>
+                    <replacements>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/pieUtilities)</token>
+                            <value>filename=\"pieUtilities/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/pieCeption)</token>
+                            <value>filename=\"pieCeption/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieTools/piePlate)</token>
+                            <value>filename=\"piePlate/src/main/java/</value>
+                        </replacement>
+                        <replacement>
+                            <token>filename=\"(?=org/pieShare/pieShareApp)</token>
+                            <value>filename=\"pieShareApp/src/main/java/</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4.3</version>
+                <configuration>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>2.2.0</version>
+                <configuration>
+                    <sourceEncoding>utf8</sourceEncoding>
+                    <sourceDirectories>
+                        <sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
+                    </sourceDirectories>
                 </configuration>
             </plugin>
             
@@ -84,7 +159,23 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <!-- Build an executable JAR -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.pieShare.pieShareApp.App</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+
         </plugins>
     </build>
-
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
