@@ -7,20 +7,15 @@
 package org.pieShare.pieTools.pieUtilities.service.security.hashService;
 
 import org.bouncycastle.util.encoders.Hex;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService;
-import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 
 /**
  *
  * @author Svetoslav
  */
-public class MD5ServiceTest {
+public class MD5ServiceModuleTest {
 
     /**
      * Test of hash method, of class MD5Service.
