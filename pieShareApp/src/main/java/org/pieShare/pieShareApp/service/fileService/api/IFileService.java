@@ -18,17 +18,17 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
 public interface IFileService
 {
 
-    public void remoteFileChange(FileChangedMessage message);
+	public void remoteFileChange(FileChangedMessage message);
 
-    public void localFileChange(FileChangedMessage message);
+	public void localFileChange(FileChangedMessage message);
 
-    public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
+	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 
-    public void sendAllFilesSyncRequest();
+	public void sendAllFilesSyncRequest();
 
-    public void fileTransferRequestReceived(FileTransferRequestMessage msg);
+	public void fileTransferRequestReceived(FileTransferRequestMessage msg);
 
-    public void fileTransfereMessage(FileTransferMessageBlocked msg);
-    
-    public void sendFileTransferRequenst(PieFile piefile);
+	public void fileTransfereMessage(FileTransferMessageBlocked msg);
+
+	public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg);
 }
