@@ -7,6 +7,10 @@
 package org.pieShare.pieTools.piePlate.service.cluster;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -31,6 +35,17 @@ public class ClusterManagementService implements IClusterManagementService {
     public void setMap(Map<String, IClusterService> map) {
         this.clusters = map;
     }
+    
+    @Override
+    public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
+        if(this.clusters.containsKey(message.getAddress().getClusterName())) {
+            try {
+                this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
+            } catch (ClusterServiceException ex) {
+                throw new ClusterManagmentServiceException(ex);
+            }
+        }
+    }
 
     @Override
     public IClusterService connect(String id) throws ClusterManagmentServiceException {
@@ -39,7 +54,7 @@ public class ClusterManagementService implements IClusterManagementService {
         }
         
         try {
-            IClusterService cluster = (IClusterService)this.beanService.getBean("clusterService");
+            IClusterService cluster = (IClusterService)this.beanService.getBean(PiePlateBeanNames.getClusterService());
             cluster.connect(id);
             this.clusters.put(id, cluster);
             return cluster;
