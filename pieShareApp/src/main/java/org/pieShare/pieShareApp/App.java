@@ -10,7 +10,7 @@ public class App {
     public static void main(String[] args) {
         //todo-sv: choosing the right ip stack should be automated and not fixed to IPv4
         System.setProperty("java.net.preferIPv4Stack", "true");
-        ApplicationContext context = new ClassPathXmlApplicationContext("pieShareApplicationContext.xml");
+        ApplicationContext context = new ClassPathXmlApplicationContext("pieShareApp.xml");
         //PieShareController controller = (PieShareController)context.getBean("pieShareController");
         //controller.run();
     }
