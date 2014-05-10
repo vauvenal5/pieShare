@@ -6,11 +6,14 @@
 package org.pieShare.pieShareApp.service;
 
 import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.model.SimpleMessage;
-import org.pieShare.pieShareApp.model.action.SimpleMessageAction;
+import org.pieShare.pieShareApp.model.message.SimpleMessage;
+import org.pieShare.pieShareApp.service.actionService.LoginActionService;
+import org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
@@ -28,16 +31,10 @@ public class PieShareService
     private ICommandParserService parserService;
     private ICmdLineService cmdLineService;
     private IBeanService beanService;
-    private IClusterService clusterService;
-    private IFileService fileService;
+    private IClusterManagementService clusterManagementService;
 
     public PieShareService()
     {
-    }
-
-    public void setFileService(IFileService fileService)
-    {
-        this.fileService = fileService;
     }
 
     public void setExecutorService(IExecutorService service)
@@ -60,32 +57,24 @@ public class PieShareService
         this.beanService = service;
     }
 
-    public void setClusterService(IClusterService service)
+    public void setClusterManagementService(IClusterManagementService service)
     {
-        this.clusterService = service;
+        this.clusterManagementService = service;
     }
 
     @PostConstruct
     public void start()
     {
-
-        try
-        {
-            this.clusterService.connect("ourFirstCluster");
-        }
-        catch (ClusterServiceException ex)
-        {
-            ex.printStackTrace();
-        }
-
         this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
 
         try
         {
             //todo-sv: change this!!! (new should not be used here)
             //getbean per class ist dumm... zerst?rt unabh?ngigkeit
-            SimpleMessageAction action = this.beanService.getBean(SimpleMessageAction.class);
+            SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
             this.parserService.registerAction(action);
+            LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
+            this.parserService.registerAction(laction);
         }
         catch (Exception ex)
         {
@@ -96,6 +85,6 @@ public class PieShareService
         msg.setMsg("PieShare awaits your command:");
 
         this.cmdLineService.writeLine(msg);
-        this.fileService.sendAllFilesSyncRequest();
+        //this.fileService.sendAllFilesSyncRequest();
     }
 }

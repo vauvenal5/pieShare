@@ -5,8 +5,11 @@
  */
 package org.pieShare.pieShareApp.service.fileService.api;
 
-import org.pieShare.pieShareApp.model.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
+import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
  *
@@ -22,4 +25,10 @@ public interface IFileService
 	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 
 	public void sendAllFilesSyncRequest();
+
+	public void fileTransferRequestReceived(FileTransferRequestMessage msg);
+
+	public void fileTransfereMessage(FileTransferMessageBlocked msg);
+
+	public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg);
 }

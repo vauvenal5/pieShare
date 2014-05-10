@@ -9,6 +9,9 @@ import java.io.File;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
+import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  *
@@ -17,18 +20,30 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 public class ApacheDefaultFileListener implements FileListener
 {
 
+    private IFileObserver fileObserver;
+    private IExecutorService executerService;
     private IFileMerger fileMerger;
-    
+
+    public void setFileObserver(IFileObserver fileObserver)
+    {
+        this.fileObserver = fileObserver;
+    }
+
     public void setFileMerger(IFileMerger fileMerger)
     {
         this.fileMerger = fileMerger;
     }
-    
+
+    public void setExecutorService(IExecutorService executerService)
+    {
+        this.executerService = executerService;
+    }
+
     @Override
     public void fileCreated(FileChangeEvent fce) throws Exception
     {
         String filePath = fce.getFile().getURL().getFile();
-        fileMerger.fileCreated(new File(filePath));
+        startObservation(new File(filePath), FileChangedTypes.FILE_CREATED);
     }
 
     @Override
@@ -36,13 +51,20 @@ public class ApacheDefaultFileListener implements FileListener
     {
         String filePath = fce.getFile().getURL().getFile();
         fileMerger.fileDeleted(new File(filePath));
+        //startObservation(new File(filePath), FileChangedTypes.FILE_DELETED);
     }
 
     @Override
     public void fileChanged(FileChangeEvent fce) throws Exception
     {
         String filePath = fce.getFile().getURL().getFile();
-        fileMerger.fileChanged(new File(filePath));
+        startObservation(new File(filePath), FileChangedTypes.FILE_MODIFIED);
+    }
+
+    private void startObservation(File file, FileChangedTypes event)
+    {
+        fileObserver.setData(file, event);
+        executerService.execute(fileObserver);
     }
 
 }

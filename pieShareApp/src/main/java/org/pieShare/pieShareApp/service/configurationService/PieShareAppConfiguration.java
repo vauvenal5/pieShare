@@ -12,15 +12,11 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppCon
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author richy
  */
-@Component("pieShareAppConfiguration")
 public class PieShareAppConfiguration implements IPieShareAppConfiguration
 {
 
@@ -28,8 +24,6 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
     private Properties conf;
     private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
-    @Autowired
-    @Qualifier("configurationReader")
     public void setConfigurationReader(IConfigurationReader configurationReader)
     {
         this.configurationReader = configurationReader;
@@ -48,7 +42,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
     public File getWorkingDirectory()
     {
         Validate.notNull(conf);
-        
+
         File watchDir = new File(conf.getProperty("workingDir"));
 
         if (!watchDir.exists())
@@ -57,5 +51,35 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration
         }
 
         return new File(watchDir.getAbsolutePath());
+    }
+
+    @Override
+    public int getFileSendBufferSize()
+    {
+        Validate.notNull(conf);
+
+        try
+        {
+            return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
+        }
+        catch (NumberFormatException ex)
+        {
+            return 2048;
+        }
+    }
+
+    @Override
+    public File getTempCopyDirectory()
+    {
+        Validate.notNull(conf);
+
+        File tempCopyDir = new File(conf.getProperty("tempCopyDir"));
+
+        if (!tempCopyDir.exists())
+        {
+            tempCopyDir.mkdirs();
+        }
+
+        return new File(tempCopyDir.getAbsolutePath());
     }
 }

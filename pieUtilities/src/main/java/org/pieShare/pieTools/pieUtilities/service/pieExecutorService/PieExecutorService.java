@@ -13,7 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
@@ -66,7 +66,7 @@ public class PieExecutorService implements IExecutorService{
         IPieEventTask task = null;
         try {
             task = (IPieEventTask)this.beanService.getBean(taskClass);
-        } catch(BeanServiceException ex) {
+        } catch(BeanServiceError ex) {
             throw new PieExecutorServiceException("Could not create task!", ex);
         }
         
