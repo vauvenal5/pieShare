@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
  *
  * @author richy
  */
-@Component("configurationReader")
 public class ConfigurationReader implements IConfigurationReader
 {
 
@@ -46,6 +45,11 @@ public class ConfigurationReader implements IConfigurationReader
     {
         File config = new File(configFolder, pathToConfig);
 
+        if(!config.getParentFile().exists())
+        {
+            config.getParentFile().mkdirs();
+        }
+        
         if (!config.exists())
         {
             logger.error("Configuration: " + config.getAbsolutePath() + " does not exists.");

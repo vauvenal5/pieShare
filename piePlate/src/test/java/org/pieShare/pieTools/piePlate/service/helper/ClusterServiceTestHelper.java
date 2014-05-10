@@ -23,7 +23,7 @@ public abstract class ClusterServiceTestHelper implements Runnable {
         return this.done;
     }
 
-    public void setDone() {
-        this.done = true;
+    public void setDone(boolean done) {
+        this.done = done;
     }
 }

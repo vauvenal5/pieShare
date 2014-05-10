@@ -3,7 +3,7 @@ package org.pieShare.pieTools.pieUtilities.service.commandParser;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.*;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IAction;
+import org.pieShare.pieTools.pieUtilities.service.commandParser.api.IActionService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.CommandParserServiceException;
 
@@ -28,7 +28,7 @@ public class Argparse4jService implements ICommandParserService {
     public void parseArgs(String[] args) throws CommandParserServiceException {
         try {
             Namespace n = parser.parseArgs(args);
-            ((IAction)n.get("func")).doAction(n.getAttrs());
+            ((IActionService)n.get("func")).doAction(n.getAttrs());
         }
         catch (ArgumentParserException ex) {
             throw new CommandParserServiceException("Arguments could not be parsed!", ex);
@@ -36,7 +36,7 @@ public class Argparse4jService implements ICommandParserService {
     }
 
     @Override
-    public void registerAction(IAction action) throws CommandParserServiceException {
+    public void registerAction(IActionService action) throws CommandParserServiceException {
         try {
             Validate.notNull(action);
             Validate.notBlank(action.getCommandName());

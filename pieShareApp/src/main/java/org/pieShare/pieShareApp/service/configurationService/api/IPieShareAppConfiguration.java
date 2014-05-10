@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.configurationService.api;
 
 import java.io.File;
@@ -14,5 +13,10 @@ import java.io.File;
  */
 public interface IPieShareAppConfiguration
 {
+
     public File getWorkingDirectory();
+
+    public int getFileSendBufferSize();
+
+    public File getTempCopyDirectory();
 }
