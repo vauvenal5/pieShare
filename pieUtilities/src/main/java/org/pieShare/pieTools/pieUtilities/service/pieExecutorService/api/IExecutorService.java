@@ -17,8 +17,23 @@ public interface IExecutorService {
     
     public void execute(IPieTask task);
     
+    /**
+     * Will register a task which works directly with the given event type.
+     * @param <P>
+     * @param <T>
+     * @param event
+     * @param task 
+     */
     <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
     
+    /**
+     * Will register a task which works with the base type of a given event type.
+     * @param <X>
+     * @param <P>
+     * @param <T>
+     * @param event
+     * @param task 
+     */
     <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task);
     
     public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException;
