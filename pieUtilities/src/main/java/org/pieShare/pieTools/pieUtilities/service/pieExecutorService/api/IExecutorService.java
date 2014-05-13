@@ -28,6 +28,14 @@ public interface IExecutorService {
     
     /**
      * Will register a task which works with the base type of a given event type.
+     * Lets say for example you want to print SmallMessages and ErrorMessages to CMD
+     * and BigMessages to file.
+     * All implement the PrintableEvent.
+     * You have now two tasks: PrintToCMDTask<PrintableEvent> and PrintToFileTask<PrintableEvent>
+     * Both can handle all Messages which are Printable.
+     * You have to register the tasks based on the derived types because registering to the base type
+     * will always trigger the tasks although the tasks work with the base type and not the given
+     * derived type.
      * @param <X>
      * @param <P>
      * @param <T>
