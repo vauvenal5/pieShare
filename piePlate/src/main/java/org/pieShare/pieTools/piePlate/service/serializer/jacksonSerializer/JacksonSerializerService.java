@@ -9,6 +9,7 @@ import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
 import java.io.IOException;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.IPieMessageMixIn;
 
 /**
  * Created by Svetoslav on 19.03.14.
@@ -17,9 +18,10 @@ public class JacksonSerializerService implements ISerializerService {
 
     private ObjectMapper objectMapper;
 
-    public JacksonSerializerService() {
+    public JacksonSerializerService() {   
         this.objectMapper = new ObjectMapper();
         this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        this.objectMapper.addMixInAnnotations(IPieMessage.class, IPieMessageMixIn.class);
     }
 
     @Override
