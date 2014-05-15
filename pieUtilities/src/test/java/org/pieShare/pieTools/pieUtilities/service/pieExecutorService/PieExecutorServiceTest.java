@@ -150,4 +150,36 @@ public class PieExecutorServiceTest {
         PieExecutorService instance = new PieExecutorService();
         instance.registerTask(IPieEvent.class, null);
     }
+    
+    @Test
+    public void testRegisterExtendedTask() {
+        Map<Class, Class> map = Mockito.mock(Map.class);
+        
+        PieExecutorService instance = new PieExecutorService();
+        instance.setMap(map);
+        
+        class SubEvent implements IPieEvent {
+        }
+        
+        class SubSubEvent extends SubEvent {
+        }
+        
+        class SubTask implements IPieEventTask<SubEvent>{
+
+            @Override
+            public void setMsg(SubEvent msg) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void run() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            
+        }
+        
+        instance.registerExtendedTask(SubSubEvent.class, SubTask.class);
+        
+        Mockito.verify(map, Mockito.times(1)).put(SubSubEvent.class, SubTask.class);
+    }
 }
