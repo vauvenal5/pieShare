@@ -33,6 +33,10 @@ public class LoginController implements Initializable {
     private LoginCommandService loginCommandService;
     private IBeanService beanService;
     
+    public void setLoginCommandService(LoginCommandService service) {
+        this.loginCommandService = service;
+    }
+    
     @FXML
     private void handleLoginAction(ActionEvent event) {
         PlainTextPassword plainText = new PlainTextPassword();
