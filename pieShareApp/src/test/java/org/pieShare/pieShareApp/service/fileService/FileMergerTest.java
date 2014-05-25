@@ -208,12 +208,12 @@ public class FileMergerTest
         Mockito.verify(message, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message, Mockito.times(1)).setLastModified((long) 10);
         //Mockito.verify(message, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
-        Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("folder1/newFile2");
+        Mockito.verify(message, Mockito.times(1)).setRelativeFilePath("folder1/newFile1");
         
         Mockito.verify(message2, Mockito.times(1)).setChangedType(FileChangedTypes.FILE_DELETED);
         Mockito.verify(message2, Mockito.times(1)).setLastModified((long) 10);
         //Mockito.verify(message2, Mockito.times(1)).setMd5("SuperDuperMD5Sum");
-        Mockito.verify(message2, Mockito.times(1)).setRelativeFilePath("folder1/newFile1");
+        Mockito.verify(message2, Mockito.times(1)).setRelativeFilePath("folder1/newFile2");
     }
 
     
