@@ -6,12 +6,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        System.setProperty("java.net.preferIPv4Stack", "true");
+        ApplicationContext context = new ClassPathXmlApplicationContext("pieShareAppFx.xml");
+        
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
         
         Scene scene = new Scene(root);
