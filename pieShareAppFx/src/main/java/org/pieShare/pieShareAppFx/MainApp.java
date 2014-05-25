@@ -17,7 +17,7 @@ public class MainApp extends Application {
         System.setProperty("java.net.preferIPv4Stack", "true");
         ApplicationContext context = new ClassPathXmlApplicationContext("pieShareAppFx.xml");
         
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/Styles.css");
