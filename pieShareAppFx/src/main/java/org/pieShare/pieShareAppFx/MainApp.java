@@ -2,9 +2,6 @@ package org.pieShare.pieShareAppFx;
 
 import javafx.application.Application;
 import static javafx.application.Application.launch;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -16,15 +13,8 @@ public class MainApp extends Application {
     public void start(Stage stage) throws Exception {
         System.setProperty("java.net.preferIPv4Stack", "true");
         ApplicationContext context = new ClassPathXmlApplicationContext("pieShareAppFx.xml");
-        
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("/styles/Styles.css");
-        
-        stage.setTitle("JavaFX and Maven");
-        stage.setScene(scene);
-        stage.show();
+        FXMLController controller = context.getBean(FXMLController.class);
+        controller.setMainStage(stage);
     }
 
     /**
