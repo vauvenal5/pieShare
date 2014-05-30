@@ -5,10 +5,10 @@
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
    
-    <import resource="classpath*:piePlateApplicationContext.xml" />
-    <import resource="classpath*:pieUtilitiesApplicationContext.xml" />
-    <import resource="classpath*:pieShareAppModel.xml" />
-    <import resource="classpath*:service/pieShareAppAction.xml" />
+    <import resource="classpath*:contexts/piePlateApplicationContext.xml" />
+    <import resource="classpath*:contexts/pieUtilitiesApplicationContext.xml" />
+    <import resource="classpath*:contexts/pieShareAppModel.xml" />
+    <import resource="classpath*:contexts/service/pieShareAppAction.xml" />
     
   
     <bean id="pieFile" class="org.pieShare.pieShareApp.service.fileService.PieFile" scope="prototype">
