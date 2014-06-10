@@ -58,12 +58,13 @@ public class PieExecutorServiceTest {
     public void testHandlePieEvent() throws Exception {
         IPieEvent event = Mockito.mock(IPieEvent.class);
         Map<Class, Class> map = Mockito.mock(Map.class);
-        IPieEventTask<IPieEvent> task = Mockito.mock(IPieEventTask.class);
+        IPieEventTask task = Mockito.mock(IPieEventTask.class);
         IBeanService beanService = Mockito.mock(IBeanService.class);
         ExecutorService executor = Mockito.mock(ExecutorService.class);
         
         Mockito.when(map.get(event.getClass())).thenReturn(task.getClass());
-        Mockito.when(beanService.getBean(task.getClass())).thenReturn(task);
+        Class clazz = task.getClass();
+        Mockito.when(beanService.getBean(clazz)).thenReturn(task);
         
         PieExecutorService instance = new PieExecutorService();
         instance.setBeanService(beanService);
