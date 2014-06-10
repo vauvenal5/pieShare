@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <import resource="classpath*:contexts/pieShareApp.xml" />
+    
+    <bean id="mainController" class="org.pieShare.pieShareAppFx.FXMLController" lazy-init="false">
+        <property name="beanService" ref="pieBeanService"/>
+        <property name="fXMLLoader" ref="fxmlLoader"/>
+    </bean>
+    
+    <bean id="fxmlLoader" class="javafx.fxml.FXMLLoader" lazy-init="true"></bean>
+    
+    <bean id="loginController" class="org.pieShare.pieShareAppFx.controller.LoginController" lazy-init="true">
+        <property name="loginCommandService" ref="loginCommandService"/>
+    </bean>
+</beans>
