@@ -51,6 +51,11 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
+                <dependency>
+                    <groupId>com.turn</groupId>
+                    <artifactId>ttorrent</artifactId>
+                    <version>1.4</version>
+                </dependency>
         
 	</dependencies>
    
