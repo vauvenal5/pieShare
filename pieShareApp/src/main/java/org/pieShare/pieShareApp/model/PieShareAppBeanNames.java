@@ -26,4 +26,8 @@ public class PieShareAppBeanNames {
     public static String getFileServiceName() {
         return "fileService";
     }
+    
+     public static String getPieFileName() {
+        return "pieFile";
+    }
 }
