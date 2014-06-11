@@ -104,7 +104,7 @@ public class FileService implements IFileService
             //ToDo Handle Error
         }
 
-        try
+      /*  try
         {
             registerAll(pieAppConfig.getWorkingDirectory());
 
@@ -113,7 +113,7 @@ public class FileService implements IFileService
         {
             logger.error("Error parsing workingDir at startup");
         }
-
+*/
         addWatchDirectory(pieAppConfig.getWorkingDirectory());
 
     }
