@@ -29,7 +29,6 @@ public class PieShareService
 
     private IExecutorService executorService;
     private ICommandParserService parserService;
-    private ICmdLineService cmdLineService;
     private IBeanService beanService;
     private IClusterManagementService clusterManagementService;
 
@@ -45,11 +44,6 @@ public class PieShareService
     public void setParserService(ICommandParserService service)
     {
         this.parserService = service;
-    }
-
-    public void setCommandLineService(ICmdLineService service)
-    {
-        this.cmdLineService = service;
     }
 
     public void setBeanService(IBeanService service)
@@ -80,11 +74,5 @@ public class PieShareService
         {
             ex.printStackTrace();
         }
-
-        SimpleMessage msg = new SimpleMessage();
-        msg.setMsg("PieShare awaits your command:");
-
-        this.cmdLineService.writeLine(msg);
-        //this.fileService.sendAllFilesSyncRequest();
     }
 }
