@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
+import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
@@ -20,14 +21,14 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 public class FileObserver implements IFileObserver
 {
 
-    private IFileMerger fileMerger;
+    private IShareService shareService;
     private File file;
     private FileChangedTypes event;
     private final long TIME_OUT_SEC = 60 * 60;
 
-    public void setFileMerger(IFileMerger fileMerger)
+    public void setShareService(IShareService shareService)
     {
-        this.fileMerger = fileMerger;
+        this.shareService = shareService;
     }
 
     @Override
@@ -71,12 +72,15 @@ public class FileObserver implements IFileObserver
 
         if (event == FileChangedTypes.FILE_CREATED)
         {
-            fileMerger.fileCreated(file);
+	    PieFile pieFile = new PieFile();
+	    pieFile.Init(file);
+	    
+            shareService.shareFile(pieFile);
         }
-        else if (event == FileChangedTypes.FILE_MODIFIED)
+        /*else if (event == FileChangedTypes.FILE_MODIFIED)
         {
             fileMerger.fileChanged(file);
-        }
+        }*/
     }
 
 }

@@ -14,6 +14,7 @@ import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -24,14 +25,8 @@ public class ApacheFileWatcher implements IFileWatcherService
 {
 
     private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
-    private IFileMerger fileMerger;
     private File watchDir;
     private FileListener fileListener;
-
-    public void setFileMerger(IFileMerger fileMerger)
-    {
-        this.fileMerger = fileMerger;
-    }
 
     public void setFileListener(FileListener fileListener)
     {
