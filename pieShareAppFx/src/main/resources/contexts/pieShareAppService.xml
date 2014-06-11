@@ -91,6 +91,7 @@
 
     <bean id="fileObserver" class="org.pieShare.pieShareApp.service.fileService.FileObserver" scope="prototype">
         <property name="shareService" ref="shareService"/>
+        <property name="beanService" ref="pieBeanService"/>
     </bean>
     
     <bean id="shareService" class="org.pieShare.pieShareApp.service.shareService.BitTorrentService">
