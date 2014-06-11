@@ -24,8 +24,10 @@ import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
 import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
 import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.task.AllFilesSyncTask;
 import org.pieShare.pieShareApp.model.task.FileChangedTask;
+import org.pieShare.pieShareApp.model.task.FileMetaTask;
 import org.pieShare.pieShareApp.model.task.FileTransferRequestTask;
 import org.pieShare.pieShareApp.model.task.FileTransferTask;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -138,6 +140,7 @@ public class FileService implements IFileService
         this.executorService.registerTask(AllFilesSyncMessage.class, AllFilesSyncTask.class);
         this.executorService.registerTask(FileTransferRequestMessage.class, FileTransferRequestTask.class);
         this.executorService.registerTask(FileTransferMessageBlocked.class, FileTransferTask.class);
+        this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
     }
 
     public void setFileMerger(IFileMerger fileMerger)
