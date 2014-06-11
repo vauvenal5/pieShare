@@ -16,17 +16,21 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.fileUtileService.api.IFileUtileService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFolderService;
 
@@ -39,8 +43,17 @@ public class BitTorrentService implements IShareService {
     private Tracker tracker;
     private IPieShareAppConfiguration configurationService;
     private ITempFolderService tmpFolderService;
-    private IClusterService clusterService;
     private IFileUtileService fileUtileService;
+    private IClusterManagementService clusterManagementService;
+    private IBeanService beanService;
+
+    public void setBeanService(IBeanService beanService) {
+        this.beanService = beanService;
+    }
+
+    public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+        this.clusterManagementService = clusterManagementService;
+    }
 
     public void setConfigurationService(IPieShareAppConfiguration configurationService) {
         this.configurationService = configurationService;
@@ -48,10 +61,6 @@ public class BitTorrentService implements IShareService {
 
     public void setTmpFolderService(ITempFolderService tmpFolderService) {
         this.tmpFolderService = tmpFolderService;
-    }
-
-    public void setClusterService(IClusterService clusterService) {
-        this.clusterService = clusterService;
     }
 
     public void setFileUtileService(IFileUtileService fileUtileService) {
@@ -71,6 +80,9 @@ public class BitTorrentService implements IShareService {
     @Override
     public void shareFile(PieFile file) {
         try {
+            //todo: think about some kind o PieAdress factory
+            PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+            IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
             //todo: error handling when torrent null
             //todo: replace name by nodeName
             Torrent torrent = Torrent.create(file.getFile(), tracker.getAnnounceUrl().toURI(), "replaceThisByNodeName");
@@ -86,12 +98,14 @@ public class BitTorrentService implements IShareService {
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
             
-            this.clusterService.sendMessage(metaMsg);
+            clusterService.sendMessage(metaMsg);
         } catch (InterruptedException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (URISyntaxException ex) {
+            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClusterManagmentServiceException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClusterServiceException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
