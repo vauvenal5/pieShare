@@ -100,5 +100,8 @@
         <property name="fileUtileService" ref="fileUtileService"/>
         <property name="tmpFolderService" ref="tempFolderService"/>
     </bean>
-
+    
+    <bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
+        <property name="shareService" ref="shareService"/>
+    </bean>
 </beans>
