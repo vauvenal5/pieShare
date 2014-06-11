@@ -46,15 +46,14 @@
         <property name="pieShareAppConfiguration" ref="pieShareAppConfiguration"/>
     </bean>
     
-    <bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileService.ApacheFileWatcher" lazy-init="true">
-        <property name="fileMerger" ref="fileMerger"/>    
+    <bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileService.ApacheFileWatcher" lazy-init="true">    
         <property name="fileListener" ref="fileListener"/>
     </bean>
     
     <bean id="fileListener" class="org.pieShare.pieShareApp.service.fileService.ApacheDefaultFileListener" lazy-init="true">
         <property name="fileObserver" ref="fileObserver"/>   
         <property name="executorService" ref="pieExecutorService"/> 
-        <property name="fileMerger" ref="fileMerger"/>     
+        <property name="shareService" ref="shareService"/>     
     </bean>
     
     <bean id="simpleMessageCommandService" lazy-init="true" class="org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService">
