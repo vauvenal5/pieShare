@@ -14,5 +14,5 @@ import java.io.File;
  */
 public interface ITempFolderService
 {
-    public File tempFolderName(String fileName, File parentDir) throws Exception;
+    public File createTempFolder(String fileName, File parentDir) throws Exception;
 }
