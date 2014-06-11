@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.fileUtilService.api;
+package org.pieShare.pieTools.pieUtilities.service.fileUtileService.api;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Richard
  */
-public interface IFileUtilService
+public interface IFileUtileService
 {
 
     public boolean deleteRecursive(File path) throws FileNotFoundException;

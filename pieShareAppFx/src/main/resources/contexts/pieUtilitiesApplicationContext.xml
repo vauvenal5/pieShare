@@ -66,6 +66,6 @@
     
     <bean id="tempFolderService" class="org.pieShare.pieTools.pieUtilities.service.tempFolderService.TempFolderService">
 
-    <bean id="fileUtilService" class="org.pieShare.pieTools.pieUtilities.service.fileUtilService.FileUtilService">
+    <bean id="fileUtileService" class="org.pieShare.pieTools.pieUtilities.service.fileUtileService.FileUtileService">
             
 </beans>

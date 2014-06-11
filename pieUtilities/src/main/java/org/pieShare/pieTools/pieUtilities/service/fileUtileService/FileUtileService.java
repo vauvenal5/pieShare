@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.fileUtilService;
+package org.pieShare.pieTools.pieUtilities.service.fileUtileService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,14 +12,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.pieShare.pieTools.pieUtilities.service.fileUtilService.api.IFileUtilService;
+import org.pieShare.pieTools.pieUtilities.service.fileUtileService.api.IFileUtileService;
 import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
 
 /**
  *
  * @author Richard
  */
-public class FileUtilService implements IFileUtilService
+public class FileUtileService implements IFileUtileService
 {
 
     @Override
