@@ -95,10 +95,11 @@
     </bean>
     
     <bean id="shareService" class="org.pieShare.pieShareApp.service.shareService.BitTorrentService">
-        <property name="clusterService" ref="clusterService"/>
+        <property name="clusterManagementService" ref="clusterManagementService"/>
         <property name="configurationService" ref="pieShareAppConfiguration"/>
         <property name="fileUtileService" ref="fileUtileService"/>
         <property name="tmpFolderService" ref="tempFolderService"/>
+        <property name="beanService" ref="pieBeanService"/>
     </bean>
     
     <bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">

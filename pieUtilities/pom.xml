@@ -132,7 +132,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.3</version>
+            <version>1.8</version>
             <type>jar</type>
         </dependency>
     </dependencies>
