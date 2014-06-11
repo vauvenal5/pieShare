@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.shareService;
 
 import java.io.File;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
  *
@@ -15,7 +16,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
  */
 public interface IShareService {
     
-    void shareFile(File file);
+    void shareFile(PieFile file);
     
     void handleFile(FileTransferMetaMessage msg);
     
