@@ -64,4 +64,8 @@
     <bean id="providerService" class="org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService">
     </bean>
     
+    <bean id="tempFolderService" class="org.pieShare.pieTools.pieUtilities.service.tempFolderService.TempFolderService">
+
+    <bean id="fileUtileService" class="org.pieShare.pieTools.pieUtilities.service.fileUtileService.FileUtileService">
+            
 </beans>

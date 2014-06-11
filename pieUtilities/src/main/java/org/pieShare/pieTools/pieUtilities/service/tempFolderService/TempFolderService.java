@@ -16,15 +16,15 @@ public class TempFolderService implements ITempFolderService
 {
 
     @Override
-    public File tempFolderName(String fileName, File tempFolder) throws Exception
+    public File createTempFolder(String fileName, File parentDir )throws Exception
     {
-	if (!tempFolder.exists())
+	if (!parentDir.exists())
 	{
 	    throw new Exception("Given temp folder does not exist");
 	}
 
 	String blokDirName = ".copyJobf_" + fileName;
-	File blockDir = new File(tempFolder, fileName);
+	File blockDir = new File(parentDir, fileName);
 
 	boolean found = false;
 	int index = 0;
@@ -32,7 +32,7 @@ public class TempFolderService implements ITempFolderService
 	{
 	    if (blockDir.exists())
 	    {
-		blockDir = new File(tempFolder, blokDirName + "_" + index++);
+		blockDir = new File(parentDir, blokDirName + "_" + index++);
 	    }
 	    else
 	    {
