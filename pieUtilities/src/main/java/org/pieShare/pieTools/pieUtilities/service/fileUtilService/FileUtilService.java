@@ -12,15 +12,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.pieShare.pieTools.pieUtilities.service.fileUtilService.api.IFileUtilService;
 import org.pieShare.pieTools.pieUtilities.utils.FileUtils;
 
 /**
  *
  * @author Richard
  */
-public class FileUtilService
+public class FileUtilService implements IFileUtilService
 {
 
+    @Override
     public boolean deleteRecursive(File path) throws FileNotFoundException
     {
 	if (!path.exists())
@@ -38,6 +40,7 @@ public class FileUtilService
 	return ret && path.delete();
     }
 
+    @Override
     public boolean deleteOneFile(File file) throws FileNotFoundException
     {
 	if (!file.exists() || file.isDirectory())
@@ -48,6 +51,7 @@ public class FileUtilService
 	return file.delete();
     }
 
+    @Override
     public void copyFileUsingStream(File source, File dest) throws IOException
     {
 	InputStream is = null;
