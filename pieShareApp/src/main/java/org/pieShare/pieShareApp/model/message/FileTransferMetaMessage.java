@@ -13,7 +13,25 @@ import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
  * @author Svetoslav
  */
 public class FileTransferMetaMessage extends HeaderMessage {
-    byte[] metaInfo;
+    private String filename;
+    private String relativePath;
+    private byte[] metaInfo;
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
+
+    public String getRelativePath() {
+        return relativePath;
+    }
+
+    public void setRelativePath(String relativePath) {
+        this.relativePath = relativePath;
+    }
 
     public byte[] getMetaInfo() {
         return metaInfo;
