@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class PieFile
 {
 
-    private File file = null;
     private String md5 = "";
     private String relativeFilePath;
+    private String fileName;
     private long lastModified;
     private IPieShareAppConfiguration pieAppConfig;
 
@@ -40,17 +40,17 @@ public class PieFile
 
     public String getFileName()
     {
-	return file.getName();
+	return fileName;
     }
 
-    public File getFile()
+    public void setFileName(String fileName)
     {
-	return file;
+	this.fileName = fileName;
     }
 
     public long getLastModified()
     {
-	return file.lastModified();
+	return lastModified;
     }
 
     public void setLastModified(long lastModified)
