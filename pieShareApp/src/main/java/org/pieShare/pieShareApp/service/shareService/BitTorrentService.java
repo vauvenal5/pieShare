@@ -7,6 +7,7 @@
 package org.pieShare.pieShareApp.service.shareService;
 
 import com.turn.ttorrent.client.Client;
+import com.turn.ttorrent.client.Client.ClientState;
 import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
 import com.turn.ttorrent.tracker.TrackedTorrent;
@@ -20,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -96,6 +98,7 @@ public class BitTorrentService implements IShareService {
             //todo: replace name by nodeName
             URI uri = tracker.getAnnounceUrl().toURI();
             Torrent torrent = Torrent.create(file.getFile(), uri, "replaceThisByNodeName");
+	    
             
             //share torrent
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -109,7 +112,6 @@ public class BitTorrentService implements IShareService {
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
-            
             Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
             seeder.share();
             
@@ -132,15 +134,38 @@ public class BitTorrentService implements IShareService {
         try {
             File tmpDir = tmpFolderService.createTempFolder(msg.getFilename(), configurationService.getTempCopyDirectory());
 
-            SharedTorrent torrent = new SharedTorrent(msg.getMetaInfo(), tmpDir);
+	    File f = new File("ttt.torrent");
+	    FileOutputStream fSt = new FileOutputStream(f);
+	    fSt.write(msg.getMetaInfo());
+	    fSt.close();
+	    
+	    Torrent tF = Torrent.load(f);
+	    
+            SharedTorrent torrent = new SharedTorrent(tF, tmpDir);
             Client client = new Client(InetAddress.getLocalHost(), torrent);
 
             //seed for 10min to other cluster members
             //todo: move this to settings
-            client.share(600);
-
-            client.waitForCompletion();
+            //client.share(600);
+            client.download();
+	    
             
+	    
+	    while (!ClientState.SEEDING.equals(client.getState())) {
+		// Check if there's an error
+		if (ClientState.ERROR.equals(client.getState())) {
+		    throw new Exception("ttorrent client Error State");
+		}
+
+		// Display statistics
+		System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
+
+		// Wait one second
+		TimeUnit.SECONDS.sleep(1);
+	}
+
+	    
+	    
             File tmpFile = new File(tmpDir, msg.getFilename());
             File targetDir = new File(configurationService.getWorkingDirectory(), msg.getRelativePath());
             
