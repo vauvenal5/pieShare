@@ -115,6 +115,7 @@ public class FileService implements IFileService
 
     }
 
+	@Override
     public boolean checkMergeFile(PieFile pieFile)
     {
 	File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
