@@ -13,9 +13,11 @@ import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.logging.Level;
@@ -30,6 +32,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementServ
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.fileUtileService.api.IFileUtileService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFolderService;
@@ -46,6 +49,11 @@ public class BitTorrentService implements IShareService {
     private IFileUtileService fileUtileService;
     private IClusterManagementService clusterManagementService;
     private IBeanService beanService;
+    private IBase64Service base64Service;
+
+    public void setBase64Service(IBase64Service base64Service) {
+        this.base64Service = base64Service;
+    }
 
     public void setBeanService(IBeanService beanService) {
         this.beanService = beanService;
@@ -71,7 +79,8 @@ public class BitTorrentService implements IShareService {
     private void BitTorrentServicePost() {
         try {
             //todo: use beanService
-            tracker = new Tracker(new InetSocketAddress(6969));
+            tracker = new Tracker(new InetSocketAddress(InetAddress.getLocalHost(), 6969));
+            tracker.start();
         } catch (IOException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -85,10 +94,13 @@ public class BitTorrentService implements IShareService {
             IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
             //todo: error handling when torrent null
             //todo: replace name by nodeName
-            Torrent torrent = Torrent.create(file.getFile(), tracker.getAnnounceUrl().toURI(), "replaceThisByNodeName");
+            URI uri = tracker.getAnnounceUrl().toURI();
+            Torrent torrent = Torrent.create(file.getFile(), uri, "replaceThisByNodeName");
             
             //share torrent
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            FileOutputStream fos = new FileOutputStream("test.torrent");
+            torrent.save(fos);
             torrent.save(baos);
            
             FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
@@ -97,6 +109,9 @@ public class BitTorrentService implements IShareService {
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
+            
+            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
+            seeder.share();
             
             clusterService.sendMessage(metaMsg);
         } catch (InterruptedException ex) {
@@ -123,7 +138,7 @@ public class BitTorrentService implements IShareService {
             //seed for 10min to other cluster members
             //todo: move this to settings
             client.share(600);
-            
+
             client.waitForCompletion();
             
             File tmpFile = new File(tmpDir, msg.getFilename());
