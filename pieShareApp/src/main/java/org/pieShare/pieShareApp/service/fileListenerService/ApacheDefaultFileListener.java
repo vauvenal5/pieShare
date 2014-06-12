@@ -8,9 +8,13 @@ package org.pieShare.pieShareApp.service.fileListenerService;
 import java.io.File;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
+import org.pieShare.pieShareApp.service.fileService.task.FileChangedTask;
+import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 
 /**
  *
@@ -43,7 +47,10 @@ public class ApacheDefaultFileListener implements FileListener
     public void fileCreated(FileChangeEvent fce) throws Exception
     {
         String filePath = fce.getFile().getURL().getFile();
-        startObservation(new File(filePath));
+        FileCreatedTask task = beanService.getBean(PieShareAppBeanNames.getFileCreatedTaskName());
+	File file = new File(filePath);
+	task.setCreatedFile(file);
+	startObservation(file, task);
     }
 
     @Override
@@ -61,13 +68,17 @@ public class ApacheDefaultFileListener implements FileListener
     @Override
     public void fileChanged(FileChangeEvent fce) throws Exception
     {
-        /*String filePath = fce.getFile().getURL().getFile();
-        startObservation(new File(filePath), FileChangedTypes.FILE_MODIFIED);*/
+        String filePath = fce.getFile().getURL().getFile();
+        FileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
+	File file = new File(filePath);
+	task.setCreatedFile(file);
+	startObservation(file, task);
     }
 
-    private void startObservation(File file)
+    private void startObservation(File file, IPieTask task)
     {
         fileObserver.setData(file);
+	fileObserver.setTask(task);
         executerService.execute(fileObserver);
     }
 
