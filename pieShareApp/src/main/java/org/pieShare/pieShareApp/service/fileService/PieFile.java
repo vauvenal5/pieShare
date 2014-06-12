@@ -20,79 +20,54 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class PieFile
 {
 
-    private String md5 = "";
-    private String relativeFilePath;
-    private String fileName;
-    private long lastModified;
-    private IPieShareAppConfiguration pieAppConfig;
-
-    public PieFile()
-    {
-
-    }
-
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
-    public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
-    {
-	this.pieAppConfig = pieShareAppConfiguration;
-    }
-
-    public String getFileName()
-    {
-	return fileName;
-    }
-
-    public void setFileName(String fileName)
-    {
-	this.fileName = fileName;
-    }
-
-    public long getLastModified()
-    {
-	return lastModified;
-    }
-
-    public void setLastModified(long lastModified)
-    {
-	this.lastModified = lastModified;
-    }
-
-    public String getRelativeFilePath()
-    {
-	return relativeFilePath;
-    }
-
-    public void setRelativeFilePath(String relativeFilePath)
-    {
-	this.relativeFilePath = relativeFilePath;
-    }
-
-    @Override
-    public boolean equals(Object object)
-    {
-	if (!(object instanceof PieFile))
+	private byte[] md5;
+	private String relativeFilePath;
+	private String fileName;
+	private long lastModified;
+	
+	public PieFile()
 	{
-	    return false;
+
 	}
 
-	PieFile pieFile = (PieFile) object;
-
-	if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+	public byte[] getMd5()
 	{
-	    return false;
+		return md5;
 	}
 
-	if (pieFile.getLastModified() != this.getLastModified())
+	public void setMd5(byte[] md5)
 	{
-	    return false;
+		this.md5 = md5;
 	}
 
-	/* if (!pieFile.getMD5().equals(this.getMD5()))
-	 {
-	 return false;
-	 }*/
-	return true;
-    }
+	public String getFileName()
+	{
+		return fileName;
+	}
+
+	public void setFileName(String fileName)
+	{
+		this.fileName = fileName;
+	}
+
+	public long getLastModified()
+	{
+		return lastModified;
+	}
+
+	public void setLastModified(long lastModified)
+	{
+		this.lastModified = lastModified;
+	}
+
+	public String getRelativeFilePath()
+	{
+		return relativeFilePath;
+	}
+
+	public void setRelativeFilePath(String relativeFilePath)
+	{
+		this.relativeFilePath = relativeFilePath;
+	}
 
 }
