@@ -14,9 +14,7 @@ import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,6 +28,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -81,7 +80,7 @@ public class BitTorrentService implements IShareService {
     private void BitTorrentServicePost() {
         try {
             //todo: use beanService
-            tracker = new Tracker(new InetSocketAddress(InetAddress.getLocalHost(), 6969));
+            tracker = new Tracker(new InetSocketAddress(NetworkService.getLocalHost(), 6969));
 
             tracker.start();
         } catch (IOException ex) {
@@ -110,7 +109,7 @@ public class BitTorrentService implements IShareService {
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
-            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
+            Client seeder = new Client(NetworkService.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
             seeder.share();
             
             clusterService.sendMessage(metaMsg);
@@ -133,7 +132,7 @@ public class BitTorrentService implements IShareService {
             File tmpDir = tmpFolderService.createTempFolder(msg.getFilename(), configurationService.getTempCopyDirectory());
 	    
             SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
-            Client client = new Client(InetAddress.getLocalHost(), torrent);
+            Client client = new Client(NetworkService.getLocalHost(), torrent);
 
             //seed for 10min to other cluster members
             //todo: move this to settings
