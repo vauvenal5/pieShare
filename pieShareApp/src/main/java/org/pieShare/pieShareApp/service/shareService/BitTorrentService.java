@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -208,7 +209,7 @@ public class BitTorrentService implements IShareService
 				targetFile.getParentFile().mkdirs();
 			}
 			
-			Files.move(tmpFile.toPath(), targetFile.toPath());
+			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			
 			if(!targetFile.setLastModified(msg.getPieFile().getLastModified()))
 			{
