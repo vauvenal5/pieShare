@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareApp.model.message;
 
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
@@ -13,24 +14,16 @@ import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
  * @author Svetoslav
  */
 public class FileTransferMetaMessage extends HeaderMessage {
-    private String filename;
-    private String relativePath;
+    
+    private PieFile pieFile;
     private byte[] metaInfo;
-
-    public String getFilename() {
-        return filename;
+   
+    public PieFile getPieFile() {
+        return pieFile;
     }
 
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getRelativePath() {
-        return relativePath;
-    }
-
-    public void setRelativePath(String relativePath) {
-        this.relativePath = relativePath;
+    public void setPieFile(PieFile pieFile) {
+        this.pieFile = pieFile;
     }
 
     public byte[] getMetaInfo() {

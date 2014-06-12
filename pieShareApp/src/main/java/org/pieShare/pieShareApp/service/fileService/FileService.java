@@ -131,6 +131,7 @@ public class FileService implements IFileService
 	pieFile.setRelativeFilePath(pathRelative.toString());
 
 	pieFile.setLastModified(file.lastModified());
+	pieFile.setFileName(file.getName());
 
 	return pieFile;
     }

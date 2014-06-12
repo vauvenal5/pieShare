@@ -114,8 +114,7 @@ public class BitTorrentService implements IShareService {
 	    
             FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
             metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
-            metaMsg.setFilename(file.getName());
-            metaMsg.setRelativePath(pieFile.getRelativeFilePath());
+            metaMsg.setPieFile(pieFile);
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
             Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
@@ -138,7 +137,7 @@ public class BitTorrentService implements IShareService {
     @Override
     public void handleFile(FileTransferMetaMessage msg) {
         try {
-            File tmpDir = tmpFolderService.createTempFolder(msg.getFilename(), configurationService.getTempCopyDirectory());
+            File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
 	    
             SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
             Client client = new Client(InetAddress.getLocalHost(), torrent);
@@ -162,8 +161,8 @@ public class BitTorrentService implements IShareService {
 		TimeUnit.SECONDS.sleep(1);
             }
 
-            File tmpFile = new File(tmpDir, msg.getFilename());
-            File targetDir = new File(configurationService.getWorkingDirectory(), msg.getRelativePath());
+            File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
+            File targetDir = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
             
             Files.move(tmpFile.toPath(), targetDir.toPath());
             
