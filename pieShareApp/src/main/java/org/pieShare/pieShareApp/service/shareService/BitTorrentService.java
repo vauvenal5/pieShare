@@ -82,6 +82,7 @@ public class BitTorrentService implements IShareService {
         try {
             //todo: use beanService
             tracker = new Tracker(new InetSocketAddress(InetAddress.getLocalHost(), 6969));
+
             tracker.start();
         } catch (IOException ex) {
             Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,8 +103,6 @@ public class BitTorrentService implements IShareService {
             
             //share torrent
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            FileOutputStream fos = new FileOutputStream("test.torrent");
-            torrent.save(fos);
             torrent.save(baos);
            
             FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
@@ -112,8 +111,8 @@ public class BitTorrentService implements IShareService {
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
-            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
-            seeder.share();
+            //Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
+            //seeder.share();
             
             clusterService.sendMessage(metaMsg);
         } catch (InterruptedException ex) {
@@ -133,25 +132,17 @@ public class BitTorrentService implements IShareService {
     public void handleFile(FileTransferMetaMessage msg) {
         try {
             File tmpDir = tmpFolderService.createTempFolder(msg.getFilename(), configurationService.getTempCopyDirectory());
-
-	    File f = new File("ttt.torrent");
-	    FileOutputStream fSt = new FileOutputStream(f);
-	    fSt.write(base64Service.decode(msg.getMetaInfo()));
-	    fSt.close();
 	    
-	    Torrent tF = Torrent.load(f);
-	    
-            SharedTorrent torrent = new SharedTorrent(tF, tmpDir);
+            SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
             Client client = new Client(InetAddress.getLocalHost(), torrent);
 
             //seed for 10min to other cluster members
             //todo: move this to settings
-            //client.share(600);
-            client.download();
-	    
+            client.share();
             
+            client.waitForCompletion();
 	    
-	    while (!ClientState.SEEDING.equals(client.getState())) {
+	    /*while (!ClientState.SEEDING.equals(client.getState())) {
 		// Check if there's an error
 		if (ClientState.ERROR.equals(client.getState())) {
 		    throw new Exception("ttorrent client Error State");
@@ -162,10 +153,8 @@ public class BitTorrentService implements IShareService {
 
 		// Wait one second
 		TimeUnit.SECONDS.sleep(1);
-	}
+            }*/
 
-	    
-	    
             File tmpFile = new File(tmpDir, msg.getFilename());
             File targetDir = new File(configurationService.getWorkingDirectory(), msg.getRelativePath());
             
