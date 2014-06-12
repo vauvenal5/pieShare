@@ -19,6 +19,7 @@ import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author richy
@@ -114,6 +115,20 @@ public class FileService implements IFileService
 
     }
 
+    public boolean checkMergeFile(PieFile pieFile)
+    {
+	File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
+	
+	if(!file.exists())
+	{
+	    return true;
+	}
+	
+	//TODO: Warnung es kopiert die files immer.
+	return true;
+    }
+    
+    
     @Override
     public PieFile genPieFile(File file) throws FileNotFoundException
     {
