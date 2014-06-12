@@ -131,13 +131,37 @@ public class FileService implements IFileService
 	public boolean checkMergeFile(PieFile pieFile)
 	{
 		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
-
+		
 		if (!file.exists())
 		{
 			return true;
 		}
+		
+		PieFile localPieFile = null;
+		
+		try
+		{
+			localPieFile = genPieFile(file);
+		}
+		catch (IOException ex)
+		{
+			return false;
+			//Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-		//TODO: Warnung es kopiert die files immer.
+		if(localPieFile.getLastModified() > pieFile.getLastModified())
+		{
+			return false;
+		}
+		else if(localPieFile.getLastModified() < pieFile.getLastModified())
+		{
+			return true;
+		}
+		else if(localPieFile.getLastModified() == pieFile.getLastModified())
+		{
+			return false;
+		}
+		
 		return false;
 	}
 
