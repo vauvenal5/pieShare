@@ -61,7 +61,7 @@ public class FileService implements IFileService
 		this.shareService = shareService;
 	}
 
-	public void setHashService(IHashService hashService)
+	public void setMd5Service(IHashService hashService)
 	{
 		this.hashService = hashService;
 	}
