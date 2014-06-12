@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
@@ -28,7 +29,14 @@ public class FileObserver implements IFileObserver
     private File file;
     private IBeanService beanService;
     private final long TIME_OUT_SEC = 60 * 60;
-
+    public IPieTask task;
+    
+    @Override
+    public void setTask(IPieTask task)
+    {
+	this.task = task;
+    }
+    
     public void setExecutorService(IExecutorService executorService)
     {
 	this.executorService = executorService;
@@ -72,8 +80,6 @@ public class FileObserver implements IFileObserver
 	    }
 	}
 
-	FileCreatedTask task = beanService.getBean(PieShareAppBeanNames.getFileCreatedTaskName());
-	task.setCreatedFile(file);
 	executorService.execute(task);
     }
 
