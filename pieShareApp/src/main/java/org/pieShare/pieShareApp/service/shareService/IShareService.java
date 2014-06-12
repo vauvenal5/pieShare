@@ -16,7 +16,7 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  */
 public interface IShareService {
     
-    void shareFile(PieFile file);
+    void shareFile(File file);
     
     void handleFile(FileTransferMetaMessage msg);
     

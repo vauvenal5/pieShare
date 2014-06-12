@@ -5,10 +5,8 @@
  */
 package org.pieShare.pieShareApp.service.fileService.api;
 
-import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
-import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
+import java.io.File;
+import java.io.FileNotFoundException;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
@@ -18,17 +16,11 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
 public interface IFileService
 {
 
-	public void remoteFileChange(FileChangedMessage message);
+	//public void remoteFileChange(FileChangedMessage message);
+    public PieFile genPieFile(File file) throws FileNotFoundException;
 
-	public void localFileChange(FileChangedMessage message);
+    public void localFileChange(File file);
 
-	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
-
-	public void sendAllFilesSyncRequest();
-
-	public void fileTransferRequestReceived(FileTransferRequestMessage msg);
-
-	public void fileTransfereMessage(FileTransferMessageBlocked msg);
-
-	public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg);
+//	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
+//	public void sendAllFilesSyncRequest();
 }

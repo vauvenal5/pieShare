@@ -30,6 +30,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -52,6 +53,7 @@ public class BitTorrentService implements IShareService {
     private IClusterManagementService clusterManagementService;
     private IBeanService beanService;
     private IBase64Service base64Service;
+    private IFileService fileService;
 
     public void setBase64Service(IBase64Service base64Service) {
         this.base64Service = base64Service;
@@ -59,6 +61,10 @@ public class BitTorrentService implements IShareService {
 
     public void setBeanService(IBeanService beanService) {
         this.beanService = beanService;
+    }
+    
+    public void setFileService(IFileService fileService){
+	this.fileService = fileService;
     }
 
     public void setClusterManagementService(IClusterManagementService clusterManagementService) {
@@ -90,7 +96,7 @@ public class BitTorrentService implements IShareService {
     }
     
     @Override
-    public void shareFile(PieFile file) {
+    public void shareFile(File file) {
         try {
             //todo: think about some kind o PieAdress factory
             PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
@@ -98,19 +104,21 @@ public class BitTorrentService implements IShareService {
             //todo: error handling when torrent null
             //todo: replace name by nodeName
             URI uri = tracker.getAnnounceUrl().toURI();
-            Torrent torrent = Torrent.create(file.getFile(), uri, "replaceThisByNodeName");
+            Torrent torrent = Torrent.create(file, uri, "replaceThisByNodeName");
             
             //share torrent
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             torrent.save(baos);
            
+	    PieFile pieFile = fileService.genPieFile(file);
+	    
             FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
             metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
-            metaMsg.setFilename(file.getFileName());
-            metaMsg.setRelativePath(file.getRelativeFilePath());
+            metaMsg.setFilename(file.getName());
+            metaMsg.setRelativePath(pieFile.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
-            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
+            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
             seeder.share();
             
             clusterService.sendMessage(metaMsg);

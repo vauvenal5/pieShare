@@ -7,12 +7,7 @@
     <bean id="simpleMessageCommand" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.command.SimpleMessageCommand">  
     </bean>
 
-    <bean id="fileChangedMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.FileChangedMessage">
-    </bean>
-
-    <bean id="fileTransfereRequestMessage" class="org.pieShare.pieShareApp.model.message.FileTransferRequestMessage" scope="prototype">
-    </bean>
-
+  
     <bean id="loginCommand" class="org.pieShare.pieShareApp.model.command.LoginCommand">
     </bean>
     

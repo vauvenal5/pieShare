@@ -23,104 +23,76 @@ public class PieFile
     private File file = null;
     private String md5 = "";
     private String relativeFilePath;
-
+    private long lastModified;
     private IPieShareAppConfiguration pieAppConfig;
 
     public PieFile()
     {
-        
-    }
 
-    public void Init(File file)
-    {
-        this.file = file;
-
-       /* if (file.exists() && !file.isDirectory())
-        {
-            try
-            {
-                md5 = MD5Service.MD5(file);
-            }
-            catch (IOException ex)
-            {
-                //ToDo: Error Handling
-            }
-        }*/
-
-        Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-        Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-        this.relativeFilePath = pathRelative.toString();
     }
 
     @Autowired
     @Qualifier("pieShareAppConfiguration")
     public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
     {
-        this.pieAppConfig = pieShareAppConfiguration;
+	this.pieAppConfig = pieShareAppConfiguration;
     }
 
     public String getFileName()
     {
-        return file.getName();
+	return file.getName();
     }
 
     public File getFile()
     {
-        return file;
+	return file;
     }
-
-    /*public String getMD5()
-    {
-        return md5;
-    }*/
 
     public long getLastModified()
     {
-        return file.lastModified();
+	return file.lastModified();
+    }
+
+    public void setLastModified(long lastModified)
+    {
+	this.lastModified = lastModified;
     }
 
     public String getRelativeFilePath()
     {
-        return relativeFilePath;
-        /*
-         File workingDir = pieAppConfig.getWorkingDirectory();
+	return relativeFilePath;
+    }
 
-         Path pathBase = new File(workingDir.getAbsolutePath()).toPath(); // Paths.get("/var/data");
-
-         Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-
-         Path pathRelative = pathBase.relativize(pathAbsolute);
-         return pathRelative.toString();
-         */
+    public void setRelativeFilePath(String relativeFilePath)
+    {
+	this.relativeFilePath = relativeFilePath;
     }
 
     @Override
     public boolean equals(Object object)
     {
-        if (!(object instanceof PieFile))
-        {
-            return false;
-        }
+	if (!(object instanceof PieFile))
+	{
+	    return false;
+	}
 
-        PieFile pieFile = (PieFile) object;
+	PieFile pieFile = (PieFile) object;
 
-        if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
-        {
-            return false;
-        }
+	if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
+	{
+	    return false;
+	}
 
-        if (pieFile.getLastModified() != this.getLastModified())
-        {
-            return false;
-        }
+	if (pieFile.getLastModified() != this.getLastModified())
+	{
+	    return false;
+	}
 
-       /* if (!pieFile.getMD5().equals(this.getMD5()))
-        {
-            return false;
-        }*/
-
-        return true;
+	/* if (!pieFile.getMD5().equals(this.getMD5()))
+	 {
+	 return false;
+	 }*/
+	return true;
     }
 
 }

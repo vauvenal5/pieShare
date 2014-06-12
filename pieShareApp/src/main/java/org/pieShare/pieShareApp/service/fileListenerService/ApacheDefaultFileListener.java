@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileService;
+package org.pieShare.pieShareApp.service.fileListenerService;
 
 import java.io.File;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
-import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  *
@@ -23,12 +21,7 @@ public class ApacheDefaultFileListener implements FileListener
 
     private IFileObserver fileObserver;
     private IExecutorService executerService;
-    private IShareService shareService;
-
-    public void setShareService(IShareService shareService)
-    {
-        this.shareService = shareService;
-    }
+    private IBeanService beanService;
 
     
     public void setFileObserver(IFileObserver fileObserver)
@@ -36,6 +29,10 @@ public class ApacheDefaultFileListener implements FileListener
         this.fileObserver = fileObserver;
     }
 
+    public void setBeanService(IBeanService beanService)
+    {
+	this.beanService = beanService;
+    }
    
     public void setExecutorService(IExecutorService executerService)
     {
@@ -46,7 +43,7 @@ public class ApacheDefaultFileListener implements FileListener
     public void fileCreated(FileChangeEvent fce) throws Exception
     {
         String filePath = fce.getFile().getURL().getFile();
-        startObservation(new File(filePath), FileChangedTypes.FILE_CREATED);
+        startObservation(new File(filePath));
     }
 
     @Override
@@ -68,9 +65,9 @@ public class ApacheDefaultFileListener implements FileListener
         startObservation(new File(filePath), FileChangedTypes.FILE_MODIFIED);*/
     }
 
-    private void startObservation(File file, FileChangedTypes event)
+    private void startObservation(File file)
     {
-        fileObserver.setData(file, event);
+        fileObserver.setData(file);
         executerService.execute(fileObserver);
     }
 
