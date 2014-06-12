@@ -137,10 +137,8 @@ public class FileService implements IFileService
 			return true;
 		}
 
-		
-		
 		//TODO: Warnung es kopiert die files immer.
-		return true;
+		return false;
 	}
 
 	@Override

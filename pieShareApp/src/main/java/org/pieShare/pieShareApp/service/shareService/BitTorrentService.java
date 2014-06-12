@@ -178,7 +178,7 @@ public class BitTorrentService implements IShareService
 			client.download();
 
             //client.waitForCompletion();
-			while (!ClientState.SEEDING.equals(client.getState()))
+			while (!ClientState.DONE.equals(client.getState()))
 			{
 				// Check if there's an error
 				if (ClientState.ERROR.equals(client.getState()))
@@ -201,8 +201,14 @@ public class BitTorrentService implements IShareService
 			{
 				targetFile.getParentFile().mkdirs();
 			}
+			
 			Files.move(tmpFile.toPath(), targetFile.toPath());
-			targetFile.setLastModified(msg.getPieFile().getLastModified());
+			
+			if(!targetFile.setLastModified(msg.getPieFile().getLastModified()))
+			{
+				System.out.println("WARNING: Could not set LastModificationDate");
+			}
+			
 			fileUtileService.deleteRecursive(tmpDir);
 		}
 		catch (IOException ex)
