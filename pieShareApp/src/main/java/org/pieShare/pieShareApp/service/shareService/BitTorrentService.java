@@ -195,10 +195,14 @@ public class BitTorrentService implements IShareService
 
 			client.stop();
 			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
-			File targetDir = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
+			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
-			Files.move(tmpFile.toPath(), targetDir.toPath());
-
+			if(!targetFile.getParentFile().exists())
+			{
+				targetFile.getParentFile().mkdirs();
+			}
+			Files.move(tmpFile.toPath(), targetFile.toPath());
+			targetFile.setLastModified(msg.getPieFile().getLastModified());
 			fileUtileService.deleteRecursive(tmpDir);
 		}
 		catch (IOException ex)

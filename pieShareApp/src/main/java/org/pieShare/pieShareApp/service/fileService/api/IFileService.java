@@ -7,6 +7,7 @@ package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
@@ -17,7 +18,7 @@ public interface IFileService
 {
 
 	//public void remoteFileChange(FileChangedMessage message);
-    public PieFile genPieFile(File file) throws FileNotFoundException;
+    public PieFile genPieFile(File file) throws FileNotFoundException, IOException;
 	public boolean checkMergeFile(PieFile pieFile);
     public void localFileChange(File file);
 

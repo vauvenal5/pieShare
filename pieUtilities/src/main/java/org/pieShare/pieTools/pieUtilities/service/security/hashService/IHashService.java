@@ -6,10 +6,14 @@
 
 package org.pieShare.pieTools.pieUtilities.service.security.hashService;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 /**
  *
  * @author Svetoslav
  */
 public interface IHashService {
     byte[] hash(byte[] data);
+	byte[] hashStream(InputStream stream) throws IOException;
 }
