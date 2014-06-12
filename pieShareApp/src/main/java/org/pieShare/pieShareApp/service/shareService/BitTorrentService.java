@@ -107,7 +107,7 @@ public class BitTorrentService implements IShareService {
             torrent.save(baos);
            
             FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
-            metaMsg.setMetaInfo(baos.toByteArray());
+            metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
             metaMsg.setFilename(file.getFileName());
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
@@ -136,7 +136,7 @@ public class BitTorrentService implements IShareService {
 
 	    File f = new File("ttt.torrent");
 	    FileOutputStream fSt = new FileOutputStream(f);
-	    fSt.write(msg.getMetaInfo());
+	    fSt.write(base64Service.decode(msg.getMetaInfo()));
 	    fSt.close();
 	    
 	    Torrent tF = Torrent.load(f);
