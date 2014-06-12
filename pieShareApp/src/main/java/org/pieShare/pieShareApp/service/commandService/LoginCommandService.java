@@ -6,9 +6,14 @@
 
 package org.pieShare.pieShareApp.service.commandService;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
@@ -22,11 +27,17 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 
     private IPasswordEncryptionService passwordEncryptionService;
     private IBeanService beanService;
-
+	private IClusterManagementService clusterManagementService;
+	
     public void setBeanService(IBeanService beanService) {
         this.beanService = beanService;
     }
     
+	public void setClusterManagementService(IClusterManagementService clusterManagementService)
+	{
+		this.clusterManagementService = clusterManagementService;
+	}
+	
     public void setPasswordEncryptionService(IPasswordEncryptionService service) {
         this.passwordEncryptionService = service;
     }
@@ -40,7 +51,16 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
         user.setUserName(command.getUserName());
         user.setIsLoggedIn(true);
         
-        this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
+        //this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
+		try
+		{
+			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
+		}
+		catch (ClusterManagmentServiceException ex)
+		{
+			Logger.getLogger(LoginCommandService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
     }
     
 }
