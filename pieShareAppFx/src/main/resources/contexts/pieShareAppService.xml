@@ -100,6 +100,7 @@
         <property name="fileUtileService" ref="fileUtileService"/>
         <property name="tmpFolderService" ref="tempFolderService"/>
         <property name="beanService" ref="pieBeanService"/>
+        <property name="base64Service" ref="base64Service"/>
     </bean>
     
     <bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
