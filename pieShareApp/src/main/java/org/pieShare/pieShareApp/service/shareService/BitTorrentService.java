@@ -130,7 +130,13 @@ public class BitTorrentService implements IShareService
 			metaMsg.setPieFile(pieFile);
 			//todo: security issues?
 			tracker.announce(new TrackedTorrent(torrent));
+			
+			long modD = file.lastModified();
 			Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
+			if(!file.setLastModified(modD))
+			{
+				System.out.println("Torrent modified lastModificationDate");
+			}
 			seeder.share();
 
 			clusterService.sendMessage(metaMsg);
