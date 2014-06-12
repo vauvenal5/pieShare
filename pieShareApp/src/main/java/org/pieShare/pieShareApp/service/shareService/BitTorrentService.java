@@ -99,7 +99,6 @@ public class BitTorrentService implements IShareService {
             //todo: replace name by nodeName
             URI uri = tracker.getAnnounceUrl().toURI();
             Torrent torrent = Torrent.create(file.getFile(), uri, "replaceThisByNodeName");
-	    
             
             //share torrent
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -111,8 +110,8 @@ public class BitTorrentService implements IShareService {
             metaMsg.setRelativePath(file.getRelativeFilePath());
             //todo: security issues?
             tracker.announce(new TrackedTorrent(torrent));
-            //Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
-            //seeder.share();
+            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
+            seeder.share();
             
             clusterService.sendMessage(metaMsg);
         } catch (InterruptedException ex) {
@@ -138,11 +137,11 @@ public class BitTorrentService implements IShareService {
 
             //seed for 10min to other cluster members
             //todo: move this to settings
-            client.share();
+            client.download();
             
-            client.waitForCompletion();
+            //client.waitForCompletion();
 	    
-	    /*while (!ClientState.SEEDING.equals(client.getState())) {
+	    while (!ClientState.SEEDING.equals(client.getState())) {
 		// Check if there's an error
 		if (ClientState.ERROR.equals(client.getState())) {
 		    throw new Exception("ttorrent client Error State");
@@ -153,12 +152,12 @@ public class BitTorrentService implements IShareService {
 
 		// Wait one second
 		TimeUnit.SECONDS.sleep(1);
-            }*/
+            }
 
             File tmpFile = new File(tmpDir, msg.getFilename());
             File targetDir = new File(configurationService.getWorkingDirectory(), msg.getRelativePath());
             
-            Files.copy(tmpFile.toPath(), targetDir.toPath());
+            Files.move(tmpFile.toPath(), targetDir.toPath());
             
             fileUtileService.deleteRecursive(tmpDir);
         } catch (IOException ex) {
