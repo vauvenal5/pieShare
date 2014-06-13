@@ -87,6 +87,9 @@
 		<property name="fileService" ref="fileService"/>
 	</bean>
     
+    <bean id="fileChangedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileChangedTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
     
     
 </beans>

@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
 import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
@@ -30,13 +32,13 @@ public class FileObserver implements IFileObserver
     private IBeanService beanService;
     private final long TIME_OUT_SEC = 60 * 60;
     public IPieTask task;
-    
+
     @Override
     public void setTask(IPieTask task)
     {
 	this.task = task;
     }
-    
+
     public void setExecutorService(IExecutorService executorService)
     {
 	this.executorService = executorService;
@@ -66,6 +68,7 @@ public class FileObserver implements IFileObserver
 
 	    try
 	    {
+		Thread.sleep(2000);
 		st = new FileInputStream(file);
 		isCopying = false;
 		st.close();
@@ -78,6 +81,11 @@ public class FileObserver implements IFileObserver
 	    {
 
 	    }
+	    catch (InterruptedException ex)
+	    {
+
+	    }
+
 	}
 
 	executorService.execute(task);
