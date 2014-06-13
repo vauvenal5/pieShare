@@ -109,7 +109,8 @@ public class BitTorrentService implements IShareService {
 			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
 			//todo: error handling when torrent null
 			//todo: replace name by nodeName
-			URI uri = tracker.getAnnounceUrl().toURI();
+			//URI uri = tracker.getAnnounceUrl().toURI();
+			URI uri = new URI("http://"+networkService.getLocalHost().getHostAddress()+":6969/announce");
 			Torrent torrent = Torrent.create(file, uri, "replaceThisByNodeName");
 
 			//share torrent
