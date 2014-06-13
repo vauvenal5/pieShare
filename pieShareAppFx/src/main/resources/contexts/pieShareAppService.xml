@@ -101,9 +101,13 @@
         <property name="tmpFolderService" ref="tempFolderService"/>
         <property name="beanService" ref="pieBeanService"/>
         <property name="base64Service" ref="base64Service"/>
+        <property name="networkService" ref="networkService"/>
     </bean>
     
     <bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
         <property name="shareService" ref="shareService"/>
+    </bean>
+    
+    <bean id="networkService" class="org.pieShare.pieShareApp.service.networkService.NetworkService">
     </bean>
 </beans>
