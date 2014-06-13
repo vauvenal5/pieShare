@@ -123,7 +123,12 @@ public class FileService implements IFileService
 	@Override
 	public void localFileChange(File file)
 	{
-		shareService.shareFile(file);
+	    if(file.isDirectory())
+	    {
+		return;
+	    }
+		
+	    shareService.shareFile(file);
 
 	}
 
