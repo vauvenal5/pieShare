@@ -66,7 +66,14 @@ public class MD5Service implements IHashService {
 
 	@Override
 	public boolean isMD5Equal(byte[] first, byte[] second) {
-		return messageDigest.isEqual(first, second);
+		if(first.length != second.length) return false;
+		
+		for(int i = 0; i < first.length; i++){
+			if(first[i] != second[i]){
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
