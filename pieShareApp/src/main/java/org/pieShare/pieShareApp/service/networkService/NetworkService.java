@@ -69,7 +69,7 @@ public class NetworkService implements INetworkService {
 			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
 			while (nics.hasMoreElements()) {
 				NetworkInterface nic = nics.nextElement();
-
+				
 				if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
 					Enumeration<InetAddress> ads = nic.getInetAddresses();
 
@@ -77,25 +77,26 @@ public class NetworkService implements INetworkService {
 						InetAddress ad = ads.nextElement();
 						try {
 							if (ad instanceof Inet4Address) {
-								ad.isReachable(1000);
-								possibleAds.add(ad);
+								if(ad.isReachable(5000))
+								{
+									possibleAds.add(ad);
 
-								//test internet connection
-								try (SocketChannel socket = SocketChannel.open()) {
-									socket.socket().setSoTimeout(1000);
+									//test internet connection
+									try (SocketChannel socket = SocketChannel.open()) {
+										socket.socket().setSoTimeout(5000);
 
-									int freePort = this.getAvailablePort();
+										int freePort = this.getAvailablePort();
 
-									socket.bind(new InetSocketAddress(ad, freePort));
-									socket.connect(new InetSocketAddress("google.com", 80));
-									//if everything passes the InetAddress should be okay.
-									socket.close();
-									this.address = ad;
-									return this.address;
-								} catch (IOException ex) {
-									Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+										socket.bind(new InetSocketAddress(ad, freePort));
+										socket.connect(new InetSocketAddress("google.com", 80));
+										//if everything passes the InetAddress should be okay.
+										socket.close();
+										this.address = ad;
+										return this.address;
+									} catch (IOException ex) {
+										Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+									}
 								}
-
 							}
 						} catch (IOException ex) {
 							Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
