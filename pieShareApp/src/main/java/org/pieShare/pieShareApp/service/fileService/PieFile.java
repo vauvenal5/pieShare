@@ -20,107 +20,54 @@ import org.springframework.beans.factory.annotation.Qualifier;
 public class PieFile
 {
 
-    private File file = null;
-    private String md5 = "";
-    private String relativeFilePath;
+	private byte[] md5;
+	private String relativeFilePath;
+	private String fileName;
+	private long lastModified;
+	
+	public PieFile()
+	{
 
-    private IPieShareAppConfiguration pieAppConfig;
+	}
 
-    public PieFile()
-    {
-        
-    }
+	public byte[] getMd5()
+	{
+		return md5;
+	}
 
-    public void Init(File file)
-    {
-        this.file = file;
+	public void setMd5(byte[] md5)
+	{
+		this.md5 = md5;
+	}
 
-       /* if (file.exists() && !file.isDirectory())
-        {
-            try
-            {
-                md5 = MD5Service.MD5(file);
-            }
-            catch (IOException ex)
-            {
-                //ToDo: Error Handling
-            }
-        }*/
+	public String getFileName()
+	{
+		return fileName;
+	}
 
-        Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-        Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-        this.relativeFilePath = pathRelative.toString();
-    }
+	public void setFileName(String fileName)
+	{
+		this.fileName = fileName;
+	}
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
-    public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
-    {
-        this.pieAppConfig = pieShareAppConfiguration;
-    }
+	public long getLastModified()
+	{
+		return lastModified;
+	}
 
-    public String getFileName()
-    {
-        return file.getName();
-    }
+	public void setLastModified(long lastModified)
+	{
+		this.lastModified = lastModified;
+	}
 
-    public File getFile()
-    {
-        return file;
-    }
+	public String getRelativeFilePath()
+	{
+		return relativeFilePath;
+	}
 
-    /*public String getMD5()
-    {
-        return md5;
-    }*/
-
-    public long getLastModified()
-    {
-        return file.lastModified();
-    }
-
-    public String getRelativeFilePath()
-    {
-        return relativeFilePath;
-        /*
-         File workingDir = pieAppConfig.getWorkingDirectory();
-
-         Path pathBase = new File(workingDir.getAbsolutePath()).toPath(); // Paths.get("/var/data");
-
-         Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-
-         Path pathRelative = pathBase.relativize(pathAbsolute);
-         return pathRelative.toString();
-         */
-    }
-
-    @Override
-    public boolean equals(Object object)
-    {
-        if (!(object instanceof PieFile))
-        {
-            return false;
-        }
-
-        PieFile pieFile = (PieFile) object;
-
-        if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
-        {
-            return false;
-        }
-
-        if (pieFile.getLastModified() != this.getLastModified())
-        {
-            return false;
-        }
-
-       /* if (!pieFile.getMD5().equals(this.getMD5()))
-        {
-            return false;
-        }*/
-
-        return true;
-    }
+	public void setRelativeFilePath(String relativeFilePath)
+	{
+		this.relativeFilePath = relativeFilePath;
+	}
 
 }

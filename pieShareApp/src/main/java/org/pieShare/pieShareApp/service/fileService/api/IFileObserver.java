@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
@@ -16,5 +15,8 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
  */
 public interface IFileObserver extends IPieTask
 {
-	public void setData(File file, FileChangedTypes event);
+
+    public void setData(File file);
+
+    public void setTask(IPieTask task);
 }
