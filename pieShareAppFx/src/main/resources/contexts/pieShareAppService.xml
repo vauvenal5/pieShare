@@ -72,22 +72,22 @@
 		<property name="tmpFolderService" ref="tempFolderService"/>
 		<property name="beanService" ref="pieBeanService"/>
 		<property name="base64Service" ref="base64Service"/>
-        <property name="networkService" ref="networkService"/>
+		<property name="networkService" ref="networkService"/>
 		<property name="fileService" ref="fileService"/>
 	</bean>
     
 	<bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
 		<property name="shareService" ref="shareService"/>
-    </bean>
+	</bean>
     
-    <bean id="networkService" class="org.pieShare.pieShareApp.service.networkService.NetworkService">
+	<bean id="networkService" class="org.pieShare.pieShareApp.service.networkService.NetworkService">
 	</bean>
     
 	<bean id="fileCreatedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask">
 		<property name="fileService" ref="fileService"/>
 	</bean>
     
-    <bean id="fileChangedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileChangedTask">
+	<bean id="fileChangedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileChangedTask">
 		<property name="fileService" ref="fileService"/>
 	</bean>
     

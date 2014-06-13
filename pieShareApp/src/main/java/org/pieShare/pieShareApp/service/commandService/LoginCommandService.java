@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.commandService;
 
 import java.util.logging.Level;
@@ -25,42 +24,38 @@ import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncrypti
  */
 public class LoginCommandService implements ICommandService<LoginCommand> {
 
-    private IPasswordEncryptionService passwordEncryptionService;
-    private IBeanService beanService;
+	private IPasswordEncryptionService passwordEncryptionService;
+	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
-	
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
-    
-	public void setClusterManagementService(IClusterManagementService clusterManagementService)
-	{
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
+
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
-	
-    public void setPasswordEncryptionService(IPasswordEncryptionService service) {
-        this.passwordEncryptionService = service;
-    }
-    
-    @Override
-    public void executeCommand(LoginCommand command) {
-        EncryptedPassword pwd = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
-        
-        PieUser user = (PieUser)this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-        user.setPassword(pwd);
-        user.setUserName(command.getUserName());
-        user.setIsLoggedIn(true);
-        
-        //this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
-		try
-		{
+
+	public void setPasswordEncryptionService(IPasswordEncryptionService service) {
+		this.passwordEncryptionService = service;
+	}
+
+	@Override
+	public void executeCommand(LoginCommand command) {
+		EncryptedPassword pwd = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
+
+		PieUser user = (PieUser) this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+		user.setPassword(pwd);
+		user.setUserName(command.getUserName());
+		user.setIsLoggedIn(true);
+
+		//this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
+		try {
 			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
-		}
-		catch (ClusterManagmentServiceException ex)
-		{
+		} catch (ClusterManagmentServiceException ex) {
 			Logger.getLogger(LoginCommandService.class.getName()).log(Level.SEVERE, null, ex);
 		}
-		
-    }
-    
+
+	}
+
 }

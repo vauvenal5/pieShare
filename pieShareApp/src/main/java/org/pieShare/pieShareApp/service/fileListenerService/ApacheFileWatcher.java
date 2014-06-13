@@ -19,49 +19,40 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Richard
  */
-public class ApacheFileWatcher implements IFileWatcherService
-{
+public class ApacheFileWatcher implements IFileWatcherService {
 
-    private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
-    private File watchDir;
-    private FileListener fileListener;
+	private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
+	private File watchDir;
+	private FileListener fileListener;
 
-    public void setFileListener(FileListener fileListener)
-    {
-        this.fileListener = fileListener;
-    }
+	public void setFileListener(FileListener fileListener) {
+		this.fileListener = fileListener;
+	}
 
-    @Override
-    public void setWatchDir(File watchDir)
-    {
-        this.watchDir = watchDir;
-    }
+	@Override
+	public void setWatchDir(File watchDir) {
+		this.watchDir = watchDir;
+	}
 
-    public void watchDir() throws IOException
-    {
+	public void watchDir() throws IOException {
 
-        FileSystemManager fileSystemManager = VFS.getManager();
-        FileObject dirToWatchFO = null;
-        dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
+		FileSystemManager fileSystemManager = VFS.getManager();
+		FileObject dirToWatchFO = null;
+		dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
 
-        DefaultFileMonitor fileMonitor = new DefaultFileMonitor(fileListener);
+		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(fileListener);
 
-        fileMonitor.setRecursive(true);
-        fileMonitor.addFile(dirToWatchFO);
-        fileMonitor.start();
-    }
+		fileMonitor.setRecursive(true);
+		fileMonitor.addFile(dirToWatchFO);
+		fileMonitor.start();
+	}
 
-
-    @Override
-    public void run()
-    {
-        try
-        {
-            watchDir();
-        }
-        catch (IOException ex)
-        {
-            logger.debug("Watcher error: Message: " + ex.getMessage());
-        }
-    }
+	@Override
+	public void run() {
+		try {
+			watchDir();
+		} catch (IOException ex) {
+			logger.debug("Watcher error: Message: " + ex.getMessage());
+		}
+	}
 }

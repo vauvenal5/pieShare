@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.piePlate.service.cluster;
 
 import java.util.Map;
@@ -24,45 +23,45 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  * @author Svetoslav
  */
 public class ClusterManagementService implements IClusterManagementService {
-    
-    private Map<String, IClusterService> clusters;
-    private IBeanService beanService;
-    
-    public void setBeanService(IBeanService service) {
-        this.beanService = service;
-    }
-    
-    public void setMap(Map<String, IClusterService> map) {
-        this.clusters = map;
-    }
-    
-    @Override
-    public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
-        if(this.clusters.containsKey(message.getAddress().getClusterName())) {
-            try {
-                this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
-            } catch (ClusterServiceException ex) {
-                throw new ClusterManagmentServiceException(ex);
-            }
-        }
-    }
 
-    @Override
-    public IClusterService connect(String id) throws ClusterManagmentServiceException {
-        if(this.clusters.containsKey(id)) {
-            return this.clusters.get(id);
-        }
-        
-        try {
-            IClusterService cluster = (IClusterService)this.beanService.getBean(PiePlateBeanNames.getClusterService());
-            cluster.connect(id);
-            this.clusters.put(id, cluster);
-            return cluster;
-        } catch (BeanServiceError ex) {
-            //should never happen
-            throw new ClusterManagmentServiceException(ex);
-        } catch (ClusterServiceException ex) {
-            throw new ClusterManagmentServiceException(ex);
-        }
-    }    
+	private Map<String, IClusterService> clusters;
+	private IBeanService beanService;
+
+	public void setBeanService(IBeanService service) {
+		this.beanService = service;
+	}
+
+	public void setMap(Map<String, IClusterService> map) {
+		this.clusters = map;
+	}
+
+	@Override
+	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
+		if (this.clusters.containsKey(message.getAddress().getClusterName())) {
+			try {
+				this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
+			} catch (ClusterServiceException ex) {
+				throw new ClusterManagmentServiceException(ex);
+			}
+		}
+	}
+
+	@Override
+	public IClusterService connect(String id) throws ClusterManagmentServiceException {
+		if (this.clusters.containsKey(id)) {
+			return this.clusters.get(id);
+		}
+
+		try {
+			IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
+			cluster.connect(id);
+			this.clusters.put(id, cluster);
+			return cluster;
+		} catch (BeanServiceError ex) {
+			//should never happen
+			throw new ClusterManagmentServiceException(ex);
+		} catch (ClusterServiceException ex) {
+			throw new ClusterManagmentServiceException(ex);
+		}
+	}
 }

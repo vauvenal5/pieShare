@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     
-    <import resource="classpath*:contexts/pieUtilitiesApplicationContext.xml" />
+	<import resource="classpath*:contexts/pieUtilitiesApplicationContext.xml" />
 
-    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
+	<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor" />
 
-    <bean id="clusterManagementService" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService" lazy-init="true">
-        <property name="beanService" ref="pieBeanService"/>
-        <property name="map" ref="javaMap"/>
-    </bean>
+	<bean id="clusterManagementService" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService" lazy-init="true">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="map" ref="javaMap"/>
+	</bean>
     
-    <bean id="clusterService" scope="prototype" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" lazy-init="true">
-        <property name="receiver" ref="objectReceiver"/>
-        <property name="serializerService" ref="serializerService"/>
-        <property name="channel" ref="channel"/>
-    </bean>
+	<bean id="clusterService" scope="prototype" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" lazy-init="true">
+		<property name="receiver" ref="objectReceiver"/>
+		<property name="serializerService" ref="serializerService"/>
+		<property name="channel" ref="channel"/>
+	</bean>
 
-    <bean id="serializerService" class="org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService" lazy-init="true">
-    </bean>
+	<bean id="serializerService" class="org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService" lazy-init="true">
+	</bean>
 
-    <bean id="objectReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" lazy-init="true">
-        <property name="executorService" ref="pieExecutorService"/>
-        <property name="serializerService" ref="serializerService"/>
-        <property name="beanService" ref="pieBeanService"/>
-    </bean>
+	<bean id="objectReceiver" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver" lazy-init="true">
+		<property name="executorService" ref="pieExecutorService"/>
+		<property name="serializerService" ref="serializerService"/>
+		<property name="beanService" ref="pieBeanService"/>
+	</bean>
 
-    <bean id="channel" scope="prototype" class="org.jgroups.JChannel" lazy-init="true">
-    </bean>
+	<bean id="channel" scope="prototype" class="org.jgroups.JChannel" lazy-init="true">
+	</bean>
     
-    <bean id="jgroupsPieAddress" lazy-init="true" class="org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress">
-    </bean>
+	<bean id="jgroupsPieAddress" lazy-init="true" class="org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress">
+	</bean>
 </beans>

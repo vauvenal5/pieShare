@@ -7,21 +7,22 @@ import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.IPrintableE
  * Created by vauvenal5 on 3/20/14.
  */
 public class SimpleMessage extends HeaderMessage implements IPrintableEvent {
-    private String msg;
 
-    public SimpleMessage() {
-    }
+	private String msg;
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+	public SimpleMessage() {
+	}
 
-    public String getMsg() {
-        return this.msg;
-    }
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
 
-    @Override
-    public String getText() {
-        return this.getMsg();
-    }
+	public String getMsg() {
+		return this.msg;
+	}
+
+	@Override
+	public String getText() {
+		return this.getMsg();
+	}
 }

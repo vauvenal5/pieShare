@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
@@ -14,6 +13,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
  * @author Svetoslav
  */
 public interface IClusterManagementService {
-    void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
-    IClusterService connect(String id) throws ClusterManagmentServiceException;
+
+	void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
+
+	IClusterService connect(String id) throws ClusterManagmentServiceException;
 }

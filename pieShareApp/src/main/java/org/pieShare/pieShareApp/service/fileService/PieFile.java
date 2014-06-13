@@ -17,56 +17,46 @@ import org.springframework.beans.factory.annotation.Qualifier;
  *
  * @author richy
  */
-public class PieFile
-{
+public class PieFile {
 
 	private byte[] md5;
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
-	
-	public PieFile()
-	{
+
+	public PieFile() {
 
 	}
 
-	public byte[] getMd5()
-	{
+	public byte[] getMd5() {
 		return md5;
 	}
 
-	public void setMd5(byte[] md5)
-	{
+	public void setMd5(byte[] md5) {
 		this.md5 = md5;
 	}
 
-	public String getFileName()
-	{
+	public String getFileName() {
 		return fileName;
 	}
 
-	public void setFileName(String fileName)
-	{
+	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
-	public long getLastModified()
-	{
+	public long getLastModified() {
 		return lastModified;
 	}
 
-	public void setLastModified(long lastModified)
-	{
+	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
 	}
 
-	public String getRelativeFilePath()
-	{
+	public String getRelativeFilePath() {
 		return relativeFilePath;
 	}
 
-	public void setRelativeFilePath(String relativeFilePath)
-	{
+	public void setRelativeFilePath(String relativeFilePath) {
 		this.relativeFilePath = relativeFilePath;
 	}
 

@@ -24,55 +24,45 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
  *
  * @author Svetoslav
  */
-public class PieShareService
-{
+public class PieShareService {
 
-    private IExecutorService executorService;
-    private ICommandParserService parserService;
-    private IBeanService beanService;
-    private IClusterManagementService clusterManagementService;
+	private IExecutorService executorService;
+	private ICommandParserService parserService;
+	private IBeanService beanService;
+	private IClusterManagementService clusterManagementService;
 
-    public PieShareService()
-    {
-    }
+	public PieShareService() {
+	}
 
-    public void setExecutorService(IExecutorService service)
-    {
-        this.executorService = service;
-    }
+	public void setExecutorService(IExecutorService service) {
+		this.executorService = service;
+	}
 
-    public void setParserService(ICommandParserService service)
-    {
-        this.parserService = service;
-    }
+	public void setParserService(ICommandParserService service) {
+		this.parserService = service;
+	}
 
-    public void setBeanService(IBeanService service)
-    {
-        this.beanService = service;
-    }
+	public void setBeanService(IBeanService service) {
+		this.beanService = service;
+	}
 
-    public void setClusterManagementService(IClusterManagementService service)
-    {
-        this.clusterManagementService = service;
-    }
+	public void setClusterManagementService(IClusterManagementService service) {
+		this.clusterManagementService = service;
+	}
 
-    @PostConstruct
-    public void start()
-    {
-        this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
+	@PostConstruct
+	public void start() {
+		this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
 
-        try
-        {
-            //todo-sv: change this!!! (new should not be used here)
-            //getbean per class ist dumm... zerst?rt unabh?ngigkeit
-            SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
-            this.parserService.registerAction(action);
-            LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
-            this.parserService.registerAction(laction);
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
-    }
+		try {
+			//todo-sv: change this!!! (new should not be used here)
+			//getbean per class ist dumm... zerst?rt unabh?ngigkeit
+			SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
+			this.parserService.registerAction(action);
+			LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
+			this.parserService.registerAction(laction);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 }

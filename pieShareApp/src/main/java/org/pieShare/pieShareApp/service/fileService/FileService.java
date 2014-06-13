@@ -26,8 +26,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 /**
  * @author richy
  */
-public class FileService implements IFileService
-{
+public class FileService implements IFileService {
 
 	private final PieLogger logger = new PieLogger(FileService.class);
 	private IExecutorService executorService = null;
@@ -37,34 +36,28 @@ public class FileService implements IFileService
 	private IShareService shareService;
 	private IHashService hashService;
 
-	public FileService()
-	{
+	public FileService() {
 
 	}
 
-	public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
-	{
+	public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration) {
 		this.pieAppConfig = pieShareAppConfiguration;
 	}
 
-	public void setBeanService(IBeanService beanService)
-	{
+	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setShareService(IShareService shareService)
-	{
+	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
 	}
 
-	public void setMd5Service(IHashService hashService)
-	{
+	public void setMd5Service(IHashService hashService) {
 		this.hashService = hashService;
 	}
 
 	@PostConstruct
-	public void initFileService()
-	{
+	public void initFileService() {
 		/*  try
 		 {
 		 registerAll(pieAppConfig.getWorkingDirectory());
@@ -79,37 +72,30 @@ public class FileService implements IFileService
 
 	}
 
-	public void setFileWatcher(IFileWatcherService fileWatcher)
-	{
+	public void setFileWatcher(IFileWatcherService fileWatcher) {
 		this.fileWatcher = fileWatcher;
 	}
 
-	public void setExecutorService(IExecutorService executorService)
-	{
+	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
 		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 	}
 
-	private void addWatchDirectory(File file)
-	{
+	private void addWatchDirectory(File file) {
 		fileWatcher.setWatchDir(file);
 		executorService.execute(fileWatcher);
 	}
 
-	private void registerAll(File file) throws IOException
-	{
-		Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>()
-		{
+	private void registerAll(File file) throws IOException {
+		Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
 			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException
-			{
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				//ToDO: Propergate All Files 
 				return FileVisitResult.CONTINUE;
 			}
 
 			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException
-			{
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 				//ToDO: Propergate All Files 
 				return FileVisitResult.CONTINUE;
 			}
@@ -117,53 +103,43 @@ public class FileService implements IFileService
 	}
 
 	@Override
-	public void localFileChange(File file)
-	{
-	    if(file.isDirectory())
-	    {
-		return;
-	    }
-		
-	    shareService.shareFile(file);
+	public void localFileChange(File file) {
+		if (file.isDirectory()) {
+			return;
+		}
+
+		shareService.shareFile(file);
 
 	}
 
 	@Override
-	public boolean checkMergeFile(PieFile pieFile)
-	{
+	public boolean checkMergeFile(PieFile pieFile) {
 		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
-		
-		if (!file.exists())
-		{
+
+		if (!file.exists()) {
 			return true;
 		}
-		
+
 		PieFile localPieFile = null;
-		
-		try
-		{
+
+		try {
 			localPieFile = genPieFile(file);
-		}
-		catch (IOException ex)
-		{
-		    //ToDo: DO conflict hadling
-		    return false;
+		} catch (IOException ex) {
+			//ToDo: DO conflict hadling
+			return false;
 		}
 
-		if(!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5()))
-		{
-		    return true;
+		if (!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5())) {
+			return true;
 		}
-		
+
 		return false;
 	}
 
 	@Override
-	public PieFile genPieFile(File file) throws FileNotFoundException, IOException
-	{
+	public PieFile genPieFile(File file) throws FileNotFoundException, IOException {
 
-		if (!file.exists())
-		{
+		if (!file.exists()) {
 			throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
 		}
 
@@ -178,7 +154,7 @@ public class FileService implements IFileService
 		pieFile.setFileName(file.getName());
 
 		pieFile.setMd5(hashService.hashStream(new FileInputStream(file)));
-		
+
 		return pieFile;
 
 	}

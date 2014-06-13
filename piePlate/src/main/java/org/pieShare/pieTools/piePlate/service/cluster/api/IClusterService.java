@@ -8,13 +8,14 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
  * Created by vauvenal5 on 12/12/13.
  */
 public interface IClusterService {
-    void connect(String clusterName) throws ClusterServiceException;
 
-    void sendMessage(IPieMessage msg) throws ClusterServiceException;
+	void connect(String clusterName) throws ClusterServiceException;
 
-    int getMembersCount();
+	void sendMessage(IPieMessage msg) throws ClusterServiceException;
 
-    boolean isConnectedToCluster();
-    
-    <P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
+	int getMembersCount();
+
+	boolean isConnectedToCluster();
+
+	<P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
 }

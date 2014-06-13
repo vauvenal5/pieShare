@@ -24,71 +24,57 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
  *
  * @author Richard
  */
-public class FileObserver implements IFileObserver
-{
+public class FileObserver implements IFileObserver {
 
-    private IExecutorService executorService;
-    private File file;
-    private IBeanService beanService;
-    private final long TIME_OUT_SEC = 60 * 60;
-    public IPieTask task;
+	private IExecutorService executorService;
+	private File file;
+	private IBeanService beanService;
+	private final long TIME_OUT_SEC = 60 * 60;
+	public IPieTask task;
 
-    @Override
-    public void setTask(IPieTask task)
-    {
-	this.task = task;
-    }
-
-    public void setExecutorService(IExecutorService executorService)
-    {
-	this.executorService = executorService;
-    }
-
-    @Override
-    public void setData(File file)
-    {
-	this.file = file;
-    }
-
-    public void setBeanService(IBeanService beanService)
-    {
-	this.beanService = beanService;
-    }
-
-    @Override
-    public void run()
-    {
-
-	FileInputStream st;
-
-	boolean isCopying = true;
-
-	while (isCopying)
-	{
-
-	    try
-	    {
-		Thread.sleep(2000);
-		st = new FileInputStream(file);
-		isCopying = false;
-		st.close();
-	    }
-	    catch (FileNotFoundException ex)
-	    {
-
-	    }
-	    catch (IOException ex)
-	    {
-
-	    }
-	    catch (InterruptedException ex)
-	    {
-
-	    }
-
+	@Override
+	public void setTask(IPieTask task) {
+		this.task = task;
 	}
 
-	executorService.execute(task);
-    }
+	public void setExecutorService(IExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
+	@Override
+	public void setData(File file) {
+		this.file = file;
+	}
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
+
+	@Override
+	public void run() {
+
+		FileInputStream st;
+
+		boolean isCopying = true;
+
+		while (isCopying) {
+
+			try {
+				Thread.sleep(2000);
+				st = new FileInputStream(file);
+				isCopying = false;
+				st.close();
+			} catch (FileNotFoundException ex) {
+
+			} catch (IOException ex) {
+
+			} catch (InterruptedException ex) {
+
+			}
+
+		}
+
+		executorService.execute(task);
+	}
 
 }
