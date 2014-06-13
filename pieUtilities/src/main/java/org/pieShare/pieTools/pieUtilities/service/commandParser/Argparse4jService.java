@@ -14,49 +14,46 @@ import java.util.Map;
  */
 public class Argparse4jService implements ICommandParserService {
 
-    private String programName;
-    private ArgumentParser parser;
-    private Subparsers subParsers;
+	private String programName;
+	private ArgumentParser parser;
+	private Subparsers subParsers;
 
-    private void init(String name) {
-        this.programName = name;
-        this.parser = ArgumentParsers.newArgumentParser(name);
-        this.subParsers = this.parser.addSubparsers();
-    }
+	private void init(String name) {
+		this.programName = name;
+		this.parser = ArgumentParsers.newArgumentParser(name);
+		this.subParsers = this.parser.addSubparsers();
+	}
 
-    @Override
-    public void parseArgs(String[] args) throws CommandParserServiceException {
-        try {
-            Namespace n = parser.parseArgs(args);
-            ((IActionService)n.get("func")).doAction(n.getAttrs());
-        }
-        catch (ArgumentParserException ex) {
-            throw new CommandParserServiceException("Arguments could not be parsed!", ex);
-        }
-    }
+	@Override
+	public void parseArgs(String[] args) throws CommandParserServiceException {
+		try {
+			Namespace n = parser.parseArgs(args);
+			((IActionService) n.get("func")).doAction(n.getAttrs());
+		} catch (ArgumentParserException ex) {
+			throw new CommandParserServiceException("Arguments could not be parsed!", ex);
+		}
+	}
 
-    @Override
-    public void registerAction(IActionService action) throws CommandParserServiceException {
-        try {
-            Validate.notNull(action);
-            Validate.notBlank(action.getCommandName());
-            Validate.notBlank(action.getProgramName());
+	@Override
+	public void registerAction(IActionService action) throws CommandParserServiceException {
+		try {
+			Validate.notNull(action);
+			Validate.notBlank(action.getCommandName());
+			Validate.notBlank(action.getProgramName());
 
-            if(this.parser == null) {
-                this.init(action.getProgramName());
-            }
-            else {
-                Validate.matchesPattern(action.getProgramName(), this.programName);
-            }
+			if (this.parser == null) {
+				this.init(action.getProgramName());
+			} else {
+				Validate.matchesPattern(action.getProgramName(), this.programName);
+			}
 
-            Subparser parser = this.subParsers.addParser(action.getCommandName()).setDefault("func", action);
+			Subparser parser = this.subParsers.addParser(action.getCommandName()).setDefault("func", action);
 
-            for(Map.Entry<String, Class> entry: action.getArguments().entrySet()) {
-                parser.addArgument(entry.getKey()).type(entry.getValue());
-            }
-        }
-        catch (NullPointerException | IllegalArgumentException ex) {
-            throw new CommandParserServiceException("Null value not allowed plus the program and command name must be set!", ex);
-        }
-    }
+			for (Map.Entry<String, Class> entry : action.getArguments().entrySet()) {
+				parser.addArgument(entry.getKey()).type(entry.getValue());
+			}
+		} catch (NullPointerException | IllegalArgumentException ex) {
+			throw new CommandParserServiceException("Null value not allowed plus the program and command name must be set!", ex);
+		}
+	}
 }

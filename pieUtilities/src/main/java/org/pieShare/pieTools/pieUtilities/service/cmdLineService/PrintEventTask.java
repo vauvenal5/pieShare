@@ -9,20 +9,20 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
  */
 public class PrintEventTask implements IPieEventTask<IPrintableEvent> {
 
-    private IPrintableEvent msg;
-    private ICmdLineService cmdService;
+	private IPrintableEvent msg;
+	private ICmdLineService cmdService;
 
-    public void setCommandLineService(ICmdLineService service) {
-        this.cmdService = service;
-    }
-    
-    @Override
-    public void setMsg(IPrintableEvent msg) {
-        this.msg = msg;
-    }
+	public void setCommandLineService(ICmdLineService service) {
+		this.cmdService = service;
+	}
 
-    @Override
-    public void run() {
-        this.cmdService.writeLine(this.msg);
-    }
+	@Override
+	public void setMsg(IPrintableEvent msg) {
+		this.msg = msg;
+	}
+
+	@Override
+	public void run() {
+		this.cmdService.writeLine(this.msg);
+	}
 }

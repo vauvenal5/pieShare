@@ -7,23 +7,23 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
  */
 public abstract class ClusterServiceTestHelper implements Runnable {
 
-    private IClusterService service;
+	private IClusterService service;
 
-    private boolean done = false;
+	private boolean done = false;
 
-    public ClusterServiceTestHelper(IClusterService service) {
-        this.service = service;
-    }
+	public ClusterServiceTestHelper(IClusterService service) {
+		this.service = service;
+	}
 
-    public IClusterService getService() {
-        return this.service;
-    }
+	public IClusterService getService() {
+		return this.service;
+	}
 
-    public boolean getDone() {
-        return this.done;
-    }
+	public boolean getDone() {
+		return this.done;
+	}
 
-    public void setDone(boolean done) {
-        this.done = done;
-    }
+	public void setDone(boolean done) {
+		this.done = done;
+	}
 }

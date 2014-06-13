@@ -9,86 +9,72 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.service.fileService.api.IFileMerger;
 import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
+import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
 
 /**
  *
  * @author Richard
  */
-public class FileObserver implements IFileObserver
-{
+public class FileObserver implements IFileObserver {
 
-    private IShareService shareService;
-    private File file;
-    private FileChangedTypes event;
-    private IBeanService beanService;
-    private final long TIME_OUT_SEC = 60 * 60;
+	private IExecutorService executorService;
+	private File file;
+	private IBeanService beanService;
+	private final long TIME_OUT_SEC = 60 * 60;
+	public IPieTask task;
 
-    public void setShareService(IShareService shareService)
-    {
-        this.shareService = shareService;
-    }
+	@Override
+	public void setTask(IPieTask task) {
+		this.task = task;
+	}
 
-    @Override
-    public void setData(File file, FileChangedTypes event)
-    {
-        this.file = file;
-        this.event = event;
-    }
-    
-    public void setBeanService(IBeanService beanService)
-    {
-	this.beanService = beanService;
-    }
+	public void setExecutorService(IExecutorService executorService) {
+		this.executorService = executorService;
+	}
 
-    @Override
-    public void run()
-    {
+	@Override
+	public void setData(File file) {
+		this.file = file;
+	}
 
-        if (!(event == FileChangedTypes.FILE_CREATED || event == FileChangedTypes.FILE_MODIFIED))
-        {
-            return;
-        }
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
-        FileInputStream st;
+	@Override
+	public void run() {
 
-        boolean isCopying = true;
+		FileInputStream st;
 
-        while (isCopying)
-        {
+		boolean isCopying = true;
 
-            try
-            {
-                st = new FileInputStream(file);
-                isCopying = false;
-                st.close();
-            }
-            catch (FileNotFoundException ex)
-            {
+		while (isCopying) {
 
-            }
-            catch (IOException ex)
-            {
+			try {
+				Thread.sleep(2000);
+				st = new FileInputStream(file);
+				isCopying = false;
+				st.close();
+			} catch (FileNotFoundException ex) {
 
-            }
-        }
+			} catch (IOException ex) {
 
-        if (event == FileChangedTypes.FILE_CREATED)
-        {
-	    PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
-	    pieFile.Init(file);
-	    
-            shareService.shareFile(pieFile);
-        }
-        /*else if (event == FileChangedTypes.FILE_MODIFIED)
-        {
-            fileMerger.fileChanged(file);
-        }*/
-    }
+			} catch (InterruptedException ex) {
+
+			}
+
+		}
+
+		executorService.execute(task);
+	}
 
 }

@@ -6,7 +6,8 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.exception.Comman
  * Created by Svetoslav on 29.12.13.
  */
 public interface ICommandParserService {
-    public void parseArgs(String[] args) throws CommandParserServiceException;
 
-    public void registerAction(IActionService action) throws CommandParserServiceException;
+	public void parseArgs(String[] args) throws CommandParserServiceException;
+
+	public void registerAction(IActionService action) throws CommandParserServiceException;
 }

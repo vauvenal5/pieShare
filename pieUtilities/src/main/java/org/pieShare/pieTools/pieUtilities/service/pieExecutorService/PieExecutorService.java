@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
 import java.util.HashMap;
@@ -25,70 +24,70 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.P
  *
  * @author Svetoslav
  */
-public class PieExecutorService implements IExecutorService{
-    
-    private ExecutorService executor;
-    private Map<Class, Class> tasks;
-    private IBeanService beanService;
-    
-    public PieExecutorService() {
-    }
-    
-    public void setExecutorService(ExecutorService executor) {
-        this.executor = executor;
-    }
-    
-    public void setBeanService(IBeanService service) {
-        this.beanService = service;
-    }
-    
-    public void setMap(Map<Class, Class> map) {
-        this.tasks = map;
-    }
+public class PieExecutorService implements IExecutorService {
 
-    @Override
-    public void execute(IPieTask task) {
-            Validate.notNull(task);
-            this.executor.execute(task);
-    }
-    
-    @Override
-    public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException {
-        Validate.notNull(event);
-        Class taskClass = this.tasks.get(event.getClass());
-        
-        try {
-            Validate.notNull(taskClass);
-        } catch(NullPointerException ex) {
-            throw new PieExecutorServiceException("No task registered for given event!", ex);
-        }
-        
-        IPieEventTask task = null;
-        try {
-            task = (IPieEventTask)this.beanService.getBean(taskClass);
-        } catch(BeanServiceError ex) {
-            throw new PieExecutorServiceException("Could not create task!", ex);
-        }
-        
-        task.setMsg(event);
-        this.executor.execute(task);
-    }
-    
-    private void register(Class event, Class task) {
-        Validate.notNull(event);
-        Validate.notNull(task);
-        
-        this.tasks.put(event, task);
-    }
+	private ExecutorService executor;
+	private Map<Class, Class> tasks;
+	private IBeanService beanService;
 
-    @Override
-    public <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
-        this.register(event, task);
-    }
+	public PieExecutorService() {
+	}
 
-    @Override
-    public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task) {
-        this.register(event, task);
-    }
-    
+	public void setExecutorService(ExecutorService executor) {
+		this.executor = executor;
+	}
+
+	public void setBeanService(IBeanService service) {
+		this.beanService = service;
+	}
+
+	public void setMap(Map<Class, Class> map) {
+		this.tasks = map;
+	}
+
+	@Override
+	public void execute(IPieTask task) {
+		Validate.notNull(task);
+		this.executor.execute(task);
+	}
+
+	@Override
+	public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException {
+		Validate.notNull(event);
+		Class taskClass = this.tasks.get(event.getClass());
+
+		try {
+			Validate.notNull(taskClass);
+		} catch (NullPointerException ex) {
+			throw new PieExecutorServiceException("No task registered for given event!", ex);
+		}
+
+		IPieEventTask task = null;
+		try {
+			task = (IPieEventTask) this.beanService.getBean(taskClass);
+		} catch (BeanServiceError ex) {
+			throw new PieExecutorServiceException("Could not create task!", ex);
+		}
+
+		task.setMsg(event);
+		this.executor.execute(task);
+	}
+
+	private void register(Class event, Class task) {
+		Validate.notNull(event);
+		Validate.notNull(task);
+
+		this.tasks.put(event, task);
+	}
+
+	@Override
+	public <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
+		this.register(event, task);
+	}
+
+	@Override
+	public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task) {
+		this.register(event, task);
+	}
+
 }
