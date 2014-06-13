@@ -29,7 +29,9 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -53,7 +55,12 @@ public class BitTorrentService implements IShareService
 	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
 	private IBase64Service base64Service;
+    private INetworkService networkService;
 	private IFileService fileService;
+
+    public void setNetworkService(INetworkService networkService) {
+        this.networkService = networkService;
+    }
 
 	public void setBase64Service(IBase64Service base64Service)
 	{
@@ -96,7 +103,7 @@ public class BitTorrentService implements IShareService
 		try
 		{
 			//todo: use beanService
-			tracker = new Tracker(new InetSocketAddress(InetAddress.getLocalHost(), 6969));
+            tracker = new Tracker(new InetSocketAddress(networkService.getLocalHost(), 6969));
 
 			tracker.start();
 		}
@@ -132,7 +139,7 @@ public class BitTorrentService implements IShareService
 			tracker.announce(new TrackedTorrent(torrent));
 			
 			long modD = file.lastModified();
-			Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
+			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
 			if(!file.setLastModified(modD))
 			{
 				System.out.println("Torrent modified lastModificationDate");
@@ -177,7 +184,7 @@ public class BitTorrentService implements IShareService
 			File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
 
 			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
-			Client client = new Client(InetAddress.getLocalHost(), torrent);
+            Client client = new Client(networkService.getLocalHost(), torrent);
 
             //seed for 10min to other cluster members
 			//todo: move this to settings
