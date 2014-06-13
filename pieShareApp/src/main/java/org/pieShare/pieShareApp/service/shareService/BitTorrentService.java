@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.shareService;
 
 import com.turn.ttorrent.client.Client;
@@ -14,13 +13,13 @@ import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +29,9 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -44,126 +46,155 @@ import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFol
  * @author Svetoslav
  */
 public class BitTorrentService implements IShareService {
-    
-    private Tracker tracker;
-    private IPieShareAppConfiguration configurationService;
-    private ITempFolderService tmpFolderService;
-    private IFileUtileService fileUtileService;
-    private IClusterManagementService clusterManagementService;
-    private IBeanService beanService;
-    private IBase64Service base64Service;
 
-    public void setBase64Service(IBase64Service base64Service) {
-        this.base64Service = base64Service;
-    }
+	private Tracker tracker;
+	private IPieShareAppConfiguration configurationService;
+	private ITempFolderService tmpFolderService;
+	private IFileUtileService fileUtileService;
+	private IClusterManagementService clusterManagementService;
+	private IBeanService beanService;
+	private IBase64Service base64Service;
+	private INetworkService networkService;
+	private IFileService fileService;
 
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
+	public void setNetworkService(INetworkService networkService) {
+		this.networkService = networkService;
+	}
 
-    public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-        this.clusterManagementService = clusterManagementService;
-    }
+	public void setBase64Service(IBase64Service base64Service) {
+		this.base64Service = base64Service;
+	}
 
-    public void setConfigurationService(IPieShareAppConfiguration configurationService) {
-        this.configurationService = configurationService;
-    }
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
-    public void setTmpFolderService(ITempFolderService tmpFolderService) {
-        this.tmpFolderService = tmpFolderService;
-    }
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
 
-    public void setFileUtileService(IFileUtileService fileUtileService) {
-        this.fileUtileService = fileUtileService;
-    }
-    
-    @PostConstruct
-    private void BitTorrentServicePost() {
-        try {
-            //todo: use beanService
-            tracker = new Tracker(new InetSocketAddress(InetAddress.getLocalHost(), 6969));
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
+	}
 
-            tracker.start();
-        } catch (IOException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    @Override
-    public void shareFile(PieFile file) {
-        try {
-            //todo: think about some kind o PieAdress factory
-            PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-            IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
-            //todo: error handling when torrent null
-            //todo: replace name by nodeName
-            URI uri = tracker.getAnnounceUrl().toURI();
-            Torrent torrent = Torrent.create(file.getFile(), uri, "replaceThisByNodeName");
-            
-            //share torrent
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            torrent.save(baos);
-           
-            FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
-            metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
-            metaMsg.setFilename(file.getFileName());
-            metaMsg.setRelativePath(file.getRelativeFilePath());
-            //todo: security issues?
-            tracker.announce(new TrackedTorrent(torrent));
-            Client seeder = new Client(InetAddress.getLocalHost(), new SharedTorrent(torrent, file.getFile().getParentFile(), true));
-            seeder.share();
-            
-            clusterService.sendMessage(metaMsg);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClusterManagmentServiceException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClusterServiceException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+	public void setConfigurationService(IPieShareAppConfiguration configurationService) {
+		this.configurationService = configurationService;
+	}
 
-    @Override
-    public void handleFile(FileTransferMetaMessage msg) {
-        try {
-            File tmpDir = tmpFolderService.createTempFolder(msg.getFilename(), configurationService.getTempCopyDirectory());
-	    
-            SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
-            Client client = new Client(InetAddress.getLocalHost(), torrent);
+	public void setTmpFolderService(ITempFolderService tmpFolderService) {
+		this.tmpFolderService = tmpFolderService;
+	}
 
-            //seed for 10min to other cluster members
-            //todo: move this to settings
-            client.download();
-            
-            //client.waitForCompletion();
-	    
-	    while (!ClientState.SEEDING.equals(client.getState())) {
-		// Check if there's an error
-		if (ClientState.ERROR.equals(client.getState())) {
-		    throw new Exception("ttorrent client Error State");
+	public void setFileUtileService(IFileUtileService fileUtileService) {
+		this.fileUtileService = fileUtileService;
+	}
+
+	@PostConstruct
+	private void BitTorrentServicePost() {
+		try {
+			//todo: use beanService
+			tracker = new Tracker(new InetSocketAddress(networkService.getLocalHost(), 6969));
+
+			tracker.start();
+		} catch (IOException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Override
+	public void shareFile(File file) {
+		try {
+			//todo: think about some kind o PieAdress factory
+			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
+			//todo: error handling when torrent null
+			//todo: replace name by nodeName
+			URI uri = tracker.getAnnounceUrl().toURI();
+			Torrent torrent = Torrent.create(file, uri, "replaceThisByNodeName");
+
+			//share torrent
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			torrent.save(baos);
+
+			PieFile pieFile = fileService.genPieFile(file);
+
+			FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
+			metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
+			metaMsg.setPieFile(pieFile);
+			//todo: security issues?
+			tracker.announce(new TrackedTorrent(torrent));
+
+			long modD = file.lastModified();
+			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
+			if (!file.setLastModified(modD)) {
+				System.out.println("Torrent modified lastModificationDate");
+			}
+			seeder.share();
+
+			clusterService.sendMessage(metaMsg);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IOException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (URISyntaxException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (ClusterManagmentServiceException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (ClusterServiceException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@Override
+	public void handleFile(FileTransferMetaMessage msg) {
+
+		if (!fileService.checkMergeFile(msg.getPieFile())) {
+			return;
 		}
 
-		// Display statistics
-		System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
+		try {
+			File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
 
-		// Wait one second
-		TimeUnit.SECONDS.sleep(1);
-            }
+			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
+			Client client = new Client(networkService.getLocalHost(), torrent);
 
-            File tmpFile = new File(tmpDir, msg.getFilename());
-            File targetDir = new File(configurationService.getWorkingDirectory(), msg.getRelativePath());
-            
-            Files.move(tmpFile.toPath(), targetDir.toPath());
-            
-            fileUtileService.deleteRecursive(tmpDir);
-        } catch (IOException ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex) {
-            Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+			//seed for 10min to other cluster members
+			//todo: move this to settings
+			client.download();
+
+			//client.waitForCompletion();
+			while (!ClientState.DONE.equals(client.getState())) {
+				// Check if there's an error
+				if (ClientState.ERROR.equals(client.getState())) {
+					throw new Exception("ttorrent client Error State");
+				}
+
+				// Display statistics
+				System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
+
+				// Wait one second
+				TimeUnit.SECONDS.sleep(1);
+			}
+
+			client.stop();
+			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
+			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
+
+			if (!targetFile.getParentFile().exists()) {
+				targetFile.getParentFile().mkdirs();
+			}
+
+			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+			if (!targetFile.setLastModified(msg.getPieFile().getLastModified())) {
+				System.out.println("WARNING: Could not set LastModificationDate");
+			}
+
+			fileUtileService.deleteRecursive(tmpDir);
+		} catch (IOException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (Exception ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 }

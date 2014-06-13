@@ -7,7 +7,8 @@ import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerSer
  * Created by Svetoslav on 19.01.14.
  */
 public interface ISerializerService {
-    IPieMessage deserialize(byte[] buffer) throws SerializerServiceException;
 
-    byte[] serialize(IPieMessage msg) throws SerializerServiceException;
+	IPieMessage deserialize(byte[] buffer) throws SerializerServiceException;
+
+	byte[] serialize(IPieMessage msg) throws SerializerServiceException;
 }

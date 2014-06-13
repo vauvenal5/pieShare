@@ -19,39 +19,39 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.P
  */
 public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 
-    private ISerializerService serializerService;
-    private IExecutorService executorService;
-    private IBeanService beanService;
+	private ISerializerService serializerService;
+	private IExecutorService executorService;
+	private IBeanService beanService;
 
-    public void setSerializerService(ISerializerService service) {
-        this.serializerService = service;
-    }
-    
-    public void setBeanService(IBeanService service) {
-        this.beanService = service;
-    }
+	public void setSerializerService(ISerializerService service) {
+		this.serializerService = service;
+	}
 
-    @Override
-    public void receive(Message msg) {
-        try {
-            IPieMessage pieMsg = this.serializerService.deserialize(msg.getBuffer());
-            JGroupsPieAddress ad = (JGroupsPieAddress)this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
-            ad.setAddress(msg.getSrc());
-            pieMsg.setAddress(ad);
-            this.executorService.handlePieEvent(pieMsg);
-        } catch (SerializerServiceException | PieExecutorServiceException e) {
-            //todo-sv: fix error handling!
-            e.printStackTrace();
-        }
-    }
+	public void setBeanService(IBeanService service) {
+		this.beanService = service;
+	}
 
-    @Override
-    public void viewAccepted(View view) {
-        super.viewAccepted(view);
-    }
+	@Override
+	public void receive(Message msg) {
+		try {
+			IPieMessage pieMsg = this.serializerService.deserialize(msg.getBuffer());
+			JGroupsPieAddress ad = (JGroupsPieAddress) this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
+			ad.setAddress(msg.getSrc());
+			pieMsg.setAddress(ad);
+			this.executorService.handlePieEvent(pieMsg);
+		} catch (SerializerServiceException | PieExecutorServiceException e) {
+			//todo-sv: fix error handling!
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void setExecutorService(IExecutorService service) {
-        this.executorService = service;
-    }
+	@Override
+	public void viewAccepted(View view) {
+		super.viewAccepted(view);
+	}
+
+	@Override
+	public void setExecutorService(IExecutorService service) {
+		this.executorService = service;
+	}
 }

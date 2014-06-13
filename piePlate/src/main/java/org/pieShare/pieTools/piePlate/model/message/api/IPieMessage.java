@@ -8,9 +8,12 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
  * Created by Svetoslav on 17.01.14.
  */
 public interface IPieMessage extends IPieEvent {
-    public IPieAddress getAddress();
-    public void setAddress(IPieAddress address);
-    
-    public String getType();
-    public void setType(String type);
+
+	public IPieAddress getAddress();
+
+	public void setAddress(IPieAddress address);
+
+	public String getType();
+
+	public void setType(String type);
 }
