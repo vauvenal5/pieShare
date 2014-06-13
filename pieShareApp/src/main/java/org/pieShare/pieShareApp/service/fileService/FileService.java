@@ -9,19 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Date;
 import javax.annotation.PostConstruct;
-import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.task.FileMetaTask;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -150,21 +146,13 @@ public class FileService implements IFileService
 		}
 		catch (IOException ex)
 		{
-			return false;
-			//Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
+		    //ToDo: DO conflict hadling
+		    return false;
 		}
 
-		if(localPieFile.getLastModified() > pieFile.getLastModified())
+		if(!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5()))
 		{
-			return false;
-		}
-		else if(localPieFile.getLastModified() < pieFile.getLastModified())
-		{
-			return true;
-		}
-		else if(localPieFile.getLastModified() == pieFile.getLastModified())
-		{
-			return false;
+		    return true;
 		}
 		
 		return false;
@@ -190,7 +178,7 @@ public class FileService implements IFileService
 		pieFile.setFileName(file.getName());
 
 		pieFile.setMd5(hashService.hashStream(new FileInputStream(file)));
-
+		
 		return pieFile;
 
 	}
