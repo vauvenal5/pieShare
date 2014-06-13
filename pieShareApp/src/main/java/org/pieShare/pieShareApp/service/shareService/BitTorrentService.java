@@ -45,8 +45,7 @@ import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFol
  *
  * @author Svetoslav
  */
-public class BitTorrentService implements IShareService
-{
+public class BitTorrentService implements IShareService {
 
 	private Tracker tracker;
 	private IPieShareAppConfiguration configurationService;
@@ -55,73 +54,60 @@ public class BitTorrentService implements IShareService
 	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
 	private IBase64Service base64Service;
-    private INetworkService networkService;
+	private INetworkService networkService;
 	private IFileService fileService;
 
-    public void setNetworkService(INetworkService networkService) {
-        this.networkService = networkService;
-    }
+	public void setNetworkService(INetworkService networkService) {
+		this.networkService = networkService;
+	}
 
-	public void setBase64Service(IBase64Service base64Service)
-	{
+	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
 
-	public void setBeanService(IBeanService beanService)
-	{
+	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setFileService(IFileService fileService)
-	{
+	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
 	}
 
-	public void setClusterManagementService(IClusterManagementService clusterManagementService)
-	{
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
 
-	public void setConfigurationService(IPieShareAppConfiguration configurationService)
-	{
+	public void setConfigurationService(IPieShareAppConfiguration configurationService) {
 		this.configurationService = configurationService;
 	}
 
-	public void setTmpFolderService(ITempFolderService tmpFolderService)
-	{
+	public void setTmpFolderService(ITempFolderService tmpFolderService) {
 		this.tmpFolderService = tmpFolderService;
 	}
 
-	public void setFileUtileService(IFileUtileService fileUtileService)
-	{
+	public void setFileUtileService(IFileUtileService fileUtileService) {
 		this.fileUtileService = fileUtileService;
 	}
 
 	@PostConstruct
-	private void BitTorrentServicePost()
-	{
-		try
-		{
+	private void BitTorrentServicePost() {
+		try {
 			//todo: use beanService
-            tracker = new Tracker(new InetSocketAddress(networkService.getLocalHost(), 6969));
+			tracker = new Tracker(new InetSocketAddress(networkService.getLocalHost(), 6969));
 
 			tracker.start();
-		}
-		catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
-	public void shareFile(File file)
-	{
-		try
-		{
+	public void shareFile(File file) {
+		try {
 			//todo: think about some kind o PieAdress factory
 			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
-            //todo: error handling when torrent null
+			//todo: error handling when torrent null
 			//todo: replace name by nodeName
 			URI uri = tracker.getAnnounceUrl().toURI();
 			Torrent torrent = Torrent.create(file, uri, "replaceThisByNodeName");
@@ -137,65 +123,49 @@ public class BitTorrentService implements IShareService
 			metaMsg.setPieFile(pieFile);
 			//todo: security issues?
 			tracker.announce(new TrackedTorrent(torrent));
-			
+
 			long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
-			if(!file.setLastModified(modD))
-			{
+			if (!file.setLastModified(modD)) {
 				System.out.println("Torrent modified lastModificationDate");
 			}
 			seeder.share();
 
 			clusterService.sendMessage(metaMsg);
-		}
-		catch (InterruptedException ex)
-		{
+		} catch (InterruptedException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (URISyntaxException ex)
-		{
+		} catch (URISyntaxException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (ClusterManagmentServiceException ex)
-		{
+		} catch (ClusterManagmentServiceException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (ClusterServiceException ex)
-		{
+		} catch (ClusterServiceException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
-	public void handleFile(FileTransferMetaMessage msg)
-	{
-		
-		if(!fileService.checkMergeFile(msg.getPieFile()))
-		{
+	public void handleFile(FileTransferMetaMessage msg) {
+
+		if (!fileService.checkMergeFile(msg.getPieFile())) {
 			return;
 		}
-		
-		try
-		{
+
+		try {
 			File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
 
 			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
-            Client client = new Client(networkService.getLocalHost(), torrent);
+			Client client = new Client(networkService.getLocalHost(), torrent);
 
-            //seed for 10min to other cluster members
+			//seed for 10min to other cluster members
 			//todo: move this to settings
 			client.download();
 
-            //client.waitForCompletion();
-			while (!ClientState.DONE.equals(client.getState()))
-			{
+			//client.waitForCompletion();
+			while (!ClientState.DONE.equals(client.getState())) {
 				// Check if there's an error
-				if (ClientState.ERROR.equals(client.getState()))
-				{
+				if (ClientState.ERROR.equals(client.getState())) {
 					throw new Exception("ttorrent client Error State");
 				}
 
@@ -210,26 +180,20 @@ public class BitTorrentService implements IShareService
 			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
 			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
-			if(!targetFile.getParentFile().exists())
-			{
+			if (!targetFile.getParentFile().exists()) {
 				targetFile.getParentFile().mkdirs();
 			}
-			
+
 			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			
-			if(!targetFile.setLastModified(msg.getPieFile().getLastModified()))
-			{
+
+			if (!targetFile.setLastModified(msg.getPieFile().getLastModified())) {
 				System.out.println("WARNING: Could not set LastModificationDate");
 			}
-			
+
 			fileUtileService.deleteRecursive(tmpDir);
-		}
-		catch (IOException ex)
-		{
+		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (Exception ex)
-		{
+		} catch (Exception ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}

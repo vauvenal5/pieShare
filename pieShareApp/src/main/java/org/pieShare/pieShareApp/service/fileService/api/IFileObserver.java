@@ -13,10 +13,9 @@ import org.pieShare.pieTools.pieUtilities.utils.FileChangedTypes;
  *
  * @author Richard
  */
-public interface IFileObserver extends IPieTask
-{
+public interface IFileObserver extends IPieTask {
 
-    public void setData(File file);
+	public void setData(File file);
 
-    public void setTask(IPieTask task);
+	public void setTask(IPieTask task);
 }

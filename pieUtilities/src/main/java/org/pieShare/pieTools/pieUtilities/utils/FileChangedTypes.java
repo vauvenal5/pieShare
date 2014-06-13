@@ -9,10 +9,10 @@ package org.pieShare.pieTools.pieUtilities.utils;
  *
  * @author richy
  */
-    public enum FileChangedTypes
-    {
-        FILE_CREATED,
-        FILE_DELETED,
-        FILE_MODIFIED,
-        SNYC_ALL
-    }
+public enum FileChangedTypes {
+
+	FILE_CREATED,
+	FILE_DELETED,
+	FILE_MODIFIED,
+	SNYC_ALL
+}

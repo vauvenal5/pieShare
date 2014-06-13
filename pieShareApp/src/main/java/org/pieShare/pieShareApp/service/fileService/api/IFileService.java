@@ -14,13 +14,14 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  *
  * @author richy
  */
-public interface IFileService
-{
+public interface IFileService {
 
 	//public void remoteFileChange(FileChangedMessage message);
-    public PieFile genPieFile(File file) throws FileNotFoundException, IOException;
+	public PieFile genPieFile(File file) throws FileNotFoundException, IOException;
+
 	public boolean checkMergeFile(PieFile pieFile);
-    public void localFileChange(File file);
+
+	public void localFileChange(File file);
 
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();

@@ -12,7 +12,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  *
  * @author Richard
  */
-public interface IFileWatcherService extends IPieTask
-{
+public interface IFileWatcherService extends IPieTask {
+
 	public void setWatchDir(File watchDir);
 }

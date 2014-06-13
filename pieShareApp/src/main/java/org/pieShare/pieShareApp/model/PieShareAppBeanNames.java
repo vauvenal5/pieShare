@@ -9,42 +9,34 @@ package org.pieShare.pieShareApp.model;
  *
  * @author Svetoslav
  */
-public class PieShareAppBeanNames
-{
+public class PieShareAppBeanNames {
 
-    public static String getLoginCommmandName()
-    {
-	return "loginCommand";
-    }
+	public static String getLoginCommmandName() {
+		return "loginCommand";
+	}
 
-    public static String getPieUser()
-    {
-	return "pieUser";
-    }
+	public static String getPieUser() {
+		return "pieUser";
+	}
 
-    public static String getLoginActionServiceName()
-    {
-	return "loginActionService";
-    }
+	public static String getLoginActionServiceName() {
+		return "loginActionService";
+	}
 
-    public static String getFileServiceName()
-    {
-	return "fileService";
-    }
+	public static String getFileServiceName() {
+		return "fileService";
+	}
 
-    public static String getPieFileName()
-    {
-	return "pieFile";
-    }
+	public static String getPieFileName() {
+		return "pieFile";
+	}
 
-    public static String getFileCreatedTaskName()
-    {
-	return "fileCreatedTask";
-    }
-    
-     public static String getFileChangedTaskName()
-    {
-	return "fileChangedTask";
-    }
+	public static String getFileCreatedTaskName() {
+		return "fileCreatedTask";
+	}
+
+	public static String getFileChangedTaskName() {
+		return "fileChangedTask";
+	}
 
 }
