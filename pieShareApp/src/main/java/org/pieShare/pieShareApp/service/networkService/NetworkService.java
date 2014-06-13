@@ -24,8 +24,46 @@ import java.util.logging.Logger;
  *
  * @author Svetoslav
  */
-public class NetworkService {
-    public static InetAddress getLocalHost() {
+public class NetworkService implements INetworkService {
+    
+    private int minPort = 1024;
+    private int maxPort = 49151;
+    private InetAddress address = null;
+    
+    @Override
+    public int getAvailablePort() {
+        int port = -1;
+        boolean found = false;
+        for(port = this.minPort; port <= this.maxPort && !found; port++) {
+            try {                                                    
+                ServerSocket tmpSocket = new ServerSocket(port);
+                tmpSocket.setReuseAddress(true);
+                tmpSocket.close();
+                found = true;
+            }
+            catch(IOException ex) {
+                Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return port;
+    }
+    
+    @Override
+    public InetAddress getLocalHost() {
+        return this.getLocalHost(false);
+    }
+    
+    @Override
+    public InetAddress getLocalHost(boolean invalidate) {
+        
+        if(invalidate) {
+            this.address = null;
+        }
+        
+        if(this.address != null) {
+            return this.address;
+        }
         
         List<InetAddress> possibleAds = new ArrayList<>();
         
@@ -48,14 +86,14 @@ public class NetworkService {
                                 try(SocketChannel socket = SocketChannel.open()){
                                     socket.socket().setSoTimeout(1000);
 
-                                    ServerSocket tmpServer = new ServerSocket(0);
-                                    int port = tmpServer.getLocalPort();
-                                    int port2 = tmpServer.getLocalPort();
+                                    int freePort = this.getAvailablePort();
 
-                                    socket.bind(new InetSocketAddress(ad, port2));
+                                    socket.bind(new InetSocketAddress(ad, freePort));
                                     socket.connect(new InetSocketAddress("google.com", 80));
                                     //if everything passes the InetAddress should be okay.
-                                    return ad;
+                                    socket.close();
+                                    this.address = ad;
+                                    return this.address;
                                 }
                                 catch(IOException ex) {
                                     Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,6 +115,7 @@ public class NetworkService {
             return null;
         }
         
-        return possibleAds.get(0);
+        this.address = possibleAds.get(0);
+        return this.address;
     }
 }
