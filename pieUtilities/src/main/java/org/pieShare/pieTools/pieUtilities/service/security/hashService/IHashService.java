@@ -15,5 +15,6 @@ import java.io.InputStream;
  */
 public interface IHashService {
     byte[] hash(byte[] data);
-	byte[] hashStream(InputStream stream) throws IOException;
+    byte[] hashStream(InputStream stream) throws IOException;
+    boolean isMD5Equal(byte[] first, byte[] second);
 }

@@ -74,5 +74,11 @@ public class MD5Service implements IHashService
 		this.messageDigest.reset();
 		return resultByte;
 	}
+	
+	@Override
+	public boolean isMD5Equal(byte[] first, byte[] second)
+	{
+	    return messageDigest.isEqual(first, second);
+	}
 
 }
