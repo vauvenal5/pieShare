@@ -18,5 +18,4 @@ public interface IShareService {
 	void shareFile(File file);
 
 	void handleFile(FileTransferMetaMessage msg);
-
 }
