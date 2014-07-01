@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareApp.service.requestService.api;
 
+import java.util.ArrayList;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
@@ -16,4 +17,6 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
 public interface IRequestService {
 	public void requestFile(PieFile pieFile);
 	public void anncounceRecived(FileTransferMetaMessage message);
+	public ArrayList<PieFile> getRequestedFileList();
+	public boolean deleteRequestedFile(PieFile pieFile);
 }
