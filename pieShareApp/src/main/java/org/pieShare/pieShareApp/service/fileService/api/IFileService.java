@@ -23,6 +23,8 @@ public interface IFileService {
 
 	public void localFileChange(File file);
 
+
+	
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
 }

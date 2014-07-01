@@ -5,13 +5,9 @@
  */
 package org.pieShare.pieShareApp.service.fileService;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  *
@@ -58,6 +54,25 @@ public class PieFile {
 
 	public void setRelativeFilePath(String relativeFilePath) {
 		this.relativeFilePath = relativeFilePath;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		if (!(obj instanceof PieFile)) {
+			return false;
+		}
+
+		return Arrays.equals(((PieFile) obj).getMd5(), this.md5);
+
+	}
+
+	@Override
+	public int hashCode() {
+		//TODO: Test this
+		ByteBuffer bb = ByteBuffer.wrap(md5);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getInt();
 	}
 
 }
