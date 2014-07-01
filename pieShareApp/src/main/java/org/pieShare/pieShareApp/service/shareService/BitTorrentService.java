@@ -20,6 +20,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,13 +30,14 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.replicatedHashMapService.IReplicatedHashMap;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.fileUtileService.api.IFileUtileService;
@@ -56,6 +58,7 @@ public class BitTorrentService implements IShareService {
 	private IBase64Service base64Service;
 	private INetworkService networkService;
 	private IFileService fileService;
+	private IReplicatedHashMap<PieFile, List<URI>> mapService;
 
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
@@ -124,7 +127,7 @@ public class BitTorrentService implements IShareService {
 			metaMsg.setPieFile(pieFile);
 			//todo: security issues?
 			tracker.announce(new TrackedTorrent(torrent));
-
+			
 			long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
 			if (!file.setLastModified(modD)) {
