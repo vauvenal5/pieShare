@@ -5,10 +5,8 @@
  */
 package org.pieShare.pieShareApp.service.requestService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
@@ -29,11 +27,11 @@ public class RequestService implements IRequestService {
 	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
-	private HashMap<PieFile, Boolean> requestedFiles;
+	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IShareService shareService;
 
 	public RequestService() {
-		requestedFiles = new HashMap<>();
+		requestedFiles = new ConcurrentHashMap<>();
 	}
 
 	public void setShareService(IShareService shareService) {
@@ -70,13 +68,19 @@ public class RequestService implements IRequestService {
 		}
 	}
 
+	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
+		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
+			shareService.handleActiveShare(pieFile);
+		}
+	}
+
 	@Override
-	public HashMap<PieFile, Boolean> getRequestedFileList() {
+	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList() {
 		return requestedFiles;
 	}
 
 	@Override
-	public boolean deleteRequestedFile(PieFile pieFile) {
+	public synchronized boolean deleteRequestedFile(PieFile pieFile) {
 		if (requestedFiles.containsKey(pieFile)) {
 			requestedFiles.remove(pieFile);
 			return true;
