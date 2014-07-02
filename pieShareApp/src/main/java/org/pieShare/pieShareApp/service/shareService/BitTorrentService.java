@@ -143,6 +143,7 @@ public class BitTorrentService implements IShareService {
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
 			
+			clusterService.sendMessage(metaMsg);
 			handleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true));
 			/*long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
@@ -151,8 +152,6 @@ public class BitTorrentService implements IShareService {
 			}
 			seeder.share();
 			seeder.*/
-
-			clusterService.sendMessage(metaMsg);
 		} catch (InterruptedException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IOException ex) {
