@@ -5,10 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.requestService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
@@ -29,7 +26,7 @@ public class RequestService implements IRequestService {
 	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
-	private HashMap<PieFile, Boolean> requestedFiles;
+	private final HashMap<PieFile, Boolean> requestedFiles;
 	private IShareService shareService;
 
 	public RequestService() {
