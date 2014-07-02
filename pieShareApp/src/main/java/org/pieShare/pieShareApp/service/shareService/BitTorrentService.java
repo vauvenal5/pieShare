@@ -175,6 +175,25 @@ public class BitTorrentService implements IShareService {
 			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
 			
 			handleSharedTorrent(msg.getPieFile(), torrent);
+			/*Client client = new Client(networkService.getLocalHost(), torrent);
+			client.share();
+			
+			while (!ClientState.DONE.equals(client.getState())) {
+				// Check if there's an error
+				if (ClientState.ERROR.equals(client.getState())) {
+					throw new Exception("ttorrent client Error State");
+				}
+				
+				if(ClientState.SEEDING.equals(client.getState())) {
+					System.out.println("SEEDING STATE!!");
+				}
+				
+				if(ClientState.SHARING.equals(client.getState())) {
+					System.out.println("SHARIN STATE!!");
+				}
+				
+				Thread.sleep(1000);
+			}*/
 			
 			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
 			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
@@ -226,7 +245,7 @@ public class BitTorrentService implements IShareService {
 					throw new Exception("ttorrent client Error State");
 				}
 				
-				if(ClientState.SHARING.equals(client.getState())) {
+				if(ClientState.SEEDING.equals(client.getState())) {
 					FileTransferCompleteMessage msg = new FileTransferCompleteMessage();
 					msg.setPieFile(pieFile);
 					PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
@@ -234,7 +253,7 @@ public class BitTorrentService implements IShareService {
 					this.clusterManagementService.sendMessage(msg, user.getCloudName());
 				}
 				
-				if(ClientState.SHARING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
+				if(ClientState.SEEDING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
 					this.removePieFileState(pieFile);
 					client.stop();
 				}
