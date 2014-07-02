@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,6 +59,7 @@ public class BitTorrentService implements IShareService {
 	private INetworkService networkService;
 	private IFileService fileService;
 	private IReplicatedHashMap<PieFile, List<URI>> mapService;
+	private Map<PieFile, Integer> sharedFiles;
 
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
@@ -128,7 +130,16 @@ public class BitTorrentService implements IShareService {
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
 			
-			handleSharedTorrent(new SharedTorrent(torrent, file.getParentFile(), true));
+			synchronized (this.sharedFiles) {
+				if(this.sharedFiles.containsKey(pieFile)) {
+					this.sharedFiles.put(pieFile, this.sharedFiles.get(pieFile)+1);
+				}
+				else {
+					this.sharedFiles.put(pieFile, 1);
+				}
+			}
+			
+			handleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true));
 			/*long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
 			if (!file.setLastModified(modD)) {
@@ -206,18 +217,20 @@ public class BitTorrentService implements IShareService {
 		}
 	}
 	
-	private void handleSharedTorrent(SharedTorrent torrent) {
+	private void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
 		try {
 			Client client = new Client(networkService.getLocalHost(), torrent);
 			client.share();
-			
-			//added timertask for stoping client after work done
 			
 			//client.waitForCompletion();
 			while (!ClientState.DONE.equals(client.getState())) {
 				// Check if there's an error
 				if (ClientState.ERROR.equals(client.getState())) {
 					throw new Exception("ttorrent client Error State");
+				}
+				
+				if(ClientState.SHARING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
+					client.stop();
 				}
 				
 				// Display statistics
@@ -227,7 +240,6 @@ public class BitTorrentService implements IShareService {
 				Thread.sleep(500);
 			}
 			
-			client.stop();
 		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (Exception ex) {
@@ -236,7 +248,16 @@ public class BitTorrentService implements IShareService {
 	}
 
 	@Override
-	public void fileTransferComplete(FileTransferCompleteMessage msg) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public synchronized void fileTransferComplete(FileTransferCompleteMessage msg) {
+		if(this.sharedFiles.containsKey(msg.getPieFile())) {
+			this.sharedFiles.put(msg.getPieFile(), this.sharedFiles.get(msg.getPieFile()) - 1);
+		}
+	}
+
+	@Override
+	public synchronized void handleActiveShare(PieFile pieFile) {
+		if(this.sharedFiles.containsKey(pieFile)) {
+			this.sharedFiles.put(pieFile, this.sharedFiles.get(pieFile) + 1);
+		}
 	}
 }
