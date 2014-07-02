@@ -126,14 +126,17 @@ public class BitTorrentService implements IShareService {
 			metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
 			metaMsg.setPieFile(pieFile);
 			//todo: security issues?
-			tracker.announce(new TrackedTorrent(torrent));
+			TrackedTorrent tt = new TrackedTorrent(torrent);
+			tracker.announce(tt);
 			
-			long modD = file.lastModified();
+			handleSharedTorrent(new SharedTorrent(torrent, file.getParentFile(), true));
+			/*long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
 			if (!file.setLastModified(modD)) {
 				System.out.println("Torrent modified lastModificationDate");
 			}
 			seeder.share();
+			seeder.*/
 
 			clusterService.sendMessage(metaMsg);
 		} catch (InterruptedException ex) {
@@ -151,7 +154,8 @@ public class BitTorrentService implements IShareService {
 
 	@Override
 	public void handleFile(FileTransferMetaMessage msg) {
-
+			
+		//will be deleted
 		if (!fileService.checkMergeFile(msg.getPieFile())) {
 			return;
 		}
@@ -165,6 +169,7 @@ public class BitTorrentService implements IShareService {
 			//seed for 10min to other cluster members
 			//todo: move this to settings
 			client.download();
+			
 
 			//client.waitForCompletion();
 			while (!ClientState.DONE.equals(client.getState())) {
@@ -195,6 +200,35 @@ public class BitTorrentService implements IShareService {
 			}
 
 			fileUtileService.deleteRecursive(tmpDir);
+		} catch (IOException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (Exception ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	private void handleSharedTorrent(SharedTorrent torrent) {
+		try {
+			Client client = new Client(networkService.getLocalHost(), torrent);
+			client.share();
+			
+			//added timertask for stoping client after work done
+			
+			//client.waitForCompletion();
+			while (!ClientState.DONE.equals(client.getState())) {
+				// Check if there's an error
+				if (ClientState.ERROR.equals(client.getState())) {
+					throw new Exception("ttorrent client Error State");
+				}
+				
+				// Display statistics
+				System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
+
+				// Wait one second
+				Thread.sleep(500);
+			}
+			
+			client.stop();
 		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (Exception ex) {

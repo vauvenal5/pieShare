@@ -52,7 +52,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.turn</groupId>
+			<groupId>org.pieshare</groupId>
 			<artifactId>ttorrent</artifactId>
 			<version>1.4</version>
 		</dependency>
