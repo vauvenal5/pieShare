@@ -9,11 +9,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.model.task.FileMetaTask;
+import org.pieShare.pieShareApp.model.task.FileRequestTask;
+import org.pieShare.pieShareApp.model.task.NewFileTask;
+import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
+import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -35,9 +44,14 @@ public class FileService implements IFileService {
 	private IBeanService beanService;
 	private IShareService shareService;
 	private IHashService hashService;
+	private IComparerService comparerService;
 
 	public FileService() {
 
+	}
+
+	public void setComparerService(IComparerService comparerService) {
+		this.comparerService = comparerService;
 	}
 
 	public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration) {
@@ -79,6 +93,8 @@ public class FileService implements IFileService {
 	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
 		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
+		this.executorService.registerExtendedTask(FileRequestMessage.class, FileRequestTask.class);
+		this.executorService.registerExtendedTask(NewFileMessage.class, NewFileTask.class);
 	}
 
 	private void addWatchDirectory(File file) {
@@ -108,12 +124,57 @@ public class FileService implements IFileService {
 			return;
 		}
 
-		shareService.shareFile(file);
+		PieFile pieFile = null;
+		try {
+			pieFile = genPieFile(file);
+		} catch (IOException ex) {
+			logger.error("Error Creating PieFile. Message: " + ex.getMessage());
+			return;
+		}
 
+		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
+		msg.setPieFile(pieFile);
+		logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
+		//Message New File
+		//shareService.shareFile(file);
 	}
 
 	@Override
-	public boolean checkMergeFile(PieFile pieFile) {
+	public void remoteFileChanged(NewFileMessage msg) {
+		try {
+			comparerService.comparePieFile(msg.getPieFile());
+		} catch (IOException ex) {
+			//TODO: Handle
+		} catch (FileConflictException ex) {
+			//TODO: Handle
+		}
+	}
+
+	@Override
+	public void fileRequested(FileRequestMessage msg) {
+
+		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
+
+		if (!file.exists()) {
+			return;
+		}
+
+		PieFile pieFile = null;
+
+		try {
+			pieFile = genPieFile(file);
+		} catch (IOException ex) {
+			return;
+		}
+
+		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
+			shareService.shareFile(file);
+		}
+	}
+
+	@Override
+	public boolean checkMergeFile(PieFile pieFile
+	) {
 		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
 
 		if (!file.exists()) {
@@ -158,4 +219,5 @@ public class FileService implements IFileService {
 		return pieFile;
 
 	}
+
 }
