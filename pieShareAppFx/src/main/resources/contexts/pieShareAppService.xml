@@ -75,6 +75,7 @@
 		<property name="base64Service" ref="base64Service"/>
 		<property name="networkService" ref="networkService"/>
 		<property name="fileService" ref="fileService"/>
+		<property name="requestService" ref="requestService"/>
 	</bean>
     
 	<bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
