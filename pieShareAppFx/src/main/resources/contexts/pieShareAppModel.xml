@@ -10,6 +10,9 @@
 	<bean id="fileRequestMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.FileRequestMessage">  
 	</bean>
 	
+	<bean id="fileTransferCompleteMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage">  
+	</bean>
+	
 	<bean id="newFileMessage" scope="prototype" lazy-init="true" class="org.pieShare.pieShareApp.model.message.NewFileMessage">  
 	</bean>
   

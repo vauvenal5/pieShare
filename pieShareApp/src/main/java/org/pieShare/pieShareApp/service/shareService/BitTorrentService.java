@@ -14,7 +14,6 @@ import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,12 +26,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
-import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -234,5 +233,10 @@ public class BitTorrentService implements IShareService {
 		} catch (Exception ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		}
+	}
+
+	@Override
+	public void fileTransferComplete(FileTransferCompleteMessage msg) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }
