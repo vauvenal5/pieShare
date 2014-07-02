@@ -85,6 +85,10 @@
 		<property name="fileService" ref="fileService"/>
 	</bean>
 	
+	<bean id="fileTransferCompleteTask" class="org.pieShare.pieShareApp.model.task.FileTransferCompleteTask">
+		<property name="shareService" ref="shareService"/>
+	</bean>
+	
 	<bean id="newFileTask" class="org.pieShare.pieShareApp.model.task.NewFileTask">
 		<property name="fileService" ref="fileService"/>
 	</bean>
