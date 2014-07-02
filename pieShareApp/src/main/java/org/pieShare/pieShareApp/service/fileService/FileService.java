@@ -16,10 +16,12 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.model.task.FileMetaTask;
 import org.pieShare.pieShareApp.model.task.FileRequestTask;
+import org.pieShare.pieShareApp.model.task.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.model.task.NewFileTask;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
@@ -28,6 +30,9 @@ import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherServ
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -47,11 +52,17 @@ public class FileService implements IFileService {
 	private IHashService hashService;
 	private IComparerService comparerService;
 	private IRequestService requestService;
+	private IClusterManagementService clusterManagementService;
 
 	public FileService() {
 
 	}
 
+	public void setClusterManagementService(IClusterManagementService clusterManagementService)
+	{
+		this.clusterManagementService = clusterManagementService;
+	}
+	
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
@@ -101,6 +112,7 @@ public class FileService implements IFileService {
 		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 		this.executorService.registerExtendedTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorService.registerExtendedTask(NewFileMessage.class, NewFileTask.class);
+		this.executorService.registerExtendedTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 	}
 
 	private void addWatchDirectory(File file) {
@@ -140,7 +152,13 @@ public class FileService implements IFileService {
 
 		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
 		msg.setPieFile(pieFile);
-		logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
+		try {
+			clusterManagementService.sendMessage(msg);
+			logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
+		} catch (ClusterManagmentServiceException ex) {
+			Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
 		//Message New File
 		//shareService.shareFile(file);
 	}
