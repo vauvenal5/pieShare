@@ -68,13 +68,19 @@ public class RequestService implements IRequestService {
 		}
 	}
 
+	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
+		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
+			shareService.handleActiveShare(pieFile);
+		}
+	}
+
 	@Override
 	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList() {
 		return requestedFiles;
 	}
 
 	@Override
-	public boolean deleteRequestedFile(PieFile pieFile) {
+	public synchronized boolean deleteRequestedFile(PieFile pieFile) {
 		if (requestedFiles.containsKey(pieFile)) {
 			requestedFiles.remove(pieFile);
 			return true;
