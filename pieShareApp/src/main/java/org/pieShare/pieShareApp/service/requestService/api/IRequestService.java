@@ -3,11 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.requestService.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
@@ -16,8 +14,14 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  * @author Richard
  */
 public interface IRequestService {
+
 	public void requestFile(PieFile pieFile);
+
 	public void anncounceRecived(FileTransferMetaMessage message);
-	public HashMap<PieFile, Boolean> getRequestedFileList();
+
+	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList();
+
 	public boolean deleteRequestedFile(PieFile pieFile);
+
+	public void checkForActiveFileHandle(PieFile pieFile);
 }

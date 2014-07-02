@@ -30,6 +30,7 @@
 		<property name="pieShareAppConfiguration" ref="pieShareAppConfiguration"/>
 		<property name="md5Service" ref="md5Service"/>
 		<property name="comparerService" ref="comparerService"/>
+		<property name="requestService" ref="requestService"/>
 	</bean>
     
     

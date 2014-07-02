@@ -26,6 +26,7 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -45,9 +46,14 @@ public class FileService implements IFileService {
 	private IShareService shareService;
 	private IHashService hashService;
 	private IComparerService comparerService;
+	private IRequestService requestService;
 
 	public FileService() {
 
+	}
+
+	public void setRequestService(IRequestService requestService) {
+		this.requestService = requestService;
 	}
 
 	public void setComparerService(IComparerService comparerService) {
@@ -156,6 +162,7 @@ public class FileService implements IFileService {
 		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
+			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
 		}
 
