@@ -29,14 +29,17 @@ public class RequestService implements IRequestService {
 	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
-	private ArrayList<PieFile> requestedFiles;
+	private HashMap<PieFile, Boolean> requestedFiles;
 	private IShareService shareService;
 
-	public void setShareService(IShareService shareService)
-	{
+	public RequestService() {
+		requestedFiles = new HashMap<>();
+	}
+
+	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
 	}
-	
+
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
@@ -52,6 +55,7 @@ public class RequestService implements IRequestService {
 		msg.setPieFile(pieFile);
 		try {
 			clusterManagementService.sendMessage(msg);
+			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
 			logger.error("Error sending RequestMessage. Message:" + ex.getMessage());
 		}
@@ -59,21 +63,21 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public synchronized void anncounceRecived(FileTransferMetaMessage message) {
-		if(!requestedFiles.contains(message.getPieFile()))
-		{
-			requestedFiles.add(message.getPieFile());
+		if (requestedFiles.containsKey(message.getPieFile()) && requestedFiles.get(message.getPieFile()) == false) {
+
+			requestedFiles.replace(message.getPieFile(), true);
 			shareService.handleFile(message);
 		}
 	}
 
 	@Override
-	public ArrayList<PieFile> getRequestedFileList() {
+	public HashMap<PieFile, Boolean> getRequestedFileList() {
 		return requestedFiles;
 	}
 
 	@Override
 	public boolean deleteRequestedFile(PieFile pieFile) {
-		if (requestedFiles.contains(pieFile)) {
+		if (requestedFiles.containsKey(pieFile)) {
 			requestedFiles.remove(pieFile);
 			return true;
 		}

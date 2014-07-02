@@ -77,16 +77,14 @@ public class ComparerService implements IComparerService {
 	public void comparePieFileList(List<PieFile> list) throws IOException, FileConflictException {
 
 		for (PieFile pieFile : list) {
-			if (!requestService.getRequestedFileList().contains(pieFile) && isPieFileDesired(pieFile)) {
-				requestService.requestFile(pieFile);
-			}
+			comparePieFile(pieFile);
 		}
 	}
 
 	@Override
 	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
 
-		if (!requestService.getRequestedFileList().contains(pieFile) && isPieFileDesired(pieFile)) {
+		if (!requestService.getRequestedFileList().containsKey(pieFile) && isPieFileDesired(pieFile)) {
 			requestService.requestFile(pieFile);
 		}
 
