@@ -38,9 +38,16 @@ public class PieShareAppBeanNames {
 	public static String getFileChangedTaskName() {
 		return "fileChangedTask";
 	}
-	
+
 	public static String getPieShareAppConfigurationName() {
 		return "pieShareAppConfiguraion";
 	}
 
+	public static String getFileRequestMessageName() {
+		return "fileRequestMessage";
+	}
+
+	public static String getNewFileMessageName() {
+		return "newFileMessage";
+	}
 }

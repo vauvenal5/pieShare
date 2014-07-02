@@ -21,19 +21,18 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Richard
  */
-public class ComparerService implements IComparerService{
+public class ComparerService implements IComparerService {
 
 	private IPieShareAppConfiguration pieAppConfig;
 	private IFileService fileService;
 	private IRequestService requestService;
-	
+
 	private final PieLogger logger = new PieLogger(ComparerService.class);
 
-	public void setRequestService(IRequestService requestService)
-	{
+	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
-	
+
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
 	}
@@ -63,29 +62,32 @@ public class ComparerService implements IComparerService{
 			}
 			logger.debug(remotePieFile.getRelativeFilePath() + " is already there. Do not request.");
 			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
-		}
-		//Remote File is older than local file
+		} //Remote File is older than local file
 		else if (remotePieFile.getLastModified() < localFile.lastModified()) {
 			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
-		}
-		//Remote File is newer than local file
+		} //Remote File is newer than local file
 		else if (remotePieFile.getLastModified() > localFile.lastModified()) {
 			return true;
 		}
-		
+
 		throw new FileConflictException("Cannot handle this file.", remotePieFile);
 	}
 
 	@Override
 	public void comparePieFileList(List<PieFile> list) throws IOException, FileConflictException {
-		
-		for(PieFile pieFile : list)
-		{
-			if(isPieFileDesired(pieFile))
-			{
-				requestService.requestFile(pieFile);
-			}
+
+		for (PieFile pieFile : list) {
+			comparePieFile(pieFile);
 		}
+	}
+
+	@Override
+	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
+
+		if (!requestService.getRequestedFileList().containsKey(pieFile) && isPieFileDesired(pieFile)) {
+			requestService.requestFile(pieFile);
+		}
+
 	}
 
 }

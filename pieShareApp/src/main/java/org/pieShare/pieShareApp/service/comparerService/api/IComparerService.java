@@ -18,4 +18,5 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
 public interface IComparerService {
 	public void comparePieFileList(List<PieFile> list) throws IOException, FileConflictException;
 	public boolean isPieFileDesired(PieFile remotePieFile) throws IOException, FileConflictException;
+	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException;
 }

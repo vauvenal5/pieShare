@@ -29,6 +29,7 @@
 		<property name="beanService" ref="pieBeanService"/>
 		<property name="pieShareAppConfiguration" ref="pieShareAppConfiguration"/>
 		<property name="md5Service" ref="md5Service"/>
+		<property name="comparerService" ref="comparerService"/>
 	</bean>
     
     
@@ -77,7 +78,15 @@
 	</bean>
     
 	<bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
-		<property name="shareService" ref="shareService"/>
+		<property name="requestService" ref="requestService"/>
+	</bean>
+	
+	<bean id="fileRequestTask" class="org.pieShare.pieShareApp.model.task.FileRequestTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
+	
+	<bean id="newFileTask" class="org.pieShare.pieShareApp.model.task.NewFileTask">
+		<property name="fileService" ref="fileService"/>
 	</bean>
     
 	<bean id="networkService" class="org.pieShare.pieShareApp.service.networkService.NetworkService">
@@ -91,5 +100,17 @@
 		<property name="fileService" ref="fileService"/>
 	</bean>
     
+	<bean id="requestService" class="org.pieShare.pieShareApp.service.requestService.RequestService">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+		<property name="shareService" ref="shareService"/>
+	</bean>
+    
+	<bean id="comparerService" class="org.pieShare.pieShareApp.service.comparerService.ComparerService">
+		<property name="fileService" ref="fileService"/>
+		<property name="pieShareConfiguration" ref="pieShareAppConfiguration"/>
+		<property name="requestService" ref="requestService"/>
+	</bean>
+	
     
 </beans>

@@ -8,6 +8,8 @@ package org.pieShare.pieShareApp.service.fileService.api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
@@ -23,8 +25,9 @@ public interface IFileService {
 
 	public void localFileChange(File file);
 
+	public void fileRequested(FileRequestMessage msg);
 
-	
+	public void remoteFileChanged(NewFileMessage msg);
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
 }

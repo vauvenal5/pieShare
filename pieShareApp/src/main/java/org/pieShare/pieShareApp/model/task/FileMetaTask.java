@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.model.task;
 
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 /**
@@ -16,10 +16,10 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 public class FileMetaTask implements IPieEventTask<FileTransferMetaMessage> {
 
 	FileTransferMetaMessage msg;
-	IShareService shareService;
+	private IRequestService requestService;
 
-	public void setShareService(IShareService shareService) {
-		this.shareService = shareService;
+	public void setRequestService(IRequestService requestService) {
+		this.requestService = requestService;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class FileMetaTask implements IPieEventTask<FileTransferMetaMessage> {
 
 	@Override
 	public void run() {
-		this.shareService.handleFile(msg);
+		this.requestService.anncounceRecived(msg);
 	}
 
 }
