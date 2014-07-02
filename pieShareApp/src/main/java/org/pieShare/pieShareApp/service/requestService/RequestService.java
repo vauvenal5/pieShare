@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.requestService;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
@@ -49,10 +50,10 @@ public class RequestService implements IRequestService {
 	@Override
 	public void requestFile(PieFile pieFile) {
 		FileRequestMessage msg = beanService.getBean(PieShareAppBeanNames.getFileRequestMessageName());
-
+		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.setPieFile(pieFile);
 		try {
-			clusterManagementService.sendMessage(msg);
+			clusterManagementService.sendMessage(msg, user.getCloudName());
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
 			logger.error("Error sending RequestMessage. Message:" + ex.getMessage());
@@ -67,7 +68,8 @@ public class RequestService implements IRequestService {
 			shareService.handleFile(message);
 		}
 	}
-
+	
+	@Override
 	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
 		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
 			shareService.handleActiveShare(pieFile);

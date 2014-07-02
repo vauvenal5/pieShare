@@ -15,6 +15,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
 public interface IClusterManagementService {
 
 	void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
+	
+	void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException;
 
 	IClusterService connect(String id) throws ClusterManagmentServiceException;
 }
