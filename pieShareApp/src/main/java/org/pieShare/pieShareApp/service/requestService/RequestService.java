@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.requestService;
 
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
@@ -26,11 +27,11 @@ public class RequestService implements IRequestService {
 	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
-	private final HashMap<PieFile, Boolean> requestedFiles;
+	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IShareService shareService;
 
 	public RequestService() {
-		requestedFiles = new HashMap<>();
+		requestedFiles = new ConcurrentHashMap<>();
 	}
 
 	public void setShareService(IShareService shareService) {
@@ -68,7 +69,7 @@ public class RequestService implements IRequestService {
 	}
 
 	@Override
-	public HashMap<PieFile, Boolean> getRequestedFileList() {
+	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList() {
 		return requestedFiles;
 	}
 
