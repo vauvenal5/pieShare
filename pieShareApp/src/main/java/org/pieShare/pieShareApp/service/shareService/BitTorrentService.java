@@ -227,6 +227,14 @@ public class BitTorrentService implements IShareService {
 					throw new Exception("ttorrent client Error State");
 				}
 				
+				if(ClientState.SHARING.equals(client.getState())) {
+					FileTransferCompleteMessage msg = new FileTransferCompleteMessage();
+					msg.setPieFile(pieFile);
+					PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+					
+					this.clusterManagementService.sendMessage(msg, user.getCloudName());
+				}
+				
 				if(ClientState.SHARING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
 					this.removePieFileState(pieFile);
 					client.stop();

@@ -37,13 +37,7 @@ public class ClusterManagementService implements IClusterManagementService {
 
 	@Override
 	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
-		if (this.clusters.containsKey(message.getAddress().getClusterName())) {
-			try {
-				this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
-			} catch (ClusterServiceException ex) {
-				throw new ClusterManagmentServiceException(ex);
-			}
-		}
+		this.sendMessage(message, message.getAddress().getClusterName());
 	}
 
 	@Override
@@ -62,6 +56,17 @@ public class ClusterManagementService implements IClusterManagementService {
 			throw new ClusterManagmentServiceException(ex);
 		} catch (ClusterServiceException ex) {
 			throw new ClusterManagmentServiceException(ex);
+		}
+	}
+
+	@Override
+	public void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException {
+		if (this.clusters.containsKey(cloudName)) {
+			try {
+				this.clusters.get(cloudName).sendMessage(message);
+			} catch (ClusterServiceException ex) {
+				throw new ClusterManagmentServiceException(ex);
+			}
 		}
 	}
 }

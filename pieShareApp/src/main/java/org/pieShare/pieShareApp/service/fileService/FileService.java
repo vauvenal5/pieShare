@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
@@ -151,9 +152,10 @@ public class FileService implements IFileService {
 		}
 
 		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.setPieFile(pieFile);
 		try {
-			clusterManagementService.sendMessage(msg);
+			clusterManagementService.sendMessage(msg, user.getCloudName());
 			logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
 		} catch (ClusterManagmentServiceException ex) {
 			Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
