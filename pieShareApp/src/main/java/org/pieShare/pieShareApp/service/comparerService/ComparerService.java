@@ -47,12 +47,14 @@ public class ComparerService implements IComparerService {
 		logger.debug("Comparing file: " + remotePieFile.getRelativeFilePath());
 
 		File localFile = new File(pieAppConfig.getWorkingDirectory(), remotePieFile.getRelativeFilePath());
-		PieFile localPieFile = fileService.genPieFile(localFile);
-
+		
 		if (!localFile.exists()) {
 			logger.debug(remotePieFile.getRelativeFilePath() + " does not exist. Request this file.");
 			return true;
 		}
+		
+		PieFile localPieFile = fileService.genPieFile(localFile);
+
 
 		//Remote File is older than local file
 		if (remotePieFile.getLastModified() == localFile.lastModified()) {
