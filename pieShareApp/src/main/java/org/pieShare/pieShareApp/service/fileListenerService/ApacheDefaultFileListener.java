@@ -60,11 +60,11 @@ public class ApacheDefaultFileListener implements FileListener {
 
 	@Override
 	public void fileChanged(FileChangeEvent fce) throws Exception {
-		String filePath = fce.getFile().getURL().getFile();
+		/*String filePath = fce.getFile().getURL().getFile();
 		FileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
 		File file = new File(filePath);
 		task.setCreatedFile(file);
-		startObservation(file, task);
+		startObservation(file, task);*/
 	}
 
 	private void startObservation(File file, IPieTask task) {
