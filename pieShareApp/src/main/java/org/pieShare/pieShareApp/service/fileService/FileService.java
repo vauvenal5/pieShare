@@ -134,7 +134,7 @@ public class FileService implements IFileService {
 
 		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
 		msg.setPieFile(pieFile);
-
+		logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
 		//Message New File
 		//shareService.shareFile(file);
 	}
