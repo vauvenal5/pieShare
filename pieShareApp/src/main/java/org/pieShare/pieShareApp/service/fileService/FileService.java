@@ -163,8 +163,9 @@ public class FileService implements IFileService {
 
 		if (!file.exists()) {
 			if (requestService.getRequestedFileList().containsKey(msg.getPieFile()) && requestService.getRequestedFileList().get(msg.getPieFile()).equals(true)) {
-			
+				shareService.handleActiveShare(msg.getPieFile());
 			}
+			return;
 		}
 
 		PieFile pieFile = null;
