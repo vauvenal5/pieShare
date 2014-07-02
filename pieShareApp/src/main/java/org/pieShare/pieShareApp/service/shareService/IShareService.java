@@ -21,4 +21,6 @@ public interface IShareService {
 	void handleFile(FileTransferMetaMessage msg);
 	
 	void fileTransferComplete(FileTransferCompleteMessage msg);
+	
+	void handleActiveShare(PieFile pieFile);
 }
