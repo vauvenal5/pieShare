@@ -162,9 +162,7 @@ public class FileService implements IFileService {
 		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
-			if (requestService.getRequestedFileList().containsKey(msg.getPieFile()) && requestService.getRequestedFileList().get(msg.getPieFile()).equals(true)) {
-				shareService.handleActiveShare(msg.getPieFile());
-			}
+			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
 		}
 
