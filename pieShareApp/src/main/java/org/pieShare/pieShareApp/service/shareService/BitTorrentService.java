@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,6 +34,7 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppCon
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -59,7 +61,16 @@ public class BitTorrentService implements IShareService {
 	private INetworkService networkService;
 	private IFileService fileService;
 	private IReplicatedHashMap<PieFile, List<URI>> mapService;
-	private Map<PieFile, Integer> sharedFiles;
+	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
+	private IRequestService requestService;
+
+	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
+		this.sharedFiles = sharedFiles;
+	}
+
+	public void setRequestService(IRequestService requestService) {
+		this.requestService = requestService;
+	}
 
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
@@ -98,7 +109,7 @@ public class BitTorrentService implements IShareService {
 		try {
 			//todo: use beanService
 			tracker = new Tracker(new InetSocketAddress(networkService.getLocalHost(), 6969));
-
+			this.sharedFiles = new ConcurrentHashMap<>();
 			tracker.start();
 		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
@@ -122,6 +133,8 @@ public class BitTorrentService implements IShareService {
 			torrent.save(baos);
 
 			PieFile pieFile = fileService.genPieFile(file);
+			this.initPieFileState(pieFile, 0);
+			this.manipulatePieFileState(pieFile, 1);
 
 			FileTransferMetaMessage metaMsg = new FileTransferMetaMessage();
 			metaMsg.setMetaInfo(base64Service.encode(baos.toByteArray()));
@@ -129,15 +142,6 @@ public class BitTorrentService implements IShareService {
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
-			
-			synchronized (this.sharedFiles) {
-				if(this.sharedFiles.containsKey(pieFile)) {
-					this.sharedFiles.put(pieFile, this.sharedFiles.get(pieFile)+1);
-				}
-				else {
-					this.sharedFiles.put(pieFile, 1);
-				}
-			}
 			
 			handleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true));
 			/*long modD = file.lastModified();
@@ -164,38 +168,15 @@ public class BitTorrentService implements IShareService {
 
 	@Override
 	public void handleFile(FileTransferMetaMessage msg) {
-			
-		//will be deleted
-		if (!fileService.checkMergeFile(msg.getPieFile())) {
-			return;
-		}
 
-		try {
+		try {		
+			this.initPieFileState(msg.getPieFile(), 0);
+			
 			File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
-
 			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
-			Client client = new Client(networkService.getLocalHost(), torrent);
-
-			//seed for 10min to other cluster members
-			//todo: move this to settings
-			client.download();
 			
-
-			//client.waitForCompletion();
-			while (!ClientState.DONE.equals(client.getState())) {
-				// Check if there's an error
-				if (ClientState.ERROR.equals(client.getState())) {
-					throw new Exception("ttorrent client Error State");
-				}
-
-				// Display statistics
-				System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
-
-				// Wait one second
-				TimeUnit.SECONDS.sleep(1);
-			}
-
-			client.stop();
+			handleSharedTorrent(msg.getPieFile(), torrent);
+			
 			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
 			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
@@ -208,12 +189,29 @@ public class BitTorrentService implements IShareService {
 			if (!targetFile.setLastModified(msg.getPieFile().getLastModified())) {
 				System.out.println("WARNING: Could not set LastModificationDate");
 			}
-
+			
+			this.requestService.deleteRequestedFile(msg.getPieFile());
 			fileUtileService.deleteRecursive(tmpDir);
 		} catch (IOException ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (Exception ex) {
 			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
+	private synchronized void initPieFileState(PieFile file, Integer count) {
+		if(!this.sharedFiles.containsKey(file)) {
+			this.sharedFiles.put(file, count);
+		}
+	}
+	
+	private synchronized void removePieFileState(PieFile file) {
+		this.sharedFiles.remove(file);
+	}
+	
+	private synchronized void manipulatePieFileState(PieFile file, Integer value) {
+		if(!this.sharedFiles.containsKey(file)) {
+			this.sharedFiles.put(file, this.sharedFiles.get(file)+value);
 		}
 	}
 	
@@ -230,6 +228,7 @@ public class BitTorrentService implements IShareService {
 				}
 				
 				if(ClientState.SHARING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
+					this.removePieFileState(pieFile);
 					client.stop();
 				}
 				
@@ -237,7 +236,7 @@ public class BitTorrentService implements IShareService {
 				System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded());
 
 				// Wait one second
-				Thread.sleep(500);
+				Thread.sleep(1000);
 			}
 			
 		} catch (IOException ex) {
@@ -248,16 +247,12 @@ public class BitTorrentService implements IShareService {
 	}
 
 	@Override
-	public synchronized void fileTransferComplete(FileTransferCompleteMessage msg) {
-		if(this.sharedFiles.containsKey(msg.getPieFile())) {
-			this.sharedFiles.put(msg.getPieFile(), this.sharedFiles.get(msg.getPieFile()) - 1);
-		}
+	public void fileTransferComplete(FileTransferCompleteMessage msg) {
+		this.manipulatePieFileState(msg.getPieFile(), -1);
 	}
 
 	@Override
-	public synchronized void handleActiveShare(PieFile pieFile) {
-		if(this.sharedFiles.containsKey(pieFile)) {
-			this.sharedFiles.put(pieFile, this.sharedFiles.get(pieFile) + 1);
-		}
+	public void handleActiveShare(PieFile pieFile) {
+		this.manipulatePieFileState(pieFile, 1);
 	}
 }
