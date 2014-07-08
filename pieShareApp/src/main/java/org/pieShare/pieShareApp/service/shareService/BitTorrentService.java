@@ -245,7 +245,7 @@ public class BitTorrentService implements IShareService {
 					throw new Exception("ttorrent client Error State");
 				}
 				
-				if(ClientState.SEEDING.equals(client.getState())) {
+				if(ClientState.SEEDING.equals(client.getState()) && !torrent.isSeeder()) {
 					FileTransferCompleteMessage msg = new FileTransferCompleteMessage();
 					msg.setPieFile(pieFile);
 					PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
@@ -253,6 +253,7 @@ public class BitTorrentService implements IShareService {
 					this.clusterManagementService.sendMessage(msg, user.getCloudName());
 				}
 				
+				//todo-bug: server directly access this and stops it's client
 				if(ClientState.SEEDING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
 					this.removePieFileState(pieFile);
 					client.stop();
