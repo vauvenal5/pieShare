@@ -31,20 +31,25 @@ public class NetworkService implements INetworkService {
 
 	@Override
 	public int getAvailablePort() {
-		int port = -1;
-		boolean found = false;
-		for (port = this.minPort; port <= this.maxPort && !found; port++) {
+		return this.getAvailablePortStartingFrom(this.minPort);
+	}
+	
+	@Override
+	public int getAvailablePortStartingFrom(int port) {
+		
+		for (int p = port; p <= this.maxPort; p++) {
 			try {
-				ServerSocket tmpSocket = new ServerSocket(port);
+				ServerSocket tmpSocket = new ServerSocket(p);
 				tmpSocket.setReuseAddress(true);
 				tmpSocket.close();
-				found = true;
+				return p;
 			} catch (IOException ex) {
 				Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 
-		return port;
+		//todo: throw exception
+		return -1;
 	}
 
 	@Override
@@ -88,7 +93,8 @@ public class NetworkService implements INetworkService {
 										int freePort = this.getAvailablePort();
 
 										socket.bind(new InetSocketAddress(ad, freePort));
-										socket.connect(new InetSocketAddress("google.com", 80));
+										//this has to become way better
+										//socket.connect(new InetSocketAddress("google.com", 80));
 										//if everything passes the InetAddress should be okay.
 										socket.close();
 										this.address = ad;

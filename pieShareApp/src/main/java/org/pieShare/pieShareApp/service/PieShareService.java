@@ -5,12 +5,14 @@
  */
 package org.pieShare.pieShareApp.service;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.model.message.SimpleMessage;
 import org.pieShare.pieShareApp.service.actionService.LoginActionService;
 import org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -19,6 +21,7 @@ import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 
 /**
  *
@@ -30,6 +33,11 @@ public class PieShareService {
 	private ICommandParserService parserService;
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
+	private IShutdownService shutdownService;
+
+	public void setShutdownService(IShutdownService shutdownService) {
+		this.shutdownService = shutdownService;
+	}
 
 	public PieShareService() {
 	}
@@ -64,5 +72,15 @@ public class PieShareService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+	
+	public void stop() {
+		try {
+			this.clusterManagementService.diconnectAll();
+		} catch (ClusterManagmentServiceException ex) {
+			Logger.getLogger(PieShareService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		
+		this.shutdownService.fireShutdown();
 	}
 }

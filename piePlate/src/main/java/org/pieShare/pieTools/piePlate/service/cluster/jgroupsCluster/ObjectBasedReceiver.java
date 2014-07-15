@@ -35,6 +35,7 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 	public void receive(Message msg) {
 		try {
 			IPieMessage pieMsg = this.serializerService.deserialize(msg.getBuffer());
+			System.out.println("Recived: " + pieMsg.getClass());
 			JGroupsPieAddress ad = (JGroupsPieAddress) this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
 			ad.setAddress(msg.getSrc());
 			pieMsg.setAddress(ad);
