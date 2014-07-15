@@ -19,4 +19,6 @@ public interface IClusterManagementService {
 	void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException;
 
 	IClusterService connect(String id) throws ClusterManagmentServiceException;
+	
+	void diconnectAll() throws ClusterManagmentServiceException;
 }

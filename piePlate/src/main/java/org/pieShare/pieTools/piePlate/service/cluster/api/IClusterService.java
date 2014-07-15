@@ -10,6 +10,8 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 public interface IClusterService {
 
 	void connect(String clusterName) throws ClusterServiceException;
+	
+	void disconnect() throws ClusterServiceException;
 
 	void sendMessage(IPieMessage msg) throws ClusterServiceException;
 

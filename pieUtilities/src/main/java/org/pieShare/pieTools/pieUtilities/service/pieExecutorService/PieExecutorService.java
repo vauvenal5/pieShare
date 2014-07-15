@@ -19,12 +19,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Svetoslav
  */
-public class PieExecutorService implements IExecutorService {
+public class PieExecutorService implements IExecutorService, IShutdownableService {
 
 	private ExecutorService executor;
 	private Map<Class, Class> tasks;
@@ -88,6 +89,11 @@ public class PieExecutorService implements IExecutorService {
 	@Override
 	public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task) {
 		this.register(event, task);
+	}
+
+	@Override
+	public void shutdown() {
+		this.executor.shutdown();
 	}
 
 }

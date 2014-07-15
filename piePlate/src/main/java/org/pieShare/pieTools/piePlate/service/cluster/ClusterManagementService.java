@@ -6,8 +6,10 @@
 package org.pieShare.pieTools.piePlate.service.cluster;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyValue;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -66,6 +68,18 @@ public class ClusterManagementService implements IClusterManagementService {
 				this.clusters.get(cloudName).sendMessage(message);
 			} catch (ClusterServiceException ex) {
 				throw new ClusterManagmentServiceException(ex);
+			}
+		}
+	}
+
+	@Override
+	public void diconnectAll() throws ClusterManagmentServiceException {
+		for(Entry<String, IClusterService> entry : this.clusters.entrySet()) {
+			try {
+				entry.getValue().disconnect();
+			} catch (ClusterServiceException ex) {
+				//todo: error handling
+				Logger.getLogger(ClusterManagementService.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
 	}
