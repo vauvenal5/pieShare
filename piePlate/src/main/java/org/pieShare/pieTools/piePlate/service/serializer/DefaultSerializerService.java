@@ -10,21 +10,22 @@ import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerSer
  */
 //TODO-sv: delete this?
 public class DefaultSerializerService implements ISerializerService {
-    @Override
-    public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
-        try {
-            return (IPieMessage) Util.objectFromByteBuffer(buffer);
-        } catch (Exception e) {
-            throw new SerializerServiceException("Message couldn't be serialized!", e);
-        }
-    }
 
-    @Override
-    public byte[] serialize(IPieMessage msg) throws SerializerServiceException {
-        try {
-            return Util.objectToByteBuffer(msg);
-        } catch (Exception e) {
-            throw new SerializerServiceException("Message couldn't be serialized!", e);
-        }
-    }
+	@Override
+	public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
+		try {
+			return (IPieMessage) Util.objectFromByteBuffer(buffer);
+		} catch (Exception e) {
+			throw new SerializerServiceException("Message couldn't be serialized!", e);
+		}
+	}
+
+	@Override
+	public byte[] serialize(IPieMessage msg) throws SerializerServiceException {
+		try {
+			return Util.objectToByteBuffer(msg);
+		} catch (Exception e) {
+			throw new SerializerServiceException("Message couldn't be serialized!", e);
+		}
+	}
 }

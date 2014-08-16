@@ -5,122 +5,74 @@
  */
 package org.pieShare.pieShareApp.service.fileService;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  *
  * @author richy
  */
-public class PieFile
-{
+public class PieFile {
 
-    private File file = null;
-    private String md5 = "";
-    private String relativeFilePath;
+	private byte[] md5;
+	private String relativeFilePath;
+	private String fileName;
+	private long lastModified;
 
-    private IPieShareAppConfiguration pieAppConfig;
+	public PieFile() {
 
-    public PieFile()
-    {
-        
-    }
+	}
 
-    public void Init(File file)
-    {
-        this.file = file;
+	public byte[] getMd5() {
+		return md5;
+	}
 
-       /* if (file.exists() && !file.isDirectory())
-        {
-            try
-            {
-                md5 = MD5Service.MD5(file);
-            }
-            catch (IOException ex)
-            {
-                //ToDo: Error Handling
-            }
-        }*/
+	public void setMd5(byte[] md5) {
+		this.md5 = md5;
+	}
 
-        Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-        Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-        Path pathRelative = pathBase.relativize(pathAbsolute);
-        this.relativeFilePath = pathRelative.toString();
-    }
+	public String getFileName() {
+		return fileName;
+	}
 
-    @Autowired
-    @Qualifier("pieShareAppConfiguration")
-    public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration)
-    {
-        this.pieAppConfig = pieShareAppConfiguration;
-    }
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
 
-    public String getFileName()
-    {
-        return file.getName();
-    }
+	public long getLastModified() {
+		return lastModified;
+	}
 
-    public File getFile()
-    {
-        return file;
-    }
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
 
-    /*public String getMD5()
-    {
-        return md5;
-    }*/
+	public String getRelativeFilePath() {
+		return relativeFilePath;
+	}
 
-    public long getLastModified()
-    {
-        return file.lastModified();
-    }
+	public void setRelativeFilePath(String relativeFilePath) {
+		this.relativeFilePath = relativeFilePath;
+	}
 
-    public String getRelativeFilePath()
-    {
-        return relativeFilePath;
-        /*
-         File workingDir = pieAppConfig.getWorkingDirectory();
+	@Override
+	public boolean equals(Object obj) {
 
-         Path pathBase = new File(workingDir.getAbsolutePath()).toPath(); // Paths.get("/var/data");
+		if (!(obj instanceof PieFile)) {
+			return false;
+		}
 
-         Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		return Arrays.equals(((PieFile) obj).getMd5(), this.md5);
 
-         Path pathRelative = pathBase.relativize(pathAbsolute);
-         return pathRelative.toString();
-         */
-    }
+	}
 
-    @Override
-    public boolean equals(Object object)
-    {
-        if (!(object instanceof PieFile))
-        {
-            return false;
-        }
-
-        PieFile pieFile = (PieFile) object;
-
-        if (!pieFile.getRelativeFilePath().equals(this.getRelativeFilePath()))
-        {
-            return false;
-        }
-
-        if (pieFile.getLastModified() != this.getLastModified())
-        {
-            return false;
-        }
-
-       /* if (!pieFile.getMD5().equals(this.getMD5()))
-        {
-            return false;
-        }*/
-
-        return true;
-    }
+	@Override
+	public int hashCode() {
+		//TODO: Test this
+		ByteBuffer bb = ByteBuffer.wrap(md5);
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		return bb.getInt();
+	}
 
 }
