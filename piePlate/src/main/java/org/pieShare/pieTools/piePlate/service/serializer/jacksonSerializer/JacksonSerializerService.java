@@ -16,43 +16,43 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.IPieMes
  */
 public class JacksonSerializerService implements ISerializerService {
 
-    private ObjectMapper objectMapper;
+	private ObjectMapper objectMapper;
 
-    public JacksonSerializerService() {   
-        this.objectMapper = new ObjectMapper();
-        this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        this.objectMapper.addMixInAnnotations(IPieMessage.class, IPieMessageMixIn.class);
-    }
+	public JacksonSerializerService() {
+		this.objectMapper = new ObjectMapper();
+		this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+		this.objectMapper.addMixInAnnotations(IPieMessage.class, IPieMessageMixIn.class);
+	}
 
-    @Override
-    public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
-        HeaderMessage header;
+	@Override
+	public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
+		HeaderMessage header;
 
-        try {
-            header = objectMapper.readValue(buffer, HeaderMessage.class);
-        } catch (IOException e) {
-            throw new SerializerServiceException("Could not deserialize header!", e);
-        }
+		try {
+			header = objectMapper.readValue(buffer, HeaderMessage.class);
+		} catch (IOException e) {
+			throw new SerializerServiceException("Could not deserialize header!", e);
+		}
 
-        IPieMessage msg;
+		IPieMessage msg;
 
-        try {
-            msg = (IPieMessage)objectMapper.readValue(buffer, Class.forName(header.getType()));
-        } catch (IOException e) {
-            throw new SerializerServiceException("Could not deserialize msg!", e);
-        } catch (ClassNotFoundException e) {
-            throw new SerializerServiceException("Could not find given class name!", e);
-        }
+		try {
+			msg = (IPieMessage) objectMapper.readValue(buffer, Class.forName(header.getType()));
+		} catch (IOException e) {
+			throw new SerializerServiceException("Could not deserialize msg!", e);
+		} catch (ClassNotFoundException e) {
+			throw new SerializerServiceException("Could not find given class name!", e);
+		}
 
-        return msg;
-    }
+		return msg;
+	}
 
-    @Override
-    public byte[] serialize(IPieMessage msg) throws SerializerServiceException {
-        try {
-            return objectMapper.writeValueAsBytes(msg);
-        } catch (JsonProcessingException e) {
-            throw new SerializerServiceException("Failed serializing JSON", e);
-        }
-    }
+	@Override
+	public byte[] serialize(IPieMessage msg) throws SerializerServiceException {
+		try {
+			return objectMapper.writeValueAsBytes(msg);
+		} catch (JsonProcessingException e) {
+			throw new SerializerServiceException("Failed serializing JSON", e);
+		}
+	}
 }

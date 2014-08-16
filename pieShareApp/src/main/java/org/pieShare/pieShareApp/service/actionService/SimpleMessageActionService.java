@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.actionService;
 
 import java.util.HashMap;
@@ -17,22 +16,23 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionSe
  * @author Svetoslav
  */
 public class SimpleMessageActionService extends AbstractActionService<SimpleMessageCommand, SimpleMessageCommandService> {
-    @Override
-    public String getCommandName() {
-        return "sendMsg";
-    }
 
-    @Override
-    public Map<String, Class> getArguments() {
-        Map<String, Class> args = new HashMap<>();
-        args.put("msg", String.class);
-        return args;
-    }
+	@Override
+	public String getCommandName() {
+		return "sendMsg";
+	}
 
-    @Override
-    public SimpleMessageCommand getCommand(Map<String, Object> args) {
-        SimpleMessageCommand command = (SimpleMessageCommand)this.beanService.getBean("simpleMessageCommand");
-        command.setMsg((String)args.get("msg"));
-        return command;
-    }
+	@Override
+	public Map<String, Class> getArguments() {
+		Map<String, Class> args = new HashMap<>();
+		args.put("msg", String.class);
+		return args;
+	}
+
+	@Override
+	public SimpleMessageCommand getCommand(Map<String, Object> args) {
+		SimpleMessageCommand command = (SimpleMessageCommand) this.beanService.getBean("simpleMessageCommand");
+		command.setMsg((String) args.get("msg"));
+		return command;
+	}
 }

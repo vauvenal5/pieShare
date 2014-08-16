@@ -12,29 +12,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Richard
  */
-public class LoggerGetter
-{
+public class LoggerGetter {
 
-    private static final Logger mainLogger = LoggerFactory.getLogger(PieLogger.class);
-    private static LoggerGetter instance;
+	private static final Logger mainLogger = LoggerFactory.getLogger(PieLogger.class);
+	private static LoggerGetter instance;
 
-    private LoggerGetter()
-    {
-    }
-
-    public static LoggerGetter getInstance()
-    {
-	if (instance == null)
-	{
-	    instance = new LoggerGetter();
+	private LoggerGetter() {
 	}
 
-	return instance;
-    }
-    
-    public Logger getLogger()
-    {
-	return mainLogger;
-    }
+	public static LoggerGetter getInstance() {
+		if (instance == null) {
+			instance = new LoggerGetter();
+		}
+
+		return instance;
+	}
+
+	public Logger getLogger() {
+		return mainLogger;
+	}
 
 }

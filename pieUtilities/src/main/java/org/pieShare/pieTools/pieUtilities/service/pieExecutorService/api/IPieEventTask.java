@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
 /**
@@ -11,5 +10,6 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
  * @author Svetoslav
  */
 public interface IPieEventTask<P extends IPieEvent> extends IPieTask {
-    void setMsg(P msg);
+
+	void setMsg(P msg);
 }
