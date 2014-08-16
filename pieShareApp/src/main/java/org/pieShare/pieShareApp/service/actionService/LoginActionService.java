@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.actionService;
 
 import java.io.BufferedReader;
@@ -23,32 +22,32 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.AbstractActionSe
  */
 public class LoginActionService extends AbstractActionService<LoginCommand, LoginCommandService> {
 
-    @Override
-    public LoginCommand getCommand(Map<String, Object> args) {
-        LoginCommand command = (LoginCommand)this.beanService.getBean(PieShareAppBeanNames.getLoginCommmandName());
-        command.setUserName((String)args.get("userName"));
-        
-        System.out.println("Enter password:");
-        PlainTextPassword pwd = new PlainTextPassword();
-        
-        //Console console = System.console();
-        //pwd.password = console.readPassword();
-        pwd.password = "test".toCharArray();
-        command.setPlainTextPassword(pwd);
-        
-        return command;
-    }
+	@Override
+	public LoginCommand getCommand(Map<String, Object> args) {
+		LoginCommand command = (LoginCommand) this.beanService.getBean(PieShareAppBeanNames.getLoginCommmandName());
+		command.setUserName((String) args.get("userName"));
 
-    @Override
-    public String getCommandName() {
-        return "login";
-    }
+		System.out.println("Enter password:");
+		PlainTextPassword pwd = new PlainTextPassword();
 
-    @Override
-    public Map<String, Class> getArguments() {
-        Map<String, Class> args = new HashMap<>();
-        args.put("userName", String.class);
-        return args;
-    }
-    
+		//Console console = System.console();
+		//pwd.password = console.readPassword();
+		pwd.password = "test".toCharArray();
+		command.setPlainTextPassword(pwd);
+
+		return command;
+	}
+
+	@Override
+	public String getCommandName() {
+		return "login";
+	}
+
+	@Override
+	public Map<String, Class> getArguments() {
+		Map<String, Class> args = new HashMap<>();
+		args.put("userName", String.class);
+		return args;
+	}
+
 }

@@ -9,10 +9,9 @@ package org.pieShare.pieTools.pieUtilities.service.base64Service.api;
  *
  * @author richy
  */
-public interface IBase64Service
-{
+public interface IBase64Service {
 
-    public byte[] encode(byte[] in);
+	public byte[] encode(byte[] in);
 
-    public byte[] decode(byte[] in);
+	public byte[] decode(byte[] in);
 }

@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.commandParser;
 
 import java.util.Map;
@@ -19,21 +18,22 @@ import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandSer
  * @author Svetoslav
  */
 public abstract class AbstractActionService<C extends ICommand, T extends ICommandService<C>> extends BeanServiceUser implements IActionService {
-    protected T commandService;
-    
-    public void setCommandService(T service) {
-        this.commandService = service;
-    }
-    
-    public abstract C getCommand(Map<String, Object> args);
-    
-    @Override
-    public String getProgramName() {
-        return "pieShare";
-    }
-    
-    @Override
-    public final void doAction(Map<String, Object> args) {
-        this.commandService.executeCommand(this.getCommand(args));
-    }
+
+	protected T commandService;
+
+	public void setCommandService(T service) {
+		this.commandService = service;
+	}
+
+	public abstract C getCommand(Map<String, Object> args);
+
+	@Override
+	public String getProgramName() {
+		return "pieShare";
+	}
+
+	@Override
+	public final void doAction(Map<String, Object> args) {
+		this.commandService.executeCommand(this.getCommand(args));
+	}
 }
