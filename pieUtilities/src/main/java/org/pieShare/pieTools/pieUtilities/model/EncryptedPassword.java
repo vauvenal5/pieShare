@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.model;
 
 /**
@@ -11,14 +10,14 @@ package org.pieShare.pieTools.pieUtilities.model;
  * @author Svetoslav
  */
 public class EncryptedPassword {
-    
-    private byte[] password;
-    
-    public void setPassword(byte[] pwd) {
-        this.password = pwd;
-    }
-    
-    public byte[] getPassword() {
-        return this.password;
-    }
+
+	private byte[] password;
+
+	public void setPassword(byte[] pwd) {
+		this.password = pwd;
+	}
+
+	public byte[] getPassword() {
+		return this.password;
+	}
 }
