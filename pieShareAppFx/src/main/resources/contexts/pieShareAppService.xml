@@ -70,7 +70,7 @@
 		<property name="executorService" ref="pieExecutorService"/>
 	</bean>
     
-	<bean id="shareService" class="org.pieShare.pieShareApp.service.shareService.BitTorrentService">
+	<bean id="shareService" class="org.pieShare.pieShareApp.service.shareService.BitTorrentService" lazy-init="true">
 		<property name="clusterManagementService" ref="clusterManagementService"/>
 		<property name="configurationService" ref="pieShareAppConfiguration"/>
 		<property name="fileUtileService" ref="fileUtileService"/>

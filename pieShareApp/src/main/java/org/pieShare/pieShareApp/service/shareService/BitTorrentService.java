@@ -122,6 +122,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			System.out.println(this.trackerUri.toString());
 			InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
 			tracker = new Tracker(ad);
+			//todo-sv: try to get local host out of cloud service
 			
 			this.sharedFiles = new ConcurrentHashMap<>();
 			tracker.start();

@@ -10,10 +10,20 @@
 		<property name="beanService" ref="pieBeanService"/>
 		<property name="fXMLLoader" ref="fxmlLoader"/>
 	</bean>
+	
+	<bean id="controllerFactory" class="org.pieShare.pieShareAppFx.ControllerFactory" lazy-init="true">
+		<property name="beanService" ref="pieBeanService"/>
+	</bean>
     
-	<bean id="fxmlLoader" class="javafx.fxml.FXMLLoader" lazy-init="true"></bean>
+	<bean id="fxmlLoader" scope="prototype" class="javafx.fxml.FXMLLoader" lazy-init="true">
+		<property name="controllerFactory" ref="controllerFactory"/>
+	</bean>
     
 	<bean id="loginController" class="org.pieShare.pieShareAppFx.controller.LoginController" lazy-init="true">
 		<property name="loginCommandService" ref="loginCommandService"/>
+	</bean>
+	
+	<bean id="mainSceneController" class="org.pieShare.pieShareAppFx.controller.MainSceneController" lazy-init="true">
+		<property name="fXMLLoader" ref="fxmlLoader"/>
 	</bean>
 </beans>
