@@ -17,69 +17,70 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author richy
  */
-public class PieShareAppConfiguration implements IPieShareAppConfiguration
-{
+public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
-    private IConfigurationReader configurationReader;
-    private Properties conf;
-    private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
+	private IConfigurationReader configurationReader;
+	private Properties conf;
+	private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
-    public void setConfigurationReader(IConfigurationReader configurationReader)
-    {
-        this.configurationReader = configurationReader;
-        try
-        {
-            //pieShare.properties
-            conf = configurationReader.getConfig("/.pieShare/pieShare.properties");
-        }
-        catch (NoConfigFoundException ex)
-        {
-            logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
-        }
-    }
+	public void setConfigurationReader(IConfigurationReader configurationReader) {
+		this.configurationReader = configurationReader;
+		try {
+			//pieShare.properties
+			conf = configurationReader.getConfig("/.pieShare/pieShare.properties");
+		} catch (NoConfigFoundException ex) {
+			logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
+		}
+	}
 
-    @Override
-    public File getWorkingDirectory()
-    {
-        Validate.notNull(conf);
+	@Override
+	public File getWorkingDirectory() {
+		String name = "";
+		if (conf == null || !conf.contains("workingDir")) {
+			name = "workingDir";
+		} else {
+			name = conf.getProperty("workingDir");
+		}
 
-        File watchDir = new File(conf.getProperty("workingDir"));
+		File watchDir = new File(name);
 
-        if (!watchDir.exists())
-        {
-            watchDir.mkdirs();
-        }
+		if (!watchDir.exists()) {
+			watchDir.mkdirs();
+		}
 
-        return new File(watchDir.getAbsolutePath());
-    }
+		return new File(watchDir.getAbsolutePath());
+	}
 
-    @Override
-    public int getFileSendBufferSize()
-    {
-        Validate.notNull(conf);
+	@Override
+	public int getFileSendBufferSize() {
+		int defaultSize = 2048;
 
-        try
-        {
-            return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
-        }
-        catch (NumberFormatException ex)
-        {
-            return 2048;
-        }
-    }
+		if (conf == null || !conf.contains("fileSendBufferSize")) {
+			return defaultSize;
+		}
 
-    @Override
-    public File getTempCopyDirectory()
-    {
-        Validate.notNull(conf);
+		try {
+			return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
+		} catch (NumberFormatException ex) {
+			return defaultSize;
+		}
+	}
 
-        File tempCopyDir = new File(conf.getProperty("tempCopyDir"));
+	@Override
+	public File getTempCopyDirectory() {
+		String name = "";
+		if (conf == null || !conf.contains("tempCopyDir")) {
+			name = "tempDir";
+		} else {
+			name = conf.getProperty("workingDir");
+		}
 
-        if (!tempCopyDir.exists())
-        {
-            tempCopyDir.mkdirs();
-        }
+		File tempCopyDir = new File(name);
 
-        return new File(tempCopyDir.getAbsolutePath());
-    }
+		if (!tempCopyDir.exists()) {
+			tempCopyDir.mkdirs();
+		}
+
+		return new File(tempCopyDir.getAbsolutePath());
+	}
 }

@@ -6,11 +6,12 @@ import java.util.Map;
  * Created by Svetoslav on 09.01.14.
  */
 public interface IActionService {
-    public void doAction(Map<String, Object> args);
 
-    public String getCommandName();
+	public void doAction(Map<String, Object> args);
 
-    public String getProgramName();
+	public String getCommandName();
 
-    public Map<String, Class> getArguments();
+	public String getProgramName();
+
+	public Map<String, Class> getArguments();
 }

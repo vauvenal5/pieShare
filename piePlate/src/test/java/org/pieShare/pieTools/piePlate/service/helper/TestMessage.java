@@ -8,39 +8,40 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
  * Created by Svetoslav on 19.01.14.
  */
 public class TestMessage implements IPieMessage {
-    String msg;
-    String type;
-    IPieAddress address;
 
-    public TestMessage() {
-    }
+	String msg;
+	String type;
+	IPieAddress address;
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+	public TestMessage() {
+	}
 
-    public String getMsg() {
-        return this.msg;
-    }
+	public void setMsg(String msg) {
+		this.msg = msg;
+	}
 
-    @Override
-    public String getType() {
-        return this.type;
-    }
+	public String getMsg() {
+		return this.msg;
+	}
 
-    @Override
-    public void setType(String type) {
-        this.type = type;
-    }
+	@Override
+	public String getType() {
+		return this.type;
+	}
 
-    @Override
-    @JsonIgnore
-    public IPieAddress getAddress() {
-        return this.address;
-    }
+	@Override
+	public void setType(String type) {
+		this.type = type;
+	}
 
-    @Override
-    public void setAddress(IPieAddress address) {
-        this.address = address;
-    }
+	@Override
+	@JsonIgnore
+	public IPieAddress getAddress() {
+		return this.address;
+	}
+
+	@Override
+	public void setAddress(IPieAddress address) {
+		this.address = address;
+	}
 }
