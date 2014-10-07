@@ -18,4 +18,6 @@ public interface INetworkService {
 	InetAddress getLocalHost();
 
 	InetAddress getLocalHost(boolean invalidate);
+	
+	int getAvailablePortStartingFrom(int port);
 }

@@ -185,6 +185,8 @@ public class FileService implements IFileService {
 			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
 		}
+		
+		//shareService.handleActiveShare(msg.getPieFile());
 
 		PieFile pieFile = null;
 

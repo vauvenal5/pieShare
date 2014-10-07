@@ -59,6 +59,7 @@ public class JGroupsClusterService implements IClusterService {
 		}
 
 		try {
+			System.out.println("Sending: " +  msg.getClass());
 			this.channel.send(ad, this.serializerService.serialize(msg));
 		} catch (Exception e) {
 			throw new ClusterServiceException(e);
@@ -78,5 +79,11 @@ public class JGroupsClusterService implements IClusterService {
 	@Override
 	public <P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
 		this.executorService.registerTask(event, task);
+	}
+
+	@Override
+	public void disconnect() throws ClusterServiceException {
+		this.channel.disconnect();
+		this.channel.close();
 	}
 }
