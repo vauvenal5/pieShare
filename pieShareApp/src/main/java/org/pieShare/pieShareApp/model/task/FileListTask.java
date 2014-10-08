@@ -7,6 +7,7 @@
 package org.pieShare.pieShareApp.model.task;
 
 import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 /**
@@ -25,7 +26,7 @@ public class FileListTask implements IPieEventTask<FileListMessage>  {
 
 	@Override
 	public void run() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.fileService.handlePieFilesList(this.msg.getFileList());
 	}
 	
 }
