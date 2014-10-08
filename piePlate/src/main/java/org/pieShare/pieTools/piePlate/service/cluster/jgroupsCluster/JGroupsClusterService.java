@@ -13,7 +13,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 public class JGroupsClusterService implements IClusterService {
-
+	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
 	private IReceiver receiver;
 	private ISerializerService serializerService;
 	private JChannel channel;
