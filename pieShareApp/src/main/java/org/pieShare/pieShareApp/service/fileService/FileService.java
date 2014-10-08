@@ -9,8 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -257,7 +256,18 @@ public class FileService implements IFileService, IClusterAddedListener {
 	@Override
 	public void handleObject(ClusterAddedEvent event) {
 		//todo: request all files list!!!!
+		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
 		System.out.println("TEST");
 	}
 
+	@Override
+	public List<PieFile> getAllFilesList() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void handlePieFilesList(List<PieFile> pieFiles) {
+		//todo: call comparerService
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }
