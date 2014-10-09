@@ -73,4 +73,7 @@
 	<bean id="md5Service" class="org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service">
 		<property name="providerService" ref="providerService"/>
 	</bean>   
+	
+	<bean id="eventBase" class="org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase">
+	</bean>
 </beans>
