@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.commandService;
 
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -55,7 +56,10 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 		} catch (ClusterManagmentServiceException ex) {
 			Logger.getLogger(LoginCommandService.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
+	}
+	
+	public Map<String, IClusterService> getClouds() {
+		return clusterManagementService.getClusters();
 	}
 
 }

@@ -7,7 +7,6 @@ package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
 import java.util.Properties;
-import org.apache.commons.lang3.Validate;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
@@ -38,8 +37,8 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		String name = "";
 		if (conf == null || !conf.contains("workingDir")) {
 			name = "workingDir";
-		} else {
-			name = conf.getProperty("workingDir");
+		} else {	
+		name = conf.getProperty("workingDir");
 		}
 
 		File watchDir = new File(name);

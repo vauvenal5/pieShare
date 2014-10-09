@@ -20,4 +20,6 @@ public interface IClusterService {
 	boolean isConnectedToCluster();
 
 	<P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
+	
+	String getName();
 }

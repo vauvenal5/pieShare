@@ -21,9 +21,20 @@
     
 	<bean id="loginController" class="org.pieShare.pieShareAppFx.controller.LoginController" lazy-init="true">
 		<property name="loginCommandService" ref="loginCommandService"/>
+		<property name="cloudsListViewController" ref="cloudsListViewController"/>
 	</bean>
 	
 	<bean id="mainSceneController" class="org.pieShare.pieShareAppFx.controller.MainSceneController" lazy-init="true">
-		<property name="fXMLLoader" ref="fxmlLoader"/>
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="clusterSettingsController" ref="clusterSettingsController"/>
+	</bean>
+	
+	<bean id="cloudsListViewController" class="org.pieShare.pieShareAppFx.controller.CloudsListViewController" lazy-init="true">
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="mainSceneController" ref="mainSceneController"/>
+	</bean>
+	
+	<bean id="clusterSettingsController" class="org.pieShare.pieShareAppFx.controller.ClusterSettingsController" lazy-init="true">
 	</bean>
 </beans>

@@ -83,4 +83,9 @@ public class ClusterManagementService implements IClusterManagementService {
 			}
 		}
 	}
+	
+	@Override
+	public Map<String, IClusterService> getClusters() {
+		return this.clusters;
+	}
 }

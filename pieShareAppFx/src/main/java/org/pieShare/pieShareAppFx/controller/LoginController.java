@@ -24,6 +24,8 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  */
 public class LoginController implements Initializable {
 
+	private CloudsListViewController cloudsListViewController;
+	
 	@FXML
 	private TextField userNameField;
 	@FXML
@@ -32,6 +34,11 @@ public class LoginController implements Initializable {
 	private LoginCommandService loginCommandService;
 	private IBeanService beanService;
 
+	
+	public void setCloudsListViewController(CloudsListViewController cloudsListViewController) {
+		this.cloudsListViewController = cloudsListViewController;
+	}
+	
 	public void setLoginCommandService(LoginCommandService service) {
 		this.loginCommandService = service;
 	}
@@ -44,6 +51,7 @@ public class LoginController implements Initializable {
 		loginCommand.setPlainTextPassword(plainText);
 		loginCommand.setUserName(this.userNameField.getText());
 		this.loginCommandService.executeCommand(loginCommand);
+		cloudsListViewController.refreshCloudList();
 	}
 
 	/**
@@ -53,7 +61,4 @@ public class LoginController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
 	}
-	
-	
-
 }

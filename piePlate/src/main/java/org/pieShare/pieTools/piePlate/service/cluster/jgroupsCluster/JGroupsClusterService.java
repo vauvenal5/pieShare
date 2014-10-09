@@ -86,4 +86,9 @@ public class JGroupsClusterService implements IClusterService {
 		this.channel.disconnect();
 		this.channel.close();
 	}
+
+	@Override
+	public String getName() {
+		return channel.getName();
+	}
 }
