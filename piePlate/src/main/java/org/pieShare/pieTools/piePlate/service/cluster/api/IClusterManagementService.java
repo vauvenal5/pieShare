@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
+import java.util.Map;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 
@@ -21,4 +22,6 @@ public interface IClusterManagementService {
 	IClusterService connect(String id) throws ClusterManagmentServiceException;
 	
 	void diconnectAll() throws ClusterManagmentServiceException;
+	
+	Map<String, IClusterService> getClusters();
 }
