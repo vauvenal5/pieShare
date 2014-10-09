@@ -12,6 +12,7 @@
 	<bean id="clusterManagementService" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService" lazy-init="true">
 		<property name="beanService" ref="pieBeanService"/>
 		<property name="map" ref="javaMap"/>
+		<property name="clusterAddedEventBase" ref="eventBase"/>
 	</bean>
     
 	<bean id="clusterService" scope="prototype" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" lazy-init="true">
