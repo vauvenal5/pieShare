@@ -21,7 +21,6 @@
     
 	<bean id="loginController" class="org.pieShare.pieShareAppFx.controller.LoginController" lazy-init="true">
 		<property name="loginCommandService" ref="loginCommandService"/>
-		<property name="cloudsListViewController" ref="cloudsListViewController"/>
 	</bean>
 	
 	<bean id="mainSceneController" class="org.pieShare.pieShareAppFx.controller.MainSceneController" lazy-init="true">

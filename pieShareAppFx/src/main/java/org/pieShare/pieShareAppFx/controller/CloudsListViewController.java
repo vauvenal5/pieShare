@@ -5,27 +5,24 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
@@ -36,11 +33,11 @@ public class CloudsListViewController implements Initializable {
 
 	private IBeanService beanService;
 	private MainSceneController mainSceneController;
-	
+
 	public void setMainSceneController(MainSceneController mainSceneController) {
 		this.mainSceneController = mainSceneController;
 	}
-	
+
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
@@ -82,12 +79,31 @@ public class CloudsListViewController implements Initializable {
 		cloudsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<IClusterService>() {
 			@Override
 			public void changed(ObservableValue<? extends IClusterService> observable, IClusterService oldValue, IClusterService newValue) {
-				if(newValue != null) mainSceneController.setClusterSettingControl(newValue);
+				if (newValue != null) {
+					mainSceneController.setClusterSettingControl(newValue);
+				}
 			}
 		});
+
+		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
+
+			@Override
+			public void handleObject(ClusterAddedEvent event) {
+				refreshCloudList();
+			}
+		});
+
+		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+
+			@Override
+			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
+				refreshCloudList();
+			}
+		});
+
 	}
 
-	public void refreshCloudList() {
+	private void refreshCloudList() {
 		listItems.clear();
 		clusterManagementService.getClusters().entrySet().stream().forEach((cluster) -> {
 			listItems.add(cluster.getValue());
