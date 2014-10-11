@@ -24,7 +24,9 @@ import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -32,10 +34,12 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Svetoslav
  */
+@Configuration
 public class PieShareAppService {
+        @Autowired
 	private PieUtilitiesConfiguration utilities;
-	private PiePlateConfiguration plate;
-	private PieShareAppModel model;
+	@Autowired
+        private PiePlateConfiguration plate;
 	
 	@Bean
 	@Lazy

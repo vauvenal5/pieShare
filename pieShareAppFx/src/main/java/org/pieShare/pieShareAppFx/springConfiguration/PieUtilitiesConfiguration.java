@@ -22,6 +22,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Servic
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.PasswordEncryptionService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.TempFolderService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Svetoslav
  */
+@Configuration
 public class PieUtilitiesConfiguration {
 	@Bean
 	@Lazy
