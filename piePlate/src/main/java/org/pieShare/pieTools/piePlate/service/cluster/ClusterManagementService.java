@@ -9,16 +9,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.KeyValue;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
  *
@@ -28,7 +29,17 @@ public class ClusterManagementService implements IClusterManagementService {
 
 	private Map<String, IClusterService> clusters;
 	private IBeanService beanService;
+	private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
 
+	@Override
+	public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
+		return this.clusterAddedEventBase;
+	}
+
+	public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
+		this.clusterAddedEventBase = clusterAddedEventBase;
+	}
+	
 	public void setBeanService(IBeanService service) {
 		this.beanService = service;
 	}
@@ -52,6 +63,7 @@ public class ClusterManagementService implements IClusterManagementService {
 			IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
 			cluster.connect(id);
 			this.clusters.put(id, cluster);
+			this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
 			return cluster;
 		} catch (BeanServiceError ex) {
 			//should never happen

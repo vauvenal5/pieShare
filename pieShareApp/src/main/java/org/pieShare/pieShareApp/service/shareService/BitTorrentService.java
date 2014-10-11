@@ -185,7 +185,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	public void handleFile(FileTransferMetaMessage msg) {
 
 		try {		
-			this.initPieFileState(msg.getPieFile(), 0);
+			this.initPieFileState(msg.getPieFile(), 1);
 			
 			File tmpDir = tmpFolderService.createTempFolder(msg.getPieFile().getFileName(), configurationService.getTempCopyDirectory());
 			SharedTorrent torrent = new SharedTorrent(base64Service.decode(msg.getMetaInfo()), tmpDir);
@@ -264,12 +264,14 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		try {
 			Client client = new Client(networkService.getLocalHost(), torrent);		
 			
-			if(torrent.isSeeder()) {
+			client.share(3600);
+			
+			/*if(torrent.isSeeder()) {
 				client.share();
 			}
 			else {
 				client.download();
-			}
+			}*/
 			
 			//client.waitForCompletion();
 			while (!ClientState.DONE.equals(client.getState())) {
@@ -288,14 +290,13 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 					
 				}
 				
-				//todo-bug: server directly access this and stops it's client
 				if(ClientState.SEEDING.equals(client.getState()) && this.sharedFiles.get(pieFile) <= 0) {
 					this.removePieFileState(pieFile);
 					client.stop();
 				}
 				
 				// Display statistics
-				System.out.printf("%f %% - %d bytes downloaded - %d bytes uploaded - %s\n", torrent.getCompletion(), torrent.getDownloaded(), torrent.getUploaded(), pieFile.getFileName());
+				System.out.printf("%f %% - state %s - %d bytes downloaded - %d bytes uploaded - %s\n", torrent.getCompletion(), client.getState(), torrent.getDownloaded(), torrent.getUploaded(), pieFile.getFileName());
 
 				// Wait one second
 				Thread.sleep(1000);
