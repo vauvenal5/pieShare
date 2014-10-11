@@ -62,7 +62,9 @@ public class PieShareService {
 	public void start() {
 		this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
 
-		try {
+		/*
+                //unimportant for the time being because we don't have commandline support
+                try {
 			//todo-sv: change this!!! (new should not be used here)
 			//getbean per class ist dumm... zerst?rt unabh?ngigkeit
 			SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
@@ -71,7 +73,7 @@ public class PieShareService {
 			this.parserService.registerAction(laction);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
+		}*/
 	}
 	
 	public void stop() {
