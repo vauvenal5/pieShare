@@ -13,6 +13,7 @@ import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Svetoslav
  */
+@Configuration
 public class PieShareAppModel {
 	@Bean
 	@Lazy

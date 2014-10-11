@@ -13,14 +13,18 @@ import org.pieShare.pieShareApp.model.task.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.model.task.NewFileTask;
 import org.pieShare.pieShareApp.service.fileService.task.FileChangedTask;
 import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 /**
  *
  * @author Svetoslav
  */
+@Configuration
 public class PieShareAppTasks {
+        @Autowired
 	private PieShareAppService services;
 	
 	@Bean
