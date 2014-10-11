@@ -30,9 +30,8 @@ public interface IFileService {
 
 	public void remoteFileChanged(NewFileMessage msg);
 	
-	public List<PieFile> getAllFilesList();
+	public List<PieFile> getAllFilesList() throws IOException;
 	
-	void handlePieFilesList(List<PieFile> pieFiles);
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
 }

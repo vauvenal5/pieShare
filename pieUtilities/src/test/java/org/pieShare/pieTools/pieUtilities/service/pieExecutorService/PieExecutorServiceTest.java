@@ -178,7 +178,7 @@ public class PieExecutorServiceTest {
 
 		}
 
-		instance.registerExtendedTask(SubSubEvent.class, SubTask.class);
+		instance.registerTask(SubSubEvent.class, SubTask.class);
 
 		Mockito.verify(map, Mockito.times(1)).put(SubSubEvent.class, SubTask.class);
 	}
