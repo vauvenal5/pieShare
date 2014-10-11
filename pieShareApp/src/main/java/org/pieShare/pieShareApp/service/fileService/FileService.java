@@ -5,20 +5,26 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.task.FileListRequestTask;
+import org.pieShare.pieShareApp.model.task.FileListTask;
 import org.pieShare.pieShareApp.model.task.FileMetaTask;
 import org.pieShare.pieShareApp.model.task.FileRequestTask;
 import org.pieShare.pieShareApp.model.task.FileTransferCompleteTask;
@@ -30,7 +36,6 @@ import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherServ
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -113,9 +118,11 @@ public class FileService implements IFileService, IClusterAddedListener {
 	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
 		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
-		this.executorService.registerExtendedTask(FileRequestMessage.class, FileRequestTask.class);
-		this.executorService.registerExtendedTask(NewFileMessage.class, NewFileTask.class);
-		this.executorService.registerExtendedTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		this.executorService.registerTask(FileRequestMessage.class, FileRequestTask.class);
+		this.executorService.registerTask(NewFileMessage.class, NewFileTask.class);
+		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
+		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
 	}
 
 	private void addWatchDirectory(File file) {
@@ -167,6 +174,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		//shareService.shareFile(file);
 	}
 
+	//todo: this should happen in the task not in here!
 	@Override
 	public void remoteFileChanged(NewFileMessage msg) {
 		try {
@@ -230,6 +238,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		return false;
 	}
 
+	//todo: rename this to convertFileToPieFile because here never happens a generation
 	@Override
 	public PieFile genPieFile(File file) throws FileNotFoundException, IOException {
 
@@ -255,19 +264,34 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	@Override
 	public void handleObject(ClusterAddedEvent event) {
-		//todo: request all files list!!!!
+		try {
+			//when a cluster is added this actually means that this client has entered a cloud
+			//todo: request all files list!!!!
+			//todo: fix hardcoded cluster name
+			this.clusterManagementService.sendMessage(new FileListRequestMessage(),"sv");
+		} catch (ClusterManagmentServiceException ex) {
+			//todo: error handling
+		}
 		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
-		System.out.println("TEST");
 	}
 
 	@Override
-	public List<PieFile> getAllFilesList() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
-	@Override
-	public void handlePieFilesList(List<PieFile> pieFiles) {
-		//todo: call comparerService
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	public List<PieFile> getAllFilesList() throws IOException {
+		List<PieFile> pieFiles = new ArrayList();
+		
+		//todo: maybe a own service or at least function?
+		Files.walkFileTree(pieAppConfig.getWorkingDirectory().toPath(), new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				File realFile = file.toFile();
+				
+				PieFile pieFile = genPieFile(realFile);
+				pieFiles.add(pieFile);
+				
+				return FileVisitResult.CONTINUE;
+			}
+		});
+		
+		return pieFiles;
 	}
 }

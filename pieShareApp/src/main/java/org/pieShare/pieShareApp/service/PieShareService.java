@@ -60,7 +60,7 @@ public class PieShareService {
 
 	@PostConstruct
 	public void start() {
-		this.executorService.registerExtendedTask(SimpleMessage.class, PrintEventTask.class);
+		this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
 
 		try {
 			//todo-sv: change this!!! (new should not be used here)

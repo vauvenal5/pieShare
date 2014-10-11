@@ -74,21 +74,12 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 		this.executor.execute(task);
 	}
 
-	private void register(Class event, Class task) {
+	@Override
+	public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<X> event, Class<T> task) {
 		Validate.notNull(event);
 		Validate.notNull(task);
 
 		this.tasks.put(event, task);
-	}
-
-	@Override
-	public <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
-		this.register(event, task);
-	}
-
-	@Override
-	public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task) {
-		this.register(event, task);
 	}
 
 	@Override

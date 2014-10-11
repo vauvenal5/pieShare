@@ -6,7 +6,10 @@
 
 package org.pieShare.pieShareApp.model.task;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
@@ -33,16 +36,22 @@ public class FileListRequestTask implements IPieEventTask<FileListRequestMessage
 
 	@Override
 	public void run() {
-		List<PieFile> pieFiles = this.fileService.getAllFilesList();
-		
-		//todo: use bean service instead
-		FileListMessage reply = new FileListMessage(pieFiles);
-		reply.setAddress(this.msg.getAddress());
-		
+		List<PieFile> pieFiles;
 		try {
-			this.clusterManagementService.sendMessage(reply);
-		}
-		catch(ClusterManagmentServiceException ex) {
+			pieFiles = this.fileService.getAllFilesList();
+		
+			//todo: use bean service instead
+			FileListMessage reply = new FileListMessage(pieFiles);
+			reply.setAddress(this.msg.getAddress());
+
+			try {
+				this.clusterManagementService.sendMessage(reply);
+			}
+			catch(ClusterManagmentServiceException ex) {
+				//todo: error handling
+			}
+		
+		} catch (IOException ex) {
 			//todo: error handling
 		}
 	}
