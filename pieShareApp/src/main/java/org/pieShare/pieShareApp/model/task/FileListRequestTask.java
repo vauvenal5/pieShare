@@ -41,7 +41,8 @@ public class FileListRequestTask implements IPieEventTask<FileListRequestMessage
 			pieFiles = this.fileService.getAllFilesList();
 		
 			//todo: use bean service instead
-			FileListMessage reply = new FileListMessage(pieFiles);
+			FileListMessage reply = new FileListMessage();
+                        reply.setFileList(pieFiles);
 			reply.setAddress(this.msg.getAddress());
 
 			try {

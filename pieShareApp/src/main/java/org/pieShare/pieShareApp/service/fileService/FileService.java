@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
@@ -34,6 +33,7 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -57,13 +57,17 @@ public class FileService implements IFileService, IClusterAddedListener {
 	private IBeanService beanService;
 	private IShareService shareService;
 	private IHashService hashService;
-	private IComparerService comparerService;
 	private IRequestService requestService;
 	private IClusterManagementService clusterManagementService;
+        private IFileUtilsService fileUtilsService;
 
 	public FileService() {
 
 	}
+
+        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+            this.fileUtilsService = fileUtilsService;
+        }
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService)
 	{
@@ -72,10 +76,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 	
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
-	}
-
-	public void setComparerService(IComparerService comparerService) {
-		this.comparerService = comparerService;
 	}
 
 	public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration) {
@@ -94,7 +94,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 		this.hashService = hashService;
 	}
 
-	@PostConstruct
 	public void initFileService() {
 		/*  try
 		 {
@@ -154,7 +153,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 		PieFile pieFile = null;
 		try {
-			pieFile = genPieFile(file);
+			pieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
 			logger.error("Error Creating PieFile. Message: " + ex.getMessage());
 			return;
@@ -174,18 +173,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 		//shareService.shareFile(file);
 	}
 
-	//todo: this should happen in the task not in here!
-	@Override
-	public void remoteFileChanged(NewFileMessage msg) {
-		try {
-			comparerService.comparePieFile(msg.getPieFile());
-		} catch (IOException ex) {
-			//TODO: Handle
-		} catch (FileConflictException ex) {
-			//TODO: Handle
-		}
-	}
-
 	@Override
 	public void fileRequested(FileRequestMessage msg) {
 
@@ -203,7 +190,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		PieFile pieFile = null;
 
 		try {
-			pieFile = genPieFile(file);
+			pieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
 			return;
 		}
@@ -225,7 +212,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		PieFile localPieFile = null;
 
 		try {
-			localPieFile = genPieFile(file);
+			localPieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
 			//ToDo: DO conflict hadling
 			return false;
@@ -236,30 +223,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 		}
 
 		return false;
-	}
-
-	//todo: rename this to convertFileToPieFile because here never happens a generation
-	@Override
-	public PieFile genPieFile(File file) throws FileNotFoundException, IOException {
-
-		if (!file.exists()) {
-			throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
-		}
-
-		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
-
-		Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-		Path pathRelative = pathBase.relativize(pathAbsolute);
-		pieFile.setRelativeFilePath(pathRelative.toString());
-
-		pieFile.setLastModified(file.lastModified());
-		pieFile.setFileName(file.getName());
-
-		pieFile.setMd5(hashService.hashStream(new FileInputStream(file)));
-
-		return pieFile;
-
 	}
 
 	@Override
@@ -285,7 +248,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				File realFile = file.toFile();
 				
-				PieFile pieFile = genPieFile(realFile);
+				PieFile pieFile = fileUtilsService.getPieFile(realFile);
 				pieFiles.add(pieFile);
 				
 				return FileVisitResult.CONTINUE;
