@@ -17,6 +17,7 @@ import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileLis
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileService.FileObserver;
 import org.pieShare.pieShareApp.service.fileService.FileService;
+import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
@@ -76,7 +77,6 @@ public class PieShareAppService {
 	}
 	
 	@Bean
-	@Lazy
 	public PieShareService pieShareService() {
 		PieShareService service = new PieShareService();
 		service.setBeanService(this.utilities.beanService());
@@ -84,11 +84,12 @@ public class PieShareAppService {
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setParserService(this.utilities.argparse4jService());
 		service.setShutdownService(this.shutdownService());
+                service.start();
 		return service;
 	}
 	
 	@Bean
-	@Lazy
+        @Lazy
 	public NetworkService networkService() {
 		return new NetworkService();
 	}
@@ -115,7 +116,7 @@ public class PieShareAppService {
 	@Lazy
 	public ComparerService comparerService() {
 		ComparerService service = new ComparerService();
-		service.setFileService(this.fileService());
+		service.setFileUtilsService(this.fileUtilsService());
 		service.setPieShareConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
 		return service;
@@ -150,18 +151,18 @@ public class PieShareAppService {
 	}
 	
 	@Bean
-	@Lazy
 	public FileService fileService() {
 		FileService service = new FileService();
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setComparerService(this.comparerService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setFileWatcher(this.fileWatcher());
 		service.setMd5Service(this.utilities.md5Service());
 		service.setPieShareAppConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
 		service.setShareService(this.shareService());
+                service.setFileUtilsService(this.fileUtilsService());
+                service.initFileService();
 		return service;
 	}
 	
@@ -173,12 +174,22 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setConfigurationService(this.pieShareAppConfiguration());
-		service.setFileService(this.fileService());
-		service.setFileUtileService(this.utilities.fileUtileService());
+		service.setFileUtilsService(this.fileUtilsService());
 		service.setNetworkService(this.networkService());
 		service.setRequestService(this.requestService());
 		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
+                service.bitTorrentServicePost();
 		return service;
 	}
+        
+        @Bean
+        @Lazy
+        public FileUtilsService fileUtilsService() {
+            FileUtilsService service = new FileUtilsService();
+            service.setBeanService(this.utilities.beanService());
+            service.setHashService(this.utilities.md5Service());
+            service.setPieAppConfig(this.pieShareAppConfiguration());
+            return service;
+        }
 }

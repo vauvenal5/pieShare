@@ -18,9 +18,12 @@ public class FileListMessage extends HeaderMessage {
 	
 	private List<PieFile> fileList;
 	
-	public FileListMessage(List<PieFile> fileList) {
-		this.fileList = fileList;
+	public FileListMessage() {
 	}
+        
+        public void setFileList(List<PieFile> list) {
+            this.fileList = list;
+        }
 
 	public List<PieFile> getFileList() {
 		return fileList;
