@@ -32,7 +32,6 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppCon
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
-import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -60,7 +59,6 @@ public class BitTorrentService implements IShareService, IShutdownableService {
         private IFileUtilsService fileUtilsService;
 	private IReplicatedHashMap<PieFile, List<URI>> mapService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
-	private IRequestService requestService;
 	private IShutdownService shutdownService;
 	private boolean shutdown = false;
 	private URI trackerUri;
@@ -71,10 +69,6 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 
 	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
 		this.sharedFiles = sharedFiles;
-	}
-
-	public void setRequestService(IRequestService requestService) {
-		this.requestService = requestService;
 	}
 
 	public void setNetworkService(INetworkService networkService) {
@@ -219,8 +213,8 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				System.out.println("WARNING: Could not set LastModificationDate");
 			}
 			
-			this.requestService.deleteRequestedFile(msg.getPieFile());
-                        FileUtils.deleteDirectory(tmpDir);
+			//this.requestService.deleteRequestedFile(msg.getPieFile());
+			FileUtils.deleteDirectory(tmpDir);
 			
 			FileTransferCompleteMessage msgComplete = new FileTransferCompleteMessage();
 			msgComplete.setPieFile(msg.getPieFile());
@@ -255,14 +249,14 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		try {
 			Client client = new Client(networkService.getLocalHost(), torrent);		
 			
-			client.share(3600);
+			//client.share(3600);
 			
-			/*if(torrent.isSeeder()) {
+			if(torrent.isSeeder()) {
 				client.share();
 			}
 			else {
 				client.download();
-			}*/
+			}
 			
 			//client.waitForCompletion();
 			while (!ClientState.DONE.equals(client.getState())) {
