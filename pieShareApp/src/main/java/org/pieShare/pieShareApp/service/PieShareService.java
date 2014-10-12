@@ -7,7 +7,6 @@ package org.pieShare.pieShareApp.service;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.SimpleMessage;
 import org.pieShare.pieShareApp.service.actionService.LoginActionService;
@@ -58,20 +57,21 @@ public class PieShareService {
 		this.clusterManagementService = service;
 	}
 
-	@PostConstruct
 	public void start() {
-		this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
+		//this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
 
-		try {
+		/*
+                //unimportant for the time being because we don't have commandline support
+                try {
 			//todo-sv: change this!!! (new should not be used here)
 			//getbean per class ist dumm... zerst?rt unabh?ngigkeit
-			SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
-			this.parserService.registerAction(action);
+			//SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
+			//this.parserService.registerAction(action);
 			LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
 			this.parserService.registerAction(laction);
 		} catch (Exception ex) {
 			ex.printStackTrace();
-		}
+		}*/
 	}
 	
 	public void stop() {

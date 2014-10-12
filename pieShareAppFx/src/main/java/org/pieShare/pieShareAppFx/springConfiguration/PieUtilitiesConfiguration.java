@@ -15,13 +15,13 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jServic
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
-import org.pieShare.pieTools.pieUtilities.service.fileUtileService.FileUtileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.PasswordEncryptionService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.TempFolderService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Svetoslav
  */
+@Configuration
 public class PieUtilitiesConfiguration {
 	@Bean
 	@Lazy
@@ -104,12 +105,6 @@ public class PieUtilitiesConfiguration {
 	@Lazy
 	public TempFolderService tempFolderService() {
 		return new TempFolderService();
-	}
-	
-	@Bean
-	@Lazy
-	public FileUtileService fileUtileService() {
-		return new FileUtileService();
 	}
 	
 	@Bean

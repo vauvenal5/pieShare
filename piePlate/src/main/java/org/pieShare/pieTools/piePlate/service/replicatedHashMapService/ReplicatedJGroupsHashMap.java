@@ -19,7 +19,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClus
  * @author Svetoslav
  */
 public class ReplicatedJGroupsHashMap<K,V> implements IReplicatedHashMap<K,V>{
-	
+	//TODO-urgent: check this out!!!
 	private ReplicatedHashMap<K, V> map;
 	private JChannel channel;
 

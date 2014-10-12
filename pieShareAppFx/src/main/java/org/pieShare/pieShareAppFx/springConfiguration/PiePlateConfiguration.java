@@ -12,7 +12,9 @@ import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -20,7 +22,9 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Svetoslav
  */
+@Configuration
 public class PiePlateConfiguration {
+        @Autowired
 	private PieUtilitiesConfiguration utilitiesConfiguration;
 	
 	@Bean
