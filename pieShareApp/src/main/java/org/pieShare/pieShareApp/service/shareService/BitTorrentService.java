@@ -20,19 +20,17 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -42,7 +40,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.piePlate.service.replicatedHashMapService.IReplicatedHashMap;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.fileUtileService.api.IFileUtileService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFolderService;
@@ -56,12 +53,11 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private Tracker tracker;
 	private IPieShareAppConfiguration configurationService;
 	private ITempFolderService tmpFolderService;
-	private IFileUtileService fileUtileService;
 	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
 	private IBase64Service base64Service;
 	private INetworkService networkService;
-	private IFileService fileService;
+        private IFileUtilsService fileUtilsService;
 	private IReplicatedHashMap<PieFile, List<URI>> mapService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
 	private IRequestService requestService;
@@ -93,9 +89,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		this.beanService = beanService;
 	}
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
+        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+            this.fileUtilsService = fileUtilsService;
+        }
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
@@ -109,12 +105,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		this.tmpFolderService = tmpFolderService;
 	}
 
-	public void setFileUtileService(IFileUtileService fileUtileService) {
-		this.fileUtileService = fileUtileService;
-	}
-
-	@PostConstruct
-	private void BitTorrentServicePost() {
+	public void bitTorrentServicePost() {
 		try {
 			//todo: use beanService
 			int port = this.networkService.getAvailablePortStartingFrom(6969);
@@ -150,7 +141,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			torrent.save(baos);
 
-			PieFile pieFile = fileService.genPieFile(file);
+			PieFile pieFile = this.fileUtilsService.getPieFile(file);
 			this.initPieFileState(pieFile, 0);
 			this.manipulatePieFileState(pieFile, 1);
 
@@ -229,7 +220,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			}
 			
 			this.requestService.deleteRequestedFile(msg.getPieFile());
-			fileUtileService.deleteRecursive(tmpDir);
+                        FileUtils.deleteDirectory(tmpDir);
 			
 			FileTransferCompleteMessage msgComplete = new FileTransferCompleteMessage();
 			msgComplete.setPieFile(msg.getPieFile());

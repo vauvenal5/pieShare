@@ -20,15 +20,12 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
 public interface IFileService {
 
 	//public void remoteFileChange(FileChangedMessage message);
-	public PieFile genPieFile(File file) throws FileNotFoundException, IOException;
 
 	public boolean checkMergeFile(PieFile pieFile);
 
 	public void localFileChange(File file);
 
 	public void fileRequested(FileRequestMessage msg);
-
-	public void remoteFileChanged(NewFileMessage msg);
 	
 	public List<PieFile> getAllFilesList() throws IOException;
 	

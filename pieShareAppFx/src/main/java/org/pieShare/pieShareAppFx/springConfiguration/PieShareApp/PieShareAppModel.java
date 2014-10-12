@@ -9,6 +9,8 @@ package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
+import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
@@ -50,6 +52,20 @@ public class PieShareAppModel {
 	public NewFileMessage newFileMessage() {
 		return new NewFileMessage();
 	}
+        
+        @Bean
+	@Lazy
+	@Scope(value="prototype")
+        public FileListMessage fileListMessage() {
+            return new FileListMessage();
+        }
+        
+        @Bean
+	@Lazy
+	@Scope(value="prototype")
+        public FileListRequestMessage fileListRequestMessage() {
+            return new FileListRequestMessage();
+        }
 	
 	@Bean
 	@Lazy
