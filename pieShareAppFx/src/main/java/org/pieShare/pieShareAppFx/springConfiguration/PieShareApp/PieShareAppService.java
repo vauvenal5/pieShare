@@ -161,8 +161,8 @@ public class PieShareAppService {
 		service.setPieShareAppConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
 		service.setShareService(this.shareService());
-                service.setFileUtilsService(this.fileUtilsService());
-                service.initFileService();
+		service.setFileUtilsService(this.fileUtilsService());
+		service.initFileService();
 		return service;
 	}
 	
@@ -176,7 +176,6 @@ public class PieShareAppService {
 		service.setConfigurationService(this.pieShareAppConfiguration());
 		service.setFileUtilsService(this.fileUtilsService());
 		service.setNetworkService(this.networkService());
-		service.setRequestService(this.requestService());
 		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
                 service.bitTorrentServicePost();
