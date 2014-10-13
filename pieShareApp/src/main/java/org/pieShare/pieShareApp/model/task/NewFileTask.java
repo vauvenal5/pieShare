@@ -5,7 +5,10 @@
  */
 package org.pieShare.pieShareApp.model.task;
 
+import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
+import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
@@ -16,11 +19,11 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 public class NewFileTask implements IPieEventTask<NewFileMessage> {
 
 	private NewFileMessage msg;
-	private IFileService fileService;
+        private IComparerService comparerService;
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
+        public void setComparerService(IComparerService comparerService) {
+            this.comparerService = comparerService;
+        }
 
 	@Override
 	public void setMsg(NewFileMessage msg) {
@@ -29,7 +32,13 @@ public class NewFileTask implements IPieEventTask<NewFileMessage> {
 
 	@Override
 	public void run() {
-		this.fileService.remoteFileChanged(msg);
+            try {
+                    comparerService.comparePieFile(msg.getPieFile());
+            } catch (IOException ex) {
+                    //TODO: Handle
+            } catch (FileConflictException ex) {
+                    //TODO: Handle
+            }
 	}
 
 }
