@@ -87,7 +87,7 @@ public class ComparerService implements IComparerService {
 	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
                 
                 //todo: the requestService could do the check of the requestedFileList internally!?!
-		if (!requestService.getRequestedFileList().containsKey(pieFile) && isPieFileDesired(pieFile)) {
+		if (isPieFileDesired(pieFile)) {
 			requestService.requestFile(pieFile);
 		}
 

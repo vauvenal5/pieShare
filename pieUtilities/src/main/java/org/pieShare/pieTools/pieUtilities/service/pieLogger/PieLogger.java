@@ -15,6 +15,11 @@ public class PieLogger {
 		//mainLogger = LoggerFactory.getLogger(clazz);
 		// PropertyConfigurator.configure("log4j.properties");
 	}
+	
+	public static void debug(Class clazz, String message) {
+		Logger log = LoggerFactory.getLogger(clazz);
+		log.debug(message);
+	}
 
 	public void debug(String message) {
 		mainLogger.debug(clazz.toString() + " || " + message);

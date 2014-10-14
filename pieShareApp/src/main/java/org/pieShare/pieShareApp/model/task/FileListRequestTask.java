@@ -28,6 +28,14 @@ public class FileListRequestTask implements IPieEventTask<FileListRequestMessage
 	private FileListRequestMessage msg;
 	private IFileService fileService;
 	private IClusterManagementService clusterManagementService;
+
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
+
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
+	}
 	
 	@Override
 	public void setMsg(FileListRequestMessage msg) {

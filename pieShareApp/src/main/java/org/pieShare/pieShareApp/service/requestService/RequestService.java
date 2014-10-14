@@ -49,6 +49,10 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public void requestFile(PieFile pieFile) {
+		if(this.requestedFiles.containsKey(pieFile)) {
+			return;
+		}
+		
 		FileRequestMessage msg = beanService.getBean(PieShareAppBeanNames.getFileRequestMessageName());
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.setPieFile(pieFile);
@@ -61,7 +65,7 @@ public class RequestService implements IRequestService {
 	}
 
 	@Override
-	public synchronized void anncounceRecived(FileTransferMetaMessage message) {
+	public void anncounceRecived(FileTransferMetaMessage message) {
 		if (requestedFiles.containsKey(message.getPieFile()) && requestedFiles.get(message.getPieFile()) == false) {
 
 			requestedFiles.replace(message.getPieFile(), true);
@@ -81,11 +85,6 @@ public class RequestService implements IRequestService {
 		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
 			shareService.handleActiveShare(pieFile);
 		}
-	}
-
-	@Override
-	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList() {
-		return requestedFiles;
 	}
 
 	@Override

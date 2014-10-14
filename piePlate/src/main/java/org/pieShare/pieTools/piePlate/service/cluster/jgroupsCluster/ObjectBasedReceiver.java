@@ -22,9 +22,15 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 	private ISerializerService serializerService;
 	private IExecutorService executorService;
 	private IBeanService beanService;
+	private String clusterName;
 
 	public void setSerializerService(ISerializerService service) {
 		this.serializerService = service;
+	}
+
+	@Override
+	public void setClusterName(String clusterName) {
+		this.clusterName = clusterName;
 	}
 
 	public void setBeanService(IBeanService service) {
@@ -38,6 +44,7 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 			System.out.println("Recived: " + pieMsg.getClass());
 			JGroupsPieAddress ad = (JGroupsPieAddress) this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
 			ad.setAddress(msg.getSrc());
+			ad.setClusterName(this.clusterName);
 			pieMsg.setAddress(ad);
 			this.executorService.handlePieEvent(pieMsg);
 		} catch (SerializerServiceException | PieExecutorServiceException e) {
