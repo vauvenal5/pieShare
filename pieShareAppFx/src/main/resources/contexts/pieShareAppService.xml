@@ -33,9 +33,7 @@
 		<property name="comparerService" ref="comparerService"/>
 		<property name="requestService" ref="requestService"/>
 		<property name="clusterManagementService" ref="clusterManagementService"/>
-		
 	</bean>
-    
     
 	<bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher" lazy-init="true">    
 		<property name="fileListener" ref="fileListener"/>
@@ -122,7 +120,7 @@
 		<property name="requestService" ref="requestService"/>
 	</bean>
 	
-	<bean id="shutdownService" class="org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService">
+	<bean id="shutdownService" class="org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService" lazy-init="true">
 		<property name="listener" ref="pieExecutorService"/>
 	</bean>
 	

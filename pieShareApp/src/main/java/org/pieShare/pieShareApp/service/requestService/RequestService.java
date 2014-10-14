@@ -69,8 +69,14 @@ public class RequestService implements IRequestService {
 		}
 	}
 	
+	/**
+	 * If this client is in a process of getting a new file and another client requests the
+	 * very same file from us we want to keep our seeder open so we notify the shareService about it.
+	 * @param pieFile 
+	 */
 	@Override
 	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
+		
 		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
 			shareService.handleActiveShare(pieFile);
 		}
