@@ -7,8 +7,13 @@ package org.pieShare.pieTools.pieUtilities.service.configurationReader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.animation.KeyValue;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -25,6 +30,11 @@ public class ConfigurationReader implements IConfigurationReader {
 	private final String configSavePath;
 	private final File configFolder;
 
+	@Override
+	public File getBaseConfigPath() {
+		return configFolder;
+	}
+
 	public ConfigurationReader() {
 		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
 		homeDir = System.getProperty("user.home");
@@ -34,7 +44,19 @@ public class ConfigurationReader implements IConfigurationReader {
 		if (!configFolder.exists() || !configFolder.isDirectory()) {
 			configFolder.mkdirs();
 		}
+	}
 
+	@Override
+	public void saveConfig(Properties props) {
+
+		try {
+			FileOutputStream outStr = new FileOutputStream(configFolder);
+			props.store(outStr, "");
+			outStr.close();
+		} catch (IOException ex) {
+			//ToDo: handle
+			Logger.getLogger(ConfigurationReader.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 
 	@Override
@@ -54,13 +76,14 @@ public class ConfigurationReader implements IConfigurationReader {
 
 		try {
 			//load a properties file from class path, inside static method
-			prop.load(new FileInputStream(config));
+			FileInputStream inputStr = new FileInputStream(config);
+			prop.load(inputStr);
+			inputStr.close();
 		} catch (IOException ex) {
 			logger.error("Error reding configuration");
 			throw new NoConfigFoundException(ex.getMessage());
 
 		}
-
 		return prop;
 	}
 }

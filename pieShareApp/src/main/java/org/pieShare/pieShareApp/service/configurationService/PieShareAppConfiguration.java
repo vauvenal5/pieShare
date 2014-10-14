@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Properties;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
@@ -22,6 +23,14 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 	private Properties conf;
 	private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
+	private File workingDir = null;
+	private File tempDir = null;
+
+	public PieShareAppConfiguration() {
+		readTempCopyDir();
+		readWorkingDir();
+	}
+
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
 		this.configurationReader = configurationReader;
 		try {
@@ -34,11 +43,22 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	@Override
 	public File getWorkingDirectory() {
+		return workingDir;
+	}
+
+	@Override
+	public void setWorkingDir(File workingDir) {
+		Path relativ = configurationReader.getBaseConfigPath().toPath().relativize(workingDir.toPath());
+		conf.replace("workingDir", relativ.toString());
+		configurationReader.saveConfig(conf);
+	}
+
+	private void readWorkingDir() {
 		String name = "";
 		if (conf == null || !conf.contains("workingDir")) {
 			name = "workingDir";
-		} else {	
-		name = conf.getProperty("workingDir");
+		} else {
+			name = conf.getProperty("workingDir");
 		}
 
 		File watchDir = new File(name);
@@ -47,27 +67,16 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 			watchDir.mkdirs();
 		}
 
-		return new File(watchDir.getAbsolutePath());
-	}
-
-	@Override
-	public int getFileSendBufferSize() {
-		int defaultSize = 2048;
-
-		if (conf == null || !conf.contains("fileSendBufferSize")) {
-			return defaultSize;
-		}
-
-		try {
-			return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
-		} catch (NumberFormatException ex) {
-			return defaultSize;
-		}
+		workingDir = new File(watchDir.getAbsolutePath());
 	}
 
 	@Override
 	public File getTempCopyDirectory() {
-		String name = "";
+		return tempDir;
+	}
+
+	private void readTempCopyDir() {
+		String name;
 		if (conf == null || !conf.contains("tempCopyDir")) {
 			name = "tempDir";
 		} else {
@@ -80,6 +89,13 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 			tempCopyDir.mkdirs();
 		}
 
-		return new File(tempCopyDir.getAbsolutePath());
+		tempDir = new File(tempCopyDir.getAbsolutePath());
+	}
+
+	@Override
+	public void setTempCopyDir(File tempCopyDir) {
+		Path relativ = configurationReader.getBaseConfigPath().toPath().relativize(workingDir.toPath());
+		conf.replace("tempCopyDir", relativ.toString());
+		configurationReader.saveConfig(conf);
 	}
 }
