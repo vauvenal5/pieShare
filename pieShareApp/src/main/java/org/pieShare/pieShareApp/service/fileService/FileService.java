@@ -9,8 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -33,6 +32,8 @@ import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -42,7 +43,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 /**
  * @author richy
  */
-public class FileService implements IFileService {
+public class FileService implements IFileService, IClusterAddedListener {
 
 	private final PieLogger logger = new PieLogger(FileService.class);
 	private IExecutorService executorService = null;
@@ -101,7 +102,8 @@ public class FileService implements IFileService {
 		 }
 		 */
 		addWatchDirectory(pieAppConfig.getWorkingDirectory());
-
+		
+		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
 	}
 
 	public void setFileWatcher(IFileWatcherService fileWatcher) {
@@ -182,6 +184,8 @@ public class FileService implements IFileService {
 		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
+			//if the file doesn't exist on these client it could be due the fact that itself
+			//is requesting it right now
 			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
 		}
@@ -199,11 +203,11 @@ public class FileService implements IFileService {
 		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
 			shareService.shareFile(file);
 		}
+		//todo: what happens when it is the "same file" with different MD5?!
 	}
 
 	@Override
-	public boolean checkMergeFile(PieFile pieFile
-	) {
+	public boolean checkMergeFile(PieFile pieFile) {
 		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
 
 		if (!file.exists()) {
@@ -249,4 +253,21 @@ public class FileService implements IFileService {
 
 	}
 
+	@Override
+	public void handleObject(ClusterAddedEvent event) {
+		//todo: request all files list!!!!
+		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
+		System.out.println("TEST");
+	}
+
+	@Override
+	public List<PieFile> getAllFilesList() {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public void handlePieFilesList(List<PieFile> pieFiles) {
+		//todo: call comparerService
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }

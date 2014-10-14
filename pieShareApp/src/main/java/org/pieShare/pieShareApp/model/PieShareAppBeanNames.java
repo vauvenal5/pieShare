@@ -50,4 +50,8 @@ public class PieShareAppBeanNames {
 	public static String getNewFileMessageName() {
 		return "newFileMessage";
 	}
+	
+	public static String getGUILoader() {
+		return "fxmlLoader";
+	}
 }
