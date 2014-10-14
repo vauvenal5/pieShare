@@ -22,6 +22,10 @@ public class FileListTask implements IPieEventTask<FileListMessage>  {
 
 	private FileListMessage msg;
 	private IComparerService comparerService;
+
+	public void setComparerService(IComparerService comparerService) {
+		this.comparerService = comparerService;
+	}
 	
 	@Override
 	public void setMsg(FileListMessage msg) {

@@ -19,8 +19,6 @@ public interface IRequestService {
 
 	public void anncounceRecived(FileTransferMetaMessage message);
 
-	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList();
-
 	public boolean deleteRequestedFile(PieFile pieFile);
 
 	public void checkForActiveFileHandle(PieFile pieFile);

@@ -25,7 +25,7 @@ public class MD5Service implements IHashService {
 
 	public void setProviderService(IProviderService service) {
 		this.provider = service;
-
+		
 		try {
 			messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
 		} catch (NoSuchAlgorithmException ex) {
@@ -50,10 +50,10 @@ public class MD5Service implements IHashService {
 	}
 
 	@Override
-	public byte[] hashStream(InputStream stream) throws IOException {
+	public synchronized byte[] hashStream(InputStream stream) throws IOException {
 		byte[] buffer = new byte[1024];
 		int read = 0;
-
+		PieLogger.debug(this.getClass(),"testing logger");
 		while ((read = stream.read(buffer)) != -1) {
 			Validate.notNull(this.messageDigest);
 			messageDigest.update(buffer, 0, read);

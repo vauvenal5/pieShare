@@ -173,13 +173,14 @@ public class FileService implements IFileService, IClusterAddedListener {
 		//shareService.shareFile(file);
 	}
 
+	//todo: belongs into the fileRequestedTask not in here?
 	@Override
 	public void fileRequested(FileRequestMessage msg) {
 
 		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
-			//if the file doesn't exist on these client it could be due the fact that itself
+			//if the file doesn't exist on this client it could be due the fact that itself
 			//is requesting it right now
 			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
