@@ -21,21 +21,21 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	private IConfigurationReader configurationReader;
 	private Properties conf;
+	private final String CONFIG_PATH;
 	private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
 	private File workingDir = null;
 	private File tempDir = null;
 
 	public PieShareAppConfiguration() {
-		readTempCopyDir();
-		readWorkingDir();
+		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
 	}
 
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
 		this.configurationReader = configurationReader;
 		try {
 			//pieShare.properties
-			conf = configurationReader.getConfig("/.pieShare/pieShare.properties");
+			conf = configurationReader.getConfig(CONFIG_PATH);
 		} catch (NoConfigFoundException ex) {
 			logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
 		}
@@ -43,19 +43,18 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	@Override
 	public File getWorkingDirectory() {
+		readWorkingDir();
 		return workingDir;
 	}
 
 	@Override
 	public void setWorkingDir(File workingDir) {
-		Path relativ = configurationReader.getBaseConfigPath().toPath().relativize(workingDir.toPath());
-		conf.replace("workingDir", relativ.toString());
-		configurationReader.saveConfig(conf);
+		addProperty("workingDir", workingDir.toPath().toString());
 	}
 
 	private void readWorkingDir() {
 		String name = "";
-		if (conf == null || !conf.contains("workingDir")) {
+		if (conf == null || !conf.containsKey("workingDir")) {
 			name = "workingDir";
 		} else {
 			name = conf.getProperty("workingDir");
@@ -72,15 +71,16 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	@Override
 	public File getTempCopyDirectory() {
+		readTempCopyDir();
 		return tempDir;
 	}
 
 	private void readTempCopyDir() {
 		String name;
-		if (conf == null || !conf.contains("tempCopyDir")) {
+		if (conf == null || !conf.containsKey("tempCopyDir")) {
 			name = "tempDir";
 		} else {
-			name = conf.getProperty("workingDir");
+			name = conf.getProperty("tempCopyDir");
 		}
 
 		File tempCopyDir = new File(name);
@@ -94,8 +94,18 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	@Override
 	public void setTempCopyDir(File tempCopyDir) {
-		Path relativ = configurationReader.getBaseConfigPath().toPath().relativize(workingDir.toPath());
-		conf.replace("tempCopyDir", relativ.toString());
-		configurationReader.saveConfig(conf);
+		addProperty("tempCopyDir", tempCopyDir.toPath().toString());
+	}
+
+	private void addProperty(String prop, String value) {
+		if (conf == null) {
+			conf = new Properties();
+		}
+		if (conf.contains(prop)) {
+			conf.replace(prop, value);
+		} else {
+			conf.put(prop, value);
+		}
+		configurationReader.saveConfig(conf, CONFIG_PATH);
 	}
 }

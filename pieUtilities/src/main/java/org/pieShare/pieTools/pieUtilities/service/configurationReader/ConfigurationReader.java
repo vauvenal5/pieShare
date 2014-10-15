@@ -47,10 +47,11 @@ public class ConfigurationReader implements IConfigurationReader {
 	}
 
 	@Override
-	public void saveConfig(Properties props) {
-
+	public void saveConfig(Properties props, String pathToConfig) {
+		File config = new File(configFolder, pathToConfig);
 		try {
-			FileOutputStream outStr = new FileOutputStream(configFolder);
+			if(!config.exists()) config.createNewFile();
+			FileOutputStream outStr = new FileOutputStream(config);
 			props.store(outStr, "");
 			outStr.close();
 		} catch (IOException ex) {
