@@ -5,8 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.commandService;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -16,6 +14,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncryptionService;
 
 /**
@@ -53,7 +52,7 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 		try {
 			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
 		} catch (ClusterManagmentServiceException ex) {
-			Logger.getLogger(LoginCommandService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Connect failed!", ex);
 		}
 
 	}

@@ -21,7 +21,6 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	private IConfigurationReader configurationReader;
 	private Properties conf;
-	private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
 
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
 		this.configurationReader = configurationReader;
@@ -29,7 +28,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 			//pieShare.properties
 			conf = configurationReader.getConfig("/.pieShare/pieShare.properties");
 		} catch (NoConfigFoundException ex) {
-			logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
+			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
 		}
 	}
 

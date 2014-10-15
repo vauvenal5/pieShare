@@ -4,32 +4,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PieLogger {
-
-	public static final Logger mainLogger = LoggerGetter.getInstance().getLogger();
-	//private static Logger mainLogger;
-
-	private Class clazz;
-
-	public PieLogger(Class clazz) {
-		this.clazz = clazz;
-		//mainLogger = LoggerFactory.getLogger(clazz);
-		// PropertyConfigurator.configure("log4j.properties");
+	
+	private static Logger getLogger(Class clazz) {
+		return LoggerFactory.getLogger(clazz);
+	}
+	
+	public static void info(Class clazz, String message) {
+		Logger log = getLogger(clazz);
+		log.info(message);
+	}
+	
+	public static void info(Class clazz, String message, Throwable th) {
+		Logger log = getLogger(clazz);
+		log.info(message, th);
+	}
+	
+	public static void info(Class clazz, String message, Object... os) {
+		Logger log = getLogger(clazz);
+		log.info(message);
 	}
 	
 	public static void debug(Class clazz, String message) {
-		Logger log = LoggerFactory.getLogger(clazz);
+		Logger log = getLogger(clazz);
 		log.debug(message);
 	}
-
-	public void debug(String message) {
-		mainLogger.debug(clazz.toString() + " || " + message);
+	
+	public static void debug(Class clazz, String message, Object... os) {
+		Logger log = getLogger(clazz);
+		log.debug(message, os);
 	}
-
-	public void error(String message) {
-		mainLogger.debug(clazz.toString() + " || " + message);
+	
+	public static void error(Class clazz, String message) {
+		Logger log = getLogger(clazz);
+		log.error(message);
 	}
-
-	public void info(String message) {
-		mainLogger.debug(clazz.toString() + " || " + message);
+	
+	public static void error(Class clazz, String message, Throwable thr) {
+		Logger log = getLogger(clazz);
+		log.error(message, thr);
 	}
 }

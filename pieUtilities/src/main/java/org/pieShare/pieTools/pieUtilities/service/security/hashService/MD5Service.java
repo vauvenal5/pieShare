@@ -18,8 +18,6 @@ import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
  */
 public class MD5Service implements IHashService {
 
-	private static final PieLogger md5Logger = new PieLogger(MD5Service.class);
-
 	private IProviderService provider;
 
 	public void setProviderService(IProviderService service) {
@@ -47,9 +45,10 @@ public class MD5Service implements IHashService {
 		try {
 			messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
 		} catch (NoSuchAlgorithmException ex) {
-			md5Logger.error("Error in MD5 Hash Algorithm, this shold no happen. Message: " + ex.getMessage());
+			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm, this should not happen.", ex);
 		} catch (NoSuchProviderException ex) {
 			//todo: error handling
+			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm.", ex);
 		}
 		
 		return messageDigest;
@@ -61,7 +60,7 @@ public class MD5Service implements IHashService {
 		
 		byte[] buffer = new byte[1024];
 		int read = 0;
-		PieLogger.debug(this.getClass(),"testing logger");
+		
 		while ((read = stream.read(buffer)) != -1) {
 			Validate.notNull(messageDigest);
 			messageDigest.update(buffer, 0, read);

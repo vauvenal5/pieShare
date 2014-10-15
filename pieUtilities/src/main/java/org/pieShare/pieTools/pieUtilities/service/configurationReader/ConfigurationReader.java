@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
  */
 public class ConfigurationReader implements IConfigurationReader {
 
-	private final PieLogger logger = new PieLogger(ConfigurationReader.class);
 	private final String homeDir;
 	private final String configSavePath;
 	private final File configFolder;
@@ -46,8 +45,7 @@ public class ConfigurationReader implements IConfigurationReader {
 		}
 
 		if (!config.exists()) {
-			logger.error("Configuration: " + config.getAbsolutePath() + " does not exists.");
-			throw new NoConfigFoundException("Configuration: " + config.getAbsolutePath() + " does not exists.");
+			throw new NoConfigFoundException(String.format("Configuration: %s does not exists.", config.getAbsolutePath()));
 		}
 
 		Properties prop = new Properties();
@@ -56,8 +54,7 @@ public class ConfigurationReader implements IConfigurationReader {
 			//load a properties file from class path, inside static method
 			prop.load(new FileInputStream(config));
 		} catch (IOException ex) {
-			logger.error("Error reding configuration");
-			throw new NoConfigFoundException(ex.getMessage());
+			throw new NoConfigFoundException(ex);
 
 		}
 

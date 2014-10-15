@@ -14,5 +14,9 @@ public class NoConfigFoundException extends Exception {
 	public NoConfigFoundException(String message) {
 		super(message);
 	}
+	
+	public NoConfigFoundException(Throwable th) {
+		super(th);
+	}
 
 }

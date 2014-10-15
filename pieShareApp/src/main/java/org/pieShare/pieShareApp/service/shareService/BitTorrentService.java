@@ -21,8 +21,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
@@ -39,6 +37,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.piePlate.service.replicatedHashMapService.IReplicatedHashMap;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFolderService;
@@ -112,9 +111,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			tracker.start();
 		} catch (IOException ex) {
 			ex.printStackTrace();
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (URISyntaxException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
 		
 		this.shutdownService.registerListener(this);
@@ -156,13 +155,13 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			seeder.share();
 			seeder.*/
 		} catch (InterruptedException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (IOException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (ClusterManagmentServiceException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (ClusterServiceException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
 	}
 
@@ -204,9 +203,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			
 			//todo: start sharing
 		} catch (IOException ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (Exception ex) {
-			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
 	}
 	
@@ -261,8 +260,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				}
 				
 				// Display statistics
-				//todo: change this into log
-				System.out.printf("%f %% - state %s - %d bytes downloaded - %d bytes uploaded - %s\n", torrent.getCompletion(), client.getState(), torrent.getDownloaded(), torrent.getUploaded(), pieFile.getFileName());
+				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}", torrent.getCompletion(), client.getState(), torrent.getDownloaded(), torrent.getUploaded(), pieFile.getFileName());
 
 				// Wait one second
 				Thread.sleep(1000);
@@ -271,9 +269,10 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			this.removePieFileState(pieFile);
 			
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			//todo: error handling?!
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (Exception ex) {
-			ex.printStackTrace();
+			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
 	}
 
