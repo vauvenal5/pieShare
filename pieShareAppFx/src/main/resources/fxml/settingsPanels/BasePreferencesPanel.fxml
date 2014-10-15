@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="88.0" prefWidth="364.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.pieShare.pieShareAppFx.controller.BasePreferencesController">
+   <children>
+      <Label layoutX="14.0" layoutY="14.0" text="Working Directory:" />
+      <Button fx:id="buttonBrowseWorking" layoutX="295.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleButtonWorkingClick" text="Browse" />
+      <TextField fx:id="textFieldWorkingPath" editable="false" layoutX="123.0" layoutY="10.0" prefHeight="25.0" prefWidth="161.0" />
+      <TextField fx:id="textFieldTempPath" editable="false" layoutX="123.0" layoutY="44.0" prefHeight="25.0" prefWidth="161.0" />
+      <Button fx:id="buttonBrowseTemp" layoutX="295.0" layoutY="44.0" mnemonicParsing="false" onAction="#handleButtonTempClick" text="Browse" />
+      <Label layoutX="14.0" layoutY="48.0" text="Temp Directory:" />
+   </children>
+</AnchorPane>

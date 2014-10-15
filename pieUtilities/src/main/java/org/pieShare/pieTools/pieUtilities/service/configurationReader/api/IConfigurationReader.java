@@ -19,5 +19,5 @@ public interface IConfigurationReader {
 	
 	File getBaseConfigPath();
 	
-	void saveConfig(Properties props);
+	void saveConfig(Properties props, String pathToConfig);
 }
