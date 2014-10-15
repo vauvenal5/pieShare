@@ -7,8 +7,6 @@ package org.pieShare.pieTools.piePlate.service.cluster;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -20,6 +18,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -91,7 +90,7 @@ public class ClusterManagementService implements IClusterManagementService {
 				entry.getValue().disconnect();
 			} catch (ClusterServiceException ex) {
 				//todo: error handling
-				Logger.getLogger(ClusterManagementService.class.getName()).log(Level.SEVERE, null, ex);
+				PieLogger.error(this.getClass(), "Disconnect all failed!", ex);
 			}
 		}
 	}

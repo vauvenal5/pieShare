@@ -19,6 +19,7 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		context = new AnnotationConfigApplicationContext();
                 context.register(PieUtilitiesConfiguration.class);
                 context.register(PiePlateConfiguration.class);

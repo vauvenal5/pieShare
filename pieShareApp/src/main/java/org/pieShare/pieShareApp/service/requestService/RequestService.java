@@ -25,7 +25,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class RequestService implements IRequestService {
 
-	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
@@ -60,7 +59,7 @@ public class RequestService implements IRequestService {
 			clusterManagementService.sendMessage(msg, user.getCloudName());
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
-			logger.error("Error sending RequestMessage. Message:" + ex.getMessage());
+			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);
 		}
 	}
 

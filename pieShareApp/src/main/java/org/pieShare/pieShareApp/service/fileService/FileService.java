@@ -12,8 +12,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
@@ -50,7 +48,6 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
  */
 public class FileService implements IFileService, IClusterAddedListener {
 
-	private final PieLogger logger = new PieLogger(FileService.class);
 	private IExecutorService executorService = null;
 	private IFileWatcherService fileWatcher;
 	private IPieShareAppConfiguration pieAppConfig;
@@ -155,7 +152,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		try {
 			pieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
-			logger.error("Error Creating PieFile. Message: " + ex.getMessage());
+			PieLogger.error(this.getClass(), "Error Creating PieFile.", ex);
 			return;
 		}
 
@@ -164,9 +161,9 @@ public class FileService implements IFileService, IClusterAddedListener {
 		msg.setPieFile(pieFile);
 		try {
 			clusterManagementService.sendMessage(msg, user.getCloudName());
-			logger.info("Send new file message. Filepath:" + pieFile.getRelativeFilePath());
+			PieLogger.info(this.getClass(), "Send new file message. Filepath: {}", pieFile.getRelativeFilePath());
 		} catch (ClusterManagmentServiceException ex) {
-			Logger.getLogger(FileService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "FileService error.", ex);
 		}
 		
 		//Message New File
@@ -193,6 +190,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		try {
 			pieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
+			PieLogger.error(this.getClass(), "File error.", ex);
 			return;
 		}
 
@@ -215,7 +213,8 @@ public class FileService implements IFileService, IClusterAddedListener {
 		try {
 			localPieFile = this.fileUtilsService.getPieFile(file);
 		} catch (IOException ex) {
-			//ToDo: DO conflict hadling
+			//ToDo: DO conflict handling
+			PieLogger.error(this.getClass(), "File error.", ex);
 			return false;
 		}
 
@@ -235,6 +234,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 			this.clusterManagementService.sendMessage(new FileListRequestMessage(),"sv");
 		} catch (ClusterManagmentServiceException ex) {
 			//todo: error handling
+			PieLogger.error(this.getClass(), "File error.", ex);
 		}
 		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
 	}

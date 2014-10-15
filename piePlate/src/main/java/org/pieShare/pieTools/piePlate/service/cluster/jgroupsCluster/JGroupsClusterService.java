@@ -11,6 +11,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiv
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class JGroupsClusterService implements IClusterService {
 	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
@@ -60,7 +61,7 @@ public class JGroupsClusterService implements IClusterService {
 		}
 
 		try {
-			System.out.println("Sending: " +  msg.getClass());
+			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			this.channel.send(ad, this.serializerService.serialize(msg));
 		} catch (Exception e) {
 			throw new ClusterServiceException(e);
