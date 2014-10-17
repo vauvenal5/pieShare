@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppModel;
@@ -13,6 +12,7 @@ import org.pieShare.pieShareApp.service.actionService.LoginActionService;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileService.FileObserver;
@@ -37,11 +37,12 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class PieShareAppService {
-        @Autowired
+
+	@Autowired
 	private PieUtilitiesConfiguration utilities;
 	@Autowired
-        private PiePlateConfiguration plate;
-	
+	private PiePlateConfiguration plate;
+
 	@Bean
 	@Lazy
 	public LoginCommandService loginCommandService() {
@@ -49,9 +50,10 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setPasswordEncryptionService(this.utilities.passwordEncryptionService());
+		service.setDatabaseService(databaseService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public LoginActionService loginActionService() {
@@ -60,14 +62,14 @@ public class PieShareAppService {
 		service.setCommandService(this.loginCommandService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public PieFile pieFile() {
 		return new PieFile();
 	}
-	
+
 	@Bean
 	@Lazy
 	public ShutdownService shutdownService() {
@@ -75,7 +77,7 @@ public class PieShareAppService {
 		service.setListener(this.utilities.pieExecutorService());
 		return service;
 	}
-	
+
 	@Bean
 	public PieShareService pieShareService() {
 		PieShareService service = new PieShareService();
@@ -84,16 +86,16 @@ public class PieShareAppService {
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setParserService(this.utilities.argparse4jService());
 		service.setShutdownService(this.shutdownService());
-                service.start();
+		service.start();
 		return service;
 	}
-	
+
 	@Bean
-        @Lazy
+	@Lazy
 	public NetworkService networkService() {
 		return new NetworkService();
 	}
-	
+
 	@Bean
 	@Lazy
 	public PieShareAppConfiguration pieShareAppConfiguration() {
@@ -101,7 +103,7 @@ public class PieShareAppService {
 		service.setConfigurationReader(this.utilities.configurationReader());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public RequestService requestService() {
@@ -111,7 +113,7 @@ public class PieShareAppService {
 		service.setShareService(this.shareService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ComparerService comparerService() {
@@ -121,17 +123,17 @@ public class PieShareAppService {
 		service.setRequestService(this.requestService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public FileObserver fileObserver() {
 		FileObserver observer = new FileObserver();
 		observer.setBeanService(this.utilities.beanService());
 		observer.setExecutorService(this.utilities.pieExecutorService());
 		return observer;
 	}
-	
+
 	@Bean
 	@Lazy
 	public FileListener fileListener() {
@@ -141,7 +143,7 @@ public class PieShareAppService {
 		listener.setExecutorService(this.utilities.pieExecutorService());
 		return listener;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ApacheFileWatcher fileWatcher() {
@@ -149,7 +151,7 @@ public class PieShareAppService {
 		watcher.setFileListener(this.fileListener());
 		return watcher;
 	}
-	
+
 	@Bean
 	public FileService fileService() {
 		FileService service = new FileService();
@@ -165,7 +167,7 @@ public class PieShareAppService {
 		service.initFileService();
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public BitTorrentService shareService() {
@@ -178,17 +180,26 @@ public class PieShareAppService {
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
-                service.bitTorrentServicePost();
+		service.bitTorrentServicePost();
 		return service;
 	}
-        
-        @Bean
-        @Lazy
-        public FileUtilsService fileUtilsService() {
-            FileUtilsService service = new FileUtilsService();
-            service.setBeanService(this.utilities.beanService());
-            service.setHashService(this.utilities.md5Service());
-            service.setPieAppConfig(this.pieShareAppConfiguration());
-            return service;
-        }
+
+	@Bean
+	@Lazy
+	public FileUtilsService fileUtilsService() {
+		FileUtilsService service = new FileUtilsService();
+		service.setBeanService(this.utilities.beanService());
+		service.setHashService(this.utilities.md5Service());
+		service.setPieAppConfig(this.pieShareAppConfiguration());
+		return service;
+	}
+
+	@Bean
+	@Lazy
+	public DatabaseService databaseService() {
+		DatabaseService service = new DatabaseService();
+		service.setPieShareAppConfiguration(pieShareAppConfiguration());
+		service.setBase64Service(utilities.base64Service());
+		return service;
+	}
 }

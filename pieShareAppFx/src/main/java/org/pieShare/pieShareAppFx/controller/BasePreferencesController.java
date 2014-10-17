@@ -67,7 +67,14 @@ public class BasePreferencesController implements Initializable {
 
 	@FXML
 	private void handleButtonTempClick(ActionEvent event) {
-
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle("Select Temp Directory");
+		chooser.setInitialDirectory(pieShareAppConfig.getTempCopyDirectory());
+		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
+		if (choosenFile == null || !choosenFile.exists()) {
+			return;
+		}
+		pieShareAppConfig.setTempCopyDir(choosenFile);
+		textFieldTempPath.setText(pieShareAppConfig.getTempCopyDirectory().getAbsolutePath());
 	}
-
 }
