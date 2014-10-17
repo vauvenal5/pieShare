@@ -13,9 +13,11 @@ import java.io.File;
  */
 public interface IPieShareAppConfiguration {
 
-	public File getWorkingDirectory();
+	File getWorkingDirectory();
 
-	public int getFileSendBufferSize();
-
-	public File getTempCopyDirectory();
+	File getTempCopyDirectory();
+	
+	void setWorkingDir(File workingDir);
+	
+	void setTempCopyDir(File tempCopyDir);
 }

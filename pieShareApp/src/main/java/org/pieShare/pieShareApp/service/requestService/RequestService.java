@@ -66,6 +66,7 @@ public class RequestService implements IRequestService {
 
 			requestedFiles.replace(message.getPieFile(), true);
 			shareService.handleFile(message);
+			this.deleteRequestedFile(message.getPieFile());
 		}
 	}
 	

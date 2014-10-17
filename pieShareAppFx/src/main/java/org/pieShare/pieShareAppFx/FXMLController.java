@@ -27,10 +27,10 @@ public class FXMLController {
 			this.mainStage = mainStage;
 
 			Parent root = this.loader.load(getClass().getResourceAsStream("/fxml/MainScene.fxml"));
-			
+
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add("/styles/Styles.css");
-			
+
 			mainStage.setTitle("JavaFX and Maven");
 			mainStage.setScene(scene);
 			mainStage.show();
@@ -38,5 +38,9 @@ public class FXMLController {
 			//todo-sv: error handling
 			ex.printStackTrace();
 		}
+	}
+
+	public Stage getMainStage() {
+		return mainStage;
 	}
 }
