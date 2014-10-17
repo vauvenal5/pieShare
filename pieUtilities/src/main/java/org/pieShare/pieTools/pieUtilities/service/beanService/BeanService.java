@@ -1,5 +1,6 @@
 package org.pieShare.pieTools.pieUtilities.service.beanService;
 
+//todo: here is maybe something rong with the dependencies
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
