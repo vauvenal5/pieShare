@@ -8,13 +8,12 @@ package org.pieShare.pieShareApp.service.fileListenerService;
 import java.io.File;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
+import org.apache.commons.vfs2.FileObject;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
-import org.pieShare.pieShareApp.service.fileService.task.FileChangedTask;
-import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
+import org.pieShare.pieShareApp.task.FileCopyObserverTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -22,13 +21,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  */
 public class ApacheDefaultFileListener implements FileListener {
 
-	private IFileObserver fileObserver;
+	//private IFileObserver fileObserver;
 	private IExecutorService executerService;
 	private IBeanService beanService;
 
-	public void setFileObserver(IFileObserver fileObserver) {
+	/*public void setFileObserver(IFileObserver fileObserver) {
 		this.fileObserver = fileObserver;
-	}
+	}*/
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -41,21 +40,18 @@ public class ApacheDefaultFileListener implements FileListener {
 	@Override
 	public void fileCreated(FileChangeEvent fce) throws Exception {
 		String filePath = fce.getFile().getURL().getFile();
-		FileCreatedTask task = beanService.getBean(PieShareAppBeanNames.getFileCreatedTaskName());
-		File file = new File(filePath);
-		task.setCreatedFile(file);
-		startObservation(file, task);
+		FileCopyObserverTask observerTask = beanService.getBean(PieShareAppBeanNames.getFileCopyObserverTask());
+		observerTask.setFile(new File(filePath));
+		executerService.execute(observerTask);
 	}
 
 	@Override
 	public void fileDeleted(FileChangeEvent fce) throws Exception {
-		/*String filePath = fce.getFile().getURL().getFile();
-		 PieFile pieFile = new PieFile();
-		 pieFile.Init(new File(filePath));
-	
-		 shareService.shareFile(pieFile);
-		 fileMerger.fileDeleted(new File(filePath));
-		 //startObservation(new File(filePath), FileChangedTypes.FILE_DELETED);*/
+		String filePath = fce.getFile().getURL().getFile();
+		PieLogger.info(this.getClass(), "File deleted: {}", filePath);
+		//todo: for the time being we will just delete without checks
+		//later somekinde of persistency and check has to be added
+		
 	}
 
 	@Override
@@ -66,11 +62,4 @@ public class ApacheDefaultFileListener implements FileListener {
 		task.setCreatedFile(file);
 		startObservation(file, task);*/
 	}
-
-	private void startObservation(File file, IPieTask task) {
-		fileObserver.setData(file);
-		fileObserver.setTask(task);
-		executerService.execute(fileObserver);
-	}
-
 }

@@ -24,6 +24,22 @@
     <!--triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"/-->
   </appender>
   
+	<appender name="lilithFile" class="ch.qos.logback.core.FileAppender">
+	  <file>log.lilith</file>
+	  <Append>false</Append>
+	  <encoder class="de.huxhorn.lilith.logback.encoder.ClassicLilithEncoder">
+	  </encoder>
+	</appender>
+	
+	
+  
+  <appender name="LogbackClassic" class="ch.qos.logback.classic.net.SocketAppender">
+    <RemoteHost>localhost</RemoteHost>
+    <Port>4560</Port>
+    <ReconnectionDelay>170</ReconnectionDelay>
+    <IncludeCallerData>true</IncludeCallerData>
+ </appender>
+  
   <logger name="org.springframework" level="ERROR"/>
   <logger name="org.hibernate" level="ERROR"/>
   <logger name="com.turn" level="ERROR"/>
@@ -33,5 +49,7 @@
   
   <root level="DEBUG">
     <appender-ref ref="FILE"/>
+	<!--appender-ref ref="multiplex"/-->
+	<appender-ref ref="LogbackClassic"/>
   </root>
 </configuration>

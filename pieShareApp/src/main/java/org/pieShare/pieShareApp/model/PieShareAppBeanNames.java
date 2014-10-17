@@ -54,4 +54,8 @@ public class PieShareAppBeanNames {
 	public static String getGUILoader() {
 		return "fxmlLoader";
 	}
+	
+	public static String getFileCopyObserverTask() {
+		return "fileCopyObserverTask";
+	}
 }

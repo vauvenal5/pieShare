@@ -3,28 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileMetaTask implements IPieEventTask<FileTransferMetaMessage> {
+public class FileMetaTask extends PieEventTaskBase<FileTransferMetaMessage> {
 
-	FileTransferMetaMessage msg;
 	private IRequestService requestService;
 
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
-	}
-
-	@Override
-	public void setMsg(FileTransferMetaMessage msg) {
-		this.msg = msg;
 	}
 
 	@Override

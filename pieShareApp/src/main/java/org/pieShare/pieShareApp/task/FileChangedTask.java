@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileService.task;
+package org.pieShare.pieShareApp.task;
 
 import java.io.File;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -13,7 +13,8 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  *
  * @author Richard
  */
-public class FileCreatedTask implements IPieTask {
+//todo: deprecated?
+public class FileChangedTask implements IPieTask {
 
 	private File file;
 	private IFileService fileService;

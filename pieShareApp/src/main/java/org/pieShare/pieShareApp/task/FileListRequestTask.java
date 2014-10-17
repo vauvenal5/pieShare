@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,14 +16,14 @@ import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileListRequestTask implements IPieEventTask<FileListRequestMessage> {
+public class FileListRequestTask extends PieEventTaskBase<FileListRequestMessage> {
 
-	private FileListRequestMessage msg;
 	private IFileService fileService;
 	private IClusterManagementService clusterManagementService;
 
@@ -33,11 +33,6 @@ public class FileListRequestTask implements IPieEventTask<FileListRequestMessage
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
-	}
-	
-	@Override
-	public void setMsg(FileListRequestMessage msg) {
-		this.msg = msg;
 	}
 
 	@Override
