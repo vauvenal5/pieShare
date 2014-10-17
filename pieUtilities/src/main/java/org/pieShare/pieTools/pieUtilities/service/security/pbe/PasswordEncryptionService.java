@@ -10,13 +10,12 @@ import java.security.NoSuchProviderException;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 
 /**
@@ -54,11 +53,11 @@ public class PasswordEncryptionService implements IPasswordEncryptionService {
 			encPwd.setPassword(key.getEncoded());
 			return encPwd;
 		} catch (NoSuchAlgorithmException ex) {
-			Logger.getLogger(PasswordEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Encryption failed!", ex);
 		} catch (NoSuchProviderException ex) {
-			Logger.getLogger(PasswordEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Encryption failed!", ex);
 		} catch (InvalidKeySpecException ex) {
-			Logger.getLogger(PasswordEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Encryption failed!", ex);
 		}
 		return null;
 	}

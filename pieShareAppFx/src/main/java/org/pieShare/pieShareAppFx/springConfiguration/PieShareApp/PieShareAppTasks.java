@@ -14,6 +14,8 @@ import org.pieShare.pieShareApp.model.task.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.model.task.NewFileTask;
 import org.pieShare.pieShareApp.service.fileService.task.FileChangedTask;
 import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
+import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,8 @@ import org.springframework.context.annotation.Scope;
 public class PieShareAppTasks {
         @Autowired
 	private PieShareAppService services;
+		@Autowired
+		private PiePlateConfiguration plate;
 	
 	@Bean
 	@Lazy
@@ -88,6 +92,7 @@ public class PieShareAppTasks {
         @Scope(value="prototype")
         public FileListTask fileListTask() {
             FileListTask task = new FileListTask();
+			task.setComparerService(this.services.comparerService());
             return task;
         }
         
@@ -96,6 +101,8 @@ public class PieShareAppTasks {
         @Scope(value="prototype")
         public FileListRequestTask fileListRequestTask() {
             FileListRequestTask task = new FileListRequestTask();
+			task.setClusterManagementService(this.plate.clusterManagementService());
+			task.setFileService(this.services.fileService());
             return task;
         }
 }

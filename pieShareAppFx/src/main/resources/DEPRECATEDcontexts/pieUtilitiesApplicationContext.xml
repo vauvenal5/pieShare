@@ -76,6 +76,6 @@
 		<property name="providerService" ref="providerService"/>
 	</bean>   
 	
-	<bean id="eventBase" class="org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase">
+	<bean id="eventBase" class="org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase" scope="prototype">
 	</bean>
 </beans>

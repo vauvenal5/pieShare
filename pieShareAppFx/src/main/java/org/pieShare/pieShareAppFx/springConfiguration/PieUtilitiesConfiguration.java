@@ -117,6 +117,7 @@ public class PieUtilitiesConfiguration {
 	
 	@Bean
 	@Lazy
+	@Scope(value="prototype")
 	public EventBase eventBase() {
 		return new EventBase();
 	}

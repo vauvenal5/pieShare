@@ -21,7 +21,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ApacheFileWatcher implements IFileWatcherService {
 
-	private PieLogger logger = new PieLogger(ApacheFileWatcher.class);
 	private File watchDir;
 	private FileListener fileListener;
 
@@ -52,7 +51,7 @@ public class ApacheFileWatcher implements IFileWatcherService {
 		try {
 			watchDir();
 		} catch (IOException ex) {
-			logger.debug("Watcher error: Message: " + ex.getMessage());
+			PieLogger.error(this.getClass(), "Watcher error", ex);
 		}
 	}
 }
