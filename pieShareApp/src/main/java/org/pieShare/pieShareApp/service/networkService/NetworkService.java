@@ -16,8 +16,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -44,7 +43,7 @@ public class NetworkService implements INetworkService {
 				tmpSocket.close();
 				return p;
 			} catch (IOException ex) {
-				Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+				PieLogger.error(this.getClass(), "Find port failed!", ex);
 			}
 		}
 
@@ -98,20 +97,21 @@ public class NetworkService implements INetworkService {
 										//if everything passes the InetAddress should be okay.
 										socket.close();
 										this.address = ad;
+										PieLogger.info(this.getClass(), "Found internet!");
 										return this.address;
 									} catch (IOException ex) {
-										Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+										PieLogger.info(this.getClass(), "No internet here!", ex);
 									}
 								}
 							}
 						} catch (IOException ex) {
-							Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+							PieLogger.info(this.getClass(), "Well looks bad for internet!", ex);
 						}
 					}
 				}
 			}
 		} catch (SocketException ex) {
-			Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.info(this.getClass(), "God damit! Give me internet", ex);
 		}
 
 		if (possibleAds.size() == 0) {
