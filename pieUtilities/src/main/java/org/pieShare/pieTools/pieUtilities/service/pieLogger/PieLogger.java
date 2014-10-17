@@ -3,6 +3,7 @@ package org.pieShare.pieTools.pieUtilities.service.pieLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class PieLogger {
 	
 	private static Logger getLogger(Class clazz) {

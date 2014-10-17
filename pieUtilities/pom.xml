@@ -40,24 +40,32 @@
 			<artifactId>argparse4j</artifactId>
 			<version>0.4.1</version>
 		</dependency>
-
-		<dependency> 
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.13</version>
+		
+		<dependency>                                    
+			<groupId>org.slf4j</groupId>                
+			<artifactId>slf4j-api</artifactId>    
+			<version>1.7.7</version>  
 		</dependency>
+		
+		
 
-		<dependency>
+		<!--dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
 			<version>1.4.3.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.2.RELEASE</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>
 			<version>4.0.0.RELEASE</version>
-		</dependency>
+		</dependency-->
 
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -75,12 +83,6 @@
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>2.3.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.0.2.RELEASE</version>
 		</dependency>
 
 		<dependency>
