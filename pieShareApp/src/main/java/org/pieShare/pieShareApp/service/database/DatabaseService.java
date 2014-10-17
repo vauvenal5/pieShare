@@ -84,7 +84,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public ArrayList<PieUser> findAllPieUsers() {
 		EntityManager em = emf.createEntityManager();
-		Query query = em.createQuery("SELECT e FROM " + PieUserEntity.class.getSimpleName() + " e");
+		Query query = em.createQuery(String.format("SELECT e FROM %s e",PieUserEntity.class.getSimpleName()));
 
 		ArrayList<PieUser> list = new ArrayList<>();
 		for (PieUserEntity entity : ((Collection<PieUserEntity>) query.getResultList())) {
@@ -96,7 +96,7 @@ public class DatabaseService implements IDatabaseService {
 			user.setUserName(entity.getUserName());
 			list.add(user);
 		}
-
+		em.close();
 		return list;
 	}
 
