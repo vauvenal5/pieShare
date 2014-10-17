@@ -29,18 +29,13 @@ public class DatabaseService implements IDatabaseService {
 	private PieShareAppConfiguration appConfiguration;
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
-	
-	public void setBase64Service(IBase64Service base64Service)
-	{
+
+	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
-	
+
 	public void setPieShareAppConfiguration(PieShareAppConfiguration config) {
 		this.appConfiguration = config;
-	}
-
-	public DatabaseService() {
-
 	}
 
 	@PostConstruct
@@ -67,7 +62,9 @@ public class DatabaseService implements IDatabaseService {
 		PieUser user = null;
 		try {
 			PieUserEntity entity = em.find(PieUserEntity.class, name);
-			if(entity == null) return null;
+			if (entity == null) {
+				return null;
+			}
 			user = new PieUser();
 			user.setIsLoggedIn(false);
 			EncryptedPassword paswd = new EncryptedPassword();
@@ -84,7 +81,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public ArrayList<PieUser> findAllPieUsers() {
 		EntityManager em = emf.createEntityManager();
-		Query query = em.createQuery(String.format("SELECT e FROM %s e",PieUserEntity.class.getSimpleName()));
+		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
 
 		ArrayList<PieUser> list = new ArrayList<>();
 		for (PieUserEntity entity : ((Collection<PieUserEntity>) query.getResultList())) {
