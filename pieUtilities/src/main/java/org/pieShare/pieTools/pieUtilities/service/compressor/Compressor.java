@@ -21,7 +21,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class Compressor implements ICompressor {
 
-	private final PieLogger logger = new PieLogger(Compressor.class);
 	private IBase64Service base64Service;
 
 	public void setBase64Service(IBase64Service base64Service) {

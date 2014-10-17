@@ -25,7 +25,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class RequestService implements IRequestService {
 
-	private final PieLogger logger = new PieLogger(RequestService.class);
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
@@ -49,6 +48,10 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public void requestFile(PieFile pieFile) {
+		if(this.requestedFiles.containsKey(pieFile)) {
+			return;
+		}
+		
 		FileRequestMessage msg = beanService.getBean(PieShareAppBeanNames.getFileRequestMessageName());
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.setPieFile(pieFile);
@@ -56,29 +59,31 @@ public class RequestService implements IRequestService {
 			clusterManagementService.sendMessage(msg, user.getCloudName());
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
-			logger.error("Error sending RequestMessage. Message:" + ex.getMessage());
+			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);
 		}
 	}
 
 	@Override
-	public synchronized void anncounceRecived(FileTransferMetaMessage message) {
+	public void anncounceRecived(FileTransferMetaMessage message) {
 		if (requestedFiles.containsKey(message.getPieFile()) && requestedFiles.get(message.getPieFile()) == false) {
 
 			requestedFiles.replace(message.getPieFile(), true);
 			shareService.handleFile(message);
+			this.deleteRequestedFile(message.getPieFile());
 		}
 	}
 	
+	/**
+	 * If this client is in a process of getting a new file and another client requests the
+	 * very same file from us we want to keep our seeder open so we notify the shareService about it.
+	 * @param pieFile 
+	 */
 	@Override
 	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
+		
 		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
 			shareService.handleActiveShare(pieFile);
 		}
-	}
-
-	@Override
-	public ConcurrentHashMap<PieFile, Boolean> getRequestedFileList() {
-		return requestedFiles;
 	}
 
 	@Override

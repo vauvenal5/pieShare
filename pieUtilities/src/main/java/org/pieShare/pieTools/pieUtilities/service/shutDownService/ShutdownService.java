@@ -17,7 +17,9 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  */
 public class ShutdownService implements IShutdownService {
 	
-	private List<IShutdownableService> listeners = new ArrayList<>();
+	private final List<IShutdownableService> listeners = new ArrayList<>();
+
+	public ShutdownService(){}
 	
 	public void setListener(IShutdownableService service) {
 		this.registerListener(service);
@@ -34,6 +36,4 @@ public class ShutdownService implements IShutdownService {
 			service.shutdown();
 		}
 	}
-	
-	
 }
