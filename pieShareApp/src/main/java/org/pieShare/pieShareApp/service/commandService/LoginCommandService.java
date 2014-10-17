@@ -56,9 +56,4 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
 		}
 	}
-	//todo:no the right place for this
-	public Map<String, IClusterService> getClouds() {
-		return clusterManagementService.getClusters();
-	}
-
 }
