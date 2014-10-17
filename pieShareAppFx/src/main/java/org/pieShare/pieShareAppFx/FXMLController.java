@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
-public class FXMLController implements Callback<Class<?>, Object> {
+public class FXMLController {
 
 	private IBeanService beanService;
 	private FXMLLoader loader;
@@ -20,14 +20,13 @@ public class FXMLController implements Callback<Class<?>, Object> {
 
 	public void setFXMLLoader(FXMLLoader loader) {
 		this.loader = loader;
-		this.loader.setControllerFactory(this);
 	}
 
 	public void setMainStage(Stage mainStage) {
 		try {
 			this.mainStage = mainStage;
 
-			Parent root = this.loader.load(getClass().getResourceAsStream("/fxml/Login.fxml"));
+			Parent root = this.loader.load(getClass().getResourceAsStream("/fxml/MainScene.fxml"));
 
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add("/styles/Styles.css");
@@ -41,8 +40,7 @@ public class FXMLController implements Callback<Class<?>, Object> {
 		}
 	}
 
-	@Override
-	public Object call(Class<?> param) {
-		return this.beanService.getBean(param);
+	public Stage getMainStage() {
+		return mainStage;
 	}
 }

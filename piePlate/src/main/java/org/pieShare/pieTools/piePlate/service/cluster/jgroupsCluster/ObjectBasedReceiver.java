@@ -13,6 +13,7 @@ import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerSer
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * Created by Svetoslav on 17.01.14.
@@ -22,9 +23,15 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 	private ISerializerService serializerService;
 	private IExecutorService executorService;
 	private IBeanService beanService;
+	private String clusterName;
 
 	public void setSerializerService(ISerializerService service) {
 		this.serializerService = service;
+	}
+
+	@Override
+	public void setClusterName(String clusterName) {
+		this.clusterName = clusterName;
 	}
 
 	public void setBeanService(IBeanService service) {
@@ -35,9 +42,10 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 	public void receive(Message msg) {
 		try {
 			IPieMessage pieMsg = this.serializerService.deserialize(msg.getBuffer());
-			System.out.println("Recived: " + pieMsg.getClass());
+			PieLogger.debug(this.getClass(), "Recived: {}", pieMsg.getClass());
 			JGroupsPieAddress ad = (JGroupsPieAddress) this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
 			ad.setAddress(msg.getSrc());
+			ad.setClusterName(this.clusterName);
 			pieMsg.setAddress(ad);
 			this.executorService.handlePieEvent(pieMsg);
 		} catch (SerializerServiceException | PieExecutorServiceException e) {
