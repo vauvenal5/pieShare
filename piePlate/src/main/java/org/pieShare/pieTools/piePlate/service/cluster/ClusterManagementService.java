@@ -12,7 +12,9 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
@@ -29,7 +31,8 @@ public class ClusterManagementService implements IClusterManagementService {
 	private Map<String, IClusterService> clusters;
 	private IBeanService beanService;
 	private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
-
+	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+	
 	@Override
 	public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
 		return this.clusterAddedEventBase;
@@ -37,6 +40,15 @@ public class ClusterManagementService implements IClusterManagementService {
 
 	public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
 		this.clusterAddedEventBase = clusterAddedEventBase;
+	}
+	
+	@Override
+	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
+		return this.clusterRemovedEventBase;
+	}
+
+	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+		this.clusterRemovedEventBase = clusterRemovedEventBase;
 	}
 	
 	public void setBeanService(IBeanService service) {
@@ -60,14 +72,18 @@ public class ClusterManagementService implements IClusterManagementService {
 
 		try {
 			IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
+			cluster.setId(id);
 			cluster.connect(id);
 			this.clusters.put(id, cluster);
 			this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
+			cluster.getClusterRemovedEventBase().addEventListener((IClusterRemovedListener) (ClusterRemovedEvent event) -> {
+				clusters.remove(((IClusterService) event.getSource()).getId());
+				clusterRemovedEventBase.fireEvent(event);
+			});
+			
 			return cluster;
-		} catch (BeanServiceError ex) {
+		} catch (BeanServiceError | ClusterServiceException ex) {
 			//should never happen
-			throw new ClusterManagmentServiceException(ex);
-		} catch (ClusterServiceException ex) {
 			throw new ClusterManagmentServiceException(ex);
 		}
 	}
@@ -93,5 +109,10 @@ public class ClusterManagementService implements IClusterManagementService {
 				PieLogger.error(this.getClass(), "Disconnect all failed!", ex);
 			}
 		}
+	}
+	
+	@Override
+	public Map<String, IClusterService> getClusters() {
+		return this.clusters;
 	}
 }

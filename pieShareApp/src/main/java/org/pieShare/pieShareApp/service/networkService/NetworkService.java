@@ -116,8 +116,10 @@ public class NetworkService implements INetworkService {
 
 		if (possibleAds.size() == 0) {
 			//todo: throw exception
-			return null;
+			return InetAddress.getLoopbackAddress();
 		}
+		
+		//todo-sv: checkout 0.0.0.0 adress for adressing all adapters
 
 		this.address = possibleAds.get(0);
 		return this.address;

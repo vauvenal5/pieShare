@@ -33,6 +33,7 @@ public class PiePlateConfiguration {
 		ClusterManagementService service = new ClusterManagementService();
 		service.setBeanService(this.utilitiesConfiguration.beanService());
 		service.setClusterAddedEventBase(this.utilitiesConfiguration.eventBase());
+		service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
 		service.setMap(this.utilitiesConfiguration.javaMap());
 		return service;
 	}
@@ -68,6 +69,7 @@ public class PiePlateConfiguration {
 		service.setReceiver(this.objectReceiver());
 		service.setSerializerService(this.jacksonSerializerService());
 		service.setChannel(this.channel());
+		service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
 		return service;
 	}
 	
