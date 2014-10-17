@@ -42,5 +42,4 @@ public class EventBase<L extends IEventListener<E>, E extends EventObject> imple
 			listener.handleObject(event);
 		});
 	}
-
 }
