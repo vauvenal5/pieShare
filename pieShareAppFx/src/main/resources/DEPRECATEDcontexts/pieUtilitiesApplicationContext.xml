@@ -10,13 +10,15 @@
 	<!-- Defines where to search for annotated components -->
 	<context:component-scan base-package="org.pieShare.pieTools.pieUtilities.service" />
     
+	
+	
 	<!-- PieExecutorService -->
 	<bean id="pieExecutorService" class="org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService">
 		<property name="executorService" ref="javaExecutorService"/>
 		<property name="map" ref="javaMap"/>
 		<property name="beanService" ref="pieBeanService"/>
 	</bean>
-    
+	
 	<bean id="javaMap" scope="prototype" class="java.util.HashMap"></bean>
     
 	<bean id="javaExecutorService" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"></bean>
@@ -73,4 +75,7 @@
 	<bean id="md5Service" class="org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service">
 		<property name="providerService" ref="providerService"/>
 	</bean>   
+	
+	<bean id="eventBase" class="org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase" scope="prototype">
+	</bean>
 </beans>
