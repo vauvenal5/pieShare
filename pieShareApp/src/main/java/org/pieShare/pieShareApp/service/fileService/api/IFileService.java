@@ -31,4 +31,6 @@ public interface IFileService {
 	
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
+
+	public void deleteRecursive(PieFile file);
 }

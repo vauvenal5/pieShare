@@ -4,30 +4,25 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileListTask implements IPieEventTask<FileListMessage>  {
+public class FileListTask extends PieEventTaskBase<FileListMessage>  {
 
-	private FileListMessage msg;
 	private IComparerService comparerService;
 
 	public void setComparerService(IComparerService comparerService) {
 		this.comparerService = comparerService;
-	}
-	
-	@Override
-	public void setMsg(FileListMessage msg) {
-		this.msg = msg;
 	}
 
 	@Override

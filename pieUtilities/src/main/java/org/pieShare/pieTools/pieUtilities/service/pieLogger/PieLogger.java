@@ -20,9 +20,14 @@ public class PieLogger {
 		log.info(message, th);
 	}
 	
+	public static void info(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.info(message, o);
+	}
+	
 	public static void info(Class clazz, String message, Object... os) {
 		Logger log = getLogger(clazz);
-		log.info(message);
+		log.info(message, os);
 	}
 	
 	public static void debug(Class clazz, String message) {

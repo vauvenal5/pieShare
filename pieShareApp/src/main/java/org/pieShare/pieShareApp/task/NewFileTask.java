@@ -3,32 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class NewFileTask implements IPieEventTask<NewFileMessage> {
+public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
 
-	private NewFileMessage msg;
         private IComparerService comparerService;
 
         public void setComparerService(IComparerService comparerService) {
             this.comparerService = comparerService;
         }
-
-	@Override
-	public void setMsg(NewFileMessage msg) {
-		this.msg = msg;
-	}
 
 	@Override
 	public void run() {

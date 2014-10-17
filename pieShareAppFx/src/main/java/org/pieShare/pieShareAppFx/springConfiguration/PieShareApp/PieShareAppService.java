@@ -15,7 +15,7 @@ import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
-import org.pieShare.pieShareApp.service.fileService.FileObserver;
+import org.pieShare.pieShareApp.task.FileCopyObserverTask;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
@@ -125,10 +125,9 @@ public class PieShareAppService {
 	@Bean
 	@Lazy
 	@Scope(value="prototype")
-	public FileObserver fileObserver() {
-		FileObserver observer = new FileObserver();
-		observer.setBeanService(this.utilities.beanService());
-		observer.setExecutorService(this.utilities.pieExecutorService());
+	public FileCopyObserverTask fileCopyObserverTask() {
+		FileCopyObserverTask observer = new FileCopyObserverTask();
+		observer.setFileService(this.fileService());
 		return observer;
 	}
 	
@@ -136,7 +135,6 @@ public class PieShareAppService {
 	@Lazy
 	public FileListener fileListener() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
-		listener.setFileObserver(this.fileObserver());
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
 		return listener;
