@@ -21,7 +21,4 @@
     
 	<bean id="pieUser" class="org.pieShare.pieShareApp.model.PieUser">
 	</bean>
-	
-	
-    
 </beans>

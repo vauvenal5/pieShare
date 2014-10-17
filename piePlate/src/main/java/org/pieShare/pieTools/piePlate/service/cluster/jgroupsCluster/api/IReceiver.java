@@ -9,4 +9,5 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 public interface IReceiver extends Receiver {
 
 	void setExecutorService(IExecutorService service);
+	void setClusterName(String name);
 }

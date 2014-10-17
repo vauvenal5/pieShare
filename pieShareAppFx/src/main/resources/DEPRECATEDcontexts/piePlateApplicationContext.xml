@@ -12,12 +12,15 @@
 	<bean id="clusterManagementService" class="org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService" lazy-init="true">
 		<property name="beanService" ref="pieBeanService"/>
 		<property name="map" ref="javaMap"/>
+		<property name="clusterAddedEventBase" ref="eventBase"/>
+		<property name="clusterRemovedEventBase" ref="eventBase"/>
 	</bean>
     
 	<bean id="clusterService" scope="prototype" class="org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService" lazy-init="true">
 		<property name="receiver" ref="objectReceiver"/>
 		<property name="serializerService" ref="serializerService"/>
 		<property name="channel" ref="channel"/>
+		<property name="clusterRemovedEventBase" ref="eventBase"/>
 	</bean>
 
 	<bean id="serializerService" class="org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService" lazy-init="true">

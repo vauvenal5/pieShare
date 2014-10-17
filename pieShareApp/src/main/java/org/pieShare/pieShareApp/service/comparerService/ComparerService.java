@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -24,18 +24,16 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class ComparerService implements IComparerService {
 
 	private IPieShareAppConfiguration pieAppConfig;
-	private IFileService fileService;
 	private IRequestService requestService;
-
-	private final PieLogger logger = new PieLogger(ComparerService.class);
+        private IFileUtilsService fileUtilsService;
 
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
+        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+            this.fileUtilsService = fileUtilsService;
+        }
 
 	public void setPieShareConfiguration(IPieShareAppConfiguration pieAppConfig) {
 		this.pieAppConfig = pieAppConfig;
@@ -44,25 +42,25 @@ public class ComparerService implements IComparerService {
 	@Override
 	public boolean isPieFileDesired(PieFile remotePieFile) throws IOException, FileConflictException {
 
-		logger.debug("Comparing file: " + remotePieFile.getRelativeFilePath());
+		PieLogger.debug(this.getClass(), "Comparing file: {}", remotePieFile.getRelativeFilePath());
 
 		File localFile = new File(pieAppConfig.getWorkingDirectory(), remotePieFile.getRelativeFilePath());
 		
 		if (!localFile.exists()) {
-			logger.debug(remotePieFile.getRelativeFilePath() + " does not exist. Request this file.");
+			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", remotePieFile.getRelativeFilePath());
 			return true;
 		}
 		
-		PieFile localPieFile = fileService.genPieFile(localFile);
+		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
 
 		//Remote File is older than local file
 		if (remotePieFile.getLastModified() == localFile.lastModified()) {
 			if (Arrays.equals(remotePieFile.getMd5(), localPieFile.getMd5())) {
-				logger.debug(remotePieFile.getRelativeFilePath() + " is already there. Do not request.");
+				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
 				return false;
 			}
-			logger.debug(remotePieFile.getRelativeFilePath() + " is already there. Do not request.");
+			PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
 			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
 		} //Remote File is older than local file
 		else if (remotePieFile.getLastModified() < localFile.lastModified()) {
@@ -85,8 +83,9 @@ public class ComparerService implements IComparerService {
 
 	@Override
 	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
-
-		if (!requestService.getRequestedFileList().containsKey(pieFile) && isPieFileDesired(pieFile)) {
+                
+                //todo: the requestService could do the check of the requestedFileList internally!?!
+		if (isPieFileDesired(pieFile)) {
 			requestService.requestFile(pieFile);
 		}
 
