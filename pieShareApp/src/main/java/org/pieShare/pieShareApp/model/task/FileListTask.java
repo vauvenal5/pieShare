@@ -6,8 +6,12 @@
 
 package org.pieShare.pieShareApp.model.task;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
+import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 
 /**
@@ -17,7 +21,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 public class FileListTask implements IPieEventTask<FileListMessage>  {
 
 	private FileListMessage msg;
-	private IFileService fileService;
+	private IComparerService comparerService;
 	
 	@Override
 	public void setMsg(FileListMessage msg) {
@@ -26,7 +30,13 @@ public class FileListTask implements IPieEventTask<FileListMessage>  {
 
 	@Override
 	public void run() {
-		this.fileService.handlePieFilesList(this.msg.getFileList());
+		try {
+			this.comparerService.comparePieFileList(this.msg.getFileList());
+		} catch (IOException ex) {
+			//todo: error handling
+		} catch (FileConflictException ex) {
+			//todo: error handling
+		}
 	}
 	
 }
