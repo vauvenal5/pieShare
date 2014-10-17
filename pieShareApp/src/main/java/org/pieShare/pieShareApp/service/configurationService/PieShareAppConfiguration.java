@@ -39,7 +39,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		this.configurationReader = configurationReader;
 
 		this.BASE_CONFIG_FOLDER = configurationReader.getBaseConfigPath().toPath().toString() + "/.pieShare/";
-		this.CONFIG_PATH = BASE_CONFIG_FOLDER + "pieShare.properties";
+		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
 
 		try {
 			//pieShare.properties
