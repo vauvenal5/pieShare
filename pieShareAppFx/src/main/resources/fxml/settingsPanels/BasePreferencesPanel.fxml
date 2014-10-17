@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" minHeight="81.0" minWidth="363.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.BasePreferencesController">
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.BasePreferencesController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="Working Directory:" />
       <Button fx:id="buttonBrowseWorking" layoutX="295.0" layoutY="10.0" mnemonicParsing="false" onAction="#handleButtonWorkingClick" text="Browse" />

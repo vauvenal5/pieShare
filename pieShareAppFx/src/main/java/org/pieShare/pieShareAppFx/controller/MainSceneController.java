@@ -59,8 +59,6 @@ public class MainSceneController implements Initializable {
 	@FXML
 	private ListView<IPreferencesEntry> settingsListView;
 	private ObservableList<IPreferencesEntry> settingsListViewItems;
-
-	private AnchorPane centerPane;
 	
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -75,7 +73,6 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		centerPane = new AnchorPane();
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -143,11 +140,7 @@ public class MainSceneController implements Initializable {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
 			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/BasePreferencesPanel.fxml");
-			centerPane.getChildren().clear();
-			centerPane.getChildren().add(loader.load(url));
-			boolean cc = centerPane.isResizable();
-			mainBorderPane.setCenter(centerPane);
-			mainBorderPane.setAlignment(centerPane, Pos.CENTER);
+			mainBorderPane.setCenter(loader.load(url));
 		} catch (IOException ex) {
 			//ToDO: Handle
 			ex.printStackTrace();
