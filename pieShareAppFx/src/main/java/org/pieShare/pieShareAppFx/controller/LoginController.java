@@ -23,7 +23,6 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  * @author Svetoslav
  */
 public class LoginController implements Initializable {
-
 	@FXML
 	private TextField userNameField;
 	@FXML
@@ -53,7 +52,4 @@ public class LoginController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO
 	}
-	
-	
-
 }

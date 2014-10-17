@@ -58,13 +58,11 @@ public class PieFile {
 
 	@Override
 	public boolean equals(Object obj) {
-
 		if (!(obj instanceof PieFile)) {
 			return false;
 		}
 
 		return Arrays.equals(((PieFile) obj).getMd5(), this.md5);
-
 	}
 
 	@Override
