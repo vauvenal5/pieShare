@@ -137,6 +137,8 @@ public class PieShareAppService {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
+		listener.setClusterManagementService(this.plate.clusterManagementService());
+		listener.setUtilsService(this.fileUtilsService());
 		return listener;
 	}
 	

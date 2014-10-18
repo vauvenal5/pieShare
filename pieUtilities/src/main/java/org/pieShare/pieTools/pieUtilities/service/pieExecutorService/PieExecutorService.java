@@ -19,6 +19,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEve
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
@@ -60,6 +61,7 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 		try {
 			Validate.notNull(taskClass);
 		} catch (NullPointerException ex) {
+			PieLogger.info(this.getClass(), "No task registered for given event!", ex);
 			throw new PieExecutorServiceException("No task registered for given event!", ex);
 		}
 
