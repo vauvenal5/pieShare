@@ -56,7 +56,6 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private IBase64Service base64Service;
 	private INetworkService networkService;
         private IFileUtilsService fileUtilsService;
-	private IReplicatedHashMap<PieFile, List<URI>> mapService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
 	private IShutdownService shutdownService;
 	private boolean shutdown = false;
@@ -82,9 +81,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		this.beanService = beanService;
 	}
 
-        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-            this.fileUtilsService = fileUtilsService;
-        }
+	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+		this.fileUtilsService = fileUtilsService;
+	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
@@ -228,6 +227,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	
 	private void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
 		try {
+			//todo: handle ports out problem!!!
 			Client client = new Client(networkService.getLocalHost(), torrent);		
 			
 			//todo: this time has to move into the properties

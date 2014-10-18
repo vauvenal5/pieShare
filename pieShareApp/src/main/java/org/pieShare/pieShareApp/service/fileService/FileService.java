@@ -15,6 +15,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
@@ -35,6 +36,7 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieShareApp.task.FileDeletedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -120,6 +122,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
+		this.executorService.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 
 	private void addWatchDirectory(File file) {

@@ -10,7 +10,11 @@ import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.apache.commons.vfs2.FileObject;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.task.FileCopyObserverTask;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -24,6 +28,8 @@ public class ApacheDefaultFileListener implements FileListener {
 	//private IFileObserver fileObserver;
 	private IExecutorService executerService;
 	private IBeanService beanService;
+	private IFileUtilsService utilsService;
+	private IClusterManagementService clusterManagementService;
 
 	/*public void setFileObserver(IFileObserver fileObserver) {
 		this.fileObserver = fileObserver;
@@ -31,6 +37,14 @@ public class ApacheDefaultFileListener implements FileListener {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
+	}
+
+	public void setUtilsService(IFileUtilsService utilsService) {
+		this.utilsService = utilsService;
+	}
+
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
 	}
 
 	public void setExecutorService(IExecutorService executerService) {
@@ -51,7 +65,12 @@ public class ApacheDefaultFileListener implements FileListener {
 		PieLogger.info(this.getClass(), "File deleted: {}", filePath);
 		//todo: for the time being we will just delete without checks
 		//later somekinde of persistency and check has to be added
+		FileDeletedMessage msg = beanService.getBean(PieShareAppBeanNames.getFileDeletedMessage());
+		msg.setFile(this.utilsService.getPieFile(new File(filePath)));
+		//todo: need somewhere a match between working dir and belonging cloud
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		
+		this.clusterManagementService.sendMessage(msg, user.getCloudName());
 	}
 
 	@Override
