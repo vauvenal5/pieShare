@@ -41,9 +41,9 @@ public class FileUtilsService implements IFileUtilsService {
 
     @Override
     public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
-            if (!file.exists()) {
+            /*if (!file.exists()) {
                     throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
-            }
+            }*/
 
             PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
@@ -51,11 +51,13 @@ public class FileUtilsService implements IFileUtilsService {
             Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
             Path pathRelative = pathBase.relativize(pathAbsolute);
             pieFile.setRelativeFilePath(pathRelative.toString());
-
-            pieFile.setLastModified(file.lastModified());
-            pieFile.setFileName(file.getName());
-
-            pieFile.setMd5(hashService.hashStream(new FileInputStream(file)));
+			
+			pieFile.setFileName(file.getName());
+			pieFile.setLastModified(file.lastModified());
+			
+			if(file.exists()){
+				pieFile.setMd5(hashService.hashStream(file));
+			}
 
             return pieFile;
     }

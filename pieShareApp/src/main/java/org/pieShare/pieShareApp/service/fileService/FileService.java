@@ -12,20 +12,22 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
-import org.pieShare.pieShareApp.model.task.FileListRequestTask;
-import org.pieShare.pieShareApp.model.task.FileListTask;
-import org.pieShare.pieShareApp.model.task.FileMetaTask;
-import org.pieShare.pieShareApp.model.task.FileRequestTask;
-import org.pieShare.pieShareApp.model.task.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.model.task.NewFileTask;
+import org.pieShare.pieShareApp.task.FileListRequestTask;
+import org.pieShare.pieShareApp.task.FileListTask;
+import org.pieShare.pieShareApp.task.FileMetaTask;
+import org.pieShare.pieShareApp.task.FileRequestTask;
+import org.pieShare.pieShareApp.task.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.NewFileTask;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -34,6 +36,7 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieShareApp.task.FileDeletedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -119,6 +122,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
+		this.executorService.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 
 	private void addWatchDirectory(File file) {
@@ -257,5 +261,21 @@ public class FileService implements IFileService, IClusterAddedListener {
 		});
 		
 		return pieFiles;
+	}
+
+	@Override
+	public void deleteRecursive(PieFile file) {
+		File localFile = new File(this.pieAppConfig.getWorkingDirectory(), file.getRelativeFilePath());
+		try {
+			if(localFile.isDirectory()) {
+				FileUtils.deleteDirectory(localFile);
+			}
+			else {
+				localFile.delete();
+			}
+		}
+		catch(IOException ex) {
+			PieLogger.error(this.getClass(), "Deleting failed!", ex);
+		}
 	}
 }

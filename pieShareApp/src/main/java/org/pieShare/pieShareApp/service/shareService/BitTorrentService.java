@@ -14,6 +14,7 @@ import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,6 +22,10 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.sound.midi.MetaMessage;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
@@ -30,6 +35,7 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppCon
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -56,11 +62,12 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private IBase64Service base64Service;
 	private INetworkService networkService;
         private IFileUtilsService fileUtilsService;
-	private IReplicatedHashMap<PieFile, List<URI>> mapService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
 	private IShutdownService shutdownService;
 	private boolean shutdown = false;
 	private URI trackerUri;
+	private Semaphore readPorts;
+	private Semaphore writePorts;
 
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
@@ -82,9 +89,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		this.beanService = beanService;
 	}
 
-        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-            this.fileUtilsService = fileUtilsService;
-        }
+	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+		this.fileUtilsService = fileUtilsService;
+	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
@@ -108,6 +115,14 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			tracker = new Tracker(ad);
 			//todo-sv: try to get local host out of cloud service
 			
+			int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
+			if(availablePorts == 0) {
+				//todo: handle this
+				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
+			}
+			this.writePorts = new Semaphore((availablePorts/2)-1);
+			this.readPorts = new Semaphore(availablePorts);
+			
 			this.sharedFiles = new ConcurrentHashMap<>();
 			tracker.start();
 		} catch (IOException ex) {
@@ -123,9 +138,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	@Override
 	public void shareFile(File file) {
 		try {
-			//todo: think about some kind o PieAdress factory
-			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
+			
 			//todo: error handling when torrent null
 			//todo: replace name by nodeName
 			//URI uri = tracker.getAnnounceUrl().toURI();
@@ -146,8 +159,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
 			
-			clusterService.sendMessage(metaMsg);
-			handleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true));
+			this.sendMetaMessageAndHandleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true), metaMsg);
 			/*long modD = file.lastModified();
 			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
 			if (!file.setLastModified(modD)) {
@@ -158,10 +170,6 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
-		} catch (ClusterManagmentServiceException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
-		} catch (ClusterServiceException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
 	}
@@ -226,8 +234,26 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		}
 	}
 	
+	private void sendMetaMessageAndHandleSharedTorrent(PieFile pieFile, SharedTorrent torrent, FileTransferMetaMessage msg) {
+		try {
+			this.writePorts.acquire();
+			//todo: think about some kind o PieAdress factory
+			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			this.clusterManagementService.sendMessage(msg, user.getCloudName());
+			handleSharedTorrent(pieFile, torrent);
+			this.writePorts.release();
+		} catch (ClusterManagmentServiceException ex) {
+			PieLogger.error(this.getClass(), "Sending Meta failed!", ex);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(BitTorrentService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+	
 	private void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
 		try {
+			this.readPorts.acquire();
+			//todo: handle ports out problem!!!
+			//todo: this should run somehow over the beans
 			Client client = new Client(networkService.getLocalHost(), torrent);		
 			
 			//todo: this time has to move into the properties
@@ -253,6 +279,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				
 				// Check if there's an error
 				if (ClientState.ERROR.equals(client.getState())) {
+					client.stop();
 					throw new Exception("ttorrent client Error State");
 				}
 				
@@ -268,8 +295,12 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			}
 			
 			this.removePieFileState(pieFile);
-			
+			this.readPorts.release();
 		} catch (IOException ex) {
+			if(ex.getMessage().equals("No available port for the BitTorrent client!")) {
+				//todo:handle all ports in use problem
+				//todo: in this case the semaphores have to be recalculated
+			}
 			//todo: error handling?!
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (Exception ex) {

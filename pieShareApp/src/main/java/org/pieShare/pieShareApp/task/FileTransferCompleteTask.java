@@ -3,28 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileTransferCompleteTask implements IPieEventTask<FileTransferCompleteMessage> {
+public class FileTransferCompleteTask extends PieEventTaskBase<FileTransferCompleteMessage> {
 
-	private FileTransferCompleteMessage msg;
 	private IShareService shareService;
 
 	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
-	}
-
-	@Override
-	public void setMsg(FileTransferCompleteMessage msg) {
-		this.msg = msg;
 	}
 
 	@Override
