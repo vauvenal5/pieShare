@@ -7,14 +7,23 @@ package org.pieShare.pieShareApp.service.database.api;
 
 import java.util.ArrayList;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
 
 /**
  *
  * @author Richard
  */
 public interface IDatabaseService {
+
 	void persistPieUser(PieUser service);
+
 	PieUser getPieUser(String name);
+
 	ArrayList<PieUser> findAllPieUsers();
+
+	void persistFileFilter(IFilter filter);
+
+	void removeFileFilter(IFilter filter);
+	
+	ArrayList<IFilter> findAllFilters();
 }

@@ -14,11 +14,15 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.fileFilterService.FileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -29,13 +33,19 @@ public class DatabaseService implements IDatabaseService {
 	private PieShareAppConfiguration appConfiguration;
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
-
+	private IBeanService beanService;
+	
 	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
 
 	public void setPieShareAppConfiguration(PieShareAppConfiguration config) {
 		this.appConfiguration = config;
+	}
+	
+	public void setBeanService(IBeanService beanService)
+	{
+		this.beanService = beanService;
 	}
 
 	@PostConstruct
@@ -92,6 +102,42 @@ public class DatabaseService implements IDatabaseService {
 			user.setPassword(paswd);
 			user.setUserName(entity.getUserName());
 			list.add(user);
+		}
+		em.close();
+		return list;
+	}
+
+	@Override
+	public synchronized void persistFileFilter(IFilter filter) {
+		EntityManager em = emf.createEntityManager();
+		FilterEntity en = new FilterEntity();
+		en.setPattern(filter.getPattern());
+		em.getTransaction().begin();
+		em.persist(en);
+		em.getTransaction().commit();
+		em.close();
+	}
+
+	@Override
+	public synchronized void removeFileFilter(IFilter filter) {
+		EntityManager em = emf.createEntityManager();
+		em.getTransaction().begin();
+		em.remove(filter);
+		em.getTransaction().commit();
+		em.close();
+	}
+
+	@Override
+	public ArrayList<IFilter> findAllFilters() {
+		EntityManager em = emf.createEntityManager();
+		Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()));
+		int s = query.getResultList().size();
+
+		ArrayList<IFilter> list = new ArrayList<>();
+		for (FilterEntity entity : ((Collection<FilterEntity>) query.getResultList())) {
+			IFilter filter = beanService.getBean(FileFilter.class);
+			filter.setPattern(entity.getPattern());
+			list.add(filter);
 		}
 		em.close();
 		return list;
