@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
-import org.pieShare.pieShareApp.task.FileCopyObserverTask;
+import org.pieShare.pieShareApp.task.localTasks.FileCopyObserverTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
@@ -54,6 +54,7 @@ public class ApacheDefaultFileListener implements FileListener {
 	@Override
 	public void fileCreated(FileChangeEvent fce) throws Exception {
 		String filePath = fce.getFile().getURL().getFile();
+		PieLogger.info(this.getClass(), "File created: {}", filePath);
 		FileCopyObserverTask observerTask = beanService.getBean(PieShareAppBeanNames.getFileCopyObserverTask());
 		observerTask.setFile(new File(filePath));
 		executerService.execute(observerTask);
@@ -61,6 +62,7 @@ public class ApacheDefaultFileListener implements FileListener {
 
 	@Override
 	public void fileDeleted(FileChangeEvent fce) throws Exception {
+		//todo: does the file delete comand also has to wait like file created until the delete has finished?
 		String filePath = fce.getFile().getURL().getFile();
 		PieLogger.info(this.getClass(), "File deleted: {}", filePath);
 		//todo: for the time being we will just delete without checks
@@ -75,8 +77,9 @@ public class ApacheDefaultFileListener implements FileListener {
 
 	@Override
 	public void fileChanged(FileChangeEvent fce) throws Exception {
-		/*String filePath = fce.getFile().getURL().getFile();
-		FileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
+		String filePath = fce.getFile().getURL().getFile();
+		PieLogger.info(this.getClass(), "File changed: {}", filePath);
+		/*FileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
 		File file = new File(filePath);
 		task.setCreatedFile(file);
 		startObservation(file, task);*/

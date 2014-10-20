@@ -22,12 +22,12 @@ import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
-import org.pieShare.pieShareApp.task.FileListRequestTask;
-import org.pieShare.pieShareApp.task.FileListTask;
-import org.pieShare.pieShareApp.task.FileMetaTask;
-import org.pieShare.pieShareApp.task.FileRequestTask;
-import org.pieShare.pieShareApp.task.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.NewFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
@@ -36,7 +36,7 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieShareApp.task.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -169,42 +169,9 @@ public class FileService implements IFileService, IClusterAddedListener {
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "FileService error.", ex);
 		}
-		
-		//Message New File
-		//shareService.shareFile(file);
 	}
 
-	//todo: belongs into the fileRequestedTask not in here?
-	@Override
-	public void fileRequested(FileRequestMessage msg) {
-
-		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
-
-		if (!file.exists()) {
-			//if the file doesn't exist on this client it could be due the fact that itself
-			//is requesting it right now
-			requestService.checkForActiveFileHandle(msg.getPieFile());
-			return;
-		}
-		
-		//shareService.handleActiveShare(msg.getPieFile());
-
-		PieFile pieFile = null;
-
-		try {
-			pieFile = this.fileUtilsService.getPieFile(file);
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "File error.", ex);
-			return;
-		}
-
-		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
-			shareService.shareFile(file);
-		}
-		//todo: what happens when it is the "same file" with different MD5?!
-	}
-
-	@Override
+	/*@Override
 	public boolean checkMergeFile(PieFile pieFile) {
 		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
 
@@ -227,7 +194,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		}
 
 		return false;
-	}
+	}*/
 
 	@Override
 	public void handleObject(ClusterAddedEvent event) {

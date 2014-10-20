@@ -5,14 +5,14 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
-import org.pieShare.pieShareApp.task.FileListRequestTask;
-import org.pieShare.pieShareApp.task.FileListTask;
-import org.pieShare.pieShareApp.task.FileMetaTask;
-import org.pieShare.pieShareApp.task.FileRequestTask;
-import org.pieShare.pieShareApp.task.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.NewFileTask;
-import org.pieShare.pieShareApp.task.FileChangedTask;
-import org.pieShare.pieShareApp.task.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.localTasks.FileChangedTask;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
