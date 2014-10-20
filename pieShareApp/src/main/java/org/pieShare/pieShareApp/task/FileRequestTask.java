@@ -3,28 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.task;
+package org.pieShare.pieShareApp.task;
 
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileRequestTask implements IPieEventTask<FileRequestMessage> {
+public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 
-	private FileRequestMessage msg;
 	private IFileService fileService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
-	}
-
-	@Override
-	public void setMsg(FileRequestMessage msg) {
-		this.msg = msg;
 	}
 
 	@Override
