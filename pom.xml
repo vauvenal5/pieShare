@@ -27,6 +27,13 @@
 			</exclusions>
 		</dependency>
 		
+		<!--todo:not needed if we don't log into lilith-->
+		<dependency>
+			<groupId>de.huxhorn.lilith</groupId>
+			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
+			<version>0.9.44</version>
+		</dependency>
+		
 		<dependency> 
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
