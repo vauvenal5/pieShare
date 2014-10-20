@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.task;
+package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
 import java.util.List;

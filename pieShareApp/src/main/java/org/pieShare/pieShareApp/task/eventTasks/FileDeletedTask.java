@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.task;
 
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+package org.pieShare.pieShareApp.task.eventTasks;
+
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
-
+public class FileDeletedTask extends PieEventTaskBase<FileDeletedMessage>{
+	
 	private IFileService fileService;
 
 	public void setFileService(IFileService fileService) {
@@ -24,7 +24,7 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 
 	@Override
 	public void run() {
-		this.fileService.fileRequested(msg);
+		this.fileService.deleteRecursive(this.msg.getFile());
 	}
-
+	
 }
