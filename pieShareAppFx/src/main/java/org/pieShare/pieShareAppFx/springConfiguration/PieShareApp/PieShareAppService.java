@@ -13,6 +13,10 @@ import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.fileFilterService.FileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.task.FileCopyObserverTask;
@@ -165,6 +169,7 @@ public class PieShareAppService {
 		service.setShareService(this.shareService());
 		service.setFileUtilsService(this.fileUtilsService());
 		service.initFileService();
+		service.setFileFilterService(fileFilterService());
 		return service;
 	}
 
@@ -200,6 +205,24 @@ public class PieShareAppService {
 		DatabaseService service = new DatabaseService();
 		service.setPieShareAppConfiguration(pieShareAppConfiguration());
 		service.setBase64Service(utilities.base64Service());
+		service.setBeanService(utilities.beanService());
 		return service;
 	}
+
+	@Bean
+	@Lazy
+	public FileFilterService fileFilterService() {
+		FileFilterService filter = new FileFilterService();
+		filter.setDatabaseService(databaseService());
+		return filter;
+	}
+
+	@Bean
+	@Lazy
+	public FileFilter fileFilter() {
+		FileFilter filter = new FileFilter();
+		filter.setRegexService(utilities.regexService());
+		return filter;
+	}
+
 }
