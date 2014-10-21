@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="443.0" prefWidth="352.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.FileFilterSettingsController">
+   <children>
+      <Button fx:id="buttonClearText" layoutX="310.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleClearTextAction" prefHeight="25.0" prefWidth="19.0" text="X" />
+      <Button fx:id="buttonDelete" layoutX="64.0" layoutY="68.0" mnemonicParsing="false" onAction="#handleDeleteAction" prefHeight="25.0" prefWidth="74.0" text="Delete" />
+      <TextField fx:id="filterTextField" layoutX="14.0" layoutY="31.0" prefHeight="25.0" prefWidth="284.0" />
+      <Label layoutX="14.0" layoutY="14.0" text="Filter:" />
+      <Button fx:id="buttonAdd" layoutX="14.0" layoutY="68.0" mnemonicParsing="false" onAction="#handleAddAction" text="Add" />
+      <ListView fx:id="listViewFilters" layoutX="14.0" layoutY="99.0" prefHeight="312.0" prefWidth="324.0" />
+   </children>
+</AnchorPane>

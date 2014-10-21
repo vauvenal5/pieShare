@@ -3,15 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareAppFx.preferences.api;
+package org.pieShare.pieShareAppFx.conrolExtensions.api;
 
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 
 /**
  *
  * @author Richard
  */
-public interface IPreferencesEntry {
-	Label getTextLabel();
-	Label getIconLabel();
+public interface IIconNameEntry {
+
+	Node getSecondColumn();
+
+	Node getFirstColumn();
+
+	default Object getObject() {
+		return null;
+	};
+	
+	String getPanelPath();
 }

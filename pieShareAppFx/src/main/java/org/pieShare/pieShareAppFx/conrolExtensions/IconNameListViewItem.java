@@ -1,13 +1,10 @@
 package org.pieShare.pieShareAppFx.conrolExtensions;
 
 
-import javafx.geometry.Insets;
-import javafx.scene.control.Label;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.IIconNameEntry;
 
 /**
  *
@@ -15,9 +12,9 @@ import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
  * 
  * Inspired by: http://www.billmann.de/2013/07/03/javafx-custom-listcell/
 */
-public class PreferencesListViewItems extends ListCell<IPreferencesEntry> {
+public class IconNameListViewItem extends ListCell<IIconNameEntry> {
     @Override
-    public void updateItem(IPreferencesEntry entry, boolean empty) {
+    public void updateItem(IIconNameEntry entry, boolean empty) {
         super.updateItem(entry, empty);
         if (empty) {
             setText(null);
@@ -31,12 +28,12 @@ public class PreferencesListViewItems extends ListCell<IPreferencesEntry> {
             grid.setVgap(4);
            // grid.setPadding(new Insets(0, 5, 0, 5));
  
-            Label icon = entry.getIconLabel();
+            Node icon = entry.getFirstColumn();
             //icon.setFont(Font.font("FontAwesome", FontWeight.BOLD, 24));
             icon.getStyleClass().add("cache-list-icon");
             grid.add(icon, 0, 0);//, 1, 2);            
  
-            Label name = entry.getTextLabel();
+            Node name = entry.getSecondColumn();
             //name.getStyleClass().add("cache-list-name");
             grid.add(name, 1, 0);
  
