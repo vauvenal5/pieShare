@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.database;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -34,7 +35,7 @@ public class DatabaseService implements IDatabaseService {
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
 	private IBeanService beanService;
-	
+
 	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
@@ -42,9 +43,8 @@ public class DatabaseService implements IDatabaseService {
 	public void setPieShareAppConfiguration(PieShareAppConfiguration config) {
 		this.appConfiguration = config;
 	}
-	
-	public void setBeanService(IBeanService beanService)
-	{
+
+	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
@@ -116,13 +116,17 @@ public class DatabaseService implements IDatabaseService {
 		em.persist(en);
 		em.getTransaction().commit();
 		em.close();
+		filter.setEntity(en);
 	}
 
 	@Override
 	public synchronized void removeFileFilter(IFilter filter) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
-		em.remove(filter);
+
+		FilterEntity f = em.find(FilterEntity.class, filter.getEntity().getId());
+		em.remove(f);
+
 		em.getTransaction().commit();
 		em.close();
 	}
@@ -131,16 +135,25 @@ public class DatabaseService implements IDatabaseService {
 	public ArrayList<IFilter> findAllFilters() {
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()));
-		int s = query.getResultList().size();
-
 		ArrayList<IFilter> list = new ArrayList<>();
-		for (FilterEntity entity : ((Collection<FilterEntity>) query.getResultList())) {
-			IFilter filter = beanService.getBean(FileFilter.class);
-			filter.setPattern(entity.getPattern());
-			list.add(filter);
+
+		List resultList;
+
+		try {
+			resultList = query.getResultList();
+		} catch (Exception ex) {
+			return list;
+		}
+
+		if (!resultList.isEmpty()) {
+			for (FilterEntity entity : (Collection<FilterEntity>) resultList) {
+				IFilter filter = beanService.getBean(FileFilter.class);
+				filter.setEntity(entity);
+				filter.setPattern(entity.getPattern());
+				list.add(filter);
+			}
 		}
 		em.close();
 		return list;
 	}
-
 }

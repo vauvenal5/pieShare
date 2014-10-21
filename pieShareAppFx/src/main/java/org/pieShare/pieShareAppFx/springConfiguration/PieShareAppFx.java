@@ -121,6 +121,7 @@ public class PieShareAppFx {
 		FileFilterSettingsController controller = new FileFilterSettingsController();
 		controller.setRegexService(utilities.regexService());
 		controller.setFileFilterService(services.fileFilterService());
+		controller.setBeanService(utilities.beanService());
 		return controller;
 	}
 

@@ -5,23 +5,24 @@
  */
 package org.pieShare.pieShareApp.model.entities;
 
-import java.io.Serializable;
-import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 
 /**
  *
  * @author Richard
  */
-@Entity
-public class FilterEntity extends BaseEntity {
+@MappedSuperclass
+public class BaseEntity{
+	
+	@Id
+	@GeneratedValue
+	private long id;
+	
+	private String pattern; 
 
-	private String pattern;
-
-	public String getPattern() {
-		return pattern;
-	}
-
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
+	public long getId() {
+		return id;
 	}
 }

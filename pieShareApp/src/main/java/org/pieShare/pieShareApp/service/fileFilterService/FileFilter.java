@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.fileFilterService;
 
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
@@ -16,7 +17,8 @@ public class FileFilter implements IFilter {
 
 	private IRegexService regexService;
 	private String patternText;
-	
+	private FilterEntity entity;
+
 	public void setRegexService(IRegexService regexService) {
 		this.regexService = regexService;
 	}
@@ -26,7 +28,7 @@ public class FileFilter implements IFilter {
 		this.patternText = pattern;
 		regexService.setPattern(patternText);
 	}
-	
+
 	@Override
 	public String getPattern() {
 		return patternText;
@@ -35,6 +37,16 @@ public class FileFilter implements IFilter {
 	@Override
 	public boolean matches(String text) {
 		return regexService.matches(text);
+	}
+
+	@Override
+	public FilterEntity getEntity() {
+		return entity;
+	}
+
+	@Override
+	public void setEntity(FilterEntity entity) {
+		this.entity = entity;
 	}
 
 }

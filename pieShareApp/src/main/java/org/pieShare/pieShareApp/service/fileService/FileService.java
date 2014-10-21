@@ -72,7 +72,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 	public void setFileFilterService(IFileFilterService fileFilterService) {
 		this.fileFilterService = fileFilterService;
 		
-	/*	IFilter filter = beanService.getBean(FileFilter.class);
+		/*IFilter filter = beanService.getBean(FileFilter.class);
 		filter.setPattern(".*thumbs\\.db.*");
 		
 		this.fileFilterService.addFilter(filter);*/

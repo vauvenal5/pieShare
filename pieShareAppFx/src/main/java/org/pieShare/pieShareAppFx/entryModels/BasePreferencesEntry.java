@@ -12,13 +12,13 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.pieShare.pieShareAppFx.controller.BasePreferencesController;
-import org.pieShare.pieShareAppFx.conrolExtensions.api.IIconNameEntry;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
 
 /**
  *
  * @author Richard
  */
-public class BasePreferencesEntry implements IIconNameEntry {
+public class BasePreferencesEntry implements ITwoColumnListView {
 
 	private BasePreferencesController basePreferenciesController;
 
