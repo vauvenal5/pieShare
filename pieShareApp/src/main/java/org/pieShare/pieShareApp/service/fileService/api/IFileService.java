@@ -22,8 +22,6 @@ public interface IFileService {
 	//public void remoteFileChange(FileChangedMessage message);
 
 	//public boolean checkMergeFile(PieFile pieFile);
-
-	public void localFileChange(File file);
 	
 	public List<PieFile> getAllFilesList() throws IOException;
 	
@@ -31,4 +29,8 @@ public interface IFileService {
 //	public void sendAllFilesSyncRequest();
 
 	public void deleteRecursive(PieFile file);
+	
+	public void waitUntilCopyFinished(File file);
+	
+	
 }

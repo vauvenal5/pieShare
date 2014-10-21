@@ -11,6 +11,7 @@ import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -30,9 +31,9 @@ public class FileListTask extends PieEventTaskBase<FileListMessage>  {
 		try {
 			this.comparerService.comparePieFileList(this.msg.getFileList());
 		} catch (IOException ex) {
-			//todo: error handling
+			PieLogger.error(this.getClass(), "File List Task error.", ex);
 		} catch (FileConflictException ex) {
-			//todo: error handling
+			PieLogger.error(this.getClass(), "File List Task error.", ex);
 		}
 	}
 	

@@ -58,7 +58,7 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 
 	@Override
 	public void run() {
-		File file = new File(pieAppConfig.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
+		File file = new File(this.pieAppConfig.getWorkingDirectory(), this.msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
 			//if the file doesn't exist on this client it could be due the fact that itself

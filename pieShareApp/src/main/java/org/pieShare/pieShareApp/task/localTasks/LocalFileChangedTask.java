@@ -14,22 +14,23 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  * @author Richard
  */
 //todo: deprecated?
-public class FileChangedTask implements IPieTask {
+public class LocalFileChangedTask implements IPieTask {
 
-	private File file;
 	private IFileService fileService;
-
-	public void setCreatedFile(File file) {
-		this.file = file;
+	private String filePath;
+	
+	public void setFileService(IFileService service) {
+		this.fileService = service;
 	}
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
 	}
 
 	@Override
 	public void run() {
-		fileService.localFileChange(file);
+		File file = new File(this.filePath);
+		this.fileService.waitUntilCopyFinished(file);
 	}
 
 }

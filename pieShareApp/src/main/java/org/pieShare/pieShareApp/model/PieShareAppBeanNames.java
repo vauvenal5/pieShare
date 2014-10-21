@@ -55,11 +55,15 @@ public class PieShareAppBeanNames {
 		return "fxmlLoader";
 	}
 	
-	public static String getFileCopyObserverTask() {
-		return "fileCopyObserverTask";
+	public static String getLocalFileCreatedTask() {
+		return "localFileCreatedTask";
 	}
 	
 	public static String getFileDeletedMessage() {
 		return "fileDeletedMessage";
+	}
+	
+	public static String getLocalFileDeletedTask() {
+		return "localFileDeletedTask";
 	}
 }

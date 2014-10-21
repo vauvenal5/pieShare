@@ -9,6 +9,7 @@ import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -28,9 +29,9 @@ public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
             try {
                     comparerService.comparePieFile(msg.getPieFile());
             } catch (IOException ex) {
-                    //TODO: Handle
+                    PieLogger.error(this.getClass(), "New File Task error.", ex);
             } catch (FileConflictException ex) {
-                    //TODO: Handle
+                    PieLogger.error(this.getClass(), "New File Task error.", ex);
             }
 	}
 

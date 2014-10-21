@@ -16,6 +16,7 @@ import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -54,7 +55,7 @@ public class FileListRequestTask extends PieEventTaskBase<FileListRequestMessage
 			}
 		
 		} catch (IOException ex) {
-			//todo: error handling
+			PieLogger.error(this.getClass(), "RequestTask failed!", ex);
 		}
 	}
 	
