@@ -30,7 +30,7 @@ public interface IFileService {
 
 	public void deleteRecursive(PieFile file);
 	
-	public void waitUntilCopyFinished(File file);
+	public void waitUntilCopyFinished(String filePath);
 	
 	
 }

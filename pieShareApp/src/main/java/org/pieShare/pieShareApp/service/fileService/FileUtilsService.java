@@ -72,5 +72,11 @@ public class FileUtilsService implements IFileUtilsService {
 
             return pieFile;
     }
+	
+	@Override
+    public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
+		File file = new File(filePath);
+		return this.getPieFile(file);
+	}
     
 }

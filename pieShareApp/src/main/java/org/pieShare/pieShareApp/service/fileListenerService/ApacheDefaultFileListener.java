@@ -72,8 +72,8 @@ public class ApacheDefaultFileListener implements FileListener {
 	public void fileChanged(FileChangeEvent fce) throws Exception {
 		String filePath = fce.getFile().getURL().getFile();
 		PieLogger.info(this.getClass(), "File changed: {}", filePath);
-		/*LocalFileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
+		LocalFileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
 		task.setFilePath(filePath);
-		this.executerService.execute(task);*/
+		this.executerService.execute(task);
 	}
 }
