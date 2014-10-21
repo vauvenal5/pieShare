@@ -21,10 +21,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -32,8 +34,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareAppFx.conrolExtensions.IconNameListViewItem;
-import org.pieShare.pieShareAppFx.conrolExtensions.api.IIconNameEntry;
+import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
 import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -58,8 +60,14 @@ public class MainSceneController implements Initializable {
 	private SplitPane mainSplitPane;
 
 	@FXML
-	private ListView<IIconNameEntry> settingsListView;
-	private ObservableList<IIconNameEntry> settingsListViewItems;
+	private Accordion mainAccordion;
+	
+	@FXML
+	private TitledPane titelPaneClouds;
+	
+	@FXML
+	private ListView<ITwoColumnListView> settingsListView;
+	private ObservableList<ITwoColumnListView> settingsListViewItems;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -74,6 +82,8 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		mainAccordion.setExpandedPane(titelPaneClouds);
+		
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -101,16 +111,16 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<IIconNameEntry>, ListCell<IIconNameEntry>>() {
+		settingsListView.setCellFactory(new Callback<ListView<ITwoColumnListView>, ListCell<ITwoColumnListView>>() {
 			@Override
-			public ListCell<IIconNameEntry> call(final ListView<IIconNameEntry> param) {
-				return new IconNameListViewItem();
+			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
+				return new TwoColumnListView();
 			}
 		});
 
 		//Set entries for settings list view
 		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
-		settingsListViewItems.add(new IIconNameEntry() {
+		settingsListViewItems.add(new ITwoColumnListView() {
 
 			@Override
 			public Node getSecondColumn() {
@@ -157,7 +167,7 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void setPreferencesControl(IIconNameEntry entry) {
+	public void setPreferencesControl(ITwoColumnListView entry) {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
 			InputStream url = getClass().getResourceAsStream(entry.getPanelPath());

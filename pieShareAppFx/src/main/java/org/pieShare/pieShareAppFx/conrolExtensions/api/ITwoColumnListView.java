@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
  *
  * @author Richard
  */
-public interface IIconNameEntry {
+public interface ITwoColumnListView {
 
 	Node getSecondColumn();
 

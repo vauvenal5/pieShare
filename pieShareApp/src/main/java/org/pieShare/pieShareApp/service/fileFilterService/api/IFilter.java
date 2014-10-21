@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieShareApp.service.fileFilterService.api;
 
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
+
 /**
  *
  * @author Richard
@@ -16,4 +18,8 @@ public interface IFilter {
 	String getPattern();
 
 	boolean matches(String text);
+
+	FilterEntity getEntity();
+
+	void setEntity(FilterEntity entity);
 }

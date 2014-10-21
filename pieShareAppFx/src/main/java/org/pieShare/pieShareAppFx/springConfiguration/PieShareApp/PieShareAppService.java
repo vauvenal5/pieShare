@@ -219,6 +219,7 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
+	@Scope(value="prototype")
 	public FileFilter fileFilter() {
 		FileFilter filter = new FileFilter();
 		filter.setRegexService(utilities.regexService());
