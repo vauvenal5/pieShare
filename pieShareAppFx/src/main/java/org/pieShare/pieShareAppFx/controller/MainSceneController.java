@@ -20,20 +20,21 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareAppFx.conrolExtensions.PreferencesListViewItems;
-import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
+import org.pieShare.pieShareAppFx.conrolExtensions.IconNameListViewItem;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.IIconNameEntry;
+import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
@@ -57,9 +58,9 @@ public class MainSceneController implements Initializable {
 	private SplitPane mainSplitPane;
 
 	@FXML
-	private ListView<IPreferencesEntry> settingsListView;
-	private ObservableList<IPreferencesEntry> settingsListViewItems;
-	
+	private ListView<IIconNameEntry> settingsListView;
+	private ObservableList<IIconNameEntry> settingsListViewItems;
+
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
@@ -100,15 +101,35 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<IPreferencesEntry>, ListCell<IPreferencesEntry>>() {
+		settingsListView.setCellFactory(new Callback<ListView<IIconNameEntry>, ListCell<IIconNameEntry>>() {
 			@Override
-			public ListCell<IPreferencesEntry> call(final ListView<IPreferencesEntry> param) {
-				return new PreferencesListViewItems();
+			public ListCell<IIconNameEntry> call(final ListView<IIconNameEntry> param) {
+				return new IconNameListViewItem();
 			}
 		});
 
 		//Set entries for settings list view
 		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
+		settingsListViewItems.add(new IIconNameEntry() {
+
+			@Override
+			public Node getSecondColumn() {
+				return new Label("Filter Settings");
+			}
+
+			@Override
+			public Node getFirstColumn() {
+				InputStream st = getClass().getResourceAsStream("/images/filter_16.png");
+				Image image = new Image(st);
+				Label label = new Label("", new ImageView(image));
+				return label;
+			}
+
+			@Override
+			public String getPanelPath() {
+				return "/fxml/settingsPanels/FileFilterSettingPanel.fxml";
+			}
+		});
 		settingsListView.setItems(settingsListViewItems);
 	}
 
@@ -136,10 +157,10 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void setPreferencesControl(IPreferencesEntry cluster) {
+	public void setPreferencesControl(IIconNameEntry entry) {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/BasePreferencesPanel.fxml");
+			InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
 			mainBorderPane.setCenter(loader.load(url));
 		} catch (IOException ex) {
 			//ToDO: Handle

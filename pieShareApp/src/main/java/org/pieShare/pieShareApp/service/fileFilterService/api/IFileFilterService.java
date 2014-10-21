@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.fileFilterService.api;
 
 import java.io.File;
+import java.util.ArrayList;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 
 /**
@@ -21,5 +22,7 @@ public interface IFileFilterService {
 	void removeFilter(IFilter filer);
 
 	boolean checkFile(File file);
+	
+	ArrayList<IFilter> getAllFilters();
 
 }

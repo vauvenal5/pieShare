@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.fileFilterService;
 
 import java.io.File;
+import java.util.ArrayList;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.*;
 
@@ -24,6 +25,7 @@ public class FileFilterService implements IFileFilterService {
 
 	@Override
 	public void addFilter(IFilter filer) {
+
 		databaseService.persistFileFilter(filer);
 	}
 
@@ -41,6 +43,11 @@ public class FileFilterService implements IFileFilterService {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public ArrayList<IFilter> getAllFilters() {
+		return databaseService.findAllFilters();
 	}
 
 }
