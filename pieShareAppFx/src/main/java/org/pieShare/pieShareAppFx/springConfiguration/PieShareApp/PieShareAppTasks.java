@@ -12,8 +12,11 @@ import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
-import org.pieShare.pieShareApp.task.localTasks.FileChangedTask;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +35,8 @@ public class PieShareAppTasks {
 	private PieShareAppService services;
 	@Autowired
 	private PiePlateConfiguration plate;
+	@Autowired
+	private PieUtilitiesConfiguration config;
 
 	@Bean
 	@Scope(value = "prototype")
@@ -46,6 +51,11 @@ public class PieShareAppTasks {
 	public FileRequestTask fileRequestTask() {
 		FileRequestTask task = new FileRequestTask();
 		task.setFileService(this.services.fileService());
+		task.setFileUtilsService(this.services.fileUtilsService());
+		task.setHashService(this.config.md5Service());
+		task.setPieAppConfig(this.services.pieShareAppConfiguration());
+		task.setRequestService(this.services.requestService());
+		task.setShareService(this.services.shareService());
 		return task;
 	}
 
@@ -64,13 +74,33 @@ public class PieShareAppTasks {
 		task.setComparerService(this.services.comparerService());
 		return task;
 	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileCreatedTask localFileCreatedTask() {
+		LocalFileCreatedTask task = new LocalFileCreatedTask();
+		task.setFileService(this.services.fileService());
+		task.setBeanService(this.config.beanService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setFileUtilsService(this.services.fileUtilsService());
+		return task;
+	}
 
 	@Bean
-	@Lazy
 	@Scope(value = "prototype")
-	public FileChangedTask fileChangedTask() {
-		FileChangedTask task = new FileChangedTask();
+	public LocalFileChangedTask fileChangedTask() {
+		LocalFileChangedTask task = new LocalFileChangedTask();
 		task.setFileService(this.services.fileService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileDeletedTask localFileDeletedTask() {
+		LocalFileDeletedTask task = new LocalFileDeletedTask();
+		task.setBeanService(this.config.beanService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setFileUtilsService(this.services.fileUtilsService());
 		return task;
 	}
 

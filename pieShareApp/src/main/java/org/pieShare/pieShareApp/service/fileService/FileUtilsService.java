@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
@@ -38,6 +39,16 @@ public class FileUtilsService implements IFileUtilsService {
     public void setHashService(IHashService hashService) {
         this.hashService = hashService;
     }
+	
+	@Override
+	public void setCorrectModificationDate(PieFile file) {
+		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
+		File targetFile = new File(this.pieAppConfig.getWorkingDirectory(), file.getRelativeFilePath());
+
+		if (!targetFile.setLastModified(file.getLastModified())) {
+			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getRelativeFilePath());
+		}
+	}
 
     @Override
     public PieFile getPieFile(File file) throws FileNotFoundException, IOException {

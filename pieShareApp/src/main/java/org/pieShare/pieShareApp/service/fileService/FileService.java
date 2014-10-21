@@ -9,6 +9,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,16 +56,17 @@ public class FileService implements IFileService, IClusterAddedListener {
 	private IFileWatcherService fileWatcher;
 	private IPieShareAppConfiguration pieAppConfig;
 	private IBeanService beanService;
-	private IShareService shareService;
 	private IHashService hashService;
 	private IRequestService requestService;
 	private IClusterManagementService clusterManagementService;
-        private IFileUtilsService fileUtilsService;
+	private IFileUtilsService fileUtilsService;
 
 	public FileService() {
 
 	}
 
+	
+	
         public void setFileUtilsService(IFileUtilsService fileUtilsService) {
             this.fileUtilsService = fileUtilsService;
         }
@@ -84,10 +86,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
-	}
-
-	public void setShareService(IShareService shareService) {
-		this.shareService = shareService;
 	}
 
 	public void setMd5Service(IHashService hashService) {
@@ -145,29 +143,25 @@ public class FileService implements IFileService, IClusterAddedListener {
 			}
 		});
 	}
-
+	
 	@Override
-	public void localFileChange(File file) {
-		if (file.isDirectory()) {
-			return;
-		}
+	public void waitUntilCopyFinished(File file) {
+		FileInputStream st;
+		boolean isCopying = true;
 
-		PieFile pieFile = null;
-		try {
-			pieFile = this.fileUtilsService.getPieFile(file);
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error Creating PieFile.", ex);
-			return;
-		}
-
-		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		msg.setPieFile(pieFile);
-		try {
-			clusterManagementService.sendMessage(msg, user.getCloudName());
-			PieLogger.info(this.getClass(), "Send new file message. Filepath: {}", pieFile.getRelativeFilePath());
-		} catch (ClusterManagmentServiceException ex) {
-			PieLogger.error(this.getClass(), "FileService error.", ex);
+		while (isCopying) {
+			try {
+				Thread.sleep(2000);
+				st = new FileInputStream(file);
+				isCopying = false;
+				st.close();
+			} catch (FileNotFoundException ex) {
+				//nothing needed to do here
+			} catch (IOException ex) {
+				//nothing needed to do here
+			} catch (InterruptedException ex) {
+				//nothing needed to do here
+			}
 		}
 	}
 
