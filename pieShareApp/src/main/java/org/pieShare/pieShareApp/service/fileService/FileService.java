@@ -145,7 +145,8 @@ public class FileService implements IFileService, IClusterAddedListener {
 	}
 	
 	@Override
-	public void waitUntilCopyFinished(File file) {
+	public void waitUntilCopyFinished(String filePath) {
+		File file = new File(filePath);
 		FileInputStream st;
 		boolean isCopying = true;
 

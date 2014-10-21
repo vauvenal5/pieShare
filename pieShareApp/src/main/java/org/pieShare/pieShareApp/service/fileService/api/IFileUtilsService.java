@@ -17,5 +17,6 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  */
 public interface IFileUtilsService {
     public PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+    public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException;
 	public void setCorrectModificationDate(PieFile file);
 }

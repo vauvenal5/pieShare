@@ -27,7 +27,7 @@ public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
 	@Override
 	public void run() {
             try {
-                    comparerService.comparePieFile(msg.getPieFile());
+                    comparerService.comparePieFile(msg.getFile());
             } catch (IOException ex) {
                     PieLogger.error(this.getClass(), "New File Task error.", ex);
             } catch (FileConflictException ex) {

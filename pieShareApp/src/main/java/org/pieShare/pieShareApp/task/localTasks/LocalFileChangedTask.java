@@ -5,32 +5,30 @@
  */
 package org.pieShare.pieShareApp.task.localTasks;
 
-import java.io.File;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieShareApp.task.localTasks.base.FileHistoryEventTask;
 
-/**
- *
- * @author Richard
- */
-//todo: deprecated?
-public class LocalFileChangedTask implements IPieTask {
+
+public class LocalFileChangedTask extends FileHistoryEventTask {
 
 	private IFileService fileService;
-	private String filePath;
-	
-	public void setFileService(IFileService service) {
-		this.fileService = service;
-	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	@Override
 	public void run() {
-		File file = new File(this.filePath);
-		this.fileService.waitUntilCopyFinished(file);
+		this.fileService.waitUntilCopyFinished(this.filePath);
+		
+		//todo: for the time being we will just delete without checks
+		//later somekinde of persistency and check has to be added
+		//see base class of changedMessage
+		FileChangedMessage msg = beanService.getBean(PieShareAppBeanNames.getFileChangedMessage());
+		
+		super.doWork(msg);
 	}
 
 }

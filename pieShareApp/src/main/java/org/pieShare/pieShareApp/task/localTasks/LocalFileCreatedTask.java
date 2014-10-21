@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -25,59 +26,26 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Richard
  */
-public class LocalFileCreatedTask implements IPieTask {
+public class LocalFileCreatedTask extends FileEventTask {
 
 	private IFileService fileService;
-	private String filePath;
-	private IFileUtilsService fileUtilsService;
-	private IBeanService beanService;
-	private IClusterManagementService clusterManagementService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
-	
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
-	}
-
 	@Override
 	public void run() {
 		File file = new File(this.filePath);
-		this.fileService.waitUntilCopyFinished(file);
+		this.fileService.waitUntilCopyFinished(this.filePath);
 		
+		//todo: why do we scip directories?!
 		if (file.isDirectory()) {
 			return;
 		}
-
-		PieFile pieFile = null;
-		try {
-			pieFile = this.fileUtilsService.getPieFile(file);
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error Creating PieFile.", ex);
-			return;
-		}
-
+		
 		NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		msg.setPieFile(pieFile);
-		try {
-			clusterManagementService.sendMessage(msg, user.getCloudName());
-			PieLogger.info(this.getClass(), "Send new file message. Filepath: {}", pieFile.getRelativeFilePath());
-		} catch (ClusterManagmentServiceException ex) {
-			PieLogger.error(this.getClass(), "FileService error.", ex);
-		}
+		
+		super.doWork(msg);
 	}
 }

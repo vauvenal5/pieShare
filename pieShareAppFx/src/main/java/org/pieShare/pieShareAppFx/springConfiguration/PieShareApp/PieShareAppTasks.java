@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +76,18 @@ public class PieShareAppTasks {
 		return task;
 	}
 	
+	private void fileEventTask(FileEventTask task) {
+		task.setBeanService(this.config.beanService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setFileUtilsService(this.services.fileUtilsService());
+	}
+	
 	@Bean
 	@Scope(value = "prototype")
 	public LocalFileCreatedTask localFileCreatedTask() {
 		LocalFileCreatedTask task = new LocalFileCreatedTask();
+		this.fileEventTask(task);
 		task.setFileService(this.services.fileService());
-		task.setBeanService(this.config.beanService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileUtilsService(this.services.fileUtilsService());
 		return task;
 	}
 
@@ -90,6 +95,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LocalFileChangedTask fileChangedTask() {
 		LocalFileChangedTask task = new LocalFileChangedTask();
+		this.fileEventTask(task);
 		task.setFileService(this.services.fileService());
 		return task;
 	}
@@ -98,9 +104,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
-		task.setBeanService(this.config.beanService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileUtilsService(this.services.fileUtilsService());
+		this.fileEventTask(task);
 		return task;
 	}
 

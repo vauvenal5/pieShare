@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieShareApp.model;
 
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+
 /**
  *
  * @author Svetoslav
@@ -65,5 +67,9 @@ public class PieShareAppBeanNames {
 	
 	public static String getLocalFileDeletedTask() {
 		return "localFileDeletedTask";
+	}
+	
+	public static Class<FileChangedMessage> getFileChangedMessage() {
+		return FileChangedMessage.class;
 	}
 }
