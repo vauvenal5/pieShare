@@ -20,6 +20,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
@@ -32,7 +34,9 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
@@ -68,15 +72,20 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private URI trackerUri;
 	private Semaphore readPorts;
 	private Semaphore writePorts;
+	private IFileListenerService fileListener;
 
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
 	}
 
+	public void setFileListener(IFileListenerService fileListener) {
+		this.fileListener = fileListener;
+	}
+	
 	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
 		this.sharedFiles = sharedFiles;
 	}
-
+	
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
 	}
@@ -138,7 +147,8 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	@Override
 	public void shareFile(File file) {
 		try {
-			
+			//todo: there is still some problem with the modification date!!! somewhere...
+			//todo: ther is a bug when triing to share 0 byte files
 			//todo: error handling when torrent null
 			//todo: replace name by nodeName
 			//URI uri = tracker.getAnnounceUrl().toURI();
@@ -160,13 +170,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			tracker.announce(tt);
 			
 			this.sendMetaMessageAndHandleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true), metaMsg);
-			/*long modD = file.lastModified();
-			Client seeder = new Client(networkService.getLocalHost(), new SharedTorrent(torrent, file.getParentFile(), true));
-			if (!file.setLastModified(modD)) {
-				System.out.println("Torrent modified lastModificationDate");
-			}
-			seeder.share();
-			seeder.*/
+			
+			//todo: find out why ttorrent changes the date modified when sharing a file?!
+			this.fileUtilsService.setCorrectModificationDate(pieFile);
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		} catch (IOException ex) {
@@ -189,6 +195,10 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				return;
 			}
 			
+			PieFile file = msg.getPieFile();
+			
+			
+			//todo: move to file service
 			File tmpFile = new File(tmpDir, msg.getPieFile().getFileName());
 			File targetFile = new File(configurationService.getWorkingDirectory(), msg.getPieFile().getRelativeFilePath());
 
@@ -198,9 +208,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 
 			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-			if (!targetFile.setLastModified(msg.getPieFile().getLastModified())) {
-				System.out.println("WARNING: Could not set LastModificationDate");
-			}
+			this.fileUtilsService.setCorrectModificationDate(file);
 			
 			//this.requestService.deleteRequestedFile(msg.getPieFile());
 			FileUtils.deleteDirectory(tmpDir);
@@ -252,6 +260,8 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
 		try {
 			this.readPorts.acquire();
+			
+			this.fileListener.addPieFileToModifiedList(pieFile);
 			//todo: handle ports out problem!!!
 			//todo: this should run somehow over the beans
 			Client client = new Client(networkService.getLocalHost(), torrent);		

@@ -4,35 +4,35 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.task;
+package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileListTask extends PieEventTaskBase<FileListMessage>  {
+public class FileChangedTask extends PieEventTaskBase<FileChangedMessage> {
 
 	private IComparerService comparerService;
 
 	public void setComparerService(IComparerService comparerService) {
 		this.comparerService = comparerService;
 	}
-
+	
 	@Override
 	public void run() {
 		try {
-			this.comparerService.comparePieFileList(this.msg.getFileList());
+				comparerService.comparePieFile(msg.getFile());
 		} catch (IOException ex) {
-			//todo: error handling
+				PieLogger.error(this.getClass(), "New File Task error.", ex);
 		} catch (FileConflictException ex) {
-			//todo: error handling
+				PieLogger.error(this.getClass(), "New File Task error.", ex);
 		}
 	}
 	
