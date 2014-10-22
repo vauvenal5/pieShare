@@ -61,7 +61,7 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 		try {
 			Validate.notNull(taskClass);
 		} catch (NullPointerException ex) {
-			PieLogger.info(this.getClass(), "No task registered for given event!", ex);
+			PieLogger.info(this.getClass(), "No task registered for given event: {}", event.getClass(), ex);
 			throw new PieExecutorServiceException("No task registered for given event!", ex);
 		}
 

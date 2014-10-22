@@ -97,6 +97,7 @@ public class PieShareAppTasks {
 		LocalFileChangedTask task = new LocalFileChangedTask();
 		this.fileEventTask(task);
 		task.setFileService(this.services.fileService());
+		task.setFileListener(this.services.fileListenerService());
 		return task;
 	}
 	

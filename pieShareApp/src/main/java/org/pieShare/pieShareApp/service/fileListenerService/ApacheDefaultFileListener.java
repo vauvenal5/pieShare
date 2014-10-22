@@ -5,9 +5,14 @@
  */
 package org.pieShare.pieShareApp.service.fileListenerService;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
@@ -21,32 +26,37 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author richy
  */
-public class ApacheDefaultFileListener implements FileListener {
+public class ApacheDefaultFileListener implements IFileListenerService, FileListener {
 
 	//private IFileObserver fileObserver;
 	private IExecutorService executerService;
 	private IBeanService beanService;
-	private IFileUtilsService utilsService;
-	private IClusterManagementService clusterManagementService;
+	private List<PieFile> modifiedFiles;
 
 	/*public void setFileObserver(IFileObserver fileObserver) {
 		this.fileObserver = fileObserver;
 	}*/
+	
+	public void init() {
+		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setUtilsService(IFileUtilsService utilsService) {
-		this.utilsService = utilsService;
-	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
-
 	public void setExecutorService(IExecutorService executerService) {
 		this.executerService = executerService;
+	}
+	
+	@Override
+	public void addPieFileToModifiedList(PieFile pieFile) {
+		this.modifiedFiles.add(pieFile);
+	}
+	
+	@Override
+	public boolean removePieFileFromModifiedList(PieFile file) {
+		return this.modifiedFiles.remove(file);
 	}
 
 	@Override

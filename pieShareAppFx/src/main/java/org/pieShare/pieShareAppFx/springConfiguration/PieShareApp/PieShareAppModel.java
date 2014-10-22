@@ -9,6 +9,7 @@ package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.SimpleMessageCommand;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
@@ -85,5 +86,11 @@ public class PieShareAppModel {
 	@Lazy
 	public PieUser pieUser() {
 		return new PieUser();
+	}
+	
+	@Bean
+	@Lazy
+	public FileChangedMessage fileChangedMessage() {
+		return new FileChangedMessage();
 	}
 }
