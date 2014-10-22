@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.fileFilterService.api;
 
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import java.io.File;
 import java.util.ArrayList;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
