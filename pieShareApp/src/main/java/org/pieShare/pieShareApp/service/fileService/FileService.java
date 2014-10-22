@@ -32,6 +32,9 @@ import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
@@ -65,17 +68,14 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	}
 
-	
-	
-        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-            this.fileUtilsService = fileUtilsService;
-        }
+	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+		this.fileUtilsService = fileUtilsService;
+	}
 
-	public void setClusterManagementService(IClusterManagementService clusterManagementService)
-	{
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
-	
+
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
@@ -104,7 +104,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		 }
 		 */
 		addWatchDirectory(pieAppConfig.getWorkingDirectory());
-		
+
 		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
 	}
 
@@ -143,7 +143,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 			}
 		});
 	}
-	
+
 	@Override
 	public void waitUntilCopyFinished(String filePath) {
 		File file = new File(filePath);
@@ -151,6 +151,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		boolean isCopying = true;
 
 		while (isCopying) {
+
 			try {
 				Thread.sleep(2000);
 				st = new FileInputStream(file);
@@ -167,37 +168,36 @@ public class FileService implements IFileService, IClusterAddedListener {
 	}
 
 	/*@Override
-	public boolean checkMergeFile(PieFile pieFile) {
-		File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
+	 public boolean checkMergeFile(PieFile pieFile) {
+	 File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
 
-		if (!file.exists()) {
-			return true;
-		}
+	 if (!file.exists()) {
+	 return true;
+	 }
 
-		PieFile localPieFile = null;
+	 PieFile localPieFile = null;
 
-		try {
-			localPieFile = this.fileUtilsService.getPieFile(file);
-		} catch (IOException ex) {
-			//ToDo: DO conflict handling
-			PieLogger.error(this.getClass(), "File error.", ex);
-			return false;
-		}
+	 try {
+	 localPieFile = this.fileUtilsService.getPieFile(file);
+	 } catch (IOException ex) {
+	 //ToDo: DO conflict handling
+	 PieLogger.error(this.getClass(), "File error.", ex);
+	 return false;
+	 }
 
-		if (!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5())) {
-			return true;
-		}
+	 if (!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5())) {
+	 return true;
+	 }
 
-		return false;
-	}*/
-
+	 return false;
+	 }*/
 	@Override
 	public void handleObject(ClusterAddedEvent event) {
 		try {
 			//when a cluster is added this actually means that this client has entered a cloud
 			//todo: request all files list!!!!
 			//todo: fix hardcoded cluster name
-			this.clusterManagementService.sendMessage(new FileListRequestMessage(),"sv");
+			this.clusterManagementService.sendMessage(new FileListRequestMessage(), "sv");
 		} catch (ClusterManagmentServiceException ex) {
 			//todo: error handling
 			PieLogger.error(this.getClass(), "File error.", ex);
@@ -208,20 +208,20 @@ public class FileService implements IFileService, IClusterAddedListener {
 	@Override
 	public List<PieFile> getAllFilesList() throws IOException {
 		List<PieFile> pieFiles = new ArrayList();
-		
+
 		//todo: maybe a own service or at least function?
 		Files.walkFileTree(pieAppConfig.getWorkingDirectory().toPath(), new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				File realFile = file.toFile();
-				
+
 				PieFile pieFile = fileUtilsService.getPieFile(realFile);
 				pieFiles.add(pieFile);
-				
+
 				return FileVisitResult.CONTINUE;
 			}
 		});
-		
+
 		return pieFiles;
 	}
 
@@ -229,14 +229,12 @@ public class FileService implements IFileService, IClusterAddedListener {
 	public void deleteRecursive(PieFile file) {
 		File localFile = new File(this.pieAppConfig.getWorkingDirectory(), file.getRelativeFilePath());
 		try {
-			if(localFile.isDirectory()) {
+			if (localFile.isDirectory()) {
 				FileUtils.deleteDirectory(localFile);
-			}
-			else {
+			} else {
 				localFile.delete();
 			}
-		}
-		catch(IOException ex) {
+		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Deleting failed!", ex);
 		}
 	}

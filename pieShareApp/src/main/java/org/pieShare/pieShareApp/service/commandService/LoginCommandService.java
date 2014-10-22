@@ -6,9 +6,12 @@
 package org.pieShare.pieShareApp.service.commandService;
 
 import java.util.Map;
+import org.bouncycastle.util.Arrays;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -40,14 +43,33 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 		this.passwordEncryptionService = service;
 	}
 
+	private IDatabaseService databaseService;
+
+	public void setDatabaseService(IDatabaseService databaseService) {
+		this.databaseService = databaseService;
+	}
+
 	@Override
 	public void executeCommand(LoginCommand command) {
 		EncryptedPassword pwd = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
 
-		PieUser user = (PieUser) this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-		user.setPassword(pwd);
-		user.setUserName(command.getUserName());
-		user.setIsLoggedIn(true);
+		PieUser user = databaseService.getPieUser(command.getUserName());
+
+		if (user != null) {
+			if (Arrays.areEqual(pwd.getPassword(), user.getPassword().getPassword())) {
+				user.setIsLoggedIn(true);
+			}
+			else {
+				//ToDO: Handle wrong password.
+				return;
+			}
+		} else {
+			user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+			user.setPassword(pwd);
+			user.setUserName(command.getUserName());
+			user.setIsLoggedIn(true);
+			databaseService.persistPieUser(user);
+		}
 
 		//this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
 		try {
