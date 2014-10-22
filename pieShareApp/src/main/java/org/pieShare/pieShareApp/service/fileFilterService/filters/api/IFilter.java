@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileFilterService.api;
+package org.pieShare.pieShareApp.service.fileFilterService.filters.api;
 
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 

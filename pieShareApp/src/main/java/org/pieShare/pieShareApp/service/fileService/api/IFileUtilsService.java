@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Path;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
@@ -16,5 +16,8 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  * @author Svetoslav
  */
 public interface IFileUtilsService {
-    public PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+
+	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+
+	Path relitivizeFilePath(File file);
 }

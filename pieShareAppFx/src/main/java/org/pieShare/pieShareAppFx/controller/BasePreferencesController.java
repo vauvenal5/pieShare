@@ -31,7 +31,7 @@ public class BasePreferencesController implements Initializable {
 
 	@FXML
 	private Button buttonBrowseTemp;
-
+	
 	@FXML
 	private TextField textFieldTempPath;
 

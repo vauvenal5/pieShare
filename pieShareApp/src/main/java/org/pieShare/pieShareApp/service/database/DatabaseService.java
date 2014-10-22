@@ -6,7 +6,6 @@
 package org.pieShare.pieShareApp.service.database;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -15,19 +14,22 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
-import org.pieShare.pieShareApp.service.fileFilterService.FileFilter;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
- * @author Richard
+ * @author Richard Sveti toled me there is normaly a converter server, but i
+ * mixed it, he sad it is o for now. But we have to document this in the bac.
+ * thesis later.
  */
 public class DatabaseService implements IDatabaseService {
 
@@ -54,7 +56,7 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public synchronized void persistPieUser(PieUser service) {
+	public void persistPieUser(PieUser service) {
 		EntityManager em = emf.createEntityManager();
 		PieUserEntity entity = new PieUserEntity();
 		byte[] pwd = base64Service.encode(service.getPassword().getPassword());
@@ -67,7 +69,7 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public synchronized PieUser getPieUser(String name) {
+	public PieUser getPieUser(String name) {
 		EntityManager em = emf.createEntityManager();
 		PieUser user = null;
 		try {
@@ -108,19 +110,18 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public synchronized void persistFileFilter(IFilter filter) {
+	public void persistFileFilter(IFilter filter) {
 		EntityManager em = emf.createEntityManager();
+
+		//ToDo: Spring
 		FilterEntity en = new FilterEntity();
 		en.setPattern(filter.getPattern());
-		em.getTransaction().begin();
-		em.persist(en);
-		em.getTransaction().commit();
-		em.close();
 		filter.setEntity(en);
+		persistBasicEntity(em, en);
 	}
 
 	@Override
-	public synchronized void removeFileFilter(IFilter filter) {
+	public void removeFileFilter(IFilter filter) {
 		EntityManager em = emf.createEntityManager();
 		em.getTransaction().begin();
 
@@ -147,7 +148,7 @@ public class DatabaseService implements IDatabaseService {
 
 		if (!resultList.isEmpty()) {
 			for (FilterEntity entity : (Collection<FilterEntity>) resultList) {
-				IFilter filter = beanService.getBean(FileFilter.class);
+				IFilter filter = beanService.getBean(RegexFileFilter.class);
 				filter.setEntity(entity);
 				filter.setPattern(entity.getPattern());
 				list.add(filter);
@@ -156,4 +157,12 @@ public class DatabaseService implements IDatabaseService {
 		em.close();
 		return list;
 	}
+
+	private void persistBasicEntity(EntityManager em, BaseEntity basic) {
+		em.getTransaction().begin();
+		em.persist(basic);
+		em.getTransaction().commit();
+		em.close();
+	}
+
 }

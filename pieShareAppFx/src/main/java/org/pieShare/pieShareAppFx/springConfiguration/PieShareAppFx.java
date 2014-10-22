@@ -122,6 +122,9 @@ public class PieShareAppFx {
 		controller.setRegexService(utilities.regexService());
 		controller.setFileFilterService(services.fileFilterService());
 		controller.setBeanService(utilities.beanService());
+		controller.setFXMLController(mainController());
+		controller.setPieShaeAppConfig(services.pieShareAppConfiguration());
+		controller.setFileUtilsService(services.fileUtilsService());
 		return controller;
 	}
 

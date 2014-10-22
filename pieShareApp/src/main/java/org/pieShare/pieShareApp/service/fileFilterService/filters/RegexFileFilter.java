@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileFilterService;
+package org.pieShare.pieShareApp.service.fileFilterService.filters;
 
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
 /**
  *
  * @author Richard
  */
-public class FileFilter implements IFilter {
+public class RegexFileFilter implements IFilter {
 
 	private IRegexService regexService;
 	private String patternText;
@@ -48,5 +48,4 @@ public class FileFilter implements IFilter {
 	public void setEntity(FilterEntity entity) {
 		this.entity = entity;
 	}
-
 }
