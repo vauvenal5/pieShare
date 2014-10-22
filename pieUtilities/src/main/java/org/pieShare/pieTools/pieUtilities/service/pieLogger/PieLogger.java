@@ -49,4 +49,19 @@ public class PieLogger {
 		Logger log = getLogger(clazz);
 		log.error(message, thr);
 	}
+	
+	public static void warn(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.warn(message, o);
+	}
+	
+	public static void trace(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.trace(message, o);
+	}
+	
+	public static void trace(Class clazz, String message, Object... o) {
+		Logger log = getLogger(clazz);
+		log.trace(message, o);
+	}
 }

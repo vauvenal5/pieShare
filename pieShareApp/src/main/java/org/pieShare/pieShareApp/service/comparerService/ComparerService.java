@@ -60,11 +60,11 @@ public class ComparerService implements IComparerService {
 				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
 				return false;
 			}
-			PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+			//todo: fix this exception: why does it take a PieFile?!
+			throw new FileConflictException(String.format("Same Modification Date but different MD5 sum: %s", remotePieFile.getRelativeFilePath()), remotePieFile);
 		} //Remote File is older than local file
 		else if (remotePieFile.getLastModified() < localFile.lastModified()) {
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+			throw new FileConflictException(String.format("Different Modification Datej: %s", remotePieFile.getRelativeFilePath()), remotePieFile);
 		} //Remote File is newer than local file
 		else if (remotePieFile.getLastModified() > localFile.lastModified()) {
 			return true;

@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppModel;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.actionService.LoginActionService;
@@ -19,7 +18,8 @@ import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
-import org.pieShare.pieShareApp.task.FileCopyObserverTask;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
@@ -131,10 +131,10 @@ public class PieShareAppService {
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
-	public FileCopyObserverTask fileCopyObserverTask() {
-		FileCopyObserverTask observer = new FileCopyObserverTask();
-		observer.setFileService(this.fileService());
-		return observer;
+	public LocalFileCreatedTask fileCreatedTask() {
+		LocalFileCreatedTask task = new LocalFileCreatedTask();
+		task.setFileService(this.fileService());
+		return task;
 	}
 
 	@Bean
@@ -143,11 +143,16 @@ public class PieShareAppService {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
-		listener.setClusterManagementService(this.plate.clusterManagementService());
-		listener.setUtilsService(this.fileUtilsService());
+		listener.init();
 		return listener;
 	}
 
+	@Bean
+	@Lazy
+	public IFileListenerService fileListenerService() {
+		return (ApacheDefaultFileListener)this.fileListener();
+	}
+	
 	@Bean
 	@Lazy
 	public ApacheFileWatcher fileWatcher() {
@@ -166,10 +171,8 @@ public class PieShareAppService {
 		service.setMd5Service(this.utilities.md5Service());
 		service.setPieShareAppConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
-		service.setShareService(this.shareService());
 		service.setFileUtilsService(this.fileUtilsService());
 		service.initFileService();
-		service.setFileFilterService(fileFilterService());
 		return service;
 	}
 
@@ -185,6 +188,7 @@ public class PieShareAppService {
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
+		service.setFileListener(this.fileListenerService());
 		service.bitTorrentServicePost();
 		return service;
 	}
@@ -196,6 +200,7 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setHashService(this.utilities.md5Service());
 		service.setPieAppConfig(this.pieShareAppConfiguration());
+			service.setFileListener(this.fileListenerService());
 		return service;
 	}
 
