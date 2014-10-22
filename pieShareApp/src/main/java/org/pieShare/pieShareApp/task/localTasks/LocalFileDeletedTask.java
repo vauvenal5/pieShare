@@ -31,7 +31,7 @@ public class LocalFileDeletedTask extends FileHistoryEventTask {
 		//later somekinde of persistency and check has to be added
 		//see base class of deleteMessage
 		FileDeletedMessage msg = this.beanService.getBean(PieShareAppBeanNames.getFileDeletedMessage());
-		
+		//if(!checkFilter(file)) return;
 		super.doWork(msg);
 	}
 	
