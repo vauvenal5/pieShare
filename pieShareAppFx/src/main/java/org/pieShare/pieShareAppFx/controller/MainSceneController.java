@@ -20,20 +20,23 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareAppFx.conrolExtensions.PreferencesListViewItems;
-import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
+import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
+import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
@@ -57,11 +60,15 @@ public class MainSceneController implements Initializable {
 	private SplitPane mainSplitPane;
 
 	@FXML
-	private ListView<IPreferencesEntry> settingsListView;
-	private ObservableList<IPreferencesEntry> settingsListViewItems;
-
-	private AnchorPane centerPane;
+	private Accordion mainAccordion;
 	
+	@FXML
+	private TitledPane titelPaneClouds;
+	
+	@FXML
+	private ListView<ITwoColumnListView> settingsListView;
+	private ObservableList<ITwoColumnListView> settingsListViewItems;
+
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
@@ -75,7 +82,8 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		centerPane = new AnchorPane();
+		mainAccordion.setExpandedPane(titelPaneClouds);
+		
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -103,15 +111,35 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<IPreferencesEntry>, ListCell<IPreferencesEntry>>() {
+		settingsListView.setCellFactory(new Callback<ListView<ITwoColumnListView>, ListCell<ITwoColumnListView>>() {
 			@Override
-			public ListCell<IPreferencesEntry> call(final ListView<IPreferencesEntry> param) {
-				return new PreferencesListViewItems();
+			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
+				return new TwoColumnListView();
 			}
 		});
 
 		//Set entries for settings list view
 		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
+		settingsListViewItems.add(new ITwoColumnListView() {
+
+			@Override
+			public Node getSecondColumn() {
+				return new Label("Filter Settings");
+			}
+
+			@Override
+			public Node getFirstColumn() {
+				InputStream st = getClass().getResourceAsStream("/images/filter_16.png");
+				Image image = new Image(st);
+				Label label = new Label("", new ImageView(image));
+				return label;
+			}
+
+			@Override
+			public String getPanelPath() {
+				return "/fxml/settingsPanels/FileFilterSettingPanel.fxml";
+			}
+		});
 		settingsListView.setItems(settingsListViewItems);
 	}
 
@@ -139,15 +167,11 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void setPreferencesControl(IPreferencesEntry cluster) {
+	public void setPreferencesControl(ITwoColumnListView entry) {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/BasePreferencesPanel.fxml");
-			centerPane.getChildren().clear();
-			centerPane.getChildren().add(loader.load(url));
-			boolean cc = centerPane.isResizable();
-			mainBorderPane.setCenter(centerPane);
-			mainBorderPane.setAlignment(centerPane, Pos.CENTER);
+			InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
+			mainBorderPane.setCenter(loader.load(url));
 		} catch (IOException ex) {
 			//ToDO: Handle
 			ex.printStackTrace();
