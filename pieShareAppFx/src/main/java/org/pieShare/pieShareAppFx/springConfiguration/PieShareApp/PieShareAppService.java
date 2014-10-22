@@ -14,6 +14,7 @@ import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
@@ -136,9 +137,14 @@ public class PieShareAppService {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
-		listener.setClusterManagementService(this.plate.clusterManagementService());
-		listener.setUtilsService(this.fileUtilsService());
+		listener.init();
 		return listener;
+	}
+	
+	@Bean
+	@Lazy
+	public IFileListenerService fileListenerService() {
+		return (ApacheDefaultFileListener)this.fileListener();
 	}
 	
 	@Bean
@@ -176,7 +182,8 @@ public class PieShareAppService {
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
-                service.bitTorrentServicePost();
+		service.setFileListener(this.fileListenerService());
+		service.bitTorrentServicePost();
 		return service;
 	}
         
@@ -187,6 +194,7 @@ public class PieShareAppService {
             service.setBeanService(this.utilities.beanService());
             service.setHashService(this.utilities.md5Service());
             service.setPieAppConfig(this.pieShareAppConfiguration());
+			service.setFileListener(this.fileListenerService());
             return service;
         }
 }

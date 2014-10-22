@@ -9,9 +9,8 @@ package org.pieShare.pieShareApp.task.localTasks.base;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -48,14 +47,20 @@ public abstract class FileEventTask implements IPieTask {
 	
 	protected void doWork(FileMessageBase msg) {
 		try {
-		msg.setFile(this.fileUtilsService.getPieFile(this.filePath));
-		
+			this.doWork(msg, this.fileUtilsService.getPieFile(this.filePath));
+		} catch (IOException ex) {
+			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
+		}
+	}
+	
+	protected void doWork(FileMessageBase msg, PieFile file) {
+		try {
+			
+		msg.setFile(file);
 		//todo: need somewhere a match between working dir and belonging cloud
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		
 		this.clusterManagementService.sendMessage(msg, user.getCloudName());
-		} catch (IOException ex) {
-			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
 		}

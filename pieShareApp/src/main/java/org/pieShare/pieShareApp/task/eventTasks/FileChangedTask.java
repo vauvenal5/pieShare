@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -16,14 +17,14 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
+public class FileChangedTask extends PieEventTaskBase<FileChangedMessage> {
 
 	private IComparerService comparerService;
 
 	public void setComparerService(IComparerService comparerService) {
 		this.comparerService = comparerService;
 	}
-
+	
 	@Override
 	public void run() {
 		try {
@@ -34,5 +35,5 @@ public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
 				PieLogger.error(this.getClass(), "New File Task error.", ex);
 		}
 	}
-
+	
 }
