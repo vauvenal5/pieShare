@@ -19,5 +19,7 @@ public interface IFileUtilsService {
 
 	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
 
+    public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException;
+	public void setCorrectModificationDate(PieFile file);
 	Path relitivizeFilePath(File file);
 }
