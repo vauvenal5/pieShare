@@ -27,8 +27,6 @@ public class ComparerService implements IComparerService {
 	private IRequestService requestService;
         private IFileUtilsService fileUtilsService;
 
-	private final PieLogger logger = new PieLogger(ComparerService.class);
-
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
@@ -44,12 +42,12 @@ public class ComparerService implements IComparerService {
 	@Override
 	public boolean isPieFileDesired(PieFile remotePieFile) throws IOException, FileConflictException {
 
-		logger.debug("Comparing file: " + remotePieFile.getRelativeFilePath());
+		PieLogger.debug(this.getClass(), "Comparing file: {}", remotePieFile.getRelativeFilePath());
 
 		File localFile = new File(pieAppConfig.getWorkingDirectory(), remotePieFile.getRelativeFilePath());
 		
 		if (!localFile.exists()) {
-			logger.debug(remotePieFile.getRelativeFilePath() + " does not exist. Request this file.");
+			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", remotePieFile.getRelativeFilePath());
 			return true;
 		}
 		
@@ -59,14 +57,14 @@ public class ComparerService implements IComparerService {
 		//Remote File is older than local file
 		if (remotePieFile.getLastModified() == localFile.lastModified()) {
 			if (Arrays.equals(remotePieFile.getMd5(), localPieFile.getMd5())) {
-				logger.debug(remotePieFile.getRelativeFilePath() + " is already there. Do not request.");
+				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
 				return false;
 			}
-			logger.debug(remotePieFile.getRelativeFilePath() + " is already there. Do not request.");
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+			//todo: fix this exception: why does it take a PieFile?!
+			throw new FileConflictException(String.format("Same Modification Date but different MD5 sum: %s", remotePieFile.getRelativeFilePath()), remotePieFile);
 		} //Remote File is older than local file
 		else if (remotePieFile.getLastModified() < localFile.lastModified()) {
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+			throw new FileConflictException(String.format("Different Modification Datej: %s", remotePieFile.getRelativeFilePath()), remotePieFile);
 		} //Remote File is newer than local file
 		else if (remotePieFile.getLastModified() > localFile.lastModified()) {
 			return true;
@@ -87,7 +85,7 @@ public class ComparerService implements IComparerService {
 	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
                 
                 //todo: the requestService could do the check of the requestedFileList internally!?!
-		if (!requestService.getRequestedFileList().containsKey(pieFile) && isPieFileDesired(pieFile)) {
+		if (isPieFileDesired(pieFile)) {
 			requestService.requestFile(pieFile);
 		}
 

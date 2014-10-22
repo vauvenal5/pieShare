@@ -11,9 +11,10 @@ import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.controller.BasePreferencesController;
 import org.pieShare.pieShareAppFx.controller.CloudsListViewController;
 import org.pieShare.pieShareAppFx.controller.ClusterSettingsController;
+import org.pieShare.pieShareAppFx.controller.FileFilterSettingsController;
 import org.pieShare.pieShareAppFx.controller.LoginController;
 import org.pieShare.pieShareAppFx.controller.MainSceneController;
-import org.pieShare.pieShareAppFx.preferences.BasePreferencesEntry;
+import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,7 +40,7 @@ public class PieShareAppFx {
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public FXMLLoader fxmlLoader() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setControllerFactory(controllerFactory());
@@ -79,7 +80,6 @@ public class PieShareAppFx {
 		return controller;
 	}
 
-	
 	@Bean
 	@Lazy
 	public LoginController loginController() {
@@ -87,7 +87,7 @@ public class PieShareAppFx {
 		controller.setLoginCommandService(this.services.loginCommandService());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public CloudsListViewController cloudsListViewController() {
@@ -97,7 +97,7 @@ public class PieShareAppFx {
 		controller.setMainSceneController(mainSceneController());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public BasePreferencesController basePreferencesController() {
@@ -106,7 +106,7 @@ public class PieShareAppFx {
 		controller.setPieShareAppConfiguration(appService.pieShareAppConfiguration());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public BasePreferencesEntry basePreferencesEntry() {
@@ -114,6 +114,18 @@ public class PieShareAppFx {
 		controller.setBasePreferencesController(basePreferencesController());
 		return controller;
 	}
-	
-	
+
+	@Bean
+	@Lazy
+	public FileFilterSettingsController fileFilterSettingsController() {
+		FileFilterSettingsController controller = new FileFilterSettingsController();
+		controller.setRegexService(utilities.regexService());
+		controller.setFileFilterService(services.fileFilterService());
+		controller.setBeanService(utilities.beanService());
+		controller.setFXMLController(mainController());
+		controller.setPieShaeAppConfig(services.pieShareAppConfiguration());
+		controller.setFileUtilsService(services.fileUtilsService());
+		return controller;
+	}
+
 }

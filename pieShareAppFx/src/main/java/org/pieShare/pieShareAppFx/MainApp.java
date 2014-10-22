@@ -1,5 +1,6 @@
 package org.pieShare.pieShareAppFx;
 
+import ch.qos.logback.classic.LoggerContext;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.stage.Stage;
@@ -10,6 +11,7 @@ import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppSer
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareAppFx;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class MainApp extends Application {
@@ -19,6 +21,7 @@ public class MainApp extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		context = new AnnotationConfigApplicationContext();
                 context.register(PieUtilitiesConfiguration.class);
                 context.register(PiePlateConfiguration.class);
@@ -34,6 +37,8 @@ public class MainApp extends Application {
 	@Override
 	public void stop() throws Exception {
 		PieShareService app = context.getBean(PieShareService.class);
+		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+		lc.stop();
 		app.stop();
 	}
 

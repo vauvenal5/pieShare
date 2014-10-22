@@ -21,14 +21,16 @@ public interface IFileService {
 
 	//public void remoteFileChange(FileChangedMessage message);
 
-	public boolean checkMergeFile(PieFile pieFile);
-
-	public void localFileChange(File file);
-
-	public void fileRequested(FileRequestMessage msg);
+	//public boolean checkMergeFile(PieFile pieFile);
 	
 	public List<PieFile> getAllFilesList() throws IOException;
 	
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
+
+	public void deleteRecursive(PieFile file);
+	
+	public void waitUntilCopyFinished(String filePath);
+	
+	
 }

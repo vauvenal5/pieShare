@@ -5,29 +5,40 @@
  */
 package org.pieShare.pieShareApp.service.fileListenerService;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.vfs2.FileChangeEvent;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.service.fileService.api.IFileObserver;
-import org.pieShare.pieShareApp.service.fileService.task.FileChangedTask;
-import org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author richy
  */
-public class ApacheDefaultFileListener implements FileListener {
+public class ApacheDefaultFileListener implements IFileListenerService, FileListener {
 
-	private IFileObserver fileObserver;
+	//private IFileObserver fileObserver;
 	private IExecutorService executerService;
 	private IBeanService beanService;
+	private List<PieFile> modifiedFiles;
 
-	public void setFileObserver(IFileObserver fileObserver) {
+	/*public void setFileObserver(IFileObserver fileObserver) {
 		this.fileObserver = fileObserver;
+	}*/
+	
+	public void init() {
+		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
 	}
 
 	public void setBeanService(IBeanService beanService) {
@@ -37,40 +48,42 @@ public class ApacheDefaultFileListener implements FileListener {
 	public void setExecutorService(IExecutorService executerService) {
 		this.executerService = executerService;
 	}
+	
+	@Override
+	public void addPieFileToModifiedList(PieFile pieFile) {
+		this.modifiedFiles.add(pieFile);
+	}
+	
+	@Override
+	public boolean removePieFileFromModifiedList(PieFile file) {
+		return this.modifiedFiles.remove(file);
+	}
 
 	@Override
 	public void fileCreated(FileChangeEvent fce) throws Exception {
 		String filePath = fce.getFile().getURL().getFile();
-		FileCreatedTask task = beanService.getBean(PieShareAppBeanNames.getFileCreatedTaskName());
-		File file = new File(filePath);
-		task.setCreatedFile(file);
-		startObservation(file, task);
+		PieLogger.info(this.getClass(), "File created: {}", filePath);
+		LocalFileCreatedTask task = beanService.getBean(PieShareAppBeanNames.getLocalFileCreatedTask());
+		task.setFilePath(filePath);
+		this.executerService.execute(task);
 	}
 
 	@Override
 	public void fileDeleted(FileChangeEvent fce) throws Exception {
-		/*String filePath = fce.getFile().getURL().getFile();
-		 PieFile pieFile = new PieFile();
-		 pieFile.Init(new File(filePath));
-	
-		 shareService.shareFile(pieFile);
-		 fileMerger.fileDeleted(new File(filePath));
-		 //startObservation(new File(filePath), FileChangedTypes.FILE_DELETED);*/
+		//todo: does the file delete comand also has to wait like file created until the delete has finished?
+		String filePath = fce.getFile().getURL().getFile();
+		PieLogger.info(this.getClass(), "File deleted: {}", filePath);
+		LocalFileDeletedTask task = beanService.getBean(PieShareAppBeanNames.getLocalFileDeletedTask());
+		task.setFilePath(filePath);
+		this.executerService.execute(task);
 	}
 
 	@Override
 	public void fileChanged(FileChangeEvent fce) throws Exception {
-		/*String filePath = fce.getFile().getURL().getFile();
-		FileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
-		File file = new File(filePath);
-		task.setCreatedFile(file);
-		startObservation(file, task);*/
+		String filePath = fce.getFile().getURL().getFile();
+		PieLogger.info(this.getClass(), "File changed: {}", filePath);
+		LocalFileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
+		task.setFilePath(filePath);
+		this.executerService.execute(task);
 	}
-
-	private void startObservation(File file, IPieTask task) {
-		fileObserver.setData(file);
-		fileObserver.setTask(task);
-		executerService.execute(fileObserver);
-	}
-
 }
