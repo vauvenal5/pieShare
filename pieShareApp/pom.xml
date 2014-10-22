@@ -10,6 +10,14 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
+	<repositories>
+		<repository>
+			<id>objectdb</id>
+			<name>ObjectDB Repository</name>
+			<url>http://m2.objectdb.com</url>
+		</repository>
+	</repositories>
+
 	<artifactId>pieShareApp</artifactId>
 	<build>
 		<plugins>
@@ -26,6 +34,12 @@
 	</build>
 	<dependencies>
       
+		<dependency>
+			<groupId>com.objectdb</groupId>
+			<artifactId>objectdb</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-vfs2</artifactId>
@@ -56,6 +70,12 @@
 			<groupId>com.turn</groupId>
 			<artifactId>ttorrent</artifactId>
 			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>   
 		</dependency>
 	</dependencies>
    

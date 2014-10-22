@@ -16,8 +16,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -38,18 +37,25 @@ public class NetworkService implements INetworkService {
 	public int getAvailablePortStartingFrom(int port) {
 		
 		for (int p = port; p <= this.maxPort; p++) {
-			try {
+			if(this.checkPort(p))
+			{
+				return p;
+			}
+		}
+		//todo: throw exception
+		return -1;
+	}
+	
+	private boolean checkPort(int p) {
+		try {
 				ServerSocket tmpSocket = new ServerSocket(p);
 				tmpSocket.setReuseAddress(true);
 				tmpSocket.close();
-				return p;
+				return true;
 			} catch (IOException ex) {
-				Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+				PieLogger.error(this.getClass(), "Find port failed!", ex);
 			}
-		}
-
-		//todo: throw exception
-		return -1;
+		return false;
 	}
 
 	@Override
@@ -98,20 +104,21 @@ public class NetworkService implements INetworkService {
 										//if everything passes the InetAddress should be okay.
 										socket.close();
 										this.address = ad;
+										PieLogger.info(this.getClass(), "Found internet!");
 										return this.address;
 									} catch (IOException ex) {
-										Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+										PieLogger.info(this.getClass(), "No internet here!", ex);
 									}
 								}
 							}
 						} catch (IOException ex) {
-							Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+							PieLogger.info(this.getClass(), "Well looks bad for internet!", ex);
 						}
 					}
 				}
 			}
 		} catch (SocketException ex) {
-			Logger.getLogger(NetworkService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.info(this.getClass(), "God damit! Give me internet", ex);
 		}
 
 		if (possibleAds.size() == 0) {
@@ -123,5 +130,18 @@ public class NetworkService implements INetworkService {
 
 		this.address = possibleAds.get(0);
 		return this.address;
+	}
+
+	@Override
+	public int getNumberOfAvailablePorts(int firstPort, int lastPort) {
+		int count = 0;
+		
+		for(int i = firstPort; i <= lastPort; i++) {
+			if(this.checkPort(i)) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }

@@ -21,23 +21,31 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	private IConfigurationReader configurationReader;
 	private Properties conf;
-	private final String CONFIG_PATH;
-	private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
-
+	private String CONFIG_PATH;
+	private String BASE_CONFIG_FOLDER;
 	private File workingDir = null;
 	private File tempDir = null;
 
 	public PieShareAppConfiguration() {
-		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+
+	}
+
+	public String getBaseConfigPath() {
+		return this.BASE_CONFIG_FOLDER;
 	}
 
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
+
 		this.configurationReader = configurationReader;
+
+		this.BASE_CONFIG_FOLDER = configurationReader.getBaseConfigPath().toPath().toString() + "/.pieShare/";
+		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+
 		try {
 			//pieShare.properties
 			conf = configurationReader.getConfig(CONFIG_PATH);
 		} catch (NoConfigFoundException ex) {
-			logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
+			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
 		}
 	}
 
