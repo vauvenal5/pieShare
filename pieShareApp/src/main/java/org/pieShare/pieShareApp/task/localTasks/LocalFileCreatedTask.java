@@ -37,6 +37,9 @@ public class LocalFileCreatedTask extends FileEventTask {
 	@Override
 	public void run() {
 		File file = new File(this.filePath);
+		
+		if(!checkFilter(file)) return;
+		
 		this.fileService.waitUntilCopyFinished(this.filePath);
 		
 		//todo: why do we scip directories?!
