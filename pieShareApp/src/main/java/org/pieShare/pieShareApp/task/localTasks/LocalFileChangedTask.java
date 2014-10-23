@@ -35,6 +35,8 @@ public class LocalFileChangedTask extends FileHistoryEventTask {
 		try {
 			PieFile file = this.fileUtilsService.getPieFile(this.filePath);
 			
+			if(!checkFilter(file)) return;
+			
 			if(this.fileListener.removePieFileFromModifiedList(file)) {
 				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", file.getRelativeFilePath());
 				return;
