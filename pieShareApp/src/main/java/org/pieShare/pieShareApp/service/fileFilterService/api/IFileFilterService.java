@@ -9,6 +9,7 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import java.io.File;
 import java.util.ArrayList;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.fileService.PieFile;
 
 /**
  *
@@ -22,6 +23,8 @@ public interface IFileFilterService {
 
 	void removeFilter(IFilter filer);
 
+	boolean checkFile(PieFile file);
+	
 	boolean checkFile(File file);
 	
 	ArrayList<IFilter> getAllFilters();
