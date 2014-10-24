@@ -79,6 +79,7 @@ public class PieShareAppTasks {
 	private void fileEventTask(FileEventTask task) {
 		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setFileFilterService(services.fileFilterService());
 		task.setFileUtilsService(this.services.fileUtilsService());
 	}
 	

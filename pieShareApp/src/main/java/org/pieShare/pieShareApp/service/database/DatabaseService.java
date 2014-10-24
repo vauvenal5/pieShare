@@ -5,14 +5,20 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import org.codehaus.plexus.util.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
@@ -52,7 +58,21 @@ public class DatabaseService implements IDatabaseService {
 
 	@PostConstruct
 	public void init() {
-		emf = Persistence.createEntityManagerFactory(appConfiguration.getBaseConfigPath() + "/objectdb/db/points.odb");
+		//ToDo: Delete DB Hack
+		String newDBDir = String.valueOf(new Date().getTime());
+
+		File file = new File(String.format("%s%s", appConfiguration.getBaseConfigPath(), "/objectdb/db/points.odb"));
+		File newFile = new File(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
+		if(file.exists())
+		{
+			try {
+				FileUtils.copyFile(file, newFile);
+			} catch (IOException ex) {
+				Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
 	}
 
 	@Override
@@ -77,7 +97,7 @@ public class DatabaseService implements IDatabaseService {
 			if (entity == null) {
 				return null;
 			}
-			user = new PieUser();
+			user = beanService.getBean(PieUser.class);
 			user.setIsLoggedIn(false);
 			EncryptedPassword paswd = new EncryptedPassword();
 			paswd.setPassword(base64Service.decode(entity.getPassword()));
@@ -97,7 +117,7 @@ public class DatabaseService implements IDatabaseService {
 
 		ArrayList<PieUser> list = new ArrayList<>();
 		for (PieUserEntity entity : ((Collection<PieUserEntity>) query.getResultList())) {
-			PieUser user = new PieUser();
+			PieUser user = beanService.getBean(PieUser.class);
 			user.setIsLoggedIn(false);
 			EncryptedPassword paswd = new EncryptedPassword();
 			paswd.setPassword(base64Service.decode(entity.getPassword()));
