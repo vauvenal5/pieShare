@@ -97,6 +97,8 @@ public class ClusterManagementService implements IClusterManagementService {
 				throw new ClusterManagmentServiceException(ex);
 			}
 		}
+		
+		throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
 	}
 
 	@Override
