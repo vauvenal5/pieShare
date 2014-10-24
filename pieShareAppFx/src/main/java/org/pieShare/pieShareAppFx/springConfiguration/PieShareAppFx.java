@@ -62,6 +62,7 @@ public class PieShareAppFx {
 		MainSceneController controller = new MainSceneController();
 		controller.setBeanService(this.utilities.beanService());
 		controller.setClusterSettingsController(clusterSettingsController());
+		controller.setClusterManagementService(plate.clusterManagementService());
 		return controller;
 	}
 
@@ -69,6 +70,8 @@ public class PieShareAppFx {
 	@Lazy
 	public ClusterSettingsController clusterSettingsController() {
 		ClusterSettingsController controller = new ClusterSettingsController();
+		controller.setBeanService(utilities.beanService());
+		controller.setClusterManagementService(plate.clusterManagementService());
 		return controller;
 	}
 

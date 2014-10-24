@@ -28,7 +28,5 @@ public interface IClusterService {
 
 	<P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
 	
-	String getName();
-	
 	IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase();
 }

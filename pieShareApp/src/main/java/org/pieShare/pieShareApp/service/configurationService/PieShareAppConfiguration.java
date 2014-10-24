@@ -35,11 +35,15 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 	}
 
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
-
 		this.configurationReader = configurationReader;
+	}
 
+	public void init() {
 		this.BASE_CONFIG_FOLDER = configurationReader.getBaseConfigPath().toPath().toString() + "/.pieShare/";
-		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+
+		if (CONFIG_PATH == null) {
+			this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+		}
 
 		try {
 			//pieShare.properties
@@ -47,6 +51,10 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		} catch (NoConfigFoundException ex) {
 			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
 		}
+	}
+
+	public void setConfigPath(String path) {
+		CONFIG_PATH = String.format("/.pieShare/%s", path);
 	}
 
 	@Override

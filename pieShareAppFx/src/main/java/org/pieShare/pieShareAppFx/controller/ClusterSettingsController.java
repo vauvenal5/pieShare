@@ -13,8 +13,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -22,26 +27,33 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
  */
 public class ClusterSettingsController implements Initializable {
 
+	private IBeanService beanService;
+	private IClusterManagementService clusterManagementService;
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
+
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
+	}
+
 	@FXML
 	private Label labelCloudName;
-	public IClusterService clusterService;
 
 	@FXML
 	private void handleLogoutAction(ActionEvent event) {
 		try {
-			clusterService.disconnect();
-		} catch (ClusterServiceException ex) {
+			clusterManagementService.diconnectAll();
+		} catch (ClusterManagmentServiceException ex) {
 			Logger.getLogger(ClusterSettingsController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-	public void setClusterFile(IClusterService clusterService) {
-		this.clusterService = clusterService;
-	}
-
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		labelCloudName.setText(clusterService.getName());
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		labelCloudName.setText(user.getCloudName());
 	}
 
 }
