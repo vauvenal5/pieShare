@@ -90,15 +90,15 @@ public class ClusterManagementService implements IClusterManagementService {
 
 	@Override
 	public void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException {
-		if (this.clusters.containsKey(cloudName)) {
-			try {
-				this.clusters.get(cloudName).sendMessage(message);
-			} catch (ClusterServiceException ex) {
-				throw new ClusterManagmentServiceException(ex);
-			}
+		if (!this.clusters.containsKey(cloudName)) {
+			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
 		}
 		
-		throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
+		try {
+			this.clusters.get(cloudName).sendMessage(message);
+		} catch (ClusterServiceException ex) {
+			throw new ClusterManagmentServiceException(ex);
+		}
 	}
 
 	@Override
