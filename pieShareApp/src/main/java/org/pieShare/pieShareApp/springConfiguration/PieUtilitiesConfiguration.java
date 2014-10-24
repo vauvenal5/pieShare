@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareAppFx.springConfiguration;
+package org.pieShare.pieShareApp.springConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;

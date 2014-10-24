@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import javafx.fxml.FXMLLoader;
 import org.pieShare.pieShareAppFx.ControllerFactory;
 import org.pieShare.pieShareAppFx.FXMLController;
@@ -15,7 +17,7 @@ import org.pieShare.pieShareAppFx.controller.FileFilterSettingsController;
 import org.pieShare.pieShareAppFx.controller.LoginController;
 import org.pieShare.pieShareAppFx.controller.MainSceneController;
 import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

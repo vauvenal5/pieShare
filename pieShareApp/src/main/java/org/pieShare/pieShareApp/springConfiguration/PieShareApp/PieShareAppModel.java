@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
+package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
