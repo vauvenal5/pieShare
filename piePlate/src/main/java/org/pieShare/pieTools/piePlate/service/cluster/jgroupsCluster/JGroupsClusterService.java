@@ -115,9 +115,4 @@ public class JGroupsClusterService implements IClusterService {
 		this.channel.close();
 		clusterRemovedEventBase.fireEvent(new ClusterRemovedEvent(this));
 	}
-
-	@Override
-	public String getName() {
-		return channel.getClusterName();
-	}
 }
