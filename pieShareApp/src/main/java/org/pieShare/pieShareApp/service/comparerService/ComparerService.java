@@ -55,6 +55,7 @@ public class ComparerService implements IComparerService {
 
 
 		//Remote File is older than local file
+		//todo: should compare also file name!!!
 		if (remotePieFile.getLastModified() == localFile.lastModified()) {
 			if (Arrays.equals(remotePieFile.getMd5(), localPieFile.getMd5())) {
 				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());

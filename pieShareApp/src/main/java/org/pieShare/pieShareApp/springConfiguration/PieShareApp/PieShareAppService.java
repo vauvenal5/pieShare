@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
+package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.PieShareService;
@@ -12,22 +12,22 @@ import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
-import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
-import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

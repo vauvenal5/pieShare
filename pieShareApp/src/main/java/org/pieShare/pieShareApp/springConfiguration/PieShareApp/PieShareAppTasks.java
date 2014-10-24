@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
+package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -16,8 +18,6 @@ import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
-import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
