@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareAppFx.springConfiguration;
+package org.pieShare.pieShareApp.springConfiguration;
 
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
