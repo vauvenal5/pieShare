@@ -53,7 +53,7 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 	public void executeCommand(LoginCommand command) {
 		EncryptedPassword pwd = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
 
-		PieUser user = beanService.getBean(PieUser.class);
+		PieUser user = null;
 		//PieUser user = databaseService.getPieUser(command.getUserName());
 
 		/*if (user != null) {
@@ -69,7 +69,7 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 			user.setPassword(pwd);
 			user.setUserName(command.getUserName());
 			user.setIsLoggedIn(true);
-			databaseService.persistPieUser(user);
+			//databaseService.persistPieUser(user);
 		//}
 
 		//this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
