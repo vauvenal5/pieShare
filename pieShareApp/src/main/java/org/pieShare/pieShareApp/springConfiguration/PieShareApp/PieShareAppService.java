@@ -43,9 +43,9 @@ import org.springframework.context.annotation.Scope;
 public class PieShareAppService {
 
 	@Autowired
-	private PieUtilitiesConfiguration utilities;
+	protected PieUtilitiesConfiguration utilities;
 	@Autowired
-	private PiePlateConfiguration plate;
+	protected PiePlateConfiguration plate;
 
 	@Bean
 	@Lazy

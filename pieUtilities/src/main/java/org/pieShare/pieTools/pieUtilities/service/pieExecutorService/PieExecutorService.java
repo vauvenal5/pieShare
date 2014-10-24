@@ -89,4 +89,9 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 		this.executor.shutdown();
 	}
 
+	@Override
+	public <P extends IPieEvent> void removeTaskRegistration(Class<P> event) {
+		this.tasks.remove(event);
+	}
+
 }

@@ -114,13 +114,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
-		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
-		this.executorService.registerTask(FileRequestMessage.class, FileRequestTask.class);
-		this.executorService.registerTask(NewFileMessage.class, NewFileTask.class);
-		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
-		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
-		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
-		this.executorService.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 
 	private void addWatchDirectory(File file) {
@@ -196,8 +189,8 @@ public class FileService implements IFileService, IClusterAddedListener {
 		try {
 			//when a cluster is added this actually means that this client has entered a cloud
 			//todo: request all files list!!!!
-			//todo: fix hardcoded cluster name
-			this.clusterManagementService.sendMessage(new FileListRequestMessage(), "sv");
+			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
 		} catch (ClusterManagmentServiceException ex) {
 			//todo: error handling
 			PieLogger.error(this.getClass(), "File error.", ex);

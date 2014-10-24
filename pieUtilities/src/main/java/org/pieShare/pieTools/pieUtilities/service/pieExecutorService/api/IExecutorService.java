@@ -35,5 +35,7 @@ public interface IExecutorService {
 	 */
 	<X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<X> event, Class<T> task);
 
+	<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
+	
 	public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException;
 }
