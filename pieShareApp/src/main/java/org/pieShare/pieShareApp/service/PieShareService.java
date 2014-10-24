@@ -5,6 +5,20 @@
  */
 package org.pieShare.pieShareApp.service;
 
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -66,6 +80,13 @@ public class PieShareService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}*/
+		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
+		this.executorService.registerTask(FileRequestMessage.class, FileRequestTask.class);
+		this.executorService.registerTask(NewFileMessage.class, NewFileTask.class);
+		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
+		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
+		this.executorService.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 	
 	public void stop() {
