@@ -22,6 +22,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -37,7 +38,12 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
 import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
 import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
@@ -48,6 +54,7 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 public class MainSceneController implements Initializable {
 
 	private ClusterSettingsController clusterSettingsController;
+	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
 
 	@FXML
@@ -61,10 +68,13 @@ public class MainSceneController implements Initializable {
 
 	@FXML
 	private Accordion mainAccordion;
-	
+
 	@FXML
 	private TitledPane titelPaneClouds;
-	
+
+	@FXML
+	private Button addButton;
+
 	@FXML
 	private ListView<ITwoColumnListView> settingsListView;
 	private ObservableList<ITwoColumnListView> settingsListViewItems;
@@ -77,13 +87,17 @@ public class MainSceneController implements Initializable {
 		this.clusterSettingsController = settingsController;
 	}
 
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
+	}
+
 	/**
 	 * Initializes the controller class.
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		mainAccordion.setExpandedPane(titelPaneClouds);
-		
+
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -115,6 +129,21 @@ public class MainSceneController implements Initializable {
 			@Override
 			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
 				return new TwoColumnListView();
+			}
+		});
+
+		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
+
+			@Override
+			public void handleObject(ClusterAddedEvent event) {
+				addButton.disableProperty().set(true);
+			}
+		});
+
+		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+			@Override
+			public void handleObject(ClusterRemovedEvent event) {
+				addButton.disableProperty().set(false);
 			}
 		});
 
@@ -155,8 +184,7 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void setClusterSettingControl(IClusterService cluster) {
-		clusterSettingsController.setClusterFile(cluster);
+	public void setClusterSettingControl() {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
 			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
