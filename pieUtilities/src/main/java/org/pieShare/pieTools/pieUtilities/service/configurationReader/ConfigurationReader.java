@@ -28,7 +28,7 @@ public class ConfigurationReader implements IConfigurationReader {
 	private final String homeDir;
 	private final String configSavePath;
 	private final File configFolder;
-
+	
 	@Override
 	public File getBaseConfigPath() {
 		return configFolder;

@@ -16,6 +16,8 @@ import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
+import org.pieShare.pieTools.pieUtilities.service.regexService.RegexService;
 import org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.PasswordEncryptionService;
@@ -120,5 +122,12 @@ public class PieUtilitiesConfiguration {
 	@Scope(value="prototype")
 	public EventBase eventBase() {
 		return new EventBase();
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value="prototype")
+	public IRegexService regexService() {
+		return new RegexService();
 	}
 }
