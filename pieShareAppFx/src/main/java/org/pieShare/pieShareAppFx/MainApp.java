@@ -5,12 +5,12 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.stage.Stage;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppModel;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTasks;
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareAppFx;
-import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
