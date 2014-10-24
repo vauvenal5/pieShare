@@ -117,7 +117,7 @@ public class DatabaseService implements IDatabaseService {
 
 		ArrayList<PieUser> list = new ArrayList<>();
 		for (PieUserEntity entity : ((Collection<PieUserEntity>) query.getResultList())) {
-			user = beanService.getBean(PieUser.class);
+			PieUser user = beanService.getBean(PieUser.class);
 			user.setIsLoggedIn(false);
 			EncryptedPassword paswd = new EncryptedPassword();
 			paswd.setPassword(base64Service.decode(entity.getPassword()));
