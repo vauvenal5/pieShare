@@ -11,12 +11,13 @@ import java.io.File;
  *
  * @author richy
  */
-public interface IPieShareAppConfiguration
-{
+public interface IPieShareAppConfiguration {
 
-    public File getWorkingDirectory();
+	File getWorkingDirectory();
 
-    public int getFileSendBufferSize();
-
-    public File getTempCopyDirectory();
+	File getTempCopyDirectory();
+	
+	void setWorkingDir(File workingDir);
+	
+	void setTempCopyDir(File tempCopyDir);
 }

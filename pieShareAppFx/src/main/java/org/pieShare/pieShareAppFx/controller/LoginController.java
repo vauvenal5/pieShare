@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareAppFx.controller;
 
 import java.net.URL;
@@ -24,35 +23,33 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  * @author Svetoslav
  */
 public class LoginController implements Initializable {
-    
-    @FXML
-    private TextField userNameField;
-    @FXML
-    private PasswordField passwordField;
-    
-    private LoginCommandService loginCommandService;
-    private IBeanService beanService;
-    
-    public void setLoginCommandService(LoginCommandService service) {
-        this.loginCommandService = service;
-    }
-    
-    @FXML
-    private void handleLoginAction(ActionEvent event) {
-        PlainTextPassword plainText = new PlainTextPassword();
-        plainText.password = this.passwordField.getText().toCharArray();
-        LoginCommand loginCommand = new LoginCommand();
-        loginCommand.setPlainTextPassword(plainText);
-        loginCommand.setUserName(this.userNameField.getText());
-        this.loginCommandService.executeCommand(loginCommand);
-    }
-    
-    /**
-     * Initializes the controller class.
-     */
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
-    
+	@FXML
+	private TextField userNameField;
+	@FXML
+	private PasswordField passwordField;
+
+	private LoginCommandService loginCommandService;
+	private IBeanService beanService;
+
+	public void setLoginCommandService(LoginCommandService service) {
+		this.loginCommandService = service;
+	}
+
+	@FXML
+	private void handleLoginAction(ActionEvent event) {
+		PlainTextPassword plainText = new PlainTextPassword();
+		plainText.password = this.passwordField.getText().toCharArray();
+		LoginCommand loginCommand = new LoginCommand();
+		loginCommand.setPlainTextPassword(plainText);
+		loginCommand.setUserName(this.userNameField.getText());
+		this.loginCommandService.executeCommand(loginCommand);
+	}
+
+	/**
+	 * Initializes the controller class.
+	 */
+	@Override
+	public void initialize(URL url, ResourceBundle rb) {
+		// TODO
+	}
 }
