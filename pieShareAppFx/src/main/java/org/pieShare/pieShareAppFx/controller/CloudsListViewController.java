@@ -11,10 +11,12 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -78,10 +80,10 @@ public class CloudsListViewController implements Initializable {
 			}
 		});
 
-		cloudsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<PieUser>() {
+		cloudsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public void changed(ObservableValue<? extends PieUser> observable, PieUser oldValue, PieUser newValue) {
-				if (newValue != null) {
+			public void handle(MouseEvent arg0) {
+				if (cloudsListView.getSelectionModel().getSelectedItems() != null) {
 					mainSceneController.setClusterSettingControl();
 				}
 			}

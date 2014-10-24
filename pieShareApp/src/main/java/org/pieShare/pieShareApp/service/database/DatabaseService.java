@@ -58,21 +58,21 @@ public class DatabaseService implements IDatabaseService {
 
 	@PostConstruct
 	public void init() {
-		//ToDo: Delete DB Hack
-		String newDBDir = String.valueOf(new Date().getTime());
+		/*//ToDo: Delete DB Hack
+		 String newDBDir = String.valueOf(new Date().getTime());
 
-		File file = new File(String.format("%s%s", appConfiguration.getBaseConfigPath(), "/objectdb/db/points.odb"));
-		File newFile = new File(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
-		if(file.exists())
-		{
-			try {
-				FileUtils.copyFile(file, newFile);
-			} catch (IOException ex) {
-				Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
-			}
-		}
-		
-		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
+		 File file = new File(String.format("%s%s", appConfiguration.getBaseConfigPath(), "/objectdb/db/points.odb"));
+		 File newFile = new File(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
+		 if(file.exists())
+		 {
+		 try {
+		 FileUtils.copyFile(file, newFile);
+		 } catch (IOException ex) {
+		 Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+		 }
+		 }*/
+		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/points.odb", appConfiguration.getBaseConfigPath()));
+		//emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
 	}
 
 	@Override
