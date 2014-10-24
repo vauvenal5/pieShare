@@ -6,8 +6,8 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Properties;
-import org.apache.commons.lang3.Validate;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
@@ -17,69 +17,94 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author richy
  */
-public class PieShareAppConfiguration implements IPieShareAppConfiguration
-{
+public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
-    private IConfigurationReader configurationReader;
-    private Properties conf;
-    private PieLogger logger = new PieLogger(PieShareAppConfiguration.class);
+	private IConfigurationReader configurationReader;
+	private Properties conf;
+	private final String CONFIG_PATH;
 
-    public void setConfigurationReader(IConfigurationReader configurationReader)
-    {
-        this.configurationReader = configurationReader;
-        try
-        {
-            //pieShare.properties
-            conf = configurationReader.getConfig("/.pieShare/pieShare.properties");
-        }
-        catch (NoConfigFoundException ex)
-        {
-            logger.error("Cannot find pieShareAppConfig. Message: " + ex.getMessage());
-        }
-    }
+	private File workingDir = null;
+	private File tempDir = null;
 
-    @Override
-    public File getWorkingDirectory()
-    {
-        Validate.notNull(conf);
+	public PieShareAppConfiguration() {
+		this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+	}
 
-        File watchDir = new File(conf.getProperty("workingDir"));
+	public void setConfigurationReader(IConfigurationReader configurationReader) {
+		this.configurationReader = configurationReader;
+		try {
+			//pieShare.properties
+			conf = configurationReader.getConfig(CONFIG_PATH);
+		} catch (NoConfigFoundException ex) {
+			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
+		}
+	}
 
-        if (!watchDir.exists())
-        {
-            watchDir.mkdirs();
-        }
+	@Override
+	public File getWorkingDirectory() {
+		readWorkingDir();
+		return workingDir;
+	}
 
-        return new File(watchDir.getAbsolutePath());
-    }
+	@Override
+	public void setWorkingDir(File workingDir) {
+		addProperty("workingDir", workingDir.toPath().toString());
+	}
 
-    @Override
-    public int getFileSendBufferSize()
-    {
-        Validate.notNull(conf);
+	private void readWorkingDir() {
+		String name = "";
+		if (conf == null || !conf.containsKey("workingDir")) {
+			name = "workingDir";
+		} else {
+			name = conf.getProperty("workingDir");
+		}
 
-        try
-        {
-            return Integer.parseInt(conf.getProperty("fileSendBufferSize"));
-        }
-        catch (NumberFormatException ex)
-        {
-            return 2048;
-        }
-    }
+		File watchDir = new File(name);
 
-    @Override
-    public File getTempCopyDirectory()
-    {
-        Validate.notNull(conf);
+		if (!watchDir.exists()) {
+			watchDir.mkdirs();
+		}
 
-        File tempCopyDir = new File(conf.getProperty("tempCopyDir"));
+		workingDir = new File(watchDir.getAbsolutePath());
+	}
 
-        if (!tempCopyDir.exists())
-        {
-            tempCopyDir.mkdirs();
-        }
+	@Override
+	public File getTempCopyDirectory() {
+		readTempCopyDir();
+		return tempDir;
+	}
 
-        return new File(tempCopyDir.getAbsolutePath());
-    }
+	private void readTempCopyDir() {
+		String name;
+		if (conf == null || !conf.containsKey("tempCopyDir")) {
+			name = "tempDir";
+		} else {
+			name = conf.getProperty("tempCopyDir");
+		}
+
+		File tempCopyDir = new File(name);
+
+		if (!tempCopyDir.exists()) {
+			tempCopyDir.mkdirs();
+		}
+
+		tempDir = new File(tempCopyDir.getAbsolutePath());
+	}
+
+	@Override
+	public void setTempCopyDir(File tempCopyDir) {
+		addProperty("tempCopyDir", tempCopyDir.toPath().toString());
+	}
+
+	private void addProperty(String prop, String value) {
+		if (conf == null) {
+			conf = new Properties();
+		}
+		if (conf.contains(prop)) {
+			conf.replace(prop, value);
+		} else {
+			conf.put(prop, value);
+		}
+		configurationReader.saveConfig(conf, CONFIG_PATH);
+	}
 }

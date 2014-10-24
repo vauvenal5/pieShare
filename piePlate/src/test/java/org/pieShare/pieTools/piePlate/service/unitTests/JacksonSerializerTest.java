@@ -13,34 +13,34 @@ import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.Jacks
  */
 public class JacksonSerializerTest {
 
-    private byte[] testBuffer;
-    private TestMessage msg;
-    private JacksonSerializerService service;
+	private byte[] testBuffer;
+	private TestMessage msg;
+	private JacksonSerializerService service;
 
-    @Before()
-    public void before() throws Exception {
-        msg = new TestMessage();
-        msg.setType(TestMessage.class.getName());
-        msg.setMsg("Testing JacksonSerializer!");
+	@Before()
+	public void before() throws Exception {
+		msg = new TestMessage();
+		msg.setType(TestMessage.class.getName());
+		msg.setMsg("Testing JacksonSerializer!");
 
-        ObjectMapper mapper = new ObjectMapper();
-        testBuffer = mapper.writeValueAsBytes(msg);
+		ObjectMapper mapper = new ObjectMapper();
+		testBuffer = mapper.writeValueAsBytes(msg);
 
-        this.service = new JacksonSerializerService();
-    }
+		this.service = new JacksonSerializerService();
+	}
 
-    @Test
-    public void testSerialize() throws Exception {
-        byte[] res = this.service.serialize(this.msg);
-        Assert.assertArrayEquals(this.testBuffer, res);
-    }
+	@Test
+	public void testSerialize() throws Exception {
+		byte[] res = this.service.serialize(this.msg);
+		Assert.assertArrayEquals(this.testBuffer, res);
+	}
 
-    @Test
-    public void testDeserialize() throws Exception {
-        IPieMessage res = this.service.deserialize(this.testBuffer);
+	@Test
+	public void testDeserialize() throws Exception {
+		IPieMessage res = this.service.deserialize(this.testBuffer);
 
-        Assert.assertEquals(TestMessage.class, res.getClass());
-        Assert.assertEquals(this.msg.getMsg(), ((TestMessage)res).getMsg());
-        Assert.assertEquals(this.msg.getType(), ((TestMessage)res).getType());
-    }
+		Assert.assertEquals(TestMessage.class, res.getClass());
+		Assert.assertEquals(this.msg.getMsg(), ((TestMessage) res).getMsg());
+		Assert.assertEquals(this.msg.getType(), ((TestMessage) res).getType());
+	}
 }

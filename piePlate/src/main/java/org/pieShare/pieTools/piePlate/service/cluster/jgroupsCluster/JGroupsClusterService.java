@@ -6,77 +6,118 @@ import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class JGroupsClusterService implements IClusterService {
 
-    private IReceiver receiver;
-    private ISerializerService serializerService;
-    private JChannel channel;
-    private IExecutorService executorService;
+	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
 
-    public JGroupsClusterService() {
-    }
+	private IReceiver receiver;
+	private ISerializerService serializerService;
+	private JChannel channel;
+	private IExecutorService executorService;
+	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+	private String id;
 
-    public void setChannel(JChannel channel) {
-        this.channel = channel;
-    }
+	public JGroupsClusterService() {
+	}
 
-    public void setReceiver(IReceiver receiver) {
-        this.receiver = receiver;
-    }
+	@Override
+	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
+		return this.clusterRemovedEventBase;
+	}
 
-    public void setSerializerService(ISerializerService service) {
-        this.serializerService = service;
-    }
+	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+		this.clusterRemovedEventBase = clusterRemovedEventBase;
+	}
 
-    @Override
-    public void connect(String clusterName) throws ClusterServiceException {
-        try {
-            Validate.notNull(this.receiver);
+	public void setChannel(JChannel channel) {
+		this.channel = channel;
+	}
 
-            this.channel.setReceiver(this.receiver);
-            this.channel.setDiscardOwnMessages(true);
-            this.channel.connect(clusterName);
+	public void setReceiver(IReceiver receiver) {
+		this.receiver = receiver;
+	}
 
-        } catch (NullPointerException e) {
-            throw new ClusterServiceException("Receiver not set!");
-        } catch (Exception e) {
-            throw new ClusterServiceException(e);
-        }
-    }
+	public void setSerializerService(ISerializerService service) {
+		this.serializerService = service;
+	}
 
-    @Override
-    public void sendMessage(IPieMessage msg) throws ClusterServiceException {
-        Address ad = null;
-        
-        if(msg.getAddress() instanceof JGroupsPieAddress) {
-            ad = ((JGroupsPieAddress)msg.getAddress()).getAddress();
-        }
-        
-        try {
-            this.channel.send(ad, this.serializerService.serialize(msg));
-        } catch (Exception e) {
-            throw new ClusterServiceException(e);
-        }
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    @Override
-    public int getMembersCount() {
-        return this.channel.getView().getMembers().size();
-    }
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    @Override
-    public boolean isConnectedToCluster() {
-        return this.channel.isConnected();
-    }
+	@Override
+	public void connect(String clusterName) throws ClusterServiceException {
+		try {
+			Validate.notNull(this.receiver);
 
-    @Override
-    public <P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
-        this.executorService.registerTask(event, task);
-    }
+			this.channel.setReceiver(this.receiver);
+			this.receiver.setClusterName(clusterName);
+			this.channel.setDiscardOwnMessages(true);
+			this.channel.connect(clusterName);
+
+		} catch (NullPointerException e) {
+			throw new ClusterServiceException("Receiver not set!");
+		} catch (Exception e) {
+			throw new ClusterServiceException(e);
+		}
+	}
+
+	@Override
+	public void sendMessage(IPieMessage msg) throws ClusterServiceException {
+		Address ad = null;
+
+		if (msg.getAddress() instanceof JGroupsPieAddress) {
+			ad = ((JGroupsPieAddress) msg.getAddress()).getAddress();
+		}
+
+		try {
+			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
+			this.channel.send(ad, this.serializerService.serialize(msg));
+		} catch (Exception e) {
+			throw new ClusterServiceException(e);
+		}
+	}
+
+	@Override
+	public int getMembersCount() {
+		return this.channel.getView().getMembers().size();
+	}
+
+	@Override
+	public boolean isConnectedToCluster() {
+		return this.channel.isConnected();
+	}
+
+	@Override
+	public <P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
+		this.executorService.registerTask(event, task);
+	}
+
+	@Override
+	public void disconnect() throws ClusterServiceException {
+		this.channel.disconnect();
+		this.channel.close();
+		clusterRemovedEventBase.fireEvent(new ClusterRemovedEvent(this));
+	}
+
+	@Override
+	public String getName() {
+		return channel.getName();
+	}
 }

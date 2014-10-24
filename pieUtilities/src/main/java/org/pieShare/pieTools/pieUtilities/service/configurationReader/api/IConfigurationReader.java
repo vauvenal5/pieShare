@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.configurationReader.api;
 
+import java.io.File;
 import java.util.Properties;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
 
@@ -13,7 +13,11 @@ import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.
  *
  * @author richy
  */
-public interface IConfigurationReader
-{
-    public Properties getConfig(String pathToConfig) throws NoConfigFoundException;
+public interface IConfigurationReader {
+
+	Properties getConfig(String pathToConfig) throws NoConfigFoundException;
+	
+	File getBaseConfigPath();
+	
+	void saveConfig(Properties props, String pathToConfig);
 }
