@@ -19,7 +19,7 @@
                            <graphic>
                               <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="55.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#handleAddCloudAction" text="+" />
+                                    <Button mnemonicParsing="false" fx:id="addButton" onAction="#handleAddCloudAction" text="+" />
                                  </children>
                               </StackPane>
                            </graphic>
