@@ -290,6 +290,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				// Check if there's an error
 				if (ClientState.ERROR.equals(client.getState())) {
 					client.stop();
+					//todo: ports release when exception
 					throw new Exception("ttorrent client Error State");
 				}
 				
