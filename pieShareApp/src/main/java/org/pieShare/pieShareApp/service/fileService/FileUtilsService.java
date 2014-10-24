@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
@@ -23,27 +22,27 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
  * @author Svetoslav
  */
 public class FileUtilsService implements IFileUtilsService {
-    
-    private IPieShareAppConfiguration pieAppConfig;
-    private IBeanService beanService;
-    private IHashService hashService;
+
+	private IPieShareAppConfiguration pieAppConfig;
+	private IBeanService beanService;
+	private IHashService hashService;
 	private IFileListenerService fileListener;
 
-    public void setPieAppConfig(IPieShareAppConfiguration pieAppConfig) {
-        this.pieAppConfig = pieAppConfig;
-    }
+	public void setPieAppConfig(IPieShareAppConfiguration pieAppConfig) {
+		this.pieAppConfig = pieAppConfig;
+	}
 
 	public void setFileListener(IFileListenerService fileListener) {
 		this.fileListener = fileListener;
 	}
 
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
-    public void setHashService(IHashService hashService) {
-        this.hashService = hashService;
-    }
+	public void setHashService(IHashService hashService) {
+		this.hashService = hashService;
+	}
 	
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
@@ -58,32 +57,35 @@ public class FileUtilsService implements IFileUtilsService {
 	}
 
     @Override
-    public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
-            /*if (!file.exists()) {
-                    throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
-            }*/
+	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
+		/*if (!file.exists()) {
+		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
+		 }*/
 
-            PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
+		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
-            Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-            Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
-            Path pathRelative = pathBase.relativize(pathAbsolute);
-            pieFile.setRelativeFilePath(pathRelative.toString());
-			
-			pieFile.setFileName(file.getName());
-			pieFile.setLastModified(file.lastModified());
-			
-			if(file.exists()){
-				pieFile.setMd5(hashService.hashStream(file));
-			}
+		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
 
-            return pieFile;
-    }
+		pieFile.setFileName(file.getName());
+		pieFile.setLastModified(file.lastModified());
+
+		if (file.exists()) {
+			pieFile.setMd5(hashService.hashStream(file));
+		}
+
+		return pieFile;
+	}
 	
 	@Override
     public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
 		return this.getPieFile(file);
 	}
-    
+
+	public Path relitivizeFilePath(File file) {
+		Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
+		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		return pathBase.relativize(pathAbsolute);
+	}
+
 }

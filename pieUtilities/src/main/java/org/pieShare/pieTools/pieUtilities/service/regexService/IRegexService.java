@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareAppFx.preferences.api;
-
-import javafx.scene.control.Label;
+package org.pieShare.pieTools.pieUtilities.service.regexService;
 
 /**
  *
  * @author Richard
  */
-public interface IPreferencesEntry {
-	Label getTextLabel();
-	Label getIconLabel();
+public interface IRegexService {
+
+	void setPattern(String pattern);
+
+	boolean matches(String text);
 }

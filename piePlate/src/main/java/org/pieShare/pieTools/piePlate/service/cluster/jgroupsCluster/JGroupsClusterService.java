@@ -118,6 +118,6 @@ public class JGroupsClusterService implements IClusterService {
 
 	@Override
 	public String getName() {
-		return channel.getName();
+		return channel.getClusterName();
 	}
 }
