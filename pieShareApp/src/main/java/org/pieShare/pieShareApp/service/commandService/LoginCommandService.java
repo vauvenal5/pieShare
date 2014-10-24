@@ -55,7 +55,7 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 
 		PieUser user = databaseService.getPieUser(command.getUserName());
 
-		if (user != null) {
+		/*if (user != null) {
 			if (Arrays.areEqual(pwd.getPassword(), user.getPassword().getPassword())) {
 				user.setIsLoggedIn(true);
 			}
@@ -63,13 +63,13 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 				//ToDO: Handle wrong password.
 				return;
 			}
-		} else {
+		} else {*/
 			user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 			user.setPassword(pwd);
 			user.setUserName(command.getUserName());
 			user.setIsLoggedIn(true);
 			databaseService.persistPieUser(user);
-		}
+		//}
 
 		//this.beanService.getBean(PieShareAppBeanNames.getFileServiceName());
 		try {
