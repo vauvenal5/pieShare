@@ -53,7 +53,8 @@ public class LoginCommandService implements ICommandService<LoginCommand> {
 	public void executeCommand(LoginCommand command) {
 		EncryptedPassword pwd = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
 
-		PieUser user = databaseService.getPieUser(command.getUserName());
+		PieUser user = beanService.getBean(PieUser.class);
+		//PieUser user = databaseService.getPieUser(command.getUserName());
 
 		/*if (user != null) {
 			if (Arrays.areEqual(pwd.getPassword(), user.getPassword().getPassword())) {
