@@ -6,18 +6,31 @@
 
 package integrationTests;
 
+import integrationTests.helper.runner.FileSyncMain;
+import integrationTests.helper.config.PieShareAppServiceConfig;
+import integrationTests.helper.tasks.FileTranserferCompleteTestTask;
+import integrationTests.helper.ITUtil;
+import integrationTests.helper.ITFileUtils;
+import integrationTests.helper.ITTasksCounter;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
+import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.*;
 
@@ -28,23 +41,16 @@ import static org.testng.Assert.*;
 public class SyncOneFileTest {
 	
 	private AnnotationConfigApplicationContext context;
-	private IntegrationTestUtil itUtil;
 	private Process process;
 	
 	public SyncOneFileTest() {
 	}
 
-    // TODO add test methods here.
-	// The methods must be annotated with annotation @Test. For example:
-	//
-	// @Test
-	// public void hello() {}
-
 	@org.testng.annotations.BeforeClass
 	public static void setUpClass() throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
-		PieShareAppServiceConfig.configFile = "pieShareTestMain.properties";
+		PieShareAppServiceConfig.main = true;
 	}
 
 	@org.testng.annotations.AfterClass
@@ -53,65 +59,100 @@ public class SyncOneFileTest {
 
 	@org.testng.annotations.BeforeMethod
 	public void setUpMethod() throws Exception {
-		context = IntegrationTestUtil.getContext();
-		itUtil = context.getBean(IntegrationTestUtil.class);
+		context = ITUtil.getContext();
 	}
 
 	@org.testng.annotations.AfterMethod
 	public void tearDownMethod() throws Exception {
 		process.destroy();
+		
+		//shutdown application
+		PieShareService service = context.getBean(PieShareService.class);
+		service.stop();
+		
+		//get dirs to delete
+		IPieShareAppConfiguration config = context.getBean("pieShareAppConfiguration", PieShareAppConfiguration.class);
+		File mainWorkingDir = config.getWorkingDirectory();
+		File mainTmpDir = config.getTempCopyDirectory();
+		config = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
+		File botWorkingDir = config.getWorkingDirectory();
+		File botTmpDir = config.getTempCopyDirectory();
+		
+		//stop context
+		context.close();
+		boolean done = false;
+		
+		while(!done) {
+			try {
+				FileUtils.deleteDirectory(mainWorkingDir);
+				FileUtils.deleteDirectory(mainTmpDir);
+				FileUtils.deleteDirectory(botWorkingDir);
+				FileUtils.deleteDirectory(botTmpDir);
+				done = true;
+			} catch(IOException ex) {
+				Thread.sleep(1000);
+			}
+		}
 	}
 	
 	@org.testng.annotations.Test
 	public void syncOneFileTest() throws Exception {
-		IPieShareAppConfiguration config = context.getBean(PieShareAppConfiguration.class);
+		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
+		IPieShareAppConfiguration config = context.getBean("pieShareAppMainConfiguration", PieShareAppConfiguration.class);
 		IExecutorService executorService = context.getBean(PieExecutorService.class);
 		
 		executorService.removeTaskRegistration(FileTransferCompleteMessage.class);
 		executorService.registerTask(FileTransferCompleteMessage.class, FileTranserferCompleteTestTask.class);
 		
-		String separator = System.getProperty("file.separator");
-		String classpath = System.getProperty("java.class.path");
-		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-		ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath, FileSyncMain.class.getName());
-		this.process = processBuilder.start();
+		this.process = ITUtil.startProcess(FileSyncMain.class);
 		
-		//todo: something is wrong with the working dir path :S
-		//Thread.sleep(30000);
-		
-		//todo: add timeout
-		//todo: teardown: delete files
-		LoginCommandService login = context.getBean(LoginCommandService.class);
-		LoginCommand command = new LoginCommand();
-		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".toCharArray();
-		command.setPlainTextPassword(pwd);
-		command.setUserName("test");
-		login.executeCommand(command);
+		ITUtil.executeLoginToTestCloud(context);
 		
 		File filex = new File(config.getWorkingDirectory().getParent(),"test.txt");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(filex));
-		writer.write("This is a small text file witch will be synced!!!");
-		writer.flush();
-		writer.close();
+		
+		ITFileUtils.createFile(filex, 2048);
 		
 		File file = new File(config.getWorkingDirectory(),"test.txt");
 		
 		FileUtils.moveFile(filex, file);
 		
-		while(this.itUtil.getFileTransferCompletedTask() < 1) {
+		while(counter.getCount(FileTransferCompleteTask.class) < 1) {
 			Thread.sleep(5000);
 		}
 		
-		if(this.itUtil.getFileTransferCompletedTask() == 1) {
+		if(counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
-			File file1 = new File(config.getWorkingDirectory().getParent(),"workingDirTestBot/test.txt");
+			PieShareAppConfiguration botConfig = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
+			
+			File file1 = new File(botConfig.getWorkingDirectory(),"test.txt");
 			
 			boolean filesAreEqual = FileUtils.contentEquals(file, file1);
 			assertTrue(filesAreEqual);
+			
+			boolean done = false;
+			
+			//todo: this has to move to utils: this is a check if the access to the file has been restored
+			//after torrent work
+			/*while(!done) {
+				try {
+					Thread.sleep(1000);
+					FileInputStream st = new FileInputStream(file);
+					done = true;
+					st.close();
+				} catch (FileNotFoundException ex) {
+					//nothing needed to do here
+				} catch (IOException ex) {
+					//nothing needed to do here
+				} catch (InterruptedException ex) {
+					//nothing needed to do here
+				}
+			}*/
+			
 		}
 		else {
 			fail("To much file transerfers?!");
 		}
 	}
+	
+	//todo: create test if share service will end lock of file
 }
