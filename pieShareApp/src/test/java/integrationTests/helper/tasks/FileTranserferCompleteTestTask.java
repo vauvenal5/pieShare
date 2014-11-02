@@ -4,8 +4,10 @@
  * and open the template in the editor.
  */
 
-package integrationTests;
+package integrationTests.helper.tasks;
 
+import integrationTests.helper.ITTasksCounter;
+import integrationTests.helper.ITUtil;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 
 /**
@@ -14,15 +16,15 @@ import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
  */
 public class FileTranserferCompleteTestTask extends FileTransferCompleteTask {
 	
-	IntegrationTestUtil util;
+	ITTasksCounter counter;
 
-	public void setUtil(IntegrationTestUtil util) {
-		this.util = util;
+	public void setUtil(ITTasksCounter counter) {
+		this.counter = counter;
 	}
 	
 	@Override
 	public void run() {
 		super.run();
-		util.fileTransferCompletedTaskCompleted();
+		this.counter.increment(FileTransferCompleteTask.class);
 	}
 }

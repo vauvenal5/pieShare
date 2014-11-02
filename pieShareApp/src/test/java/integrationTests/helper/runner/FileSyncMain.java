@@ -4,8 +4,10 @@
  * and open the template in the editor.
  */
 
-package integrationTests;
+package integrationTests.helper.runner;
 
+import integrationTests.helper.config.PieShareAppServiceConfig;
+import integrationTests.helper.ITUtil;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
@@ -28,16 +30,10 @@ public class FileSyncMain {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		
-		PieShareAppServiceConfig.configFile = "pieShareTest.properties";
-		AnnotationConfigApplicationContext context = IntegrationTestUtil.getContext();
+		PieShareAppServiceConfig.main = false;
+		AnnotationConfigApplicationContext context = ITUtil.getContext();
 		
-		LoginCommandService login = context.getBean(LoginCommandService.class);
-		LoginCommand command = new LoginCommand();
-		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".toCharArray();
-		command.setPlainTextPassword(pwd);
-		command.setUserName("test");
-		login.executeCommand(command);
+		ITUtil.executeLoginToTestCloud(context);
 	}
 	
 }

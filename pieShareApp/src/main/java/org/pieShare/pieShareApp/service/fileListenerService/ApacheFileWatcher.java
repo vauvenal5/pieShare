@@ -44,6 +44,7 @@ public class ApacheFileWatcher implements IFileWatcherService {
 		fileMonitor.setRecursive(true);
 		fileMonitor.addFile(dirToWatchFO);
 		fileMonitor.start();
+		//todo: shutdown service: fileMonitor.stop() has to be executed
 	}
 
 	@Override
