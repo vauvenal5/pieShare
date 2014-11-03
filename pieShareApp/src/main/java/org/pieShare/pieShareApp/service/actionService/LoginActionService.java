@@ -32,7 +32,7 @@ public class LoginActionService extends AbstractActionService<LoginCommand, Logi
 
 		//Console console = System.console();
 		//pwd.password = console.readPassword();
-		pwd.password = "test".toCharArray();
+		pwd.password = "test".getBytes();
 		command.setPlainTextPassword(pwd);
 
 		return command;

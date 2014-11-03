@@ -6,6 +6,8 @@
 package org.pieShare.pieTools.pieUtilities.service.commandParser;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceUser;
@@ -34,6 +36,11 @@ public abstract class AbstractActionService<C extends ICommand, T extends IComma
 
 	@Override
 	public final void doAction(Map<String, Object> args) {
-		this.commandService.executeCommand(this.getCommand(args));
+		try {
+			this.commandService.executeCommand(this.getCommand(args));
+		} catch (Exception ex) {
+			//ToDo: Handle
+			//Logger.getLogger(AbstractActionService.class.getName()).log(Level.SEVERE, null, ex);
+		}
 	}
 }

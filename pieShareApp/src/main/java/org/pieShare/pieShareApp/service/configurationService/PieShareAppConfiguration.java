@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.configurationService;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Properties;
+import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
@@ -30,6 +31,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	}
 
+	@Override
 	public String getBaseConfigPath() {
 		return this.BASE_CONFIG_FOLDER;
 	}

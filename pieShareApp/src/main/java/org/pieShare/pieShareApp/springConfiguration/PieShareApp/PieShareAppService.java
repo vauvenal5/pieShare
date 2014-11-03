@@ -13,15 +13,14 @@ import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
-import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.loginService.LoginService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -52,9 +51,8 @@ public class PieShareAppService {
 	public LoginCommandService loginCommandService() {
 		LoginCommandService service = new LoginCommandService();
 		service.setBeanService(this.utilities.beanService());
-		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setPasswordEncryptionService(this.utilities.passwordEncryptionService());
-		service.setDatabaseService(databaseService());
+		service.setLoginService(loginService());
+		service.setExecuterService(utilities.pieExecutorService());
 		return service;
 	}
 
@@ -90,6 +88,7 @@ public class PieShareAppService {
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setParserService(this.utilities.argparse4jService());
 		service.setShutdownService(this.shutdownService());
+		service.setDatabaseService(databaseService());
 		service.start();
 		return service;
 	}
@@ -105,6 +104,7 @@ public class PieShareAppService {
 	public PieShareAppConfiguration pieShareAppConfiguration() {
 		PieShareAppConfiguration service = new PieShareAppConfiguration();
 		service.setConfigurationReader(this.utilities.configurationReader());
+		service.init();
 		return service;
 	}
 
@@ -150,9 +150,9 @@ public class PieShareAppService {
 	@Bean
 	@Lazy
 	public IFileListenerService fileListenerService() {
-		return (ApacheDefaultFileListener)this.fileListener();
+		return (ApacheDefaultFileListener) this.fileListener();
 	}
-	
+
 	@Bean
 	@Lazy
 	public ApacheFileWatcher fileWatcher() {
@@ -200,7 +200,7 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setHashService(this.utilities.md5Service());
 		service.setPieAppConfig(this.pieShareAppConfiguration());
-			service.setFileListener(this.fileListenerService());
+		service.setFileListener(this.fileListenerService());
 		return service;
 	}
 
@@ -224,11 +224,25 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public RegexFileFilter fileFilter() {
 		RegexFileFilter filter = new RegexFileFilter();
 		filter.setRegexService(utilities.regexService());
 		return filter;
+	}
+
+	@Bean
+	@Lazy
+	public LoginService loginService() {
+		LoginService service = new LoginService();
+		service.setBeanService(utilities.beanService());
+		service.setPasswordEncryptionService(utilities.passwordEncryptionService());
+		service.setPieShareAppConfig(pieShareAppConfiguration());
+		service.setEncodeService(utilities.encodeService());
+		service.setDatabaseService(databaseService());
+		service.setClusterManagementService(plate.clusterManagementService());
+		service.setLoginFinishedEventBase(utilities.eventBase());
+		return service;
 	}
 
 }

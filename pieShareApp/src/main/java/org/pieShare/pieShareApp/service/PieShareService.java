@@ -5,12 +5,12 @@
  */
 package org.pieShare.pieShareApp.service;
 
+import java.util.ArrayList;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
-import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -27,6 +27,11 @@ public class PieShareService {
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
+	private IDatabaseService databaseService;
+
+	public void setDatabaseService(IDatabaseService databaseService) {
+		this.databaseService = databaseService;
+	}
 
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
@@ -55,26 +60,27 @@ public class PieShareService {
 		//this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
 
 		/*
-                //unimportant for the time being because we don't have commandline support
-                try {
-			//todo-sv: change this!!! (new should not be used here)
-			//getbean per class ist dumm... zerst?rt unabh?ngigkeit
-			//SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
-			//this.parserService.registerAction(action);
-			LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
-			this.parserService.registerAction(laction);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}*/
+		 //unimportant for the time being because we don't have commandline support
+		 try {
+		 //todo-sv: change this!!! (new should not be used here)
+		 //getbean per class ist dumm... zerst?rt unabh?ngigkeit
+		 //SimpleMessageActionService action = this.beanService.getBean(SimpleMessageActionService.class);
+		 //this.parserService.registerAction(action);
+		 LoginActionService laction = this.beanService.getBean(PieShareAppBeanNames.getLoginActionServiceName());
+		 this.parserService.registerAction(laction);
+		 } catch (Exception ex) {
+		 ex.printStackTrace();
+		 }*/
+		PieUser user = databaseService.findPieUser();
 	}
-	
+
 	public void stop() {
 		try {
 			this.clusterManagementService.diconnectAll();
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
 		}
-		
+
 		this.shutdownService.fireShutdown();
 	}
 }
