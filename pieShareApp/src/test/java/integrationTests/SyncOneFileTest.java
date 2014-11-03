@@ -30,6 +30,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.*;
+import org.testng.annotations.*;
 
 /**
  *
@@ -43,56 +44,23 @@ public class SyncOneFileTest {
 	public SyncOneFileTest() {
 	}
 
-	@org.testng.annotations.BeforeClass
+	@BeforeClass
 	public static void setUpClass() throws Exception {
-		System.setProperty("java.net.preferIPv4Stack", "true");
-		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
-		PieShareAppServiceConfig.main = true;
+		ITUtil.setUpEnviroment(true);
 	}
 
-	@org.testng.annotations.AfterClass
-	public static void tearDownClass() throws Exception {
-	}
-
-	@org.testng.annotations.BeforeMethod
+	@BeforeMethod
 	public void setUpMethod() throws Exception {
 		context = ITUtil.getContext();
 	}
 
-	@org.testng.annotations.AfterMethod
+	@AfterMethod
 	public void tearDownMethod() throws Exception {
 		process.destroy();
-		
-		//shutdown application
-		PieShareService service = context.getBean(PieShareService.class);
-		service.stop();
-		
-		//get dirs to delete
-		IPieShareAppConfiguration config = context.getBean("pieShareAppConfiguration", PieShareAppConfiguration.class);
-		File mainWorkingDir = config.getWorkingDirectory();
-		File mainTmpDir = config.getTempCopyDirectory();
-		config = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
-		File botWorkingDir = config.getWorkingDirectory();
-		File botTmpDir = config.getTempCopyDirectory();
-		
-		//stop context
-		context.close();
-		boolean done = false;
-		
-		while(!done) {
-			try {
-				FileUtils.deleteDirectory(mainWorkingDir);
-				FileUtils.deleteDirectory(mainTmpDir);
-				FileUtils.deleteDirectory(botWorkingDir);
-				FileUtils.deleteDirectory(botTmpDir);
-				done = true;
-			} catch(IOException ex) {
-				Thread.sleep(1000);
-			}
-		}
+		ITUtil.performTearDown(context);
 	}
 	
-	@org.testng.annotations.Test(timeOut = 120000)
+	@Test(timeOut = 120000)
 	public void syncOneFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		IPieShareAppConfiguration config = context.getBean("pieShareAppMainConfiguration", PieShareAppConfiguration.class);
@@ -135,7 +103,7 @@ public class SyncOneFileTest {
 		}
 	}
 	
-	/*@org.testng.annotations.Test(timeOut = 120000)
+	/*@Test(timeOut = 120000)
 	public void syncDeleteFile() {
 		
 	}*/
