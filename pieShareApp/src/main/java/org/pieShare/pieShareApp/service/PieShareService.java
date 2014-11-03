@@ -26,6 +26,7 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.PrintEventTask;
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
@@ -36,29 +37,16 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownS
  */
 public class PieShareService {
 
-	private IExecutorService executorService;
-	private ICommandParserService parserService;
-	private IBeanService beanService;
+	private PieExecutorTaskFactory executorFactory;
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
-
+	
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
 	}
 
-	public PieShareService() {
-	}
-
-	public void setExecutorService(IExecutorService service) {
-		this.executorService = service;
-	}
-
-	public void setParserService(ICommandParserService service) {
-		this.parserService = service;
-	}
-
-	public void setBeanService(IBeanService service) {
-		this.beanService = service;
+	public void setExecutorFactory(PieExecutorTaskFactory executorFactory) {
+		this.executorFactory = executorFactory;
 	}
 
 	public void setClusterManagementService(IClusterManagementService service) {
@@ -80,13 +68,13 @@ public class PieShareService {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}*/
-		this.executorService.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
-		this.executorService.registerTask(FileRequestMessage.class, FileRequestTask.class);
-		this.executorService.registerTask(NewFileMessage.class, NewFileTask.class);
-		this.executorService.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
-		this.executorService.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
-		this.executorService.registerTask(FileListMessage.class, FileListTask.class);
-		this.executorService.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
+		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
+		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
+		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
+		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
+		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
+		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 	
 	public void stop() {

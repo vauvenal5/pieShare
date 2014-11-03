@@ -7,6 +7,9 @@
 package integrationTests.helper;
 
 import integrationTests.helper.config.PieShareAppServiceConfig;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
@@ -29,6 +32,31 @@ public class ITUtil {
 		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
 		ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath, mainClazz.getName());
 		return processBuilder.start();
+	}
+	
+	public static boolean waitForFileToBeFreed(File file, int sec) {
+		boolean done = false;
+		int time = 0;
+			
+		//todo: this has to move to utils: this is a check if the access to the file has been restored
+		//after torrent work
+		while(!done || time >= sec) {
+			try {
+				Thread.sleep(1000);
+				FileInputStream st = new FileInputStream(file);
+				done = true;
+				st.close();
+				return true;
+			} catch (FileNotFoundException ex) {
+				//nothing needed to do here
+			} catch (IOException ex) {
+				//nothing needed to do here
+			} catch (InterruptedException ex) {
+				//nothing needed to do here
+			}
+		}
+		
+		return false;
 	}
 	
 	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context) {

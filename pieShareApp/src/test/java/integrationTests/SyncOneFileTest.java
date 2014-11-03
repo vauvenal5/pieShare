@@ -8,15 +8,12 @@ package integrationTests;
 
 import integrationTests.helper.runner.FileSyncMain;
 import integrationTests.helper.config.PieShareAppServiceConfig;
-import integrationTests.helper.tasks.FileTranserferCompleteTestTask;
 import integrationTests.helper.ITUtil;
 import integrationTests.helper.ITFileUtils;
 import integrationTests.helper.ITTasksCounter;
+import integrationTests.helper.tasks.TestTask;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -26,9 +23,9 @@ import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -95,14 +92,17 @@ public class SyncOneFileTest {
 		}
 	}
 	
-	@org.testng.annotations.Test
+	@org.testng.annotations.Test(timeOut = 120000)
 	public void syncOneFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		IPieShareAppConfiguration config = context.getBean("pieShareAppMainConfiguration", PieShareAppConfiguration.class);
-		IExecutorService executorService = context.getBean(PieExecutorService.class);
+		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 		
-		executorService.removeTaskRegistration(FileTransferCompleteMessage.class);
-		executorService.registerTask(FileTransferCompleteMessage.class, FileTranserferCompleteTestTask.class);
+		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
+		executorFactory.registerTask(FileTransferCompleteMessage.class, TestTask.class);
+		
+		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
+		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 		
@@ -121,38 +121,22 @@ public class SyncOneFileTest {
 		}
 		
 		if(counter.getCount(FileTransferCompleteTask.class) == 1) {
-			
 			PieShareAppConfiguration botConfig = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
 			
 			File file1 = new File(botConfig.getWorkingDirectory(),"test.txt");
-			
 			boolean filesAreEqual = FileUtils.contentEquals(file, file1);
+			
 			assertTrue(filesAreEqual);
-			
-			boolean done = false;
-			
-			//todo: this has to move to utils: this is a check if the access to the file has been restored
-			//after torrent work
-			/*while(!done) {
-				try {
-					Thread.sleep(1000);
-					FileInputStream st = new FileInputStream(file);
-					done = true;
-					st.close();
-				} catch (FileNotFoundException ex) {
-					//nothing needed to do here
-				} catch (IOException ex) {
-					//nothing needed to do here
-				} catch (InterruptedException ex) {
-					//nothing needed to do here
-				}
-			}*/
-			
+			assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(file1, 30));
 		}
 		else {
 			fail("To much file transerfers?!");
 		}
 	}
 	
-	//todo: create test if share service will end lock of file
+	/*@org.testng.annotations.Test(timeOut = 120000)
+	public void syncDeleteFile() {
+		
+	}*/
 }

@@ -12,8 +12,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class JGroupsClusterService implements IClusterService {
@@ -23,7 +21,6 @@ public class JGroupsClusterService implements IClusterService {
 	private IReceiver receiver;
 	private ISerializerService serializerService;
 	private JChannel channel;
-	private IExecutorService executorService;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	private String id;
 
@@ -102,11 +99,6 @@ public class JGroupsClusterService implements IClusterService {
 	@Override
 	public boolean isConnectedToCluster() {
 		return this.channel.isConnected();
-	}
-
-	@Override
-	public <P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
-		this.executorService.registerTask(event, task);
 	}
 
 	@Override

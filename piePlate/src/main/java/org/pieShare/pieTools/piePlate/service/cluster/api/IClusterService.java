@@ -25,8 +25,6 @@ public interface IClusterService {
 	int getMembersCount();
 
 	boolean isConnectedToCluster();
-
-	<P extends IPieMessage, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task);
 	
 	IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase();
 }
