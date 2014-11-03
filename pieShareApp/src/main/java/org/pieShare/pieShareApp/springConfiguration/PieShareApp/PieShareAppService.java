@@ -41,9 +41,9 @@ import org.springframework.context.annotation.Scope;
 public class PieShareAppService {
 
 	@Autowired
-	private PieUtilitiesConfiguration utilities;
+	protected PieUtilitiesConfiguration utilities;
 	@Autowired
-	private PiePlateConfiguration plate;
+	protected PiePlateConfiguration plate;
 
 	@Bean
 	@Lazy
@@ -81,10 +81,8 @@ public class PieShareAppService {
 	@Bean
 	public PieShareService pieShareService() {
 		PieShareService service = new PieShareService();
-		service.setBeanService(this.utilities.beanService());
+		service.setExecutorFactory(this.utilities.pieExecutorTaskFactory());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setExecutorService(this.utilities.pieExecutorService());
-		service.setParserService(this.utilities.argparse4jService());
 		service.setShutdownService(this.shutdownService());
 		service.setDatabaseService(databaseService());
 		service.start();

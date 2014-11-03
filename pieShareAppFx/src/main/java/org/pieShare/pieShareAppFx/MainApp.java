@@ -30,6 +30,7 @@ public class MainApp extends Application {
                 context.register(PieShareAppTasks.class);
                 context.register(PieShareAppFx.class);
                 context.refresh();
+		context.registerShutdownHook();
 		FXMLController controller = context.getBean(FXMLController.class);
 		controller.setMainStage(stage);
 	}

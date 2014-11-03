@@ -9,13 +9,13 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception;
  *
  * @author Svetoslav
  */
-public class PieExecutorServiceException extends Exception {
+public class PieExecutorTaskFactoryException extends Exception {
 
 	/**
 	 * Creates a new instance of <code>PieExecutorServiceException</code>
 	 * without detail message.
 	 */
-	public PieExecutorServiceException(String msg, Throwable ex) {
+	public PieExecutorTaskFactoryException(String msg, Throwable ex) {
 		super(msg, ex);
 	}
 
@@ -25,7 +25,7 @@ public class PieExecutorServiceException extends Exception {
 	 *
 	 * @param msg the detail message.
 	 */
-	public PieExecutorServiceException(String msg) {
+	public PieExecutorTaskFactoryException(String msg) {
 		super(msg);
 	}
 }
