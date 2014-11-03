@@ -16,6 +16,7 @@ import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 import org.pieShare.pieTools.pieUtilities.service.regexService.RegexService;
 import org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService;
@@ -56,10 +57,18 @@ public class PieUtilitiesConfiguration {
 	@Lazy
 	public PieExecutorService pieExecutorService() {
 		PieExecutorService service = new PieExecutorService();
-		service.setBeanService(this.beanService());
-		service.setExecutorService(this.javaExecutorService());
-		service.setMap(this.javaMap());
+		service.setExecutor(this.javaExecutorService());
+		service.setExecutorFactory(this.pieExecutorTaskFactory());
 		return service;
+	}
+	
+	@Bean
+	@Lazy
+	public PieExecutorTaskFactory pieExecutorTaskFactory() {
+		PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
+		factory.setBeanService(this.beanService());
+		factory.setTasks(this.javaMap());
+		return factory;
 	}
 	
 	@Bean

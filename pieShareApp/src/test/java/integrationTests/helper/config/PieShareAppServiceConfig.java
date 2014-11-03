@@ -7,8 +7,7 @@
 package integrationTests.helper.config;
 
 import integrationTests.helper.ITTasksCounter;
-import integrationTests.helper.ITUtil;
-import integrationTests.helper.tasks.FileTranserferCompleteTestTask;
+import integrationTests.helper.tasks.TestTask;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -17,8 +16,11 @@ import org.mockito.Mockito;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -31,6 +33,8 @@ import org.springframework.context.annotation.Lazy;
 public class PieShareAppServiceConfig extends PieShareAppService {	
 	
 	public static boolean main;
+	@Autowired
+	protected PieShareAppTasks tasks;
 	
 	@Bean
 	@Lazy
@@ -98,12 +102,30 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		return new ITTasksCounter();
 	}
 	
-	@Bean
+	/*@Bean
 	@Lazy
 	public FileTranserferCompleteTestTask fileTransferCompleteTestTask() {
 		FileTranserferCompleteTestTask task = new FileTranserferCompleteTestTask();
 		task.setShareService(this.shareService());
 		task.setUtil(this.itTasksCounter());
 		return task;
+	}*/
+	
+	@Bean
+	@Lazy
+	public TestTask testTask() {
+		TestTask task = new TestTask();
+		task.setFactory(this.testTaskFactory());
+		task.setUtil(this.itTasksCounter());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	public PieExecutorTaskFactory testTaskFactory() {
+		PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
+		factory.setBeanService(this.utilities.beanService());
+		factory.setTasks(this.utilities.javaMap());
+		return factory;
 	}
 }
