@@ -9,5 +9,7 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
  *
  * @author Svetoslav
  */
-public interface IPieTask extends Runnable {
+public interface IPieTask<C extends IPieCallable> extends Runnable {
+	default void setCallback(C collable) {
+	}
 }

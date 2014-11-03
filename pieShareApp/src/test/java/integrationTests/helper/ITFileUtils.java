@@ -18,7 +18,7 @@ import java.util.Random;
  */
 public class ITFileUtils {
 	
-	public static void createFile(File file, int size) throws FileNotFoundException, IOException {
+	public static File createFile(File file, int size) throws FileNotFoundException, IOException {
 		int defaultSize = 1024;
 		if(size < defaultSize) {
 			defaultSize = size;
@@ -42,5 +42,7 @@ public class ITFileUtils {
 		
 		out.flush();
 		out.close();
+		
+		return file;
 	}
 }
