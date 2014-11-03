@@ -15,7 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  *
  * @author Richard
  */
-public interface ILoginCommandService extends ICommandService<LoginCommand> {
+public interface ILogoutCommandService extends ICommandService<LoginCommand> {
 
 
 }

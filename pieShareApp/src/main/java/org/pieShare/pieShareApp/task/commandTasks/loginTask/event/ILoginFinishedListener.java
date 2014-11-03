@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.loginService.event;
+package org.pieShare.pieShareApp.task.commandTasks.loginTask.event;
 
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventListener;
 

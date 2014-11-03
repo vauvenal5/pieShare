@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
+import com.objectdb.o.MSS;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,11 +23,13 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.commandService.api.ILoginCommandService;
-import org.pieShare.pieShareApp.service.loginService.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.service.loginService.event.LoginFinished;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 
 /**
  * FXML Controller class
@@ -48,12 +51,21 @@ public class LoginController implements Initializable {
 	private Label labelWrongPwdInfo;
 
 	private SpinAnimation animation;
-
-	private ILoginCommandService loginCommandService;
+	private MainSceneController mainSceneController;
+	private PieExecutorService executorService;
+	private ILoginTask loinTask;
 	private IBeanService beanService;
 
-	public void setLoginCommandService(LoginCommandService service) {
-		this.loginCommandService = service;
+	public void setPieExecutorService(PieExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
+	public void setLoginTask(ILoginTask loginTask) {
+		this.loinTask = loginTask;
+	}
+
+	public void setMainSceneController(MainSceneController controller) {
+		this.mainSceneController = controller;
 	}
 
 	public void setBeanService(IBeanService beanService) {
@@ -68,32 +80,42 @@ public class LoginController implements Initializable {
 		loginCommand.setPlainTextPassword(plainText);
 		loginCommand.setUserName(this.userNameField.getText());
 
-		loginCommandService.getLoginServiceEventBase().addEventListener(new ILoginFinishedListener() {
+		loinTask.getLoginFinishedEventBase().addEventListener(new ILoginFinishedListener() {
 
 			@Override
 			public void handleObject(LoginFinished event) {
 				animation.stop();
 
+				//Invokes the GUI from the thread, to run in JavaFX thread.
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 						labelWaitIcon.setVisible(false);
 						labelWaitIcon.setDisable(true);
+
+						//passwordField.getStyleClass().clear();
+						switch (event.getState()) {
+							case OK:
+								passwordField.getStyleClass().remove("textfieldWrong");
+								passwordField.getStyleClass().add("textfieldOK");
+								mainSceneController.setClusterSettingControl();
+								break;
+							case WrongPassword:
+								passwordField.getStyleClass().remove("textfieldOK");
+								passwordField.getStyleClass().add("textfieldWrong");
+								break;
+							case CryptoError:
+								passwordField.getStyleClass().remove("textfieldOK");
+								passwordField.getStyleClass().add("textfieldWrong");
+								break;
+						}
 					}
 				});
-
-				switch (event.getState()) {
-					case OK:
-						break;
-					case WrongPassword:
-						break;
-					case CryptoError:
-						break;
-				}
 			}
 		});
 
-		this.loginCommandService.executeCommand(loginCommand);
+		loinTask.setLoginCommand(loginCommand);
+		this.executorService.execute(loinTask);
 		labelWaitIcon.setVisible(true);
 		labelWaitIcon.setDisable(false);
 		animation.start();

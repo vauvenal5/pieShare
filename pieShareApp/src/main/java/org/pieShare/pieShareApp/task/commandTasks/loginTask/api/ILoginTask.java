@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.loginService.api;
+package org.pieShare.pieShareApp.task.commandTasks.loginTask.api;
 
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.service.loginService.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.service.loginService.event.LoginFinished;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 
@@ -15,7 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTas
  *
  * @author Richard
  */
-public interface ILoginService extends IPieTask {
+public interface ILoginTask extends IPieTask {
 
 	void setLoginCommand(LoginCommand command);
 	IEventBase<ILoginFinishedListener, LoginFinished> getLoginFinishedEventBase();
