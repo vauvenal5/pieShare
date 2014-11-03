@@ -37,4 +37,6 @@ public interface IExecutorService {
 	//<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
 	
 	public void handlePieEvent(IPieEvent event) throws PieExecutorTaskFactoryException;
+	
+	public void handlePieEvent(IPieEvent event, IPieCallable callable) throws PieExecutorTaskFactoryException;
 }
