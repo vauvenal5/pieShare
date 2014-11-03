@@ -70,13 +70,13 @@ public class PieShareService {
 		 ex.printStackTrace();
 		 }*/
 		PieUser user = databaseService.findPieUser();
+		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
 		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
 		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
-		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 	}
 
 	public void stop() {
