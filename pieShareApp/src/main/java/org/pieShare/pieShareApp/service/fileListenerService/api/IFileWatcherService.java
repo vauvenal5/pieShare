@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service.fileListenerService.api;
 
 import java.io.File;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *
