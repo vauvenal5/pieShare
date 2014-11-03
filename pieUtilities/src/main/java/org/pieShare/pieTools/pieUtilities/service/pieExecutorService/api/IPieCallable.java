@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IPieTask<C extends IPieCallable> extends Runnable {
-	default void setCallback(C collable) {
-	}
+public interface IPieCallable {
+	
 }
