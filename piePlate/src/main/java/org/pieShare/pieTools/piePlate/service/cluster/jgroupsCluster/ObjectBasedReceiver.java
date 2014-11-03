@@ -12,7 +12,7 @@ import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -48,7 +48,7 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements IReceiver {
 			ad.setClusterName(this.clusterName);
 			pieMsg.setAddress(ad);
 			this.executorService.handlePieEvent(pieMsg);
-		} catch (SerializerServiceException | PieExecutorServiceException e) {
+		} catch (SerializerServiceException | PieExecutorTaskFactoryException e) {
 			//todo-sv: fix error handling!
 			e.printStackTrace();
 		}

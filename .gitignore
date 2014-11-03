@@ -5,3 +5,6 @@ out/
 *.jar
 *.out
 workingDir/
+*.java.orig
+*.idx
+*.lilith

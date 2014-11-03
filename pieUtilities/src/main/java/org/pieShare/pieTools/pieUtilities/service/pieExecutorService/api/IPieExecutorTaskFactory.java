@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
@@ -11,10 +12,9 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.P
  *
  * @author Svetoslav
  */
-public interface IExecutorService {
-
-	public void execute(IPieTask task);
-
+public interface IPieExecutorTaskFactory {
+	IPieEventTask getTask(IPieEvent event) throws PieExecutorTaskFactoryException;
+	
 	/**
 	 * Will register a task to a event it also works with the base type of a 
 	 * given event type. Lets say for example you want to print SmallMessages and
@@ -32,9 +32,7 @@ public interface IExecutorService {
 	 * @param event
 	 * @param task
 	 */
-	//<X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<X> event, Class<T> task);
+	<X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<X> event, Class<T> task);
 
-	//<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
-	
-	public void handlePieEvent(IPieEvent event) throws PieExecutorTaskFactoryException;
+	<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
 }

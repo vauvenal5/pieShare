@@ -5,13 +5,25 @@
  */
 package org.pieShare.pieShareApp.service;
 
-import java.util.ArrayList;
-import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.api.ICommandParserService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
@@ -22,9 +34,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownS
  */
 public class PieShareService {
 
-	private IExecutorService executorService;
-	private ICommandParserService parserService;
-	private IBeanService beanService;
+	private PieExecutorTaskFactory executorFactory;
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
@@ -32,24 +42,13 @@ public class PieShareService {
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
 	}
-
+	
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
 	}
 
-	public PieShareService() {
-	}
-
-	public void setExecutorService(IExecutorService service) {
-		this.executorService = service;
-	}
-
-	public void setParserService(ICommandParserService service) {
-		this.parserService = service;
-	}
-
-	public void setBeanService(IBeanService service) {
-		this.beanService = service;
+	public void setExecutorFactory(PieExecutorTaskFactory executorFactory) {
+		this.executorFactory = executorFactory;
 	}
 
 	public void setClusterManagementService(IClusterManagementService service) {
@@ -72,6 +71,12 @@ public class PieShareService {
 		 ex.printStackTrace();
 		 }*/
 		PieUser user = databaseService.findPieUser();
+		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
+		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
+		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
+		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
+		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
 	}
 
 	public void stop() {

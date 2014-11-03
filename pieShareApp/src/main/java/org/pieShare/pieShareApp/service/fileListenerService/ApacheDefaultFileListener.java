@@ -80,10 +80,10 @@ public class ApacheDefaultFileListener implements IFileListenerService, FileList
 
 	@Override
 	public void fileChanged(FileChangeEvent fce) throws Exception {
-		String filePath = fce.getFile().getURL().getFile();
+		/*String filePath = fce.getFile().getURL().getFile();
 		PieLogger.info(this.getClass(), "File changed: {}", filePath);
 		LocalFileChangedTask task = beanService.getBean(PieShareAppBeanNames.getFileChangedTaskName());
 		task.setFilePath(filePath);
-		this.executerService.execute(task);
+		this.executerService.execute(task);*/
 	}
 }
