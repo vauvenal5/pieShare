@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.cmdLineService.api;
 
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 
 /**
  *

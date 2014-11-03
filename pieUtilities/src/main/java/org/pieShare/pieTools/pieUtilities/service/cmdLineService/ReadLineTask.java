@@ -6,7 +6,7 @@
 package org.pieShare.pieTools.pieUtilities.service.cmdLineService;
 
 import org.pieShare.pieTools.pieUtilities.service.cmdLineService.api.ICmdLineService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *

@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 
 /**
@@ -37,6 +39,4 @@ public interface IExecutorService {
 	//<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
 	
 	public void handlePieEvent(IPieEvent event) throws PieExecutorTaskFactoryException;
-	
-	public void handlePieEvent(IPieEvent event, IPieCallable callable) throws PieExecutorTaskFactoryException;
 }

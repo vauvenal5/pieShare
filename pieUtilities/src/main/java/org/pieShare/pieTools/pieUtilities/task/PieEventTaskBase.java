@@ -6,8 +6,8 @@
 
 package org.pieShare.pieTools.pieUtilities.task;
 
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 
 /**
  *

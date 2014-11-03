@@ -9,10 +9,10 @@ import java.util.concurrent.ExecutorService;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
@@ -51,12 +51,5 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 	@Override
 	public void shutdown() {
 		this.executor.shutdown();
-	}
-
-	@Override
-	public void handlePieEvent(IPieEvent event, IPieCallable callable) throws PieExecutorTaskFactoryException {
-		IPieEventTask task = this.executorFactory.getTask(event);
-		task.setCallback(callable);
-		this.executor.execute(task);
 	}
 }
