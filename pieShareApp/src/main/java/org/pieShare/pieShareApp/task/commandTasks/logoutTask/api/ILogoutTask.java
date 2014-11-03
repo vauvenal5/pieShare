@@ -5,12 +5,14 @@
  */
 package org.pieShare.pieShareApp.task.commandTasks.logoutTask.api;
 
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
+import org.pieShare.pieShareApp.model.command.LogoutCommand;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+
 
 /**
  *
  * @author Richard
  */
 public interface ILogoutTask extends IPieTask{
-	
+	void setLogoutCommand(LogoutCommand logoutCommand);
 }

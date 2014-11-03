@@ -64,6 +64,7 @@ public class ClusterManagementService implements IClusterManagementService {
 		this.sendMessage(message, message.getAddress().getClusterName());
 	}
 
+	@Override
 	public void disconnect(String id) throws ClusterServiceException {
 		this.clusters.get(id).disconnect();
 	}

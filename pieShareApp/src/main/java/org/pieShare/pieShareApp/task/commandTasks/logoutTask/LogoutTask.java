@@ -5,8 +5,6 @@
  */
 package org.pieShare.pieShareApp.task.commandTasks.logoutTask;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
@@ -29,6 +27,7 @@ public class LogoutTask implements ILogoutTask {
 		this.beanService = beanService;
 	}
 
+	@Override
 	public void setLogoutCommand(LogoutCommand logoutCommand) {
 		this.logoutCommand = logoutCommand;
 	}
@@ -54,5 +53,6 @@ public class LogoutTask implements ILogoutTask {
 	@Override
 	public void run() {
 		logout();
+		logoutCommand.getCallback().finished();
 	}
 }

@@ -35,7 +35,7 @@ public class LogoutCommandService implements ILogoutCommandService {
 
 	@Override
 	public void executeCommand(LoginCommand command) {
-		loginService.setLoginCommand(command);
-		executorService.execute(loginService);
+	//	loginService.setLoginCommand(command);
+		//executorService.execute(loginService);
 	}
 }

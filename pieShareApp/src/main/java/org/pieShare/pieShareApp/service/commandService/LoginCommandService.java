@@ -8,11 +8,7 @@ package org.pieShare.pieShareApp.service.commandService;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.api.ILoginCommandService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 
 /**
