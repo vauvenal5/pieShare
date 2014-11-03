@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.loginService;
+package org.pieShare.pieShareApp.task.commandTasks.loginTask;
 
 import com.mchange.io.FileUtils;
 import java.io.File;
@@ -18,11 +18,11 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
-import org.pieShare.pieShareApp.service.loginService.api.ILoginService;
-import org.pieShare.pieShareApp.service.loginService.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.service.loginService.event.LoginFinished;
-import org.pieShare.pieShareApp.service.loginService.event.enumeration.LoginState;
-import org.pieShare.pieShareApp.service.loginService.exceptions.WrongPasswordException;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.enumeration.LoginState;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -38,7 +38,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncrypti
  *
  * @author Richard
  */
-public class LoginService implements ILoginService {
+public class LoginTask implements ILoginTask {
 
 	private final String PWD_FILE = "pwd.pie";
 	private final byte[] FILE_TEXT;
@@ -60,7 +60,7 @@ public class LoginService implements ILoginService {
 		return this.loginFinishedEventBase;
 	}
 
-	public LoginService() {
+	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
 	}
 
@@ -108,13 +108,13 @@ public class LoginService implements ILoginService {
 					//return pwd1;
 				}
 				else {
-					throw new WrongPasswordException("The given passwort was wring.");
+					throw new WrongPasswordException("The given password was wrong.");
 				}
 			}
 			catch (Exception ex) {
 				//ToDo: Handle Wrong password
-				PieLogger.info(this.getClass(), "Wrong password, not possible to enrypt file");
-				throw new WrongPasswordException("The given passwort was wring.", ex);
+				PieLogger.info(this.getClass(), "Wrong password, not possible to encrypt file");
+				throw new WrongPasswordException("The given password was wrong.", ex);
 			}
 		}
 		else {
@@ -138,7 +138,6 @@ public class LoginService implements ILoginService {
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
 		}
-
 	}
 
 	private void createNewPwdFile(PlainTextPassword passwordForEncoding) throws Exception {
@@ -159,7 +158,6 @@ public class LoginService implements ILoginService {
 		fos.write(encr);
 		fos.flush();
 		fos.close();
-
 	}
 
 	@Override

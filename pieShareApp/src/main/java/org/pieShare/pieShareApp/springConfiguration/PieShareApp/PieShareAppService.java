@@ -20,7 +20,6 @@ import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerSer
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieShareApp.service.loginService.LoginService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -51,7 +50,6 @@ public class PieShareAppService {
 	public LoginCommandService loginCommandService() {
 		LoginCommandService service = new LoginCommandService();
 		service.setBeanService(this.utilities.beanService());
-		service.setLoginService(loginService());
 		service.setExecuterService(utilities.pieExecutorService());
 		return service;
 	}
@@ -230,19 +228,4 @@ public class PieShareAppService {
 		filter.setRegexService(utilities.regexService());
 		return filter;
 	}
-
-	@Bean
-	@Lazy
-	public LoginService loginService() {
-		LoginService service = new LoginService();
-		service.setBeanService(utilities.beanService());
-		service.setPasswordEncryptionService(utilities.passwordEncryptionService());
-		service.setPieShareAppConfig(pieShareAppConfiguration());
-		service.setEncodeService(utilities.encodeService());
-		service.setDatabaseService(databaseService());
-		service.setClusterManagementService(plate.clusterManagementService());
-		service.setLoginFinishedEventBase(utilities.eventBase());
-		return service;
-	}
-
 }

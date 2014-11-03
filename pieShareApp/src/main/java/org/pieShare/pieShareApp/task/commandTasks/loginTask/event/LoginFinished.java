@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.loginService.event;
+package org.pieShare.pieShareApp.task.commandTasks.loginTask.event;
 
 import java.util.EventObject;
-import org.pieShare.pieShareApp.service.loginService.event.enumeration.LoginState;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.enumeration.LoginState;
 
 /**
  *

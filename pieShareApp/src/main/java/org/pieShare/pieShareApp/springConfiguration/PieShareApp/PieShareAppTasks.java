@@ -18,6 +18,7 @@ import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -133,5 +134,21 @@ public class PieShareAppTasks {
 		FileDeletedTask task = new FileDeletedTask();
 		task.setFileService(this.services.fileService());
 		return task;
+	}
+	
+	
+	@Bean
+	@Lazy
+	@Scope(value="prototype")
+	public LoginTask loginService() {
+		LoginTask service = new LoginTask();
+		service.setBeanService(config.beanService());
+		service.setPasswordEncryptionService(config.passwordEncryptionService());
+		service.setPieShareAppConfig(services.pieShareAppConfiguration());
+		service.setEncodeService(config.encodeService());
+		service.setDatabaseService(services.databaseService());
+		service.setClusterManagementService(plate.clusterManagementService());
+		service.setLoginFinishedEventBase(config.eventBase());
+		return service;
 	}
 }

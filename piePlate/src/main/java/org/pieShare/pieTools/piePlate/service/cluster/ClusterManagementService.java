@@ -32,7 +32,7 @@ public class ClusterManagementService implements IClusterManagementService {
 	private IBeanService beanService;
 	private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
-	
+
 	@Override
 	public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
 		return this.clusterAddedEventBase;
@@ -41,7 +41,7 @@ public class ClusterManagementService implements IClusterManagementService {
 	public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
 		this.clusterAddedEventBase = clusterAddedEventBase;
 	}
-	
+
 	@Override
 	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
 		return this.clusterRemovedEventBase;
@@ -50,7 +50,7 @@ public class ClusterManagementService implements IClusterManagementService {
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
 		this.clusterRemovedEventBase = clusterRemovedEventBase;
 	}
-	
+
 	public void setBeanService(IBeanService service) {
 		this.beanService = service;
 	}
@@ -62,6 +62,10 @@ public class ClusterManagementService implements IClusterManagementService {
 	@Override
 	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
 		this.sendMessage(message, message.getAddress().getClusterName());
+	}
+
+	public void disconnect(String id) throws ClusterServiceException {
+		this.clusters.get(id).disconnect();
 	}
 
 	@Override
@@ -80,9 +84,10 @@ public class ClusterManagementService implements IClusterManagementService {
 				clusters.remove(((IClusterService) event.getSource()).getId());
 				clusterRemovedEventBase.fireEvent(event);
 			});
-			
+
 			return cluster;
-		} catch (BeanServiceError | ClusterServiceException ex) {
+		}
+		catch (BeanServiceError | ClusterServiceException ex) {
 			//should never happen
 			throw new ClusterManagmentServiceException(ex);
 		}
@@ -93,26 +98,28 @@ public class ClusterManagementService implements IClusterManagementService {
 		if (!this.clusters.containsKey(cloudName)) {
 			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
 		}
-		
+
 		try {
 			this.clusters.get(cloudName).sendMessage(message);
-		} catch (ClusterServiceException ex) {
+		}
+		catch (ClusterServiceException ex) {
 			throw new ClusterManagmentServiceException(ex);
 		}
 	}
 
 	@Override
 	public void diconnectAll() throws ClusterManagmentServiceException {
-		for(Entry<String, IClusterService> entry : this.clusters.entrySet()) {
+		for (Entry<String, IClusterService> entry : this.clusters.entrySet()) {
 			try {
 				entry.getValue().disconnect();
-			} catch (ClusterServiceException ex) {
+			}
+			catch (ClusterServiceException ex) {
 				//todo: error handling
 				PieLogger.error(this.getClass(), "Disconnect all failed!", ex);
 			}
 		}
 	}
-	
+
 	@Override
 	public Map<String, IClusterService> getClusters() {
 		return this.clusters;

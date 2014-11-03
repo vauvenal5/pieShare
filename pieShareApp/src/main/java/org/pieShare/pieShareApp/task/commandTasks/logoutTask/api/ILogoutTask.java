@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.loginService.event.enumeration;
+package org.pieShare.pieShareApp.task.commandTasks.logoutTask.api;
+
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
 
 /**
  *
  * @author Richard
  */
-public enum LoginState {
-	OK,
+public interface ILogoutTask extends IPieTask{
 	
-	WrongPassword,
-	
-	CryptoError
 }
