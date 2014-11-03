@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
