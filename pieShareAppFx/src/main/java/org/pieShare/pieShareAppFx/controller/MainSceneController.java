@@ -35,11 +35,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
 import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
-import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -174,24 +173,42 @@ public class MainSceneController implements Initializable {
 
 	@FXML
 	private void handleAddCloudAction(ActionEvent event) {
+		setLoginControl();
+	}
+
+	public InputStream getLoginControl() {
+		return getClass().getResourceAsStream("/fxml/Login.fxml");
+	}
+
+	public InputStream getClusterSettingControl() {
+		return getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
+	}
+
+	public void setToMainCenter(Node node) {
+		mainBorderPane.setCenter(node);
+	}
+
+	public void setLoginControl() {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/Login.fxml");
-			mainBorderPane.setCenter(loader.load(url));
+			setToMainCenter(loader.load(getLoginControl()));
 		} catch (IOException ex) {
 			//ToDO: Handle
-			ex.printStackTrace();
 		}
 	}
 
 	public void setClusterSettingControl() {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
-			mainBorderPane.setCenter(loader.load(url));
+			if (user.isIsLoggedIn()) {
+				setToMainCenter(loader.load(getClusterSettingControl()));
+			} else {
+				setToMainCenter(loader.load(getLoginControl()));
+			}
 		} catch (IOException ex) {
 			//ToDO: Handle
-			ex.printStackTrace();
 		}
 	}
 
@@ -199,10 +216,9 @@ public class MainSceneController implements Initializable {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
 			InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
-			mainBorderPane.setCenter(loader.load(url));
+			setToMainCenter((loader.load(url)));
 		} catch (IOException ex) {
 			//ToDO: Handle
-			ex.printStackTrace();
 		}
 	}
 }

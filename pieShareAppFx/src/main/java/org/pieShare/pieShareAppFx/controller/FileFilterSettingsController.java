@@ -125,7 +125,7 @@ public class FileFilterSettingsController implements Initializable {
 		InputStream stDelete = getClass().getResourceAsStream("/images/remove_24.png");
 		Image imageDelete = new Image(stDelete);
 		buttonDelete.setGraphic(new ImageView(imageDelete));
-		
+
 		listItems = FXCollections.observableArrayList();
 		listViewFilters.setItems(listItems);
 
@@ -150,22 +150,24 @@ public class FileFilterSettingsController implements Initializable {
 		patternTextField.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
+				//Clear all Styles. 
+				patternTextField.getStyleClass().clear();
 				
 				if (patternTextField.textProperty().isEmpty().get()) {
 					buttonAdd.disableProperty().set(true);
-					patternTextField.setStyle("-fx-background-color: rgba(214, 0, 0, .7)");
+					patternTextField.getStyleClass().add("textfieldWrong");
 					return;
 				}
-				
+
 				try {
 					regexService.setPattern(s2);
 				} catch (Exception ex) {
 					buttonAdd.disableProperty().set(true);
-					patternTextField.setStyle("-fx-background-color: rgba(214, 0, 0, .7)");
+					patternTextField.getStyleClass().add("textfieldWrong");
 					return;
 				}
 
-				patternTextField.setStyle("-fx-background-color: rgba(0, 214, 0, .7)");
+				patternTextField.getStyleClass().add("textfieldOK");
 				buttonAdd.disableProperty().set(false);
 			}
 		});

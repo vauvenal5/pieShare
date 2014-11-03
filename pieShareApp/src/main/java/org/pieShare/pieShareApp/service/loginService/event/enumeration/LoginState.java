@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.model;
+package org.pieShare.pieShareApp.service.loginService.event.enumeration;
 
 /**
  *
- * @author Svetoslav
+ * @author Richard
  */
-public class PlainTextPassword {
-
-	public byte[] password;
+public enum LoginState {
+	OK,
+	
+	WrongPassword,
+	
+	CryptoError
 }

@@ -14,8 +14,8 @@ import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 public class PieUser {
 
 	private EncryptedPassword password;
-	private String userName;
-	private String cloudName;
+	private String userName = null;
+	private String cloudName = null;
 	private boolean isLoggedIn = false;
 
 	public boolean isIsLoggedIn() {

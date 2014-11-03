@@ -40,17 +40,18 @@ public class PasswordEncryptionService implements IPasswordEncryptionService {
 
 	@Override
 	public EncryptedPassword encryptPassword(PlainTextPassword plainTextPassword) {
-		try {
-			PBEKeySpec keySpec = new PBEKeySpec(plainTextPassword.password, salt, iterations);
+		try { 
+			PBEKeySpec keySpec = new PBEKeySpec(Arrays.toString(plainTextPassword.password).toCharArray(), salt, iterations);
 			//this does not ensure that there won't be any plain text copies of this array anywhere else in the memory
 			//reason is that some JVMs may have copied the array without updating all copies until GC collects them
-			Arrays.fill(plainTextPassword.password, '\0');
+			Arrays.fill(Arrays.toString(plainTextPassword.password).toCharArray(), '\0');
 
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(this.providerService.getPasswordEncryptionAlgorithm(), this.providerService.getProviderName());
 			SecretKey key = keyFactory.generateSecret(keySpec);
 
 			EncryptedPassword encPwd = new EncryptedPassword();
 			encPwd.setPassword(key.getEncoded());
+			encPwd.setSecretKey(key);
 			return encPwd;
 		} catch (NoSuchAlgorithmException ex) {
 			PieLogger.error(this.getClass(), "Encryption failed!", ex);

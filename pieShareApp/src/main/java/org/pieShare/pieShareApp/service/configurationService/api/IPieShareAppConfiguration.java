@@ -20,4 +20,6 @@ public interface IPieShareAppConfiguration {
 	void setWorkingDir(File workingDir);
 	
 	void setTempCopyDir(File tempCopyDir);
+	
+	String getBaseConfigPath();
 }
