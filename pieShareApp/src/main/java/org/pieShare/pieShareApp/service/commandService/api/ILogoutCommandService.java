@@ -6,10 +6,7 @@
 package org.pieShare.pieShareApp.service.commandService.api;
 
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
 import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandService;
-import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
  *

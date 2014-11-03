@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
-import com.objectdb.o.MSS;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -21,11 +20,9 @@ import javafx.scene.image.ImageView;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
-import org.pieShare.pieShareApp.service.commandService.api.ILoginCommandService;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -80,35 +77,44 @@ public class LoginController implements Initializable {
 		loginCommand.setPlainTextPassword(plainText);
 		loginCommand.setUserName(this.userNameField.getText());
 
-		loinTask.getLoginFinishedEventBase().addEventListener(new ILoginFinishedListener() {
+		loginCommand.setCallback(new ILoginFinished() {
 
 			@Override
-			public void handleObject(LoginFinished event) {
-				animation.stop();
-
-				//Invokes the GUI from the thread, to run in JavaFX thread.
+			public void error(Exception ex) {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						labelWaitIcon.setVisible(false);
-						labelWaitIcon.setDisable(true);
+						mainSceneController.cloudAvailable(false);
+						disableWaitTextField();
+						passwordField.getStyleClass().remove("textfieldOK");
+						passwordField.getStyleClass().add("textfieldWrong");
+					}
+				});
+			}
 
-						//passwordField.getStyleClass().clear();
-						switch (event.getState()) {
-							case OK:
-								passwordField.getStyleClass().remove("textfieldWrong");
-								passwordField.getStyleClass().add("textfieldOK");
-								mainSceneController.setClusterSettingControl();
-								break;
-							case WrongPassword:
-								passwordField.getStyleClass().remove("textfieldOK");
-								passwordField.getStyleClass().add("textfieldWrong");
-								break;
-							case CryptoError:
-								passwordField.getStyleClass().remove("textfieldOK");
-								passwordField.getStyleClass().add("textfieldWrong");
-								break;
-						}
+			@Override
+			public void wrongPassword(WrongPasswordException ex) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						mainSceneController.cloudAvailable(false);
+						disableWaitTextField();
+						passwordField.getStyleClass().remove("textfieldOK");
+						passwordField.getStyleClass().add("textfieldWrong");
+					}
+				});
+			}
+
+			@Override
+			public void OK() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						mainSceneController.cloudAvailable(true);
+						disableWaitTextField();
+						passwordField.getStyleClass().remove("textfieldWrong");
+						passwordField.getStyleClass().add("textfieldOK");
+						mainSceneController.setClusterSettingControl();
 					}
 				});
 			}
@@ -121,12 +127,17 @@ public class LoginController implements Initializable {
 		animation.start();
 	}
 
+	private void disableWaitTextField() {
+		labelWaitIcon.setVisible(false);
+		labelWaitIcon.setDisable(true);
+	}
+
 	/**
 	 * Initializes the controller class.
 	 */
 	@Override
-
 	public void initialize(URL url, ResourceBundle rb) {
+		mainSceneController.cloudAvailable(false);
 		animation = beanService.getBean(SpinAnimation.class);
 		animation.setNode(labelWaitIcon);
 
@@ -142,6 +153,7 @@ public class LoginController implements Initializable {
 
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		if (user.getCloudName() != null) {
+			mainSceneController.cloudAvailable(true);
 			userNameField.setText(user.getCloudName());
 			userNameField.disableProperty().set(true);
 		}

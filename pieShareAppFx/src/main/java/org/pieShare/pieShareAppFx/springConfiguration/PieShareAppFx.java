@@ -67,7 +67,6 @@ public class PieShareAppFx {
 	public MainSceneController mainSceneController() {
 		MainSceneController controller = new MainSceneController();
 		controller.setBeanService(this.utilities.beanService());
-		controller.setClusterSettingsController(clusterSettingsController());
 		controller.setClusterManagementService(plate.clusterManagementService());
 		return controller;
 	}
@@ -77,7 +76,9 @@ public class PieShareAppFx {
 	public ClusterSettingsController clusterSettingsController() {
 		ClusterSettingsController controller = new ClusterSettingsController();
 		controller.setBeanService(utilities.beanService());
-		controller.setClusterManagementService(plate.clusterManagementService());
+		controller.setExecuterService(utilities.pieExecutorService());
+		controller.setMainSceneController(mainSceneController());
+		controller.setLogoutTask(tasks.logoutTask());
 		return controller;
 	}
 
@@ -93,7 +94,7 @@ public class PieShareAppFx {
 	@Lazy
 	public LoginController loginController() {
 		LoginController controller = new LoginController();
-		controller.setLoginTask(tasks.loginService());
+		controller.setLoginTask(tasks.loginTask());
 		controller.setPieExecutorService(utilities.pieExecutorService());
 		controller.setBeanService(utilities.beanService());
 		controller.setMainSceneController(mainSceneController());

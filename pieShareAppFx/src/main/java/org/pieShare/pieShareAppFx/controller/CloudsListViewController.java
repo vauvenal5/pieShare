@@ -7,6 +7,7 @@ package org.pieShare.pieShareAppFx.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -81,26 +82,32 @@ public class CloudsListViewController implements Initializable {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if (cloudsListView.getSelectionModel().getSelectedItems() != null) {
-
 					mainSceneController.setClusterSettingControl();
-
 				}
 			}
 		});
 
 		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
-
 			@Override
 			public void handleObject(ClusterAddedEvent event) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
 
 		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
-
 			@Override
 			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
 		refreshCloudList();

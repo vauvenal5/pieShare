@@ -7,21 +7,14 @@ package org.pieShare.pieShareApp.task.commandTasks.loginTask;
 
 import com.mchange.io.FileUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.ILoginFinishedListener;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.LoginFinished;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.event.enumeration.LoginState;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
@@ -29,7 +22,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncryptionService;
@@ -49,16 +41,6 @@ public class LoginTask implements ILoginTask {
 	private LoginCommand command;
 	private IDatabaseService databaseService;
 	private IClusterManagementService clusterManagementService;
-	private IEventBase<ILoginFinishedListener, LoginFinished> loginFinishedEventBase;
-
-	public void setLoginFinishedEventBase(IEventBase<ILoginFinishedListener, LoginFinished> loginFinishedEventBase) {
-		this.loginFinishedEventBase = loginFinishedEventBase;
-	}
-
-	@Override
-	public IEventBase<ILoginFinishedListener, LoginFinished> getLoginFinishedEventBase() {
-		return this.loginFinishedEventBase;
-	}
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
@@ -164,13 +146,13 @@ public class LoginTask implements ILoginTask {
 	public void run() {
 		try {
 			login();
-			loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.OK));
+			command.getCallback().OK();		//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.OK));
 		}
 		catch (WrongPasswordException ex) {
-			loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.WrongPassword, ex));
+			command.getCallback().wrongPassword(ex);	//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.WrongPassword, ex));
 		}
 		catch (Exception ex) {
-			loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.CryptoError, ex));
+			command.getCallback().error(ex);//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.CryptoError, ex));
 		}
 	}
 }
