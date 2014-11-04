@@ -7,6 +7,7 @@ package org.pieShare.pieShareApp.service;
 
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
@@ -16,6 +17,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
+import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -43,7 +45,7 @@ public class PieShareService {
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
 	}
-	
+
 	public void setShutdownService(IShutdownService shutdownService) {
 		this.shutdownService = shutdownService;
 	}
@@ -79,14 +81,16 @@ public class PieShareService {
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
 		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
-		
+
 		this.executorFactory.registerTask(LoginCommand.class, LoginTask.class);
+		this.executorFactory.registerTask(LogoutCommand.class, LogoutTask.class);
 	}
 
 	public void stop() {
 		try {
 			this.clusterManagementService.diconnectAll();
-		} catch (ClusterManagmentServiceException ex) {
+		}
+		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
 		}
 

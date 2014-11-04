@@ -21,6 +21,8 @@ public interface IDatabaseService {
 
 	PieUser findPieUser();
 
+	void removePieUser(PieUser user);
+	
 	void persistFileFilter(IFilter filter);
 
 	void removeFileFilter(IFilter filter);

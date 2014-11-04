@@ -5,8 +5,11 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,6 +29,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -82,7 +86,12 @@ public class CloudsListViewController implements Initializable {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if (cloudsListView.getSelectionModel().getSelectedItems() != null) {
-					mainSceneController.setClusterSettingControl();
+					try {
+						mainSceneController.setClusterSettingControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
+					}
 				}
 			}
 		});
