@@ -24,6 +24,7 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilte
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -79,7 +80,8 @@ public class DatabaseService implements IDatabaseService {
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
 			em.close();
-		} catch (IllegalArgumentException ex) {
+		}
+		catch (IllegalArgumentException ex) {
 			return null;
 		}
 		return user;
@@ -95,7 +97,8 @@ public class DatabaseService implements IDatabaseService {
 
 		try {
 			entities = (ArrayList<PieUserEntity>) query.getResultList();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return null;
 		}
 
@@ -113,14 +116,19 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public void removePieUser(PieUser user) {
 		EntityManager em = emf.createEntityManager();
-		em.getTransaction().begin();
-
-		Query query = em.createQuery(String.format("DELETE e FROM %s e where e.userName=%s", FilterEntity.class.getSimpleName(), user.getUserName()));
-		int del = query.executeUpdate();
-		em.getTransaction().commit();
+		
+		try {
+			em.getTransaction().begin();
+			PieUserEntity ent = em.find(PieUserEntity.class, user.getUserName());
+			em.remove(ent);
+			em.getTransaction().commit();
+		}
+		catch (Exception ex) {
+			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
+		}
 		em.close();
 	}
-	
+
 	@Override
 	public void persistFileFilter(IFilter filter) {
 		EntityManager em = emf.createEntityManager();
@@ -154,7 +162,8 @@ public class DatabaseService implements IDatabaseService {
 
 		try {
 			resultList = query.getResultList();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return list;
 		}
 

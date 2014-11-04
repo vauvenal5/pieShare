@@ -56,7 +56,7 @@ public class LoginController implements Initializable {
 	private Label labelWrongPwdInfo;
 
 	@FXML
-	private Button buttonResePwd;
+	private Button buttonResetPwd;
 
 	private SpinAnimation animation;
 	private MainSceneController mainSceneController;
@@ -91,7 +91,10 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						mainSceneController.cloudAvailable(false);
-						buttonResePwd.setVisible(true);
+						buttonResetPwd.setVisible(false);
+						userNameField.setDisable(false);
+						userNameField.clear();
+						passwordField.clear();
 						disableWaitTextField();
 
 						passwordField.getStyleClass().remove("textfieldWrong");
@@ -141,7 +144,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						mainSceneController.cloudAvailable(false);
-						buttonResePwd.setVisible(true);
+						buttonResetPwd.setVisible(true);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldOK");
 						passwordField.getStyleClass().add("textfieldWrong");
@@ -155,7 +158,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						mainSceneController.cloudAvailable(true);
-						buttonResePwd.setVisible(false);
+						buttonResetPwd.setVisible(false);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldWrong");
 						passwordField.getStyleClass().add("textfieldOK");
@@ -198,7 +201,7 @@ public class LoginController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		buttonResePwd.setVisible(false);
+		buttonResetPwd.setVisible(false);
 		mainSceneController.cloudAvailable(false);
 		animation = beanService.getBean(SpinAnimation.class);
 		animation.setNode(labelWaitIcon);
