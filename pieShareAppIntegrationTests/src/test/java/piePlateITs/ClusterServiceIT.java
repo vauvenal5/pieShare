@@ -23,7 +23,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 import piePlateITs.helper.ClusterServiceTestHelper;
 import piePlateITs.helper.TestMessage;
 
-public class ClusterServiceTest {
+public class ClusterServiceIT {
 
 	private JGroupsClusterService service1;
 	private JGroupsClusterService service2;

@@ -22,13 +22,13 @@ import org.testng.annotations.BeforeMethod;
  *
  * @author Svetoslav
  */
-public class DeleteTest {
+public class DeleteIT {
 	
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private List<File> files;
 	
-	public DeleteTest() {
+	public DeleteIT() {
 		files = new ArrayList<>();
 	}
 
