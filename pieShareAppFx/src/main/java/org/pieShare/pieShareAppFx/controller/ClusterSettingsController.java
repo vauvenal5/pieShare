@@ -66,7 +66,7 @@ public class ClusterSettingsController implements Initializable {
 				});
 			}
 		});
-		logoutTask.setLogoutCommand(commnd);
+		logoutTask.setMsg(commnd);
 		executorService.execute(logoutTask);
 	}
 
