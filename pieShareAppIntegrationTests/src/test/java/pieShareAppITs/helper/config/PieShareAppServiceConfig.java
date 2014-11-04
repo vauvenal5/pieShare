@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package integrationTests.helper.config;
+package pieShareAppITs.helper.config;
 
-import integrationTests.helper.ITTasksCounter;
-import integrationTests.helper.tasks.TestTask;
+import pieShareAppITs.helper.ITTasksCounter;
+import pieShareAppITs.helper.tasks.TestTask;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;

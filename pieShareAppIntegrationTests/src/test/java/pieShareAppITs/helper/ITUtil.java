@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 
-package integrationTests.helper;
+package pieShareAppITs.helper;
 
-import integrationTests.helper.config.PieShareAppServiceConfig;
+import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
