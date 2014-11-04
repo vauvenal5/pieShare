@@ -1,12 +1,12 @@
-package org.pieShare.pieTools.piePlate.service.unitTests;
+package org.pieShare.pieTools.piePlate.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
-import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
+import org.pieShare.pieTools.piePlate.service.unitTests.helper.TestMessage;
 
 /**
  * Created by Svetoslav on 19.03.14.

@@ -11,11 +11,13 @@ import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
@@ -68,6 +70,7 @@ public class PieShareService {
 		 ex.printStackTrace();
 		 }*/
 		PieUser user = databaseService.findPieUser();
+		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
 		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);

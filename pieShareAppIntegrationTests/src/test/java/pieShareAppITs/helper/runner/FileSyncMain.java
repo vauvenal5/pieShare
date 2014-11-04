@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package integrationTests.helper.runner;
+package pieShareAppITs.helper.runner;
 
-import integrationTests.helper.config.PieShareAppServiceConfig;
-import integrationTests.helper.ITUtil;
+import pieShareAppITs.helper.config.PieShareAppServiceConfig;
+import pieShareAppITs.helper.ITUtil;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
