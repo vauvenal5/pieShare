@@ -36,12 +36,12 @@ import org.testng.annotations.*;
  *
  * @author Svetoslav
  */
-public class SyncOneFileTest {
+public class SyncOneFileIT {
 	
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	
-	public SyncOneFileTest() {
+	public SyncOneFileIT() {
 	}
 
 	@BeforeClass
