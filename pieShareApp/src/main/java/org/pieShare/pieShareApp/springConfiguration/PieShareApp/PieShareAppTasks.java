@@ -20,6 +20,7 @@ import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
+import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -158,6 +159,17 @@ public class PieShareAppTasks {
 		LogoutTask task = new LogoutTask();
 		task.setBeanService(config.beanService());
 		task.setClusterManagementService(plate.clusterManagementService());
+		return task;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public ResetPwdTask resetPwdTask() {
+		ResetPwdTask task = new ResetPwdTask();
+		task.setBeanService(config.beanService());
+		task.setConfig(services.pieShareAppConfiguration());
+		task.setDatabaseService(services.databaseService());
 		return task;
 	}
 }

@@ -20,7 +20,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementServ
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
-import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
@@ -32,7 +31,6 @@ import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncrypti
  */
 public class LoginTask implements ILoginTask {
 
-	private final String PWD_FILE = "pwd.pie";
 	private final byte[] FILE_TEXT;
 	private IPieShareAppConfiguration config;
 	private IPasswordEncryptionService passwordEncryptionService;
@@ -80,7 +78,7 @@ public class LoginTask implements ILoginTask {
 		//todo: clear plain text pwd... there should be a function somewhere
 		command.setPlainTextPassword(null);
 
-		File pwdFile = new File(config.getBaseConfigPath(), PWD_FILE);
+		File pwdFile = config.getPasswordFile();
 
 		if (pwdFile.exists()) {
 			try {
@@ -122,7 +120,7 @@ public class LoginTask implements ILoginTask {
 
 	private void createNewPwdFile(EncryptedPassword passwordForEncoding) throws Exception {
 
-		File pwdFile = new File(String.format("%s/%s", config.getBaseConfigPath(), PWD_FILE));
+		File pwdFile = config.getPasswordFile();
 
 		if (pwdFile.exists()) {
 			pwdFile.delete();

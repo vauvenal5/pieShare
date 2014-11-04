@@ -6,9 +6,7 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Properties;
-import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
@@ -43,6 +41,11 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		return this.BASE_CONFIG_FOLDER;
 	}
 
+	@Override
+	public File getPasswordFile() {
+		return new File(BASE_CONFIG_FOLDER, "pwd.pie");
+	}
+
 	public void setConfigurationReader(IPropertiesReader configurationReader) {
 		this.configurationReader = configurationReader;
 	}
@@ -68,6 +71,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	public void setConfigPath(String folder) {
 		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
+		if(!BASE_CONFIG_FOLDER.exists()) BASE_CONFIG_FOLDER.mkdirs();
 	}
 
 	@Override
