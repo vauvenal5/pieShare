@@ -23,7 +23,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 	private IPropertiesReader configurationReader;
 	private final String HOME_DIR;
 	private Properties conf;
-	private final File BASE_CONFIG_FOLDER;
+	private File BASE_CONFIG_FOLDER;
 	private File configFile;
 	private File workingDir = null;
 	private File tempDir = null;
@@ -53,6 +53,10 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 			this.configFile = new File(BASE_CONFIG_FOLDER, "pieShare.properties");
 		}
 
+		if (!configFile.getParentFile().exists()) {
+			configFile.getParentFile().mkdirs();
+		}
+
 		try {
 			//pieShare.properties
 			conf = configurationReader.getConfig(configFile);
@@ -62,8 +66,8 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		}
 	}
 
-	public void setConfigPath(String path) {
-		configFile = new File(BASE_CONFIG_FOLDER, path);
+	public void setConfigPath(String folder) {
+		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
 	}
 
 	@Override

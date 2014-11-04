@@ -73,6 +73,7 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		
 		PieShareAppConfiguration config = new PieShareAppConfiguration();
 		config.setConfigurationReader(reader);
+		config.setConfigPath("test");
 		config.init();
 		return config;
 	}
@@ -93,7 +94,7 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		
 		PieShareAppConfiguration config = new PieShareAppConfiguration();
 		config.setConfigurationReader(reader);
-		config.setConfigPath("testPWD.pie");
+		config.setConfigPath("test");
 		config.init();
 		return config;
 	}
