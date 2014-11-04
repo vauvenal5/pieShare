@@ -6,13 +6,12 @@
 package org.pieShare.pieShareApp.task.commandTasks.loginTask.api;
 
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *
  * @author Richard
  */
-public interface ILoginTask extends IPieTask {
-
-	void setLoginCommand(LoginCommand command);
+public interface ILoginTask extends IPieEventTask<LoginCommand> {
 }
