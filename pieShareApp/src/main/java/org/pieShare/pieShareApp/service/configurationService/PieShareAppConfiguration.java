@@ -10,8 +10,8 @@ import java.nio.file.Path;
 import java.util.Properties;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -20,7 +20,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
-	private IConfigurationReader configurationReader;
+	private IPropertiesReader configurationReader;
 	private final String HOME_DIR;
 	private Properties conf;
 	private final File BASE_CONFIG_FOLDER;
@@ -43,7 +43,7 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		return this.BASE_CONFIG_FOLDER;
 	}
 
-	public void setConfigurationReader(IConfigurationReader configurationReader) {
+	public void setConfigurationReader(IPropertiesReader configurationReader) {
 		this.configurationReader = configurationReader;
 	}
 

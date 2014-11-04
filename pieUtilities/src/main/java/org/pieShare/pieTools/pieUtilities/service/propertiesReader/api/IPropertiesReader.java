@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.configurationReader.api;
+package org.pieShare.pieTools.pieUtilities.service.propertiesReader.api;
 
 import java.io.File;
 import java.util.Properties;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 
 /**
  *
  * @author richy
  */
-public interface IConfigurationReader {
+public interface IPropertiesReader {
 
 	Properties getConfig(File configFile) throws NoConfigFoundException;
 	
