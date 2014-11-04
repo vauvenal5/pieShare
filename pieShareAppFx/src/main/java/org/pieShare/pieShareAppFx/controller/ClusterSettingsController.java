@@ -7,19 +7,18 @@ package org.pieShare.pieShareAppFx.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieShareApp.model.command.LogoutCommand;
+import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutFinished;
+import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 
 /**
  *
@@ -28,14 +27,24 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 public class ClusterSettingsController implements Initializable {
 
 	private IBeanService beanService;
-	private IClusterManagementService clusterManagementService;
+	private PieExecutorService executorService;
+	private ILogoutTask logoutTask;
+	private MainSceneController mainSceneController;
+
+	public void setMainSceneController(MainSceneController mainSceneController) {
+		this.mainSceneController = mainSceneController;
+	}
+
+	public void setLogoutTask(ILogoutTask logoutTask) {
+		this.logoutTask = logoutTask;
+	}
+
+	public void setExecuterService(PieExecutorService pieExecutorService) {
+		this.executorService = pieExecutorService;
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
-	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
 	}
 
 	@FXML
@@ -43,11 +52,22 @@ public class ClusterSettingsController implements Initializable {
 
 	@FXML
 	private void handleLogoutAction(ActionEvent event) {
-		try {
-			clusterManagementService.diconnectAll();
-		} catch (ClusterManagmentServiceException ex) {
-			Logger.getLogger(ClusterSettingsController.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		LogoutCommand commnd = new LogoutCommand();
+		commnd.setUserName(user.getCloudName());
+		commnd.setCallback(new ILogoutFinished() {
+			@Override
+			public void finished() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						mainSceneController.setLoginControl();
+					}
+				});
+			}
+		});
+		logoutTask.setLogoutCommand(commnd);
+		executorService.execute(logoutTask);
 	}
 
 	@Override
@@ -55,5 +75,4 @@ public class ClusterSettingsController implements Initializable {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		labelCloudName.setText(user.getCloudName());
 	}
-
 }

@@ -3,15 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.model.command;
+package org.pieShare.pieShareApp.task.commandTasks.logoutTask.api;
 
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.*;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieCallbackEvent;
 
 /**
  *
- * @author Svetoslav
+ * @author Richard
  */
-public interface ICommand<C extends IPieCallable> extends IPieCallbackEvent<C>{
+public interface ILogoutFinished extends IPieCallable {
 
+	void finished();
+	
 }

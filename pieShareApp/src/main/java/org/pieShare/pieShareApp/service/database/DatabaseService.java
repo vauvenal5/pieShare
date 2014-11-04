@@ -19,6 +19,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.codehaus.plexus.util.FileUtils;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
@@ -79,8 +80,6 @@ public class DatabaseService implements IDatabaseService {
 	public void persistPieUser(PieUser service) {
 		EntityManager em = emf.createEntityManager();
 		PieUserEntity entity = new PieUserEntity();
-		byte[] pwd = base64Service.encode(service.getPassword().getPassword());
-		entity.setPassword(pwd);
 		entity.setUserName(service.getUserName());
 		em.getTransaction().begin();
 		em.persist(entity);
@@ -99,9 +98,6 @@ public class DatabaseService implements IDatabaseService {
 			}
 			user = beanService.getBean(PieUser.class);
 			user.setIsLoggedIn(false);
-			EncryptedPassword paswd = new EncryptedPassword();
-			paswd.setPassword(base64Service.decode(entity.getPassword()));
-			user.setPassword(paswd);
 			user.setUserName(entity.getUserName());
 			em.close();
 		} catch (IllegalArgumentException ex) {
@@ -111,22 +107,28 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public ArrayList<PieUser> findAllPieUsers() {
+	public PieUser findPieUser() {
 		EntityManager em = emf.createEntityManager();
 		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
 
-		ArrayList<PieUser> list = new ArrayList<>();
-		for (PieUserEntity entity : ((Collection<PieUserEntity>) query.getResultList())) {
-			PieUser user = beanService.getBean(PieUser.class);
-			user.setIsLoggedIn(false);
-			EncryptedPassword paswd = new EncryptedPassword();
-			paswd.setPassword(base64Service.decode(entity.getPassword()));
-			user.setPassword(paswd);
-			user.setUserName(entity.getUserName());
-			list.add(user);
+		PieUser user = null;
+		ArrayList<PieUserEntity> entities;
+
+		try {
+			entities = (ArrayList<PieUserEntity>) query.getResultList();
+		} catch (Exception ex) {
+			return null;
 		}
+
+		if (entities != null && entities.size() > 0) {
+			PieUserEntity entity = entities.get(0);
+			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			user.setIsLoggedIn(false);
+			user.setUserName(entity.getUserName());
+		}
+
 		em.close();
-		return list;
+		return user;
 	}
 
 	@Override
