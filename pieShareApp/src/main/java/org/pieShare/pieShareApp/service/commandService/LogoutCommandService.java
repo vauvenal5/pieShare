@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service.commandService;
 
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.service.commandService.api.ILoginCommandService;
+import org.pieShare.pieShareApp.service.commandService.api.ILogoutCommandService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
@@ -15,7 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutor
  *
  * @author Svetoslav
  */
-public class LoginCommandService implements ILoginCommandService {
+public class LogoutCommandService implements ILogoutCommandService {
 
 	private IBeanService beanService;
 	private ILoginTask loginService;
@@ -35,7 +35,7 @@ public class LoginCommandService implements ILoginCommandService {
 
 	@Override
 	public void executeCommand(LoginCommand command) {
-		//loginService.setLoginCommand(command);
+	//	loginService.setLoginCommand(command);
 		//executorService.execute(loginService);
 	}
 }

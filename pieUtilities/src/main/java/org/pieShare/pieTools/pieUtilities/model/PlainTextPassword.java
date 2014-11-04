@@ -11,5 +11,5 @@ package org.pieShare.pieTools.pieUtilities.model;
  */
 public class PlainTextPassword {
 
-	public char[] password;
+	public byte[] password;
 }

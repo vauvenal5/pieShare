@@ -18,6 +18,8 @@ import org.pieShare.pieShareAppFx.controller.LoginController;
 import org.pieShare.pieShareAppFx.controller.MainSceneController;
 import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
+import org.pieShare.pieShareAppFx.animations.SpinAnimation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,8 @@ public class PieShareAppFx {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieShareAppService appService;
+	@Autowired
+	private PieShareAppTasks tasks;
 
 	@Bean
 	@Lazy
@@ -63,7 +67,6 @@ public class PieShareAppFx {
 	public MainSceneController mainSceneController() {
 		MainSceneController controller = new MainSceneController();
 		controller.setBeanService(this.utilities.beanService());
-		controller.setClusterSettingsController(clusterSettingsController());
 		controller.setClusterManagementService(plate.clusterManagementService());
 		return controller;
 	}
@@ -73,7 +76,9 @@ public class PieShareAppFx {
 	public ClusterSettingsController clusterSettingsController() {
 		ClusterSettingsController controller = new ClusterSettingsController();
 		controller.setBeanService(utilities.beanService());
-		controller.setClusterManagementService(plate.clusterManagementService());
+		controller.setExecuterService(utilities.pieExecutorService());
+		controller.setMainSceneController(mainSceneController());
+		controller.setLogoutTask(tasks.logoutTask());
 		return controller;
 	}
 
@@ -89,7 +94,10 @@ public class PieShareAppFx {
 	@Lazy
 	public LoginController loginController() {
 		LoginController controller = new LoginController();
-		controller.setLoginCommandService(this.services.loginCommandService());
+		controller.setLoginTask(tasks.loginTask());
+		controller.setPieExecutorService(utilities.pieExecutorService());
+		controller.setBeanService(utilities.beanService());
+		controller.setMainSceneController(mainSceneController());
 		return controller;
 	}
 
@@ -131,6 +139,14 @@ public class PieShareAppFx {
 		controller.setPieShaeAppConfig(services.pieShareAppConfiguration());
 		controller.setFileUtilsService(services.fileUtilsService());
 		return controller;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public SpinAnimation spinAnimation() {
+		SpinAnimation animation = new SpinAnimation();
+		return animation;
 	}
 
 }

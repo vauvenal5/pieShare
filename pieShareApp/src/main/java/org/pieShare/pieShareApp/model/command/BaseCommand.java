@@ -5,22 +5,21 @@
  */
 package org.pieShare.pieShareApp.model.command;
 
-import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
 
 /**
  *
- * @author Svetoslav
+ * @author Richard
  */
-public class SimpleMessageCommand extends BaseCommand<IPieCallable> implements ICommand<IPieCallable> {
+public abstract class BaseCommand<C extends IPieCallable> {
+	
+	private C callback;
 
-	private String msg;
-
-	public void setMsg(String msg) {
-		this.msg = msg;
+	public C getCallback() {
+		return callback;
 	}
 
-	public String getMsg() {
-		return this.msg;
+	public void setCallback(C callback) {
+		this.callback = callback;
 	}
 }

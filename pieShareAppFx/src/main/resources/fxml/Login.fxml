@@ -10,6 +10,8 @@
 	<children>
 		<TextField fx:id="userNameField" layoutX="14.0" layoutY="14.0" promptText="username" />
 		<PasswordField fx:id="passwordField" layoutX="14.0" layoutY="46.0" promptText="password" />
-		<Button defaultButton="true" layoutX="63.0" layoutY="80.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+		<Button defaultButton="true" layoutX="14.0" layoutY="89.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+      <Label fx:id="labelWrongPwdInfo" layoutX="169.0" layoutY="50.0" text="Label" />
+      <Label fx:id="labelWaitIcon" layoutX="89.0" layoutY="90.0" prefHeight="24.0" prefWidth="24.0" text="Label" />
 	</children>
 </AnchorPane>

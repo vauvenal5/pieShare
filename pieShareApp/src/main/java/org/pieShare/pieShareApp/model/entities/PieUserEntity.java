@@ -16,17 +16,8 @@ import javax.persistence.Id;
 @Entity
 public class PieUserEntity implements Serializable {
 
-	private byte[] password;
 	@Id
 	private String userName;
-
-	public  byte[] getPassword() {
-		return password;
-	}
-
-	public void setPassword( byte[] password) {
-		this.password = password;
-	}
 
 	public String getUserName() {
 		return userName;

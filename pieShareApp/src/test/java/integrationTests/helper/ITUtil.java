@@ -105,7 +105,7 @@ public class ITUtil {
 		LoginCommandService login = context.getBean(LoginCommandService.class);
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".toCharArray();
+		pwd.password = "test".getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName("test");
 		login.executeCommand(command);

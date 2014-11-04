@@ -19,7 +19,7 @@ public interface IDatabaseService {
 
 	PieUser getPieUser(String name);
 
-	ArrayList<PieUser> findAllPieUsers();
+	PieUser findPieUser();
 
 	void persistFileFilter(IFilter filter);
 

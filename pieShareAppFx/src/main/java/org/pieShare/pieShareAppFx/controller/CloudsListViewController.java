@@ -7,8 +7,7 @@ package org.pieShare.pieShareAppFx.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -22,7 +21,6 @@ import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -90,27 +88,35 @@ public class CloudsListViewController implements Initializable {
 		});
 
 		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
-
 			@Override
 			public void handleObject(ClusterAddedEvent event) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
 
 		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
-
 			@Override
 			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
-
+		refreshCloudList();
 	}
 
 	private void refreshCloudList() {
 		listItems.clear();
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		if (user.isIsLoggedIn()) {
+		if (user.getCloudName() != null) {
 			listItems.add(user);
 		}
 	}
