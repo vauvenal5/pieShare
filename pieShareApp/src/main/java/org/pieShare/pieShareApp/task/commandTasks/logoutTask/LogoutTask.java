@@ -52,7 +52,7 @@ public class LogoutTask implements ILogoutTask {
 	}
 
 	@Override
-	public void setMsg(LogoutCommand msg) {
+	public void setEvent(LogoutCommand msg) {
 		this.logoutCommand = msg;
 	}
 }
