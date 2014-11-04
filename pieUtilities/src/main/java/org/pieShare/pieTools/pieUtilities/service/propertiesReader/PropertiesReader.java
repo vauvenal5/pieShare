@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.configurationReader;
+package org.pieShare.pieTools.pieUtilities.service.propertiesReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,14 +12,14 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 
 /**
  *
  * @author richy
  */
-public class ConfigurationReader implements IConfigurationReader {
+public class PropertiesReader implements IPropertiesReader {
 	
 	@Override
 	public void saveConfig(Properties props, File configFile) {
@@ -33,7 +33,7 @@ public class ConfigurationReader implements IConfigurationReader {
 		}
 		catch (IOException ex) {
 			//ToDo: handle
-			Logger.getLogger(ConfigurationReader.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PropertiesReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
