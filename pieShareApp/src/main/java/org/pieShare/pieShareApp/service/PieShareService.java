@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service;
 
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
@@ -14,6 +15,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -77,6 +79,8 @@ public class PieShareService {
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
 		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
+		
+		this.executorFactory.registerTask(LoginCommand.class, LoginTask.class);
 	}
 
 	public void stop() {
