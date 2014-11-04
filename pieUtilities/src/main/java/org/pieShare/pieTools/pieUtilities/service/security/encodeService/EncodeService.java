@@ -11,6 +11,7 @@ import java.security.PermissionCollection;
 import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
@@ -39,17 +40,17 @@ public class EncodeService implements IEncodeService {
 	}
 
 	@Override
-	public byte[] encrypt(PlainTextPassword passphrase, byte[] plaintext) throws Exception {
-		SecretKey key = passwordEncryptionService.encryptPassword(passphrase).getSecretKey();// generateKey(passphrase);
-		
+	public byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception {
+		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
+
 		Cipher cipher = Cipher.getInstance(providerService.getEnDeCryptAlgorithm(), providerService.getProviderName());
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		return cipher.doFinal(plaintext);
 	}
 
 	@Override
-	public byte[] decrypt(PlainTextPassword passphrase, byte[] ciphertext) throws Exception {
-		SecretKey key = passwordEncryptionService.encryptPassword(passphrase).getSecretKey();// generateKey(passphrase);
+	public byte[] decrypt(EncryptedPassword passphrase, byte[] ciphertext) throws Exception {
+		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
 		Cipher cipher = Cipher.getInstance(providerService.getEnDeCryptAlgorithm(), providerService.getProviderName());
 		cipher.init(Cipher.DECRYPT_MODE, key);
