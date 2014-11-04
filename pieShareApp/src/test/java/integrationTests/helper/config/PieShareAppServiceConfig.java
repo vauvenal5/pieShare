@@ -66,7 +66,7 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		ConfigurationReader reader = Mockito.mock(ConfigurationReader.class);
 		try {
 			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-			Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
+			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
 		} catch (NoConfigFoundException ex) {
 			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -86,13 +86,14 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		ConfigurationReader reader = Mockito.mock(ConfigurationReader.class);
 		try {
 			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-			Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
+			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
 		} catch (NoConfigFoundException ex) {
 			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
 		}
 		
 		PieShareAppConfiguration config = new PieShareAppConfiguration();
 		config.setConfigurationReader(reader);
+		config.setConfigPath("testPWD.pie");
 		config.init();
 		return config;
 	}

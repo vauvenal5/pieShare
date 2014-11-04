@@ -9,76 +9,50 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.KeyValue;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
 import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.springframework.stereotype.Component;
 
 /**
  *
  * @author richy
  */
 public class ConfigurationReader implements IConfigurationReader {
-
-	private final String homeDir;
-	private final String configSavePath;
-	private final File configFolder;
 	
 	@Override
-	public File getBaseConfigPath() {
-		return configFolder;
-	}
-
-	public ConfigurationReader() {
-		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
-		homeDir = System.getProperty("user.home");
-		configSavePath = homeDir + "/" + ".pieSystems/";
-		configFolder = new File(configSavePath);
-
-		if (!configFolder.exists() || !configFolder.isDirectory()) {
-			configFolder.mkdirs();
-		}
-	}
-
-	@Override
-	public void saveConfig(Properties props, String pathToConfig) {
-		File config = new File(configFolder, pathToConfig);
+	public void saveConfig(Properties props, File configFile) {
 		try {
-			if(!config.exists()) config.createNewFile();
-			FileOutputStream outStr = new FileOutputStream(config);
+			if (!configFile.exists()) {
+				configFile.createNewFile();
+			}
+			FileOutputStream outStr = new FileOutputStream(configFile);
 			props.store(outStr, "");
 			outStr.close();
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			//ToDo: handle
 			Logger.getLogger(ConfigurationReader.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	@Override
-	public Properties getConfig(String pathToConfig) throws NoConfigFoundException {
-		File config = new File(configFolder, pathToConfig);
+	public Properties getConfig(File configFile) throws NoConfigFoundException {
 
-		if (!config.getParentFile().exists()) {
-			config.getParentFile().mkdirs();
-		}
-
-		if (!config.exists()) {
-			throw new NoConfigFoundException(String.format("Configuration: %s does not exists.", config.getAbsolutePath()));
+		if (!configFile.exists()) {
+			throw new NoConfigFoundException(String.format("Configuration: %s does not exists.", configFile.getAbsolutePath()));
 		}
 
 		Properties prop = new Properties();
 
 		try {
 			//load a properties file from class path, inside static method
-			FileInputStream inputStr = new FileInputStream(config);
+			FileInputStream inputStr = new FileInputStream(configFile);
 			prop.load(inputStr);
 			inputStr.close();
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			throw new NoConfigFoundException(ex);
 
 		}

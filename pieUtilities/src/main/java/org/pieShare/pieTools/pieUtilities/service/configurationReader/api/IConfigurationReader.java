@@ -15,9 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.
  */
 public interface IConfigurationReader {
 
-	Properties getConfig(String pathToConfig) throws NoConfigFoundException;
+	Properties getConfig(File configFile) throws NoConfigFoundException;
 	
-	File getBaseConfigPath();
-	
-	void saveConfig(Properties props, String pathToConfig);
+	void saveConfig(Properties props, File configFile);
 }
