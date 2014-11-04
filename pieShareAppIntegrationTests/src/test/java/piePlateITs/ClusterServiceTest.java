@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.piePlate.service.moduleTests;
+package piePlateITs;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,11 +17,11 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
-import org.pieShare.pieTools.piePlate.service.helper.ClusterServiceTestHelper;
-import org.pieShare.pieTools.piePlate.service.helper.TestMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import piePlateITs.helper.ClusterServiceTestHelper;
+import piePlateITs.helper.TestMessage;
 
 public class ClusterServiceTest {
 
