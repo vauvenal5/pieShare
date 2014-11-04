@@ -71,18 +71,20 @@ public class LoginTask implements ILoginTask {
 	}
 
 	@Override
-	public void setLoginCommand(LoginCommand command) {
+	public void setEvent(LoginCommand command) {
 		this.command = command;
 	}
 
 	private void login() throws Exception {
 		EncryptedPassword pwd1 = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
+		//todo: clear plain text pwd... there should be a function somewhere
 		command.setPlainTextPassword(null);
 
+		//todo: change to encrypted pwd
 		PlainTextPassword passwordForEncoding = new PlainTextPassword();
 		passwordForEncoding.password = pwd1.getPassword();
 
-		File pwdFile = new File(String.format("%s/%s", config.getBaseConfigPath(), PWD_FILE));
+		File pwdFile = new File(config.getBaseConfigPath(), PWD_FILE);
 
 		if (pwdFile.exists()) {
 			try {

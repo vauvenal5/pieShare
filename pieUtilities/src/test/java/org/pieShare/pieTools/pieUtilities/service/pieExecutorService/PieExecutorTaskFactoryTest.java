@@ -47,7 +47,7 @@ public class PieExecutorTaskFactoryTest {
 
 		IPieEventTask res = instance.getTask(event);
 
-		Mockito.verify(task, Mockito.times(1)).setMsg(event);
+		Mockito.verify(task, Mockito.times(1)).setEvent(event);
 		Assert.assertEquals(res, task);
 	}
 
@@ -142,7 +142,7 @@ public class PieExecutorTaskFactoryTest {
 		class SubTask implements IPieEventTask<SubEvent> {
 
 			@Override
-			public void setMsg(SubEvent msg) {
+			public void setEvent(SubEvent msg) {
 				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 			}
 

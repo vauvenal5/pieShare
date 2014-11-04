@@ -12,5 +12,5 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.I
  * @author Svetoslav
  */
 public interface IPieEventTask<P extends IPieEvent> extends IPieTask {
-	void setMsg(P msg);
+	void setEvent(P msg);
 }
