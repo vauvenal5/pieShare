@@ -27,11 +27,6 @@ public class LogoutTask implements ILogoutTask {
 		this.beanService = beanService;
 	}
 
-	@Override
-	public void setLogoutCommand(LogoutCommand logoutCommand) {
-		this.logoutCommand = logoutCommand;
-	}
-
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
@@ -54,5 +49,10 @@ public class LogoutTask implements ILogoutTask {
 	public void run() {
 		logout();
 		logoutCommand.getCallback().finished();
+	}
+
+	@Override
+	public void setMsg(LogoutCommand msg) {
+		this.logoutCommand = msg;
 	}
 }
