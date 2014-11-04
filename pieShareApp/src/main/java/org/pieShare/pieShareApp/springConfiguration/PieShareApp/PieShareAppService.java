@@ -7,8 +7,6 @@ package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.actionService.LoginActionService;
-import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
@@ -44,24 +42,6 @@ public class PieShareAppService {
 	protected PieUtilitiesConfiguration utilities;
 	@Autowired
 	protected PiePlateConfiguration plate;
-
-	@Bean
-	@Lazy
-	public LoginCommandService loginCommandService() {
-		LoginCommandService service = new LoginCommandService();
-		service.setBeanService(this.utilities.beanService());
-		service.setExecuterService(utilities.pieExecutorService());
-		return service;
-	}
-
-	@Bean
-	@Lazy
-	public LoginActionService loginActionService() {
-		LoginActionService service = new LoginActionService();
-		service.setBeanService(this.utilities.beanService());
-		service.setCommandService(this.loginCommandService());
-		return service;
-	}
 
 	@Bean
 	@Lazy

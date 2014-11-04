@@ -120,7 +120,7 @@ public class LoginController implements Initializable {
 			}
 		});
 
-		loinTask.setLoginCommand(loginCommand);
+		loinTask.setEvent(loginCommand);
 		this.executorService.execute(loinTask);
 		labelWaitIcon.setVisible(true);
 		labelWaitIcon.setDisable(false);

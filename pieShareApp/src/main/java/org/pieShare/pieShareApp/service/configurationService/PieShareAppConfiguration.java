@@ -32,8 +32,8 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 	}
 
 	@Override
-	public String getBaseConfigPath() {
-		return this.BASE_CONFIG_FOLDER;
+	public File getBaseConfigPath() {
+		return new File(this.BASE_CONFIG_FOLDER);
 	}
 
 	public void setConfigurationReader(IConfigurationReader configurationReader) {
