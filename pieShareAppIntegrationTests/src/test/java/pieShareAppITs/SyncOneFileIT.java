@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-package integrationTests;
+package pieShareAppITs;
 
-import integrationTests.helper.runner.FileSyncMain;
-import integrationTests.helper.config.PieShareAppServiceConfig;
-import integrationTests.helper.ITUtil;
-import integrationTests.helper.ITFileUtils;
-import integrationTests.helper.ITTasksCounter;
-import integrationTests.helper.tasks.TestTask;
+import pieShareAppITs.helper.runner.FileSyncMain;
+import pieShareAppITs.helper.config.PieShareAppServiceConfig;
+import pieShareAppITs.helper.ITUtil;
+import pieShareAppITs.helper.ITFileUtils;
+import pieShareAppITs.helper.ITTasksCounter;
+import pieShareAppITs.helper.tasks.TestTask;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -36,12 +36,12 @@ import org.testng.annotations.*;
  *
  * @author Svetoslav
  */
-public class SyncOneFileTest {
+public class SyncOneFileIT {
 	
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	
-	public SyncOneFileTest() {
+	public SyncOneFileIT() {
 	}
 
 	@BeforeClass
