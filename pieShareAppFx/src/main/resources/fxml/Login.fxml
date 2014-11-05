@@ -13,5 +13,6 @@
 		<Button defaultButton="true" layoutX="14.0" layoutY="89.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
       <Label fx:id="labelWrongPwdInfo" layoutX="169.0" layoutY="50.0" text="Label" />
       <Label fx:id="labelWaitIcon" layoutX="89.0" layoutY="90.0" prefHeight="24.0" prefWidth="24.0" text="Label" />
+      <Button fx:id="buttonResetPwd" defaultButton="true" layoutX="14.0" layoutY="127.0" mnemonicParsing="false" onAction="#handleResetPwdAction" text="Reset Password" />
 	</children>
 </AnchorPane>

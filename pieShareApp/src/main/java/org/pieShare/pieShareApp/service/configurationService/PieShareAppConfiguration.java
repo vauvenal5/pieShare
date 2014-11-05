@@ -6,12 +6,10 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.Properties;
-import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.api.IConfigurationReader;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.exception.NoConfigFoundException;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -20,43 +18,60 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
-	private IConfigurationReader configurationReader;
+	private IPropertiesReader configurationReader;
+	private final String HOME_DIR;
 	private Properties conf;
-	private String CONFIG_PATH;
-	private String BASE_CONFIG_FOLDER;
+	private File BASE_CONFIG_FOLDER;
+	private File configFile;
 	private File workingDir = null;
 	private File tempDir = null;
 
 	public PieShareAppConfiguration() {
+		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
+		HOME_DIR = System.getProperty("user.home");
+		BASE_CONFIG_FOLDER = new File(String.format("%s/%s/%s", HOME_DIR, ".pieSystems", ".pieShare"));
 
+		if (!BASE_CONFIG_FOLDER.exists() || !BASE_CONFIG_FOLDER.isDirectory()) {
+			BASE_CONFIG_FOLDER.mkdirs();
+		}
 	}
 
 	@Override
-	public String getBaseConfigPath() {
+	public File getBaseConfigPath() {
 		return this.BASE_CONFIG_FOLDER;
 	}
 
-	public void setConfigurationReader(IConfigurationReader configurationReader) {
+	@Override
+	public File getPasswordFile() {
+		return new File(BASE_CONFIG_FOLDER, "pwd.pie");
+	}
+
+	public void setConfigurationReader(IPropertiesReader configurationReader) {
 		this.configurationReader = configurationReader;
 	}
 
 	public void init() {
-		this.BASE_CONFIG_FOLDER = configurationReader.getBaseConfigPath().toPath().toString() + "/.pieShare/";
 
-		if (CONFIG_PATH == null) {
-			this.CONFIG_PATH = "/.pieShare/pieShare.properties";
+		if (configFile == null) {
+			this.configFile = new File(BASE_CONFIG_FOLDER, "pieShare.properties");
+		}
+
+		if (!configFile.getParentFile().exists()) {
+			configFile.getParentFile().mkdirs();
 		}
 
 		try {
 			//pieShare.properties
-			conf = configurationReader.getConfig(CONFIG_PATH);
-		} catch (NoConfigFoundException ex) {
+			conf = configurationReader.getConfig(configFile);
+		}
+		catch (NoConfigFoundException ex) {
 			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
 		}
 	}
 
-	public void setConfigPath(String path) {
-		CONFIG_PATH = String.format("/.pieShare/%s", path);
+	public void setConfigPath(String folder) {
+		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
+		if(!BASE_CONFIG_FOLDER.exists()) BASE_CONFIG_FOLDER.mkdirs();
 	}
 
 	@Override
@@ -74,7 +89,8 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		String name = "";
 		if (conf == null || !conf.containsKey("workingDir")) {
 			name = "workingDir";
-		} else {
+		}
+		else {
 			name = conf.getProperty("workingDir");
 		}
 
@@ -97,7 +113,8 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		String name;
 		if (conf == null || !conf.containsKey("tempCopyDir")) {
 			name = "tempDir";
-		} else {
+		}
+		else {
 			name = conf.getProperty("tempCopyDir");
 		}
 
@@ -121,9 +138,10 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		}
 		if (conf.contains(prop)) {
 			conf.replace(prop, value);
-		} else {
+		}
+		else {
 			conf.put(prop, value);
 		}
-		configurationReader.saveConfig(conf, CONFIG_PATH);
+		configurationReader.saveConfig(conf, configFile);
 	}
 }

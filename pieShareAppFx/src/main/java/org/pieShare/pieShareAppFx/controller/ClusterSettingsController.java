@@ -5,8 +5,11 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +22,8 @@ import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutFinished
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -61,13 +66,23 @@ public class ClusterSettingsController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						mainSceneController.setLoginControl();
+						try {
+							mainSceneController.setLoginControl();
+						}
+						catch (IOException ex) {
+							PieLogger.error(this.getClass(), "Not able to set Login Control", ex);
+						}
 					}
 				});
 			}
 		});
-		logoutTask.setLogoutCommand(commnd);
-		executorService.execute(logoutTask);
+		logoutTask.setEvent(commnd);
+		try {
+			executorService.handlePieEvent(commnd);
+		}
+		catch (PieExecutorTaskFactoryException ex) {
+			PieLogger.error(this.getClass(), "Error executing logout event", ex);
+		}
 	}
 
 	@Override

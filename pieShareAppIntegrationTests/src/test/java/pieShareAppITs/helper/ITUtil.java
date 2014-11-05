@@ -14,16 +14,18 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
-import org.springframework.context.ApplicationContext;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.testng.Assert;
 
 /**
  *
@@ -101,14 +103,32 @@ public class ITUtil {
 		return false;
 	}
 	
-	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context) {
-		LoginCommandService login = context.getBean(LoginCommandService.class);
+	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context) throws Exception {
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
 		pwd.password = "test".getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName("test");
-		login.executeCommand(command);
+		
+		command.setCallback(new ILoginFinished() {
+
+			@Override
+			public void error(Exception ex) {
+				Assert.fail(ex.getMessage());
+			}
+
+			@Override
+			public void wrongPassword(WrongPasswordException ex) {
+				Assert.fail(ex.getMessage());
+			}
+
+			@Override
+			public void OK() {
+			}
+		});
+		
+		PieExecutorService executor = context.getBean(PieExecutorService.class);
+		executor.handlePieEvent(command);
 	}
 	
 	public static AnnotationConfigApplicationContext getContext() {

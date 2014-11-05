@@ -5,20 +5,14 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import org.codehaus.plexus.util.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
@@ -28,9 +22,9 @@ import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfigur
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -59,21 +53,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@PostConstruct
 	public void init() {
-		/*//ToDo: Delete DB Hack
-		 String newDBDir = String.valueOf(new Date().getTime());
-
-		 File file = new File(String.format("%s%s", appConfiguration.getBaseConfigPath(), "/objectdb/db/points.odb"));
-		 File newFile = new File(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
-		 if(file.exists())
-		 {
-		 try {
-		 FileUtils.copyFile(file, newFile);
-		 } catch (IOException ex) {
-		 Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
-		 }
-		 }*/
 		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/points.odb", appConfiguration.getBaseConfigPath()));
-		//emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/%spoints.odb", appConfiguration.getBaseConfigPath(), newDBDir));
 	}
 
 	@Override
@@ -100,7 +80,8 @@ public class DatabaseService implements IDatabaseService {
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
 			em.close();
-		} catch (IllegalArgumentException ex) {
+		}
+		catch (IllegalArgumentException ex) {
 			return null;
 		}
 		return user;
@@ -116,7 +97,8 @@ public class DatabaseService implements IDatabaseService {
 
 		try {
 			entities = (ArrayList<PieUserEntity>) query.getResultList();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return null;
 		}
 
@@ -129,6 +111,22 @@ public class DatabaseService implements IDatabaseService {
 
 		em.close();
 		return user;
+	}
+
+	@Override
+	public void removePieUser(PieUser user) {
+		EntityManager em = emf.createEntityManager();
+		
+		try {
+			em.getTransaction().begin();
+			PieUserEntity ent = em.find(PieUserEntity.class, user.getUserName());
+			em.remove(ent);
+			em.getTransaction().commit();
+		}
+		catch (Exception ex) {
+			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
+		}
+		em.close();
 	}
 
 	@Override
@@ -164,7 +162,8 @@ public class DatabaseService implements IDatabaseService {
 
 		try {
 			resultList = query.getResultList();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex) {
 			return list;
 		}
 
