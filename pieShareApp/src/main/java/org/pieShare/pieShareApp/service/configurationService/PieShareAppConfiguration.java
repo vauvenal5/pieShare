@@ -99,7 +99,6 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		if (!watchDir.exists()) {
 			watchDir.mkdirs();
 		}
-
 		workingDir = new File(watchDir.getAbsolutePath());
 	}
 

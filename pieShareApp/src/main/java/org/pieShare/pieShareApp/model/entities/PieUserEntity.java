@@ -20,6 +20,16 @@ public class PieUserEntity implements Serializable {
 	@Id
 	private String userName;
 
+	private boolean hasPasswordFile;
+
+	public boolean isHasPasswordFile() {
+		return hasPasswordFile;
+	}
+
+	public void setHasPasswordFile(boolean hasPasswordFile) {
+		this.hasPasswordFile = hasPasswordFile;
+	}
+	
 	public String getUserName() {
 		return userName;
 	}

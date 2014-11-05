@@ -61,8 +61,21 @@ public class DatabaseService implements IDatabaseService {
 		EntityManager em = emf.createEntityManager();
 		PieUserEntity entity = new PieUserEntity();
 		entity.setUserName(service.getUserName());
+		entity.setHasPasswordFile(service.hasPasswordFile());
 		em.getTransaction().begin();
 		em.persist(entity);
+		em.getTransaction().commit();
+		em.close();
+	}
+
+	@Override
+	public void mergePieUser(PieUser service) {
+		EntityManager em = emf.createEntityManager();
+		PieUserEntity entity = new PieUserEntity();
+		entity.setUserName(service.getUserName());
+		entity.setHasPasswordFile(service.hasPasswordFile());
+		em.getTransaction().begin();
+		em.merge(entity);
 		em.getTransaction().commit();
 		em.close();
 	}
@@ -76,9 +89,10 @@ public class DatabaseService implements IDatabaseService {
 			if (entity == null) {
 				return null;
 			}
-			user = beanService.getBean(PieUser.class);
+			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
+			user.setHasPasswordFile(entity.isHasPasswordFile());
 			em.close();
 		}
 		catch (IllegalArgumentException ex) {
@@ -107,6 +121,8 @@ public class DatabaseService implements IDatabaseService {
 			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
+			user.setUserName(entity.getUserName());
+			user.setHasPasswordFile(entity.isHasPasswordFile());
 		}
 
 		em.close();
@@ -116,7 +132,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public void removePieUser(PieUser user) {
 		EntityManager em = emf.createEntityManager();
-		
+
 		try {
 			em.getTransaction().begin();
 			PieUserEntity ent = em.find(PieUserEntity.class, user.getUserName());

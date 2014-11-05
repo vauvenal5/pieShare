@@ -102,12 +102,12 @@ public class LoginTask implements ILoginTask {
 		PieUser user;
 		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		user.setPassword(pwd1);
-
+		user.setHasPasswordFile(true);
+	
 		if (user.getUserName() == null) {
 			user.setUserName(command.getUserName());
 			databaseService.persistPieUser(user);
 		}
-
 		user.setIsLoggedIn(true);
 
 		try {
