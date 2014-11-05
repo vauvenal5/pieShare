@@ -6,11 +6,13 @@
 
 package pieShareAppITs.helper;
 
-import pieShareAppITs.helper.config.PieShareAppServiceConfig;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
@@ -20,18 +22,36 @@ import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
+import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 
 /**
  *
  * @author Svetoslav
  */
 public class ITUtil {
+	
+	public static String getMainWorkingDir() {
+		return "workingDirTestMain";
+	}
+	
+	public static String getMainTmpDir() {
+		return "pieTempTestMain";
+	}
+	
+	public static String getBotWorkingDir() {
+		return "workingDirTestBot";
+	}
+	
+	public static String getBotTmpDir() {
+		return "pieTempTestBot";
+	}
 	
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -76,6 +96,16 @@ public class ITUtil {
 		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
 		ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath, mainClazz.getName());
 		return processBuilder.start();
+	}
+	
+	public static void waitForProcessToStartup(Process process) throws Exception {
+		InputStream stream = process.getInputStream();
+		InputStreamReader in = new InputStreamReader(stream);
+		BufferedReader reader = new BufferedReader(in);
+		String line = reader.readLine();
+		while(!line.equals("!loggedIn")) {
+			line = reader.readLine();
+		}
 	}
 	
 	public static boolean waitForFileToBeFreed(File file, int sec) {
@@ -127,8 +157,9 @@ public class ITUtil {
 			}
 		});
 		
-		PieExecutorService executor = context.getBean(PieExecutorService.class);
-		executor.handlePieEvent(command);
+		LoginTask task = context.getBean(LoginTask.class);
+		task.setEvent(command);
+		task.run();
 	}
 	
 	public static AnnotationConfigApplicationContext getContext() {
