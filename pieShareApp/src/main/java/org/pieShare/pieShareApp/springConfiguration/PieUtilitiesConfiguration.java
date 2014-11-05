@@ -12,7 +12,7 @@ import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
-import org.pieShare.pieTools.pieUtilities.service.configurationReader.ConfigurationReader;
+import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -94,8 +94,8 @@ public class PieUtilitiesConfiguration {
 
 	@Bean
 	@Lazy
-	public ConfigurationReader configurationReader() {
-		return new ConfigurationReader();
+	public PropertiesReader configurationReader() {
+		return new PropertiesReader();
 	}
 
 	@Bean

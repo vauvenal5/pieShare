@@ -4,10 +4,10 @@
  * and open the template in the editor.
  */
 
-package integrationTests.helper.runner;
+package pieShareAppITs.helper.runner;
 
-import integrationTests.helper.config.PieShareAppServiceConfig;
-import integrationTests.helper.ITUtil;
+import pieShareAppITs.helper.config.PieShareAppServiceConfig;
+import pieShareAppITs.helper.ITUtil;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**

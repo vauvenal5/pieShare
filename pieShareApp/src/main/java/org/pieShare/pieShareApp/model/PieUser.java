@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.model;
 
+import javax.persistence.Column;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 
 /**

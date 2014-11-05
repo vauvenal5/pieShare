@@ -45,6 +45,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * FXML Controller class
@@ -116,7 +117,12 @@ public class MainSceneController implements Initializable {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if (settingsListView.getSelectionModel().getSelectedItems() != null) {
-					setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+					try {
+						setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+					}
+					catch (IOException ex) {
+
+					}
 				}
 			}
 		});
@@ -159,11 +165,17 @@ public class MainSceneController implements Initializable {
 
 	@FXML
 	private void handleAddCloudAction(ActionEvent event) {
-		setLoginControl();
+		try {
+			setLoginControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login control", ex);
+		}
 	}
 
 	public InputStream getLoginControl() {
-		return getClass().getResourceAsStream("/fxml/Login.fxml");
+		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
+		return st;
 	}
 
 	public InputStream getClusterSettingControl() {
@@ -174,41 +186,26 @@ public class MainSceneController implements Initializable {
 		mainBorderPane.setCenter(node);
 	}
 
-	public void setLoginControl() {
+	public void setLoginControl() throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		try {
-			setToMainCenter(loader.load(getLoginControl()));
-		}
-		catch (IOException ex) {
-			//ToDO: Handle
-		}
+		setToMainCenter(loader.load(getLoginControl()));
 	}
 
-	public void setClusterSettingControl() {
+	public void setClusterSettingControl() throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		try {
-			if (user.isIsLoggedIn()) {
-				setToMainCenter(loader.load(getClusterSettingControl()));
-			}
-			else {
-				setToMainCenter(loader.load(getLoginControl()));
-			}
+		if (user.isIsLoggedIn()) {
+			setToMainCenter(loader.load(getClusterSettingControl()));
 		}
-		catch (IOException ex) {
-			//ToDO: Handle
+		else {
+			setToMainCenter(loader.load(getLoginControl()));
 		}
 	}
 
-	public void setPreferencesControl(ITwoColumnListView entry) {
+	public void setPreferencesControl(ITwoColumnListView entry) throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		try {
-			InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
-			setToMainCenter((loader.load(url)));
-		}
-		catch (IOException ex) {
-			//ToDO: Handle
-		}
+		InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
+		setToMainCenter((loader.load(url)));
 	}
 }

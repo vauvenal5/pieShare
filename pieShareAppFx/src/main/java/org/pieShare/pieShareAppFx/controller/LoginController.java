@@ -5,13 +5,17 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -20,13 +24,17 @@ import javafx.scene.image.ImageView;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdCalback;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * FXML Controller class
@@ -46,6 +54,9 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private Label labelWrongPwdInfo;
+
+	@FXML
+	private Button buttonResetPwd;
 
 	private SpinAnimation animation;
 	private MainSceneController mainSceneController;
@@ -67,6 +78,41 @@ public class LoginController implements Initializable {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
+	}
+
+	@FXML
+	private void handleResetPwdAction(ActionEvent event) {
+		ResetPwdCommand command = new ResetPwdCommand();
+		command.setCallback(new IResetPwdCalback() {
+
+			@Override
+			public void pwdResetOK() {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						mainSceneController.cloudAvailable(false);
+						buttonResetPwd.setVisible(false);
+						userNameField.setDisable(false);
+						userNameField.clear();
+						passwordField.clear();
+						disableWaitTextField();
+
+						passwordField.getStyleClass().remove("textfieldWrong");
+						passwordField.getStyleClass().remove("textfieldOK");
+					}
+				});
+			}
+		});
+
+		enableWaitTextField();
+		animation.start();
+
+		try {
+			executorService.handlePieEvent(command);
+		}
+		catch (PieExecutorTaskFactoryException ex) {
+			PieLogger.error(this.getClass(), "Error executing password reset task", ex);
+		}
 	}
 
 	@FXML
@@ -98,6 +144,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						mainSceneController.cloudAvailable(false);
+						buttonResetPwd.setVisible(true);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldOK");
 						passwordField.getStyleClass().add("textfieldWrong");
@@ -111,20 +158,32 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						mainSceneController.cloudAvailable(true);
+						buttonResetPwd.setVisible(false);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldWrong");
 						passwordField.getStyleClass().add("textfieldOK");
-						mainSceneController.setClusterSettingControl();
+						try {
+							mainSceneController.setClusterSettingControl();
+						}
+						catch (IOException ex) {
+							PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
+						}
 					}
 				});
 			}
 		});
 
 		loinTask.setEvent(loginCommand);
-		this.executorService.execute(loinTask);
-		labelWaitIcon.setVisible(true);
-		labelWaitIcon.setDisable(false);
+		enableWaitTextField();
 		animation.start();
+		
+		try {
+			executorService.handlePieEvent(loginCommand);
+		}
+		catch (PieExecutorTaskFactoryException ex) {
+			PieLogger.error(this.getClass(), "Error executong login event", ex);
+			return;
+		}
 	}
 
 	private void disableWaitTextField() {
@@ -132,11 +191,17 @@ public class LoginController implements Initializable {
 		labelWaitIcon.setDisable(true);
 	}
 
+	private void enableWaitTextField() {
+		labelWaitIcon.setVisible(true);
+		labelWaitIcon.setDisable(false);
+	}
+
 	/**
 	 * Initializes the controller class.
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		buttonResetPwd.setVisible(false);
 		mainSceneController.cloudAvailable(false);
 		animation = beanService.getBean(SpinAnimation.class);
 		animation.setNode(labelWaitIcon);

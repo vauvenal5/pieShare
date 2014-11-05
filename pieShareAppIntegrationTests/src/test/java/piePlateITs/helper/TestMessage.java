@@ -1,4 +1,4 @@
-package org.pieShare.pieTools.piePlate.service.unitTests.helper;
+package piePlateITs.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;

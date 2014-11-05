@@ -12,6 +12,7 @@
 		<module>piePlate</module>
 		<module>pieShareApp</module>
 		<module>pieShareAppFx</module>
+	 <module>pieShareAppIntegrationTests</module>
 	</modules>
 
 	<dependencies>	
