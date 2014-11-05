@@ -17,7 +17,7 @@ public class PrintEventTask implements IPieEventTask<IPrintableEvent> {
 	}
 
 	@Override
-	public void setMsg(IPrintableEvent msg) {
+	public void setEvent(IPrintableEvent msg) {
 		this.msg = msg;
 	}
 
