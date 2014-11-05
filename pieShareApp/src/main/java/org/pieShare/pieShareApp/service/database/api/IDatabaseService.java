@@ -17,15 +17,17 @@ public interface IDatabaseService {
 
 	void persistPieUser(PieUser service);
 
+	void mergePieUser(PieUser service);
+
 	PieUser getPieUser(String name);
 
 	PieUser findPieUser();
 
 	void removePieUser(PieUser user);
-	
+
 	void persistFileFilter(IFilter filter);
 
 	void removeFileFilter(IFilter filter);
-	
+
 	ArrayList<IFilter> findAllFilters();
 }

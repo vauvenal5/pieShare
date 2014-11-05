@@ -47,15 +47,17 @@ public class ResetPwdTask implements IResetPwdTask {
 	@Override
 	public void run() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		user.setHasPasswordFile(false);
+		databaseService.mergePieUser(user);
 
-		databaseService.removePieUser(user);
-		user.setUserName(null);
-		user.setIsLoggedIn(false);
-		try {
-			Files.delete(config.getPasswordFile().toPath());
-		}
-		catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error deleting password file. Maybe this is ok", ex);
+		if (config.getPasswordFile().exists()) {
+			try {
+				Files.delete(config.getPasswordFile().toPath());
+			}
+			catch (IOException ex) {
+				//ToDo: Add error callback.
+				PieLogger.error(this.getClass(), "Error deleting password file. Maybe this is ok", ex);
+			}
 		}
 		command.getCallback().pwdResetOK();
 	}

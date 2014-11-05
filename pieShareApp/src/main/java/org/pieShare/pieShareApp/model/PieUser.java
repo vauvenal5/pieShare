@@ -18,7 +18,16 @@ public class PieUser {
 	private String userName = null;
 	private String cloudName = null;
 	private boolean isLoggedIn = false;
+	private boolean hasPasswordFile = false;
 
+	public boolean hasPasswordFile() {
+		return hasPasswordFile;
+	}
+
+	public void setHasPasswordFile(boolean hasPasswordFile) {
+		this.hasPasswordFile = hasPasswordFile;
+	}
+	
 	public boolean isIsLoggedIn() {
 		return isLoggedIn;
 	}
