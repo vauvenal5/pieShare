@@ -27,6 +27,7 @@ public class FileSyncMain {
 		AnnotationConfigApplicationContext context = ITUtil.getContext();
 		
 		ITUtil.executeLoginToTestCloud(context);
+		System.out.println("!loggedIn");
 	}
 	
 }
