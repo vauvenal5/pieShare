@@ -8,18 +8,16 @@ package org.pieShare.pieShareApp.service.database;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
@@ -34,31 +32,26 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class DatabaseService implements IDatabaseService {
 
-	private PieShareAppConfiguration appConfiguration;
+	private IPieDatabaseManagerFactory pieDatabaseManagerFactory;
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
 	private IBeanService beanService;
 
-	public void setBase64Service(IBase64Service base64Service) {
-		this.base64Service = base64Service;
+	public void setPieDatabaseManagerFactory(IPieDatabaseManagerFactory factory) {
+		this.pieDatabaseManagerFactory = factory;
 	}
 
-	public void setPieShareAppConfiguration(PieShareAppConfiguration config) {
-		this.appConfiguration = config;
+	public void setBase64Service(IBase64Service base64Service) {
+		this.base64Service = base64Service;
 	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	@PostConstruct
-	public void init() {
-		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/points.odb", appConfiguration.getBaseConfigPath()));
-	}
-
 	@Override
 	public void persistPieUser(PieUser service) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity entity = new PieUserEntity();
 		entity.setUserName(service.getUserName());
 		entity.setHasPasswordFile(service.hasPasswordFile());
@@ -70,7 +63,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void mergePieUser(PieUser service) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity entity = new PieUserEntity();
 		entity.setUserName(service.getUserName());
 		entity.setHasPasswordFile(service.hasPasswordFile());
@@ -82,7 +75,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public PieUser getPieUser(String name) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUser user = null;
 		try {
 			PieUserEntity entity = em.find(PieUserEntity.class, name);
@@ -103,7 +96,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public PieUser findPieUser() {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
 
 		PieUser user = null;
@@ -131,11 +124,13 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void removePieUser(PieUser user) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 
+		PieUserEntity ent = new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
+		ent.setUserName(user.getCloudName());
+		
 		try {
 			em.getTransaction().begin();
-			PieUserEntity ent = em.find(PieUserEntity.class, user.getUserName());
 			em.remove(ent);
 			em.getTransaction().commit();
 		}
@@ -147,7 +142,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void persistFileFilter(IFilter filter) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
 
 		//ToDo: Spring
 		FilterEntity en = new FilterEntity();
@@ -158,7 +153,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void removeFileFilter(IFilter filter) {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
 		em.getTransaction().begin();
 
 		FilterEntity f = em.find(FilterEntity.class, filter.getEntity().getId());
@@ -170,7 +165,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public ArrayList<IFilter> findAllFilters() {
-		EntityManager em = emf.createEntityManager();
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
 		Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()));
 		ArrayList<IFilter> list = new ArrayList<>();
 
@@ -200,6 +195,14 @@ public class DatabaseService implements IDatabaseService {
 		em.persist(basic);
 		em.getTransaction().commit();
 		em.close();
+	}
+
+	public <T extends BaseEntity> T findEntity(EntityManager em, Class<T> clazz, Object key) {
+		em.getTransaction().begin();
+		T entity = em.find(clazz, key);
+		em.getTransaction().commit();
+		em.close();
+		return entity;
 	}
 
 }
