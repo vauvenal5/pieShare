@@ -6,11 +6,15 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Properties;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
 /**
  *
@@ -25,8 +29,13 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 	private File configFile;
 	private File workingDir = null;
 	private File tempDir = null;
+	private IDatabaseService databaseService;
+	private IRegexService regexService;
+	private final HashMap<String, String> shortcuts;
 
 	public PieShareAppConfiguration() {
+		shortcuts = new HashMap<>();
+	
 		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
 		HOME_DIR = System.getProperty("user.home");
 		BASE_CONFIG_FOLDER = new File(String.format("%s/%s/%s", HOME_DIR, ".pieSystems", ".pieShare"));
@@ -34,6 +43,14 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 		if (!BASE_CONFIG_FOLDER.exists() || !BASE_CONFIG_FOLDER.isDirectory()) {
 			BASE_CONFIG_FOLDER.mkdirs();
 		}
+	}
+
+	public void setRegexService(IRegexService regexService) {
+		this.regexService = regexService;
+	}
+
+	public void setDatabaseServie(IDatabaseService databaseService) {
+		this.databaseService = databaseService;
 	}
 
 	@Override
@@ -60,9 +77,19 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 			configFile.getParentFile().mkdirs();
 		}
 
+		shortcuts.put("%BASE_CONFIG%", BASE_CONFIG_FOLDER.toPath().toString());
+		
 		try {
 			//pieShare.properties
 			conf = configurationReader.getConfig(configFile);
+
+//			for (Entry<String, String> shortcut : shortcuts.entrySet()) {
+//				for (Entry<Object, Object> prop : conf.entrySet()) {
+//					regexService.setPattern(String.format(".*%s.*", shortcut.getKey()));
+//					prop.setValue(regexService.replaceAll((String) prop.getValue(), shortcut.getValue()));
+//				}
+//			}
+
 		}
 		catch (NoConfigFoundException ex) {
 			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
@@ -71,7 +98,9 @@ public class PieShareAppConfiguration implements IPieShareAppConfiguration {
 
 	public void setConfigPath(String folder) {
 		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
-		if(!BASE_CONFIG_FOLDER.exists()) BASE_CONFIG_FOLDER.mkdirs();
+		if (!BASE_CONFIG_FOLDER.exists()) {
+			BASE_CONFIG_FOLDER.mkdirs();
+		}
 	}
 
 	@Override
