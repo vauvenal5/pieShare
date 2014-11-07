@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.task.localTasks;
+package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
-import org.pieShare.pieShareApp.task.localTasks.base.FileHistoryEventTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileHistoryEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;

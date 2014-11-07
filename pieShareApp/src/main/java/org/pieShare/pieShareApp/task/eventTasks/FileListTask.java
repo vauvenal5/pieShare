@@ -6,12 +6,12 @@
 
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
-import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
-import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -19,21 +19,24 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  * @author Svetoslav
  */
 public class FileListTask extends PieEventTaskBase<FileListMessage>  {
+	
+	private BeanService beanService;
+	private PieExecutorService executorService;
 
-	private IComparerService comparerService;
+	public void setBeanService(BeanService beanService) {
+		this.beanService = beanService;
+	}
 
-	public void setComparerService(IComparerService comparerService) {
-		this.comparerService = comparerService;
+	public void setExecutorService(PieExecutorService executorService) {
+		this.executorService = executorService;
 	}
 
 	@Override
 	public void run() {
-		try {
-			this.comparerService.comparePieFileList(this.msg.getFileList());
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "File List Task error.", ex);
-		} catch (FileConflictException ex) {
-			PieLogger.error(this.getClass(), "File List Task error.", ex);
+		for(PieFile file: this.msg.getFileList()) {
+			ComparePieFileTask task = this.beanService.getBean(ComparePieFileTask.class);
+			task.setPieFile(file);
+			this.executorService.execute(task);
 		}
 	}
 	
