@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.fileService;
 
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;

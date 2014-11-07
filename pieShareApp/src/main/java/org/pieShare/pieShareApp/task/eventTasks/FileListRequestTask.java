@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.List;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;

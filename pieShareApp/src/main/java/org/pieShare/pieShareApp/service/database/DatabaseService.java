@@ -17,9 +17,12 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
@@ -38,6 +41,7 @@ public class DatabaseService implements IDatabaseService {
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
 	private IBeanService beanService;
+	private IModelEntityConverterService modelEntityConverterService;
 
 	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
@@ -139,6 +143,8 @@ public class DatabaseService implements IDatabaseService {
 		filter.setEntity(en);
 		persistBasicEntity(em, en);
 	}
+	
+	
 
 	@Override
 	public void removeFileFilter(IFilter filter) {
@@ -184,6 +190,20 @@ public class DatabaseService implements IDatabaseService {
 		em.persist(basic);
 		em.getTransaction().commit();
 		em.close();
+	}
+
+	@Override
+	public void persist(PieFile file) {
+		//todo: all this can be abstracted by one single function for all default persists
+		//BaseClass for all models
+		//ConverterService.convertToEntity(BaseClass) 
+		//	--> throws Exception
+		//	--> overloads for all other types
+		//persist(BaseClass) --> tada everything gets persisted by one function
+		//and exception gets thrown if converter can't convert
+		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		EntityManager em = emf.createEntityManager();
+		this.persistBasicEntity(em, entity);
 	}
 
 }
