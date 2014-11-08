@@ -29,6 +29,7 @@ import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
@@ -43,7 +44,7 @@ public class PieShareService {
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
-
+	
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
 	}

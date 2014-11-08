@@ -8,7 +8,8 @@ package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
+import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
@@ -78,12 +79,8 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	public PieShareAppConfiguration pieShareAppConfiguration() {
-		PieShareAppConfiguration service = new PieShareAppConfiguration();
-		service.setConfigurationReader(this.utilities.configurationReader());
-		service.setDatabaseServie(databaseService());
-		service.setRegexService(utilities.regexService());
-		service.init();
+	public ApplicationConfigurationService applicationConfigurationService() {
+		ApplicationConfigurationService service = new ApplicationConfigurationService();
 		return service;
 	}
 
@@ -102,7 +99,7 @@ public class PieShareAppService {
 	public ComparerService comparerService() {
 		ComparerService service = new ComparerService();
 		service.setFileUtilsService(this.fileUtilsService());
-		service.setPieShareConfiguration(this.pieShareAppConfiguration());
+		service.setBeanService(utilities.beanService());
 		service.setRequestService(this.requestService());
 		return service;
 	}
@@ -148,10 +145,9 @@ public class PieShareAppService {
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setFileWatcher(this.fileWatcher());
 		service.setMd5Service(this.utilities.md5Service());
-		service.setPieShareAppConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
 		service.setFileUtilsService(this.fileUtilsService());
-		service.initFileService();
+		//service.initFileService();
 		return service;
 	}
 
@@ -162,7 +158,6 @@ public class PieShareAppService {
 		service.setBase64Service(this.utilities.base64Service());
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setConfigurationService(this.pieShareAppConfiguration());
 		service.setFileUtilsService(this.fileUtilsService());
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
@@ -178,7 +173,6 @@ public class PieShareAppService {
 		FileUtilsService service = new FileUtilsService();
 		service.setBeanService(this.utilities.beanService());
 		service.setHashService(this.utilities.md5Service());
-		service.setPieAppConfig(this.pieShareAppConfiguration());
 		service.setFileListener(this.fileListenerService());
 		return service;
 	}
@@ -190,6 +184,7 @@ public class PieShareAppService {
 		service.setBase64Service(utilities.base64Service());
 		service.setBeanService(utilities.beanService());
 		service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
+		service.setConfigurationFactory(configurationFactory());
 		return service;
 	}
 
@@ -197,7 +192,7 @@ public class PieShareAppService {
 	@Lazy
 	public PieDatabaseManagerFactory pieDatabaseManagerFactory() {
 		PieDatabaseManagerFactory fac = new PieDatabaseManagerFactory();
-		fac.setPieShareAppConfiguration(pieShareAppConfiguration());
+		fac.setApplicationConfigurationService(applicationConfigurationService());
 		return fac;
 	}
 
@@ -216,5 +211,13 @@ public class PieShareAppService {
 		RegexFileFilter filter = new RegexFileFilter();
 		filter.setRegexService(utilities.regexService());
 		return filter;
+	}
+
+	@Bean
+	@Lazy
+	public ConfigurationFactory configurationFactory() {
+		ConfigurationFactory service = new ConfigurationFactory();
+		service.setApplicationConfiguration(applicationConfigurationService());
+		return service;
 	}
 }

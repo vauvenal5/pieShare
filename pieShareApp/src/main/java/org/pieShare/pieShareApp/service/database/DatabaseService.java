@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -14,8 +15,11 @@ import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
+import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
@@ -36,6 +40,11 @@ public class DatabaseService implements IDatabaseService {
 	private EntityManagerFactory emf;
 	private IBase64Service base64Service;
 	private IBeanService beanService;
+	private IConfigurationFactory configurationFactory;
+
+	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
+		this.configurationFactory = configurationFactory;
+	}
 
 	public void setPieDatabaseManagerFactory(IPieDatabaseManagerFactory factory) {
 		this.pieDatabaseManagerFactory = factory;
@@ -53,12 +62,14 @@ public class DatabaseService implements IDatabaseService {
 	public void persistPieUser(PieUser service) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity entity = new PieUserEntity();
+		entity.setConfigurationEntity(configurationFactory.confToConfEntity(service.getPieShareConfiguration()));
 		entity.setUserName(service.getUserName());
 		entity.setHasPasswordFile(service.hasPasswordFile());
+		entity.getConfigurationEntity().setPieUserEntity(entity);
+		entity.getConfigurationEntity().setUser(service.getUserName());
 		em.getTransaction().begin();
 		em.persist(entity);
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override
@@ -66,11 +77,13 @@ public class DatabaseService implements IDatabaseService {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity entity = new PieUserEntity();
 		entity.setUserName(service.getUserName());
+		entity.setConfigurationEntity(configurationFactory.confToConfEntity(service.getPieShareConfiguration()));
 		entity.setHasPasswordFile(service.hasPasswordFile());
+		entity.getConfigurationEntity().setPieUserEntity(entity);
+		entity.getConfigurationEntity().setUser(service.getUserName());
 		em.getTransaction().begin();
 		em.merge(entity);
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override
@@ -86,7 +99,7 @@ public class DatabaseService implements IDatabaseService {
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
 			user.setHasPasswordFile(entity.isHasPasswordFile());
-			em.close();
+			user.setPieShareConfiguration(configurationFactory.confEntityToConf(entity.getConfigurationEntity()));
 		}
 		catch (IllegalArgumentException ex) {
 			return null;
@@ -115,10 +128,9 @@ public class DatabaseService implements IDatabaseService {
 			user.setIsLoggedIn(false);
 			user.setUserName(entity.getUserName());
 			user.setUserName(entity.getUserName());
+			user.setPieShareConfiguration(configurationFactory.confEntityToConf(entity.getConfigurationEntity()));
 			user.setHasPasswordFile(entity.isHasPasswordFile());
 		}
-
-		em.close();
 		return user;
 	}
 
@@ -128,7 +140,7 @@ public class DatabaseService implements IDatabaseService {
 
 		PieUserEntity ent = new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
 		ent.setUserName(user.getCloudName());
-		
+
 		try {
 			em.getTransaction().begin();
 			em.remove(ent);
@@ -137,7 +149,6 @@ public class DatabaseService implements IDatabaseService {
 		catch (Exception ex) {
 			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
 		}
-		em.close();
 	}
 
 	@Override
@@ -160,7 +171,6 @@ public class DatabaseService implements IDatabaseService {
 		em.remove(f);
 
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override
@@ -186,7 +196,6 @@ public class DatabaseService implements IDatabaseService {
 				list.add(filter);
 			}
 		}
-		em.close();
 		return list;
 	}
 
@@ -197,11 +206,12 @@ public class DatabaseService implements IDatabaseService {
 		em.close();
 	}
 
-	public <T extends BaseEntity> T findEntity(EntityManager em, Class<T> clazz, Object key) {
+	@Override
+	public <T extends BaseEntity> T findEntity(Class<T> clazz, Object key) {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
 		em.getTransaction().begin();
 		T entity = em.find(clazz, key);
 		em.getTransaction().commit();
-		em.close();
 		return entity;
 	}
 

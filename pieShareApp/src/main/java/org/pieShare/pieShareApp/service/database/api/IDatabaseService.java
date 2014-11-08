@@ -33,5 +33,5 @@ public interface IDatabaseService {
 
 	ArrayList<IFilter> findAllFilters();
 	
-	<T extends BaseEntity> T findEntity(EntityManager em, Class<T> clazz, Object key);
+	<T extends BaseEntity> T findEntity(Class<T> clazz, Object key);
 }
