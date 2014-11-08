@@ -10,7 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.jgroups.util.BoundedHashMap;
+import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**
@@ -19,20 +20,21 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
  */
 public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory {
 
-	private PieShareAppConfiguration appConfiguration;
+	private IApplicationConfigurationService appConfiguration;
 	private EntityManagerFactory emf;
 	private HashMap<Class, EntityManager> entityManagers;
 
 	public PieDatabaseManagerFactory() {
+		entityManagers = new HashMap<>();
 	}
 
-	public void setPieShareAppConfiguration(PieShareAppConfiguration config) {
+	public void setApplicationConfigurationService(IApplicationConfigurationService config) {
 		this.appConfiguration = config;
 	}
 
 	@PostConstruct
 	public void init() {
-		emf = Persistence.createEntityManagerFactory(String.format("%s/objectdb/db/points.odb", appConfiguration.getBaseConfigPath()));
+		emf = Persistence.createEntityManagerFactory(String.format("%s/points.odb", appConfiguration.getDatabaseFolder().toPath().toString()));
 	}
 
 	@Override

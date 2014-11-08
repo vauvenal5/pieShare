@@ -9,12 +9,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileService.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -23,36 +25,37 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ComparerService implements IComparerService {
 
-	private IPieShareAppConfiguration pieAppConfig;
 	private IRequestService requestService;
-        private IFileUtilsService fileUtilsService;
+	private IFileUtilsService fileUtilsService;
+	private IBeanService beanService;
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
 	}
 
-        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-            this.fileUtilsService = fileUtilsService;
-        }
-
-	public void setPieShareConfiguration(IPieShareAppConfiguration pieAppConfig) {
-		this.pieAppConfig = pieAppConfig;
+	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
+		this.fileUtilsService = fileUtilsService;
 	}
 
 	@Override
 	public boolean isPieFileDesired(PieFile remotePieFile) throws IOException, FileConflictException {
 
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		
 		PieLogger.debug(this.getClass(), "Comparing file: {}", remotePieFile.getRelativeFilePath());
 
-		File localFile = new File(pieAppConfig.getWorkingDirectory(), remotePieFile.getRelativeFilePath());
-		
+		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), remotePieFile.getRelativeFilePath());
+
 		if (!localFile.exists()) {
 			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", remotePieFile.getRelativeFilePath());
 			return true;
 		}
-		
-		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
+		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
 		//Remote File is older than local file
 		//todo: should compare also file name!!!
@@ -84,8 +87,8 @@ public class ComparerService implements IComparerService {
 
 	@Override
 	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
-                
-                //todo: the requestService could do the check of the requestedFileList internally!?!
+
+		//todo: the requestService could do the check of the requestedFileList internally!?!
 		if (isPieFileDesired(pieFile)) {
 			requestService.requestFile(pieFile);
 		}

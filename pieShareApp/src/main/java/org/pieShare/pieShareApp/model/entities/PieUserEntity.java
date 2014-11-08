@@ -6,9 +6,11 @@
 package org.pieShare.pieShareApp.model.entities;
 
 import java.io.Serializable;
-import javax.persistence.Column;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -19,6 +21,9 @@ public class PieUserEntity implements Serializable {
 
 	@Id
 	private String userName;
+	
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pieUserEntity")
+	private ConfigurationEntity configurationEntity;
 
 	private boolean hasPasswordFile;
 
@@ -26,10 +31,18 @@ public class PieUserEntity implements Serializable {
 		return hasPasswordFile;
 	}
 
+	public ConfigurationEntity getConfigurationEntity() {
+		return configurationEntity;
+	}
+
+	public void setConfigurationEntity(ConfigurationEntity configurationEntity) {
+		this.configurationEntity = configurationEntity;
+	}
+	
 	public void setHasPasswordFile(boolean hasPasswordFile) {
 		this.hasPasswordFile = hasPasswordFile;
 	}
-	
+
 	public String getUserName() {
 		return userName;
 	}
@@ -37,4 +50,5 @@ public class PieUserEntity implements Serializable {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+
 }
