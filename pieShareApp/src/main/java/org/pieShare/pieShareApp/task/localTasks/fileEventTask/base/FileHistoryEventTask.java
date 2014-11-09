@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.task.localTasks.base;
+package org.pieShare.pieShareApp.task.localTasks.fileEventTask.base;
 
 import org.pieShare.pieShareApp.model.message.base.FileHistoryMessageBase;
 

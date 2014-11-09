@@ -17,6 +17,7 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	private File workingDir;
 	private File tmpDir;
 	private File pwdFile;
+	private String user; 
 	
 	@Override
 	public File getWorkingDir() {
@@ -46,5 +47,13 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	@Override
 	public void setPwdFile(File pwdFile) {
 		this.pwdFile = pwdFile;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
 	}
 }

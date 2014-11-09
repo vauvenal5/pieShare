@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Random;
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -24,8 +25,6 @@ public class ITFileUtils {
 			defaultSize = size;
 		}
 		
-		FileOutputStream out = new FileOutputStream(file);
-		
 		int max = size / defaultSize;
 		int delta = size - (max * defaultSize);
 		Random random = new Random();
@@ -33,15 +32,12 @@ public class ITFileUtils {
 		
 		for(int i = 0; i<max; i++) {
 			random.nextBytes(data);
-			out.write(data);
+			FileUtils.writeByteArrayToFile(file, data, true);
 		}
 		
 		data = new byte[delta];
 		random.nextBytes(data);
-		out.write(data);
-		
-		out.flush();
-		out.close();
+		FileUtils.writeByteArrayToFile(file, data, true);
 		
 		return file;
 	}

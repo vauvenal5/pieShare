@@ -62,6 +62,7 @@ public class SyncOneFileIT {
 		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		
 		this.process = ITUtil.startProcess(FileSyncMain.class);
+		ITUtil.waitForProcessToStartup(this.process);
 		
 		ITUtil.executeLoginToTestCloud(context);
 		

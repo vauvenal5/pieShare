@@ -82,25 +82,16 @@ public class LoginTask implements ILoginTask {
 
 	private void login() throws Exception {
 		EncryptedPassword pwd1 = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
-		//todo: clear plain text pwd... there should be a function somewhere
-		command.setPlainTextPassword(null);
 
 		PieUser user;
 		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 
-		if (user.getPieShareConfiguration() == null) {
-			user.setPieShareConfiguration(configurationFactory.createConfig());
-		}
-
-		configurationFactory.checkAndCreateFolders(user.getPieShareConfiguration());
+		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
 		pwdFile = user.getPieShareConfiguration().getPwdFile();
 
 		if (pwdFile.exists()) {
 			try {
-				if (Arrays.equals(encodeService.decrypt(pwd1, FileUtils.getBytes(pwdFile)), FILE_TEXT)) {
-					//return pwd1;
-				}
-				else {
+				if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.getBytes(pwdFile)), FILE_TEXT)) {
 					throw new WrongPasswordException("The given password was wrong.");
 				}
 			}
@@ -119,6 +110,7 @@ public class LoginTask implements ILoginTask {
 
 		if (user.getUserName() == null) {
 			user.setUserName(command.getUserName());
+			user.getPieShareConfiguration().setUser(user.getUserName());
 			databaseService.persistPieUser(user);
 		}
 		user.setIsLoggedIn(true);

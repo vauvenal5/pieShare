@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.configurationService.api;
 
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 
 /**
@@ -14,11 +13,5 @@ import org.pieShare.pieShareApp.service.configurationService.PieShareConfigurati
  */
 public interface IConfigurationFactory {
 
-	PieShareConfiguration createConfig();
-
-	void checkAndCreateFolders(PieShareConfiguration conf);
-
-	PieShareConfiguration confEntityToConf(ConfigurationEntity entity);
-
-	ConfigurationEntity confToConfEntity(PieShareConfiguration conf);
+	PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config);
 }
