@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.model.message;
 
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**

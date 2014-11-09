@@ -16,10 +16,12 @@ public interface IPieShareAppConfiguration {
 	File getWorkingDirectory();
 
 	File getTempCopyDirectory();
-	
+
 	void setWorkingDir(File workingDir);
-	
+
 	void setTempCopyDir(File tempCopyDir);
-	
-	String getBaseConfigPath();
+
+	File getBaseConfigPath();
+
+	File getPasswordFile();
 }

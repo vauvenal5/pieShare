@@ -8,13 +8,6 @@ package pieShareAppITs.helper.runner;
 
 import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 import pieShareAppITs.helper.ITUtil;
-import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.service.commandService.LoginCommandService;
-import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -26,7 +19,7 @@ public class FileSyncMain {
 	/**
 	 * @param args the command line arguments
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		
@@ -34,6 +27,7 @@ public class FileSyncMain {
 		AnnotationConfigApplicationContext context = ITUtil.getContext();
 		
 		ITUtil.executeLoginToTestCloud(context);
+		System.out.println("!loggedIn");
 	}
 	
 }

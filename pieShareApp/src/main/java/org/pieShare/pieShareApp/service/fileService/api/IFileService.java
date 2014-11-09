@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *

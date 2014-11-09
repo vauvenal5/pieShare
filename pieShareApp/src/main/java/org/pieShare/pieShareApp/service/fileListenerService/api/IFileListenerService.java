@@ -6,7 +6,7 @@
 
 package org.pieShare.pieShareApp.service.fileListenerService.api;
 
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
