@@ -1,5 +1,6 @@
 package org.pieShare.pieShareApp.service.fileService;
 
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

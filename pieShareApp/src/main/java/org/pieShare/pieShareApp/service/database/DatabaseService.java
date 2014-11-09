@@ -5,22 +5,21 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
@@ -41,6 +40,11 @@ public class DatabaseService implements IDatabaseService {
 	private IBase64Service base64Service;
 	private IBeanService beanService;
 	private IConfigurationFactory configurationFactory;
+	private IModelEntityConverterService modelEntityConverterService;
+
+	public void setModelEntityConverterService(IModelEntityConverterService modelEntityConverterService) {
+		this.modelEntityConverterService = modelEntityConverterService;
+	}
 
 	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
 		this.configurationFactory = configurationFactory;
@@ -59,28 +63,18 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public void persistPieUser(PieUser service) {
+	public void persistPieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUserEntity entity = new PieUserEntity();
-		entity.setConfigurationEntity(configurationFactory.confToConfEntity(service.getPieShareConfiguration()));
-		entity.setUserName(service.getUserName());
-		entity.setHasPasswordFile(service.hasPasswordFile());
-		entity.getConfigurationEntity().setPieUserEntity(entity);
-		entity.getConfigurationEntity().setUser(service.getUserName());
+		PieUserEntity entity = modelEntityConverterService.userToEntity(user);
 		em.getTransaction().begin();
 		em.persist(entity);
 		em.getTransaction().commit();
 	}
 
 	@Override
-	public void mergePieUser(PieUser service) {
+	public void mergePieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUserEntity entity = new PieUserEntity();
-		entity.setUserName(service.getUserName());
-		entity.setConfigurationEntity(configurationFactory.confToConfEntity(service.getPieShareConfiguration()));
-		entity.setHasPasswordFile(service.hasPasswordFile());
-		entity.getConfigurationEntity().setPieUserEntity(entity);
-		entity.getConfigurationEntity().setUser(service.getUserName());
+		PieUserEntity entity = modelEntityConverterService.userToEntity(user);
 		em.getTransaction().begin();
 		em.merge(entity);
 		em.getTransaction().commit();
@@ -95,11 +89,7 @@ public class DatabaseService implements IDatabaseService {
 			if (entity == null) {
 				return null;
 			}
-			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-			user.setIsLoggedIn(false);
-			user.setUserName(entity.getUserName());
-			user.setHasPasswordFile(entity.isHasPasswordFile());
-			user.setPieShareConfiguration(configurationFactory.confEntityToConf(entity.getConfigurationEntity()));
+			user = modelEntityConverterService.entityToUser(entity);
 		}
 		catch (IllegalArgumentException ex) {
 			return null;
@@ -124,12 +114,7 @@ public class DatabaseService implements IDatabaseService {
 
 		if (entities != null && entities.size() > 0) {
 			PieUserEntity entity = entities.get(0);
-			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-			user.setIsLoggedIn(false);
-			user.setUserName(entity.getUserName());
-			user.setUserName(entity.getUserName());
-			user.setPieShareConfiguration(configurationFactory.confEntityToConf(entity.getConfigurationEntity()));
-			user.setHasPasswordFile(entity.isHasPasswordFile());
+			user = modelEntityConverterService.entityToUser(entity);
 		}
 		return user;
 	}
@@ -137,9 +122,12 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public void removePieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-
-		PieUserEntity ent = new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
-		ent.setUserName(user.getCloudName());
+		PieUserEntity ent = modelEntityConverterService.userToEntity(user);
+				
+		//ToDo: Check Delete
+		
+		//	= new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
+		//ent.setUserName(user.getCloudName());
 
 		try {
 			em.getTransaction().begin();
@@ -207,6 +195,20 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
+	public void persist(PieFile file) {
+		//todo: all this can be abstracted by one single function for all default persists
+		//BaseClass for all models
+		//ConverterService.convertToEntity(BaseClass) 
+		//	--> throws Exception
+		//	--> overloads for all other types
+		//persist(BaseClass) --> tada everything gets persisted by one function
+		//and exception gets thrown if converter can't convert
+		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		EntityManager em = emf.createEntityManager();
+		this.persistBasicEntity(em, entity);
+	}
+
+	@Override
 	public <T extends BaseEntity> T findEntity(Class<T> clazz, Object key) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
 		em.getTransaction().begin();
@@ -214,5 +216,4 @@ public class DatabaseService implements IDatabaseService {
 		em.getTransaction().commit();
 		return entity;
 	}
-
 }

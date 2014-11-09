@@ -19,13 +19,15 @@ import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -100,7 +102,6 @@ public class PieShareAppService {
 		ComparerService service = new ComparerService();
 		service.setFileUtilsService(this.fileUtilsService());
 		service.setBeanService(utilities.beanService());
-		service.setRequestService(this.requestService());
 		return service;
 	}
 
@@ -185,6 +186,13 @@ public class PieShareAppService {
 		service.setBeanService(utilities.beanService());
 		service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
 		service.setConfigurationFactory(configurationFactory());
+		service.setModelEntityConverterService(modelEntityConverterService());
+		return service;
+	}
+
+	public ModelEntityConverterService modelEntityConverterService() {
+		ModelEntityConverterService service = new ModelEntityConverterService();
+		service.setBeanService(utilities.beanService());
 		return service;
 	}
 
@@ -218,6 +226,15 @@ public class PieShareAppService {
 	public ConfigurationFactory configurationFactory() {
 		ConfigurationFactory service = new ConfigurationFactory();
 		service.setApplicationConfiguration(applicationConfigurationService());
+		service.setBeanService(utilities.beanService());
 		return service;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public PieShareConfiguration pieShareConfiguration() {
+		PieShareConfiguration config = new PieShareConfiguration();
+		return config;
 	}
 }

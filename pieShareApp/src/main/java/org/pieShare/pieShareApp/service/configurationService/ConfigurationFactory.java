@@ -6,9 +6,11 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -17,65 +19,50 @@ import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationF
 public class ConfigurationFactory implements IConfigurationFactory {
 
 	private IApplicationConfigurationService configurationService;
+	private IBeanService beanService;
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
 	public void setApplicationConfiguration(IApplicationConfigurationService configurationService) {
 		this.configurationService = configurationService;
 	}
 
-	public PieShareConfiguration createConfig() {
-		return confEntityToConf(new ConfigurationEntity());
+	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config) {
+		if (config == null) {
+			config = beanService.getBean(PieShareConfiguration.class);
+		}
+		checkAndCreateFolders(config);
+		return config;
 	}
 
-	@Override
-	public void checkAndCreateFolders(PieShareConfiguration conf) {
+	
+	private void checkAndCreateFolders(PieShareConfiguration conf) {
+
+		if (conf.getPwdFile() == null) {
+			conf.setPwdFile(new File(String.format("%s/%s", configurationService.getBaseConfigPath(), "pwd.pie")));
+		}
 
 		if (!conf.getPwdFile().exists()) {
 			conf.getPwdFile().getParentFile().mkdirs();
+		}
+
+		if (conf.getTmpDir() == null) {
+			conf.setTmpDir(new File("tmpDir"));
 		}
 
 		if (!conf.getTmpDir().exists()) {
 			conf.getTmpDir().mkdirs();
 		}
 
+		if (conf.getWorkingDir() == null) {
+			conf.setWorkingDir(new File("workingDir"));
+		}
+
 		if (!conf.getWorkingDir().exists()) {
 			conf.getWorkingDir().mkdirs();
 		}
-	}
-
-	@Override
-	public PieShareConfiguration confEntityToConf(ConfigurationEntity entity) {
-		entity = nullCheck(entity);
-
-		PieShareConfiguration configuration = new PieShareConfiguration();
-		configuration.setPwdFile(new File(entity.getPwdFile()));
-		configuration.setTmpDir(new File(entity.getTmpDir()));
-		configuration.setWorkingDir(new File(entity.getWorkingDir()));
-		return configuration;
-	}
-
-	@Override
-	public ConfigurationEntity confToConfEntity(PieShareConfiguration conf) {
-		ConfigurationEntity entity = new ConfigurationEntity();
-		entity.setPwdFile(conf.getPwdFile().toPath().toString());
-		entity.setTmpDir(conf.getTmpDir().toPath().toString());
-		entity.setWorkingDir(conf.getWorkingDir().toPath().toString());
-		return entity;
-	}
-
-	private ConfigurationEntity nullCheck(ConfigurationEntity entity) {
-		if (entity.getPwdFile() == null) {
-			entity.setPwdFile(String.format("%s/%s", configurationService.getBaseConfigPath(), "pwd.pie"));
-		}
-
-		if (entity.getTmpDir() == null) {
-			entity.setTmpDir("tmpDir");
-		}
-
-		if (entity.getWorkingDir() == null) {
-			entity.setWorkingDir("workingDir");
-		}
-
-		return entity;
 	}
 
 }

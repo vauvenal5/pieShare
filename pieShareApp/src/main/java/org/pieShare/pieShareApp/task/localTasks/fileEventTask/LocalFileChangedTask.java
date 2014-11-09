@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.task.localTasks;
+package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.task.localTasks.base.FileHistoryEventTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileHistoryEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
