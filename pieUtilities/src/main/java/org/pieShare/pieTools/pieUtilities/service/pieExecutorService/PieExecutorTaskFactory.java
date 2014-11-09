@@ -52,7 +52,7 @@ public class PieExecutorTaskFactory implements IPieExecutorTaskFactory {
 			throw new PieExecutorTaskFactoryException("Could not create task!", ex);
 		}
 
-		task.setMsg(event);
+		task.setEvent(event);
 		return task;
 	}
 	

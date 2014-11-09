@@ -18,7 +18,7 @@ public abstract class PieEventTaskBase<T extends IPieEvent> implements IPieEvent
 	protected T msg;
 	
 	@Override
-	public void setMsg(T msg) {
+	public void setEvent(T msg) {
 		this.msg = msg;
 	}
 }

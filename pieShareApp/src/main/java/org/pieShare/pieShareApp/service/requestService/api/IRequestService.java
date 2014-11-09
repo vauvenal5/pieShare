@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.service.requestService.api;
 
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *

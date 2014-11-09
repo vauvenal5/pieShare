@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileService;
+package org.pieShare.pieShareApp.model.pieFile;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

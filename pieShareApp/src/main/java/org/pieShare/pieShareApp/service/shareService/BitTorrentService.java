@@ -35,7 +35,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
@@ -119,7 +119,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			//todo: use beanService
 			int port = this.networkService.getAvailablePortStartingFrom(6969);
 			this.trackerUri = new URI("http://"+networkService.getLocalHost().getHostAddress()+":"+String.valueOf(port)+"/announce");
-			System.out.println(this.trackerUri.toString());
+			PieLogger.info(this.getClass(), this.trackerUri.toString());
 			InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
 			tracker = new Tracker(ad);
 			//todo-sv: try to get local host out of cloud service

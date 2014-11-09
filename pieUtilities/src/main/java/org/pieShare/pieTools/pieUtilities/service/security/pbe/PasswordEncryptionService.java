@@ -49,6 +49,8 @@ public class PasswordEncryptionService implements IPasswordEncryptionService {
 			SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(this.providerService.getPasswordEncryptionAlgorithm(), this.providerService.getProviderName());
 			SecretKey key = keyFactory.generateSecret(keySpec);
 
+			//todo-sv: check if returning secretKey or byte array is better
+			//what is the difference
 			EncryptedPassword encPwd = new EncryptedPassword();
 			encPwd.setPassword(key.getEncoded());
 			encPwd.setSecretKey(key);

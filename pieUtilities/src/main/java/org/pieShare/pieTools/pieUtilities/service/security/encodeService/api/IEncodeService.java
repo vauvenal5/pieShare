@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.security.encodeService.api;
 
-import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 
 /**
  *
@@ -13,7 +13,7 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
  */
 public interface IEncodeService {
 
-	byte[] encrypt(PlainTextPassword passphrase, byte[] plaintext) throws Exception;
+	byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception;
 
-	byte[] decrypt(PlainTextPassword passphrase, byte[] ciphertext) throws Exception;
+	byte[] decrypt(EncryptedPassword passphrase, byte[] ciphertext) throws Exception;
 }
