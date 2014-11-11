@@ -6,18 +6,14 @@
 package org.pieShare.pieShareApp.service.database;
 
 import java.io.File;
-import javax.persistence.EntityManager;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.api.IBaseModel;
 import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
-import org.pieShare.pieShareApp.service.database.exception.NotConvertableException;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -35,17 +31,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public <T extends IBaseModel> IBaseEntity convertToEntity(T model) throws NotConvertableException {	
-		throw new NotConvertableException(String.format("Cannot convert class: %s", model.getClass().toString()));	
-	}
-
-	@Override
-	public IBaseModel convertFromEntity(IBaseEntity entity) throws NotConvertableException {
-		throw new NotConvertableException(String.format("Cannot convert class: %s", entity.getClass().toString()));
-	}
-
-	@Override
-	public PieFileEntity convertToEntity(PieFile file) throws NotConvertableException {
+	public PieFileEntity convertToEntity(PieFile file) {
 		PieFileEntity entity = this.beanService.getBean(PieFileEntity.class);
 		entity.setMd5(file.getMd5());
 		entity.setLastModified(file.getLastModified());
@@ -55,7 +41,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieFile convertFromEntity(PieFileEntity entity) throws NotConvertableException {
+	public PieFile convertFromEntity(PieFileEntity entity) {
 		PieFile file = this.beanService.getBean(PieFile.class);
 		file.setFileName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());
@@ -65,9 +51,9 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieUserEntity convertToEntity(PieUser user) throws NotConvertableException {
+	public PieUserEntity convertToEntity(PieUser user) {
 		PieUserEntity entity = new PieUserEntity();
-		entity.setHasPasswordFile(user.hasPasswordFile());;
+		entity.setHasPasswordFile(user.hasPasswordFile());
 		entity.setUserName(user.getUserName());
 		entity.setConfigurationEntity(this.convertToEntity(user.getPieShareConfiguration()));
 		entity.getConfigurationEntity().setPieUserEntity(entity);
@@ -75,7 +61,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieUser convertFromEntity(PieUserEntity entity) throws NotConvertableException {
+	public PieUser convertFromEntity(PieUserEntity entity) {
 		PieUser user = beanService.getBean(PieUser.class);
 		user.setHasPasswordFile(entity.isHasPasswordFile());
 		user.setUserName(entity.getUserName());
@@ -85,7 +71,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieShareConfiguration convertFromEntity(ConfigurationEntity entity) throws NotConvertableException {
+	public PieShareConfiguration convertFromEntity(ConfigurationEntity entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -98,7 +84,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public ConfigurationEntity convertToEntity(PieShareConfiguration conf) throws NotConvertableException {
+	public ConfigurationEntity convertToEntity(PieShareConfiguration conf) {
 		ConfigurationEntity entity = new ConfigurationEntity();
 		entity.setPwdFile(conf.getPwdFile().toPath().toString());
 		entity.setTmpDir(conf.getTmpDir().toPath().toString());
@@ -108,7 +94,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public FilterEntity convertToEntity(IFilter filter) throws NotConvertableException {
+	public FilterEntity convertToEntity(IFilter filter) {
 		//ToDo: Spring
 		FilterEntity en = new FilterEntity();
 		en.setPattern(filter.getPattern());
@@ -117,7 +103,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public RegexFileFilter convertFromEntity(FilterEntity entity) throws NotConvertableException {
+	public RegexFileFilter convertFromEntity(FilterEntity entity) {
 		//ToDo: Spring
 		RegexFileFilter reg = new RegexFileFilter();
 		reg.setEntity(entity);
