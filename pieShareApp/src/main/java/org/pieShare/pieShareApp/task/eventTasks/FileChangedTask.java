@@ -28,7 +28,7 @@ public class FileChangedTask extends PieEventTaskBase<FileChangedMessage> {
 	@Override
 	public void run() {
 		try {
-				comparerService.comparePieFile(msg.getFile());
+				comparerService.compareWithLocalPieFile(msg.getFile());
 		} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "New File Task error.", ex);
 		} catch (FileConflictException ex) {

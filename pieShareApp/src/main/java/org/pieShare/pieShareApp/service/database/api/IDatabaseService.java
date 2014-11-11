@@ -21,6 +21,8 @@ public interface IDatabaseService {
 	PieUser getPieUser(String name);
 
 	PieUser findPieUser();
+	
+	PieFile findPieFile(PieFile file);
 
 	void removePieUser(PieUser user);
 	
