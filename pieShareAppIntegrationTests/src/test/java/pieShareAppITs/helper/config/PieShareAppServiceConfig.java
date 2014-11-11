@@ -33,8 +33,6 @@ import pieShareAppITs.helper.ITUtil;
  */
 @Configuration
 public class PieShareAppServiceConfig extends PieShareAppService {	
-	
-	public static boolean main;
 	@Autowired
 	protected PieShareAppTasks tasks;
 	
