@@ -9,19 +9,13 @@ import java.io.File;
 
 /**
  *
- * @author richy
+ * @author Richard
  */
-public interface IPieShareAppConfiguration {
-
-	File getWorkingDirectory();
-
-	File getTempCopyDirectory();
-
-	void setWorkingDir(File workingDir);
-
-	void setTempCopyDir(File tempCopyDir);
+public interface IApplicationConfigurationService {
 
 	File getBaseConfigPath();
 
-	File getPasswordFile();
+	File getDatabaseFolder();
+
+	void setDatabaseFolder(File folder);
 }

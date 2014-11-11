@@ -19,7 +19,7 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  */
 public interface IFileService {
 
-	//public void remoteFileChange(FileChangedMessage message);
+	void initFileService();
 
 	//public boolean checkMergeFile(PieFile pieFile);
 	

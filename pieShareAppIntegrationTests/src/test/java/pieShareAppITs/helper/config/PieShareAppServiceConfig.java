@@ -13,7 +13,8 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mockito.Mockito;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
@@ -32,8 +33,6 @@ import pieShareAppITs.helper.ITUtil;
  */
 @Configuration
 public class PieShareAppServiceConfig extends PieShareAppService {	
-	
-	public static boolean main;
 	@Autowired
 	protected PieShareAppTasks tasks;
 	
@@ -42,62 +41,8 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 	@Override
 	public DatabaseService databaseService() {
 		DatabaseService service = Mockito.mock(DatabaseService.class);
-		Mockito.when(service.getPieUser("test")).thenReturn(null);
-		Mockito.when(service.findPieUser()).thenReturn(null);
+		Mockito.when(service.findAllPieUser()).thenReturn(null);
 		return service;
-	}
-	
-	@Bean
-	@Lazy
-	@Override
-	public PieShareAppConfiguration pieShareAppConfiguration() {
-		if(main){
-			return this.pieShareAppMainConfiguration();
-		}
-		
-		return this.pieShareAppOtherConfiguration();
-	}
-	
-	@Bean
-	@Lazy
-	public PieShareAppConfiguration pieShareAppMainConfiguration() {
-		Properties properties = new Properties();
-		properties.put("tempCopyDir", ITUtil.getMainTmpDir());
-		properties.put("workingDir", ITUtil.getMainWorkingDir());
-		PropertiesReader reader = Mockito.mock(PropertiesReader.class);
-		try {
-			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
-		} catch (NoConfigFoundException ex) {
-			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-		PieShareAppConfiguration config = new PieShareAppConfiguration();
-		config.setConfigurationReader(reader);
-		config.setConfigPath("test");
-		config.init();
-		return config;
-	}
-	
-	@Bean
-	@Lazy
-	public PieShareAppConfiguration pieShareAppOtherConfiguration() {
-		Properties properties = new Properties();
-		properties.put("tempCopyDir", ITUtil.getBotTmpDir());
-		properties.put("workingDir", ITUtil.getBotWorkingDir());
-		PropertiesReader reader = Mockito.mock(PropertiesReader.class);
-		try {
-			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
-		} catch (NoConfigFoundException ex) {
-			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		
-		PieShareAppConfiguration config = new PieShareAppConfiguration();
-		config.setConfigurationReader(reader);
-		config.setConfigPath("test");
-		config.init();
-		return config;
 	}
 	
 	@Bean

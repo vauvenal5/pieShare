@@ -6,42 +6,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
-import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
-import org.pieShare.pieShareApp.model.message.NewFileMessage;
-import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
-import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
-import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
-import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -58,15 +37,14 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	private IExecutorService executorService = null;
 	private IFileWatcherService fileWatcher;
-	private IPieShareAppConfiguration pieAppConfig;
 	private IBeanService beanService;
 	private IHashService hashService;
 	private IRequestService requestService;
 	private IClusterManagementService clusterManagementService;
 	private IFileUtilsService fileUtilsService;
-
+	private IPieShareConfiguration configuration;
+	
 	public FileService() {
-
 	}
 
 	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
@@ -81,10 +59,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 		this.requestService = requestService;
 	}
 
-	public void setPieShareAppConfiguration(IPieShareAppConfiguration pieShareAppConfiguration) {
-		this.pieAppConfig = pieShareAppConfiguration;
-	}
-
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
@@ -93,6 +67,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		this.hashService = hashService;
 	}
 
+	@Override
 	public void initFileService() {
 		/*  try
 		 {
@@ -104,7 +79,9 @@ public class FileService implements IFileService, IClusterAddedListener {
 		 logger.error("Error parsing workingDir at startup");
 		 }
 		 */
-		addWatchDirectory(pieAppConfig.getWorkingDirectory());
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		configuration = user.getPieShareConfiguration();
+		addWatchDirectory(configuration.getWorkingDir());
 
 		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
 	}
@@ -135,11 +112,14 @@ public class FileService implements IFileService, IClusterAddedListener {
 				st = new FileInputStream(file);
 				isCopying = false;
 				st.close();
-			} catch (FileNotFoundException ex) {
+			}
+			catch (FileNotFoundException ex) {
 				//nothing needed to do here
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				//nothing needed to do here
-			} catch (InterruptedException ex) {
+			}
+			catch (InterruptedException ex) {
 				//nothing needed to do here
 			}
 		}
@@ -176,7 +156,8 @@ public class FileService implements IFileService, IClusterAddedListener {
 			//todo: request all files list!!!!
 			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
-		} catch (ClusterManagmentServiceException ex) {
+		}
+		catch (ClusterManagmentServiceException ex) {
 			//todo: error handling
 			PieLogger.error(this.getClass(), "File error.", ex);
 		}
@@ -189,7 +170,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 		List<PieFile> pieFiles = new ArrayList();
 
 		//todo: maybe a own service or at least function?
-		Files.walkFileTree(pieAppConfig.getWorkingDirectory().toPath(), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(configuration.getWorkingDir().toPath(), new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				File realFile = file.toFile();
@@ -206,14 +187,16 @@ public class FileService implements IFileService, IClusterAddedListener {
 
 	@Override
 	public void deleteRecursive(PieFile file) {
-		File localFile = new File(this.pieAppConfig.getWorkingDirectory(), file.getRelativeFilePath());
+		File localFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
 		try {
 			if (localFile.isDirectory()) {
 				FileUtils.deleteDirectory(localFile);
-			} else {
+			}
+			else {
 				localFile.delete();
 			}
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Deleting failed!", ex);
 		}
 	}

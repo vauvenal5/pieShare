@@ -20,19 +20,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Callback;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
@@ -40,7 +41,6 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
 import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
@@ -51,12 +51,12 @@ import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 public class FileFilterSettingsController implements Initializable {
 
 	private FXMLController fXMLController;
-	private IPieShareAppConfiguration pieShareAppConfiguration;
 	private boolean isCorrectRegex = false;
 	private IRegexService regexService;
 	private IFileFilterService fileFilterService;
 	private IBeanService beanService;
 	private IFileUtilsService fileUtilsService;
+	private IPieShareConfiguration configuration;
 
 	@FXML
 	private ListView<ITwoColumnListView> listViewFilters;
@@ -78,8 +78,10 @@ public class FileFilterSettingsController implements Initializable {
 
 	private ObservableList<ITwoColumnListView> listItems;
 
-	public void setPieShaeAppConfig(IPieShareAppConfiguration appConfiguration) {
-		this.pieShareAppConfiguration = appConfiguration;
+	@PostConstruct
+	public void init() {
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		configuration = user.getPieShareConfiguration();
 	}
 
 	public void setBeanService(IBeanService beanService) {
@@ -152,7 +154,7 @@ public class FileFilterSettingsController implements Initializable {
 			public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
 				//Clear all Styles. 
 				patternTextField.getStyleClass().clear();
-				
+
 				if (patternTextField.textProperty().isEmpty().get()) {
 					buttonAdd.disableProperty().set(true);
 					patternTextField.getStyleClass().add("textfieldWrong");
@@ -161,7 +163,8 @@ public class FileFilterSettingsController implements Initializable {
 
 				try {
 					regexService.setPattern(s2);
-				} catch (Exception ex) {
+				}
+				catch (Exception ex) {
 					buttonAdd.disableProperty().set(true);
 					patternTextField.getStyleClass().add("textfieldWrong");
 					return;
@@ -186,7 +189,7 @@ public class FileFilterSettingsController implements Initializable {
 	private void handleSelectDirAction(ActionEvent event) {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select path to ignore");
-		chooser.setInitialDirectory(pieShareAppConfiguration.getWorkingDirectory());
+		chooser.setInitialDirectory(configuration.getWorkingDir());
 		File choosenFile = chooser.showDialog(fXMLController.getMainStage());
 		if (choosenFile == null || !choosenFile.exists()) {
 			return;
@@ -201,7 +204,7 @@ public class FileFilterSettingsController implements Initializable {
 	private void handleSelectFileAction(ActionEvent event) {
 		FileChooser chooser = new FileChooser();
 		chooser.setTitle("Select path to ignore");
-		chooser.setInitialDirectory(pieShareAppConfiguration.getWorkingDirectory());
+		chooser.setInitialDirectory(configuration.getWorkingDir());
 
 		File choosenFile = chooser.showOpenDialog(fXMLController.getMainStage());
 		if (choosenFile == null || !choosenFile.exists()) {
