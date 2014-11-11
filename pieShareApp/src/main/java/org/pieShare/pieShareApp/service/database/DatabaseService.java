@@ -67,17 +67,16 @@ public class DatabaseService implements IDatabaseService {
 	public ArrayList<PieUser> findAllPieUser() {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 
-		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
+		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()), PieUserEntity.class);
 		PieUser user = null;
 		ArrayList<PieUserEntity> entities;
 		ArrayList<PieUser> models = new ArrayList<>();
 
-		try {
-			entities = (ArrayList<PieUserEntity>) query.getResultList();
-		}
-		catch (Exception ex) {
+		if (query.getResultList().isEmpty()) {
 			return null;
 		}
+
+		entities = (ArrayList<PieUserEntity>) query.getResultList();
 
 		entities.forEach((en) -> {
 			try {
@@ -92,7 +91,6 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void removePieUser(PieUser user) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity ent;
 		ent = modelEntityConverterService.convertToEntity(user);
 		remove(ent);
@@ -122,30 +120,20 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public ArrayList<IFilter> findAllFilters() {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
-		Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()));
+		Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()), FilterEntity.class);
 		ArrayList<IFilter> list = new ArrayList<>();
 
-		List resultList;
-
-		try {
-			resultList = query.getResultList();
-		}
-		catch (Exception ex) {
+		if (query.getResultList().isEmpty()) {
 			return list;
 		}
 
-		if (!resultList.isEmpty()) {
-			for (FilterEntity entity : (Collection<FilterEntity>) resultList) {
-				IFilter filter = beanService.getBean(RegexFileFilter.class);
-				filter.setEntity(entity);
-				filter.setPattern(entity.getPattern());
-				list.add(filter);
-			}
+		for (FilterEntity entity : (Collection<FilterEntity>) query.getResultList()) {
+			RegexFileFilter filter = modelEntityConverterService.convertFromEntity(entity);
+			list.add(filter);
 		}
 		return list;
 	}
 
-	//@Override
 	public void persist(PieFile file) {
 		PieFileEntity entity;
 		entity = this.modelEntityConverterService.convertToEntity(file);
