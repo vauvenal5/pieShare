@@ -21,9 +21,14 @@ public interface IFileService {
 
 	void initFileService();
 
-	List<PieFile> getAllFilesList() throws IOException;
+	//public boolean checkMergeFile(PieFile pieFile);
+	
+	public List<PieFile> getAllFiles() throws IOException;
+	
+//	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
+//	public void sendAllFilesSyncRequest();
 
-	void deleteRecursive(PieFile file);
-
-	void waitUntilCopyFinished(String filePath);
+	public void deleteRecursive(PieFile file);
+	
+	public void waitUntilCopyFinished(String filePath);
 }

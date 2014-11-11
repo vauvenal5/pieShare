@@ -32,12 +32,7 @@ import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Servi
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
-/**
- *
- * @author Richard Sveti toled me there is normaly a converter server, but i
- * mixed it, he sad it is o for now. But we have to document this in the bac.
- * thesis later.
- */
+
 public class DatabaseService implements IDatabaseService {
 
 	private IPieDatabaseManagerFactory pieDatabaseManagerFactory;
@@ -199,15 +194,6 @@ public class DatabaseService implements IDatabaseService {
 			return;
 		}
 		this.persist(entity);
-	}
-
-	@Override
-	public <T extends IBaseEntity> T findEntity(Class<T> clazz, Object key) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
-		em.getTransaction().begin();
-		T entity = em.find(clazz, key);
-		em.getTransaction().commit();
-		return entity;
 	}
 
 	private void persist(IBaseEntity entity) {
