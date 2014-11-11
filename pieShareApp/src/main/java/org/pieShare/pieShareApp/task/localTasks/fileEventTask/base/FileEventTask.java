@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.task.localTasks.base;
+package org.pieShare.pieShareApp.task.localTasks.fileEventTask.base;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;

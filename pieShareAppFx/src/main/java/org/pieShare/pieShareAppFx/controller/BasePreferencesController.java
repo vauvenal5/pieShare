@@ -14,8 +14,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import javax.annotation.PostConstruct;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareAppFx.FXMLController;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -23,23 +29,35 @@ import org.pieShare.pieShareAppFx.FXMLController;
  */
 public class BasePreferencesController implements Initializable {
 
-	private PieShareAppConfiguration pieShareAppConfig;
+	private IPieShareConfiguration configuration;
+	private IBeanService beanService;
 	private FXMLController fxmlController;
+	private IDatabaseService databaseService;
+	private PieUser user;
 
 	@FXML
 	private Button buttonBrowseWorking;
 
 	@FXML
 	private Button buttonBrowseTemp;
-	
+
 	@FXML
 	private TextField textFieldTempPath;
 
 	@FXML
 	private TextField textFieldWorkingPath;
 
-	public void setPieShareAppConfiguration(PieShareAppConfiguration pieShareAppConfig) {
-		this.pieShareAppConfig = pieShareAppConfig;
+	@PostConstruct
+	public void init() {
+		
+	}
+
+	public void setDatabaseService(IDatabaseService databaseService) {
+		this.databaseService = databaseService;
+	}
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
 	}
 
 	public void setFXMLController(FXMLController controller) {
@@ -48,33 +66,37 @@ public class BasePreferencesController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		textFieldTempPath.setText(pieShareAppConfig.getTempCopyDirectory().getAbsolutePath());
-		textFieldWorkingPath.setText(pieShareAppConfig.getWorkingDirectory().getAbsolutePath());
+		user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		configuration = user.getPieShareConfiguration();
+		textFieldTempPath.setText(configuration.getTmpDir().getAbsolutePath());
+		textFieldWorkingPath.setText(configuration.getWorkingDir().getAbsolutePath());
 	}
 
 	@FXML
 	private void handleButtonWorkingClick(ActionEvent event) {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select Working Directory");
-		chooser.setInitialDirectory(pieShareAppConfig.getWorkingDirectory());
+		chooser.setInitialDirectory(configuration.getWorkingDir());
 		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
 		if (choosenFile == null || !choosenFile.exists()) {
 			return;
 		}
-		pieShareAppConfig.setWorkingDir(choosenFile);
-		textFieldWorkingPath.setText(pieShareAppConfig.getWorkingDirectory().getAbsolutePath());
+		configuration.setWorkingDir(choosenFile);
+		textFieldWorkingPath.setText(configuration.getWorkingDir().getAbsolutePath());
+		databaseService.mergePieUser(user);
 	}
 
 	@FXML
 	private void handleButtonTempClick(ActionEvent event) {
 		DirectoryChooser chooser = new DirectoryChooser();
 		chooser.setTitle("Select Temp Directory");
-		chooser.setInitialDirectory(pieShareAppConfig.getTempCopyDirectory());
+		chooser.setInitialDirectory(configuration.getTmpDir());
 		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
 		if (choosenFile == null || !choosenFile.exists()) {
 			return;
 		}
-		pieShareAppConfig.setTempCopyDir(choosenFile);
-		textFieldTempPath.setText(pieShareAppConfig.getTempCopyDirectory().getAbsolutePath());
+		configuration.setTmpDir(choosenFile);
+		textFieldTempPath.setText(configuration.getTmpDir().getAbsolutePath());
+		databaseService.mergePieUser(user);
 	}
 }

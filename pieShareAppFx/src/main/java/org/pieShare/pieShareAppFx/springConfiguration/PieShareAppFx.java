@@ -116,7 +116,8 @@ public class PieShareAppFx {
 	public BasePreferencesController basePreferencesController() {
 		BasePreferencesController controller = new BasePreferencesController();
 		controller.setFXMLController(this.mainController());
-		controller.setPieShareAppConfiguration(appService.pieShareAppConfiguration());
+		controller.setBeanService(utilities.beanService());
+		controller.setDatabaseService(services.databaseService());
 		return controller;
 	}
 
@@ -136,7 +137,6 @@ public class PieShareAppFx {
 		controller.setFileFilterService(services.fileFilterService());
 		controller.setBeanService(utilities.beanService());
 		controller.setFXMLController(mainController());
-		controller.setPieShaeAppConfig(services.pieShareAppConfiguration());
 		controller.setFileUtilsService(services.fileUtilsService());
 		return controller;
 	}

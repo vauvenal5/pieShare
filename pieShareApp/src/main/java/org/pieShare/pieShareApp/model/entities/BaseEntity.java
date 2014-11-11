@@ -19,8 +19,6 @@ public class BaseEntity{
 	@Id
 	@GeneratedValue
 	private long id;
-	
-	private String pattern; 
 
 	public long getId() {
 		return id;

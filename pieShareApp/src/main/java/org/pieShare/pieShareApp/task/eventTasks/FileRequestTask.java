@@ -7,14 +7,16 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
 import java.io.IOException;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
@@ -29,11 +31,11 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 	private IShareService shareService;
 	private IHashService hashService;
 	private IRequestService requestService;
-	private IPieShareAppConfiguration pieAppConfig;
 	private IFileUtilsService fileUtilsService;
+	private IBeanService beanService;
 
-	public void setPieAppConfig(IPieShareAppConfiguration pieAppConfig) {
-		this.pieAppConfig = pieAppConfig;
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
 	}
 
 	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
@@ -58,7 +60,11 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 
 	@Override
 	public void run() {
-		File file = new File(this.pieAppConfig.getWorkingDirectory(), this.msg.getPieFile().getRelativeFilePath());
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		IPieShareConfiguration configuration = user.getPieShareConfiguration();
+
+		File file = new File(configuration.getWorkingDir(), this.msg.getPieFile().getRelativeFilePath());
 
 		if (!file.exists()) {
 			//if the file doesn't exist on this client it could be due the fact that itself
@@ -66,14 +72,14 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 			requestService.checkForActiveFileHandle(msg.getPieFile());
 			return;
 		}
-		
-		//shareService.handleActiveShare(msg.getPieFile());
 
+		//shareService.handleActiveShare(msg.getPieFile());
 		PieFile pieFile = null;
 
 		try {
 			pieFile = this.fileUtilsService.getPieFile(file);
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			PieLogger.error(this.getClass(), "File error.", ex);
 			return;
 		}

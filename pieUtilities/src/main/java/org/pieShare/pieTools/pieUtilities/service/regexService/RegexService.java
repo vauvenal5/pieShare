@@ -16,7 +16,7 @@ public class RegexService implements IRegexService {
 
 	private Pattern pattern;
 	private Matcher matcher;
-	
+
 	@Override
 	public void setPattern(String textPattern) {
 		pattern = Pattern.compile(textPattern);
@@ -26,5 +26,14 @@ public class RegexService implements IRegexService {
 	public boolean matches(String text) {
 		matcher = pattern.matcher(text);
 		return matcher.matches();
+	}
+
+	@Override
+	public String replaceAll(String text, String replaceString) {
+		matcher = pattern.matcher(text);
+		if (matcher.matches()) {
+			return matcher.replaceAll(replaceString);
+		}
+		return text;
 	}
 }
