@@ -149,13 +149,17 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void removeFileFilter(IFilter filter) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
-		em.getTransaction().begin();
 
-		FilterEntity f = em.find(FilterEntity.class, filter.getEntity().getId());
-		em.remove(f);
+		FilterEntity f;
+		try {
+			f = modelEntityConverterService.convertToEntity(filter);
+		}
+		catch (NotConvertableException ex) {
+			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
+			return;
+		}
+		remove(f);
 
-		em.getTransaction().commit();
 	}
 
 	@Override
