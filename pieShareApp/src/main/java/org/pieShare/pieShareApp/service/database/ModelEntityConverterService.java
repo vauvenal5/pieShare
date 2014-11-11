@@ -104,10 +104,9 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 
 	@Override
 	public RegexFileFilter convertFromEntity(FilterEntity entity) {
-		//ToDo: Spring
-		RegexFileFilter reg = new RegexFileFilter();
-		reg.setEntity(entity);
-		reg.setPattern(entity.getPattern());
-		return reg;
+		RegexFileFilter filter = beanService.getBean(RegexFileFilter.class);
+		filter.setEntity(entity);
+		filter.setPattern(entity.getPattern());
+		return filter;
 	}
 }
