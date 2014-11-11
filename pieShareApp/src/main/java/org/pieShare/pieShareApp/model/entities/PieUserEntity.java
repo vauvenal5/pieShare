@@ -11,13 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 
 /**
  *
  * @author Richy
  */
 @Entity
-public class PieUserEntity implements Serializable {
+public class PieUserEntity implements IBaseEntity {
 
 	@Id
 	private String userName;
