@@ -33,8 +33,6 @@ import pieShareAppITs.helper.ITUtil;
  */
 @Configuration
 public class PieShareAppServiceConfig extends PieShareAppService {	
-	
-	public static boolean main;
 	@Autowired
 	protected PieShareAppTasks tasks;
 	
@@ -47,59 +45,6 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 		//Mockito.when(service.findPieUser()).thenReturn(null);
 		return service;
 	}
-	
-//	@Bean
-//	@Lazy
-//	@Override
-//	public PieUser applicationConfigurationService() {
-//		if(main){
-//			return this.pieShareAppMainConfiguration();
-//		}
-//		
-//		return this.pieShareAppOtherConfiguration();
-//	}
-//	
-//	@Bean
-//	@Lazy
-//	public PieShareAppConfiguration pieShareAppMainConfiguration() {
-//		Properties properties = new Properties();
-//		properties.put("tempCopyDir", ITUtil.getMainTmpDir());
-//		properties.put("workingDir", ITUtil.getMainWorkingDir());
-//		PropertiesReader reader = Mockito.mock(PropertiesReader.class);
-//		try {
-//			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-//			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
-//		} catch (NoConfigFoundException ex) {
-//			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		
-//		PieShareAppConfiguration config = new PieShareAppConfiguration();
-//		config.setConfigurationReader(reader);
-//		config.setConfigPath("test");
-//		config.init();
-//		return config;
-//	}
-//	
-//	@Bean
-//	@Lazy
-//	public PieShareAppConfiguration pieShareAppOtherConfiguration() {
-//		Properties properties = new Properties();
-//		properties.put("tempCopyDir", ITUtil.getBotTmpDir());
-//		properties.put("workingDir", ITUtil.getBotWorkingDir());
-//		PropertiesReader reader = Mockito.mock(PropertiesReader.class);
-//		try {
-//			Mockito.when(reader.getConfig(Mockito.any())).thenReturn(properties);
-//			//Mockito.when(reader.getBaseConfigPath()).thenReturn(new File(""));
-//		} catch (NoConfigFoundException ex) {
-//			Logger.getLogger(PieShareAppServiceConfig.class.getName()).log(Level.SEVERE, null, ex);
-//		}
-//		
-//		PieShareAppConfiguration config = new PieShareAppConfiguration();
-//		config.setConfigurationReader(reader);
-//		config.setConfigPath("test");
-//		config.init();
-//		return config;
-//	}
 	
 	@Bean
 	@Lazy

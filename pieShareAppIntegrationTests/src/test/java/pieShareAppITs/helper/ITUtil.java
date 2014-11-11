@@ -28,6 +28,7 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
+import pieShareAppITs.helper.config.PieShareAppModelITConfig;
 import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 
 /**
@@ -55,7 +56,7 @@ public class ITUtil {
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
-		PieShareAppServiceConfig.main = main;
+		PieShareAppModelITConfig.main = main;
 	}
 	
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
