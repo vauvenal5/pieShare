@@ -20,6 +20,7 @@ import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
+import org.pieShare.pieShareAppFx.controller.WorkingMessageController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -118,6 +119,7 @@ public class PieShareAppFx {
 		controller.setFXMLController(this.mainController());
 		controller.setBeanService(utilities.beanService());
 		controller.setDatabaseService(services.databaseService());
+		controller.setApplicationConfigurationService(services.applicationConfigurationService());
 		return controller;
 	}
 
@@ -147,6 +149,15 @@ public class PieShareAppFx {
 	public SpinAnimation spinAnimation() {
 		SpinAnimation animation = new SpinAnimation();
 		return animation;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public WorkingMessageController workingMessageController() {
+		WorkingMessageController controller = new WorkingMessageController();
+		controller.setBeanService(utilities.beanService());
+		return controller;
 	}
 
 }

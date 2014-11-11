@@ -9,11 +9,14 @@ import java.io.File;
 import javax.persistence.EntityManager;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
@@ -96,5 +99,23 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		entity.setUser(conf.getUser());
 		return entity;
 	}
+	
+	@Override
+	public FilterEntity filterToFilterEntity(IFilter filter) {
+		//ToDo: Spring
+		FilterEntity en = new FilterEntity();
+		en.setPattern(filter.getPattern());
+		filter.setEntity(en);
+		return en;
+	}
 
+	@Override
+	public RegexFileFilter filterToFilterEntity(FilterEntity entity) {
+		//ToDo: Spring
+		RegexFileFilter reg = new RegexFileFilter();
+		reg.setEntity(entity);
+		reg.setPattern(entity.getPattern());
+		return reg;
+	}
+	
 }

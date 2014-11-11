@@ -12,5 +12,10 @@ import javax.persistence.EntityManager;
  * @author Richard
  */
 public interface IPieDatabaseManagerFactory {
+
 	EntityManager getEntityManger(Class clazz);
+
+	void closeDB();
+
+	void init();
 }
