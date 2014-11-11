@@ -29,6 +29,7 @@ public class ConfigurationFactory implements IConfigurationFactory {
 		this.configurationService = configurationService;
 	}
 
+	@Override
 	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config) {
 		if (config == null) {
 			config = beanService.getBean(PieShareConfiguration.class);
@@ -42,10 +43,6 @@ public class ConfigurationFactory implements IConfigurationFactory {
 
 		if (conf.getPwdFile() == null) {
 			conf.setPwdFile(new File(String.format("%s/%s", configurationService.getBaseConfigPath(), "pwd.pie")));
-		}
-
-		if (!conf.getPwdFile().exists()) {
-			conf.getPwdFile().getParentFile().mkdirs();
 		}
 
 		if (conf.getTmpDir() == null) {

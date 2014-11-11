@@ -54,7 +54,7 @@ public class SyncOneFileIT {
 	@Test(timeOut = 120000)
 	public void syncOneFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
-		PieUser user = context.getBean(PieUser.class);
+		PieUser user = context.getBean("pieUser", PieUser.class);
 		PieShareConfiguration config = user.getPieShareConfiguration();
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
@@ -65,24 +65,25 @@ public class SyncOneFileIT {
 		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 
 		this.process = ITUtil.startProcess(FileSyncMain.class);
-		ITUtil.waitForProcessToStartup(this.process);
 
 		ITUtil.executeLoginToTestCloud(context);
 
-		File filex = new File(config.getWorkingDir().getParent(),"test.txt");
+		ITUtil.waitForProcessToStartup(this.process);
+
+		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
 		ITFileUtils.createFile(filex, 2048);
-		File file = new File(config.getWorkingDir(),"test.txt");
+		File file = new File(config.getWorkingDir(), "test.txt");
 		FileUtils.moveFile(filex, file);
 		while (counter.getCount(FileTransferCompleteTask.class) < 1) {
 			Thread.sleep(5000);
 		}
 
-		if(counter.getCount(FileTransferCompleteTask.class) == 1) {
+		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			PieUser botUser = context.getBean("botPieUser", PieUser.class);
 			PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
-			File file1 = new File(botConfig.getWorkingDir(),"test.txt");
+			File file1 = new File(botConfig.getWorkingDir(), "test.txt");
 			boolean filesAreEqual = FileUtils.contentEquals(file, file1);
-			
+
 			assertTrue(filesAreEqual);
 			assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
 			assertTrue(ITUtil.waitForFileToBeFreed(file1, 30));

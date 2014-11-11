@@ -5,10 +5,10 @@
  */
 package org.pieShare.pieShareApp.task.commandTasks.loginTask;
 
-import com.mchange.io.FileUtils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Arrays;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -91,7 +91,7 @@ public class LoginTask implements ILoginTask {
 
 		if (pwdFile.exists()) {
 			try {
-				if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.getBytes(pwdFile)), FILE_TEXT)) {
+				if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.readFileToByteArray(pwdFile)), FILE_TEXT)) {
 					throw new WrongPasswordException("The given password was wrong.");
 				}
 			}
@@ -132,16 +132,9 @@ public class LoginTask implements ILoginTask {
 			pwdFile.delete();
 		}
 
-		FileOutputStream fos;
-
 		byte[] encr = encodeService.encrypt(passwordForEncoding, FILE_TEXT);
 
-		pwdFile.createNewFile();
-
-		fos = new FileOutputStream(pwdFile);
-		fos.write(encr);
-		fos.flush();
-		fos.close();
+		FileUtils.writeByteArrayToFile(pwdFile, encr, true);
 	}
 
 	@Override
