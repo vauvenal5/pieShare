@@ -89,8 +89,8 @@ public class FileUtilsService implements IFileUtilsService {
 
 	@Override
 	public Path relitivizeFilePath(File file) {
-		Path pathBase = configuration.getWorkingDir().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		Path pathBase = configuration.getWorkingDir().getAbsoluteFile().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
+		Path pathAbsolute = file.getAbsoluteFile().toPath(); // Paths.get("/var/data/stuff/xyz.dat");
 		return pathBase.relativize(pathAbsolute);
 	}
 
