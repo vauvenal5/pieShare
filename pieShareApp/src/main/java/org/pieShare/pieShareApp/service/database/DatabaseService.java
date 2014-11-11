@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -211,6 +212,14 @@ public class DatabaseService implements IDatabaseService {
 		em.getTransaction().begin();
 		em.remove(entity);
 		em.getTransaction().commit();
+	}
+
+	@Override
+	public PieFile findPieFile(PieFile file) {
+		File idFile = new File(file.getRelativeFilePath(), file.getFileName());
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, idFile.getPath());
+		return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
 	}
 
 }
