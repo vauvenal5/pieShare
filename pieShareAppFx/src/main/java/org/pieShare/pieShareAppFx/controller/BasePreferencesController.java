@@ -13,10 +13,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.DirectoryChooser;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
@@ -30,6 +32,7 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 public class BasePreferencesController implements Initializable {
 
 	private IPieShareConfiguration configuration;
+	private ApplicationConfigurationService applicationConfigurationService;
 	private IBeanService beanService;
 	private FXMLController fxmlController;
 	private IDatabaseService databaseService;
@@ -42,14 +45,27 @@ public class BasePreferencesController implements Initializable {
 	private Button buttonBrowseTemp;
 
 	@FXML
+	private Button buttonBrowseDatabase;
+
+	@FXML
 	private TextField textFieldTempPath;
 
 	@FXML
 	private TextField textFieldWorkingPath;
 
+	@FXML
+	private TextField textFielddatabaseDir;
+
+	@FXML
+	private AnchorPane loginInnerContainer;
+
 	@PostConstruct
 	public void init() {
-		
+
+	}
+
+	public void setApplicationConfigurationService(ApplicationConfigurationService applicationConfigurationService) {
+		this.applicationConfigurationService = applicationConfigurationService;
 	}
 
 	public void setDatabaseService(IDatabaseService databaseService) {
@@ -70,14 +86,12 @@ public class BasePreferencesController implements Initializable {
 		configuration = user.getPieShareConfiguration();
 		textFieldTempPath.setText(configuration.getTmpDir().getAbsolutePath());
 		textFieldWorkingPath.setText(configuration.getWorkingDir().getAbsolutePath());
+		textFielddatabaseDir.setText(applicationConfigurationService.getDatabaseFolder().toPath().toString());
 	}
 
 	@FXML
 	private void handleButtonWorkingClick(ActionEvent event) {
-		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Select Working Directory");
-		chooser.setInitialDirectory(configuration.getWorkingDir());
-		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
+		File choosenFile = showFolderChooser("Select Working Directory", configuration.getWorkingDir());
 		if (choosenFile == null || !choosenFile.exists()) {
 			return;
 		}
@@ -88,15 +102,33 @@ public class BasePreferencesController implements Initializable {
 
 	@FXML
 	private void handleButtonTempClick(ActionEvent event) {
-		DirectoryChooser chooser = new DirectoryChooser();
-		chooser.setTitle("Select Temp Directory");
-		chooser.setInitialDirectory(configuration.getTmpDir());
-		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
-		if (choosenFile == null || !choosenFile.exists()) {
+		File choosenFile = showFolderChooser("Select Temp Directory", configuration.getTmpDir());
+		if (choosenFile == null) {
 			return;
 		}
 		configuration.setTmpDir(choosenFile);
 		textFieldTempPath.setText(configuration.getTmpDir().getAbsolutePath());
 		databaseService.mergePieUser(user);
 	}
+
+	@FXML
+	private void handleButtonDatabaseClick(ActionEvent event) {
+		File choosenFile = showFolderChooser("Select Database Directory", applicationConfigurationService.getDatabaseFolder());
+		if (choosenFile == null) {
+			return;
+		}
+		applicationConfigurationService.setDatabaseFolder(choosenFile);
+	}
+
+	private File showFolderChooser(String titel, File initial) {
+		DirectoryChooser chooser = new DirectoryChooser();
+		chooser.setTitle(titel);
+		chooser.setInitialDirectory(initial);
+		File choosenFile = chooser.showDialog(fxmlController.getMainStage());
+		if (choosenFile == null || !choosenFile.exists()) {
+			return null;
+		}
+		return choosenFile;
+	}
+
 }

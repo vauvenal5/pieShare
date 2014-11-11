@@ -7,10 +7,13 @@ package org.pieShare.pieShareApp.service.database.api;
 
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
 /**
  *
@@ -29,4 +32,8 @@ public interface IModelEntityConverterService {
 	PieUserEntity userToEntity(PieUser user);
 
 	PieUser entityToUser(PieUserEntity entity);
+
+	FilterEntity filterToFilterEntity(IFilter filter);
+
+	RegexFileFilter filterToFilterEntity(FilterEntity entity);
 }

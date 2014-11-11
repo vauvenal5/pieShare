@@ -123,12 +123,10 @@ public class DatabaseService implements IDatabaseService {
 	public void removePieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity ent = modelEntityConverterService.userToEntity(user);
-				
+
 		//ToDo: Check Delete
-		
 		//	= new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
 		//ent.setUserName(user.getCloudName());
-
 		try {
 			em.getTransaction().begin();
 			em.remove(ent);
@@ -141,13 +139,8 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void persistFileFilter(IFilter filter) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
-
-		//ToDo: Spring
-		FilterEntity en = new FilterEntity();
-		en.setPattern(filter.getPattern());
-		filter.setEntity(en);
-		persistBasicEntity(em, en);
+		FilterEntity en = modelEntityConverterService.filterToFilterEntity(filter);
+		persistBasicEntity(FilterEntity.class, en);
 	}
 
 	@Override
@@ -187,11 +180,11 @@ public class DatabaseService implements IDatabaseService {
 		return list;
 	}
 
-	private void persistBasicEntity(EntityManager em, BaseEntity basic) {
+	private void persistBasicEntity(Class clazz, BaseEntity basic) {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
 		em.getTransaction().begin();
 		em.persist(basic);
 		em.getTransaction().commit();
-		em.close();
 	}
 
 	@Override
@@ -205,7 +198,7 @@ public class DatabaseService implements IDatabaseService {
 		//and exception gets thrown if converter can't convert
 		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
 		EntityManager em = emf.createEntityManager();
-		this.persistBasicEntity(em, entity);
+		this.persistBasicEntity(PieFileEntity.class, entity);
 	}
 
 	@Override
