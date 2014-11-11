@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.database.api;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.EntityManager;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.api.IBaseModel;
@@ -36,4 +37,12 @@ public interface IDatabaseService {
 	ArrayList<IFilter> findAllFilters();
 	
 	PieFile findPieFile(PieFile file);
+	
+	List<PieFile> findAllUnsyncedPieFiles();
+	
+	void resetAllPieFileSynchedFlags();
+	
+	void mergePieFile(PieFile file);
+	
+	void persistPieFile(PieFile file);
 }

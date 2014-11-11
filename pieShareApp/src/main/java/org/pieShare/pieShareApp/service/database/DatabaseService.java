@@ -11,7 +11,9 @@ import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Parameter;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
@@ -180,5 +182,42 @@ public class DatabaseService implements IDatabaseService {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
 		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, idFile.getPath());
 		return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
+	}
+
+	@Override
+	public void mergePieFile(PieFile file) {
+		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		merge(entity);
+	}
+
+	@Override
+	public void persistPieFile(PieFile file) {
+		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		persist(entity);
+	}
+
+	@Override
+	public List<PieFile> findAllUnsyncedPieFiles() {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched IS TRUE", PieFileEntity.class.getSimpleName());
+		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
+		
+		ArrayList<PieFile> files = new ArrayList<>();
+		
+		List<PieFileEntity> entities = query.getResultList();
+		
+		for(PieFileEntity entity: entities) {
+			files.add(this.modelEntityConverterService.convertFromEntity(entity));
+		}
+		
+		return files;
+	}
+
+	@Override
+	public void resetAllPieFileSynchedFlags() {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFileEntity.class.getSimpleName());
+		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
+		query.executeUpdate();
 	}
 }

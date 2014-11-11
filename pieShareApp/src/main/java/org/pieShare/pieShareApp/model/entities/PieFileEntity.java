@@ -23,7 +23,20 @@ public class PieFileEntity implements IBaseEntity{
 	private String fileName;
 	private long lastModified;
 	private boolean deleted;
+	private boolean synched;
+	
+	public PieFileEntity(){
+		this.synched = true;
+	}
 
+	public boolean isSynched() {
+		return synched;
+	}
+
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+	
 	public String getAbsoluteWorkingPath() {
 		return absoluteWorkingPath;
 	}
