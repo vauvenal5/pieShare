@@ -6,7 +6,11 @@
 package org.pieShare.pieShareApp.service.database.api;
 
 import java.util.ArrayList;
+import javax.persistence.EntityManager;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.api.IBaseModel;
+import org.pieShare.pieShareApp.model.entities.BaseEntity;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
@@ -16,19 +20,18 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
  */
 public interface IDatabaseService {
 
-	void persistPieUser(PieUser service);
+	void persist(PieUser model);
 
-	PieUser getPieUser(String name);
-
-	PieUser findPieUser();
+	public ArrayList<PieUser> findAllPieUser();
 
 	void removePieUser(PieUser user);
-	
-	void persistFileFilter(IFilter filter);
-	
-	void persist(PieFile file);
 
+	void mergePieUser(PieUser user);
+
+	void persistFileFilter(IFilter filter);
+
+//	void persist(PieFile file);
 	void removeFileFilter(IFilter filter);
-	
+
 	ArrayList<IFilter> findAllFilters();
 }

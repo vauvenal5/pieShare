@@ -14,10 +14,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
@@ -29,6 +29,7 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
+import pieShareAppITs.helper.config.PieShareAppModelITConfig;
 import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 
 /**
@@ -56,7 +57,7 @@ public class ITUtil {
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
-		PieShareAppServiceConfig.main = main;
+		PieShareAppModelITConfig.main = main;
 	}
 	
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
@@ -65,12 +66,12 @@ public class ITUtil {
 		service.stop();
 		
 		//get dirs to delete
-		IPieShareAppConfiguration config = context.getBean("pieShareAppConfiguration", PieShareAppConfiguration.class);
-		File mainWorkingDir = config.getWorkingDirectory();
-		File mainTmpDir = config.getTempCopyDirectory();
-		config = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
-		File botWorkingDir = config.getWorkingDirectory();
-		File botTmpDir = config.getTempCopyDirectory();
+		PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
+		File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
+		File mainTmpDir = config.getTmpDir();
+		config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
+		File botWorkingDir = config.getWorkingDir();
+		File botTmpDir = config.getTmpDir();
 		
 		//stop context
 		context.close();
@@ -166,7 +167,7 @@ public class ITUtil {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
-		context.register(PieShareAppModel.class);
+		context.register(PieShareAppModelITConfig.class);
 		context.register(PieShareAppServiceConfig.class);
 		context.register(PieShareAppTasks.class);
 		context.refresh();

@@ -5,13 +5,14 @@
  */
 package org.pieShare.pieShareApp.service.fileFilterService.filters.api;
 
+import org.pieShare.pieShareApp.model.api.IBaseModel;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 
 /**
  *
  * @author Richard
  */
-public interface IFilter {
+public interface IFilter extends IBaseModel {
 
 	void setPattern(String pattern);
 
