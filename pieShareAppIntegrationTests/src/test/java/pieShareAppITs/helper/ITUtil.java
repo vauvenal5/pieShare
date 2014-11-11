@@ -168,7 +168,7 @@ public class ITUtil {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
-		context.register(PieShareAppModel.class);
+		context.register(PieShareAppModelITConfig.class);
 		context.register(PieShareAppServiceConfig.class);
 		context.register(PieShareAppTasks.class);
 		context.refresh();
