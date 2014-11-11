@@ -42,6 +42,10 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 
 	@Override
 	public PieFile convertFromEntity(PieFileEntity entity) {
+		if(entity == null) {
+			return null;
+		}
+		
 		PieFile file = this.beanService.getBean(PieFile.class);
 		file.setFileName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());
