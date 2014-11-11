@@ -9,14 +9,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.api.IBaseModel;
-import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
@@ -26,13 +22,11 @@ import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationF
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
-import org.pieShare.pieShareApp.service.database.exception.NotConvertableException;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-
 
 public class DatabaseService implements IDatabaseService {
 
@@ -66,13 +60,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public void persist(PieUser model) {
 		PieUserEntity entity;
-		try {
-			entity = this.modelEntityConverterService.convertToEntity(model);
-		}
-		catch (NotConvertableException ex) {
-			PieLogger.error(this.getClass(), "Error convertig model to entity", ex);
-			return;
-		}
+		entity = this.modelEntityConverterService.convertToEntity(model);
 		persist(entity);
 	}
 
@@ -107,51 +95,29 @@ public class DatabaseService implements IDatabaseService {
 	public void removePieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
 		PieUserEntity ent;
-		try {
-			ent = modelEntityConverterService.convertToEntity(user);
-		}
-		catch (NotConvertableException ex) {
-			PieLogger.error(this.getClass(), "Error converting Entity", ex);
-			return;
-		}
+		ent = modelEntityConverterService.convertToEntity(user);
 		remove(ent);
 	}
 
 	@Override
 	public void mergePieUser(PieUser user) {
 		PieUserEntity entity;
-		try {
-			entity = modelEntityConverterService.convertToEntity(user);
-		}
-		catch (NotConvertableException ex) {
-			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
-			return;
-		}
+		entity = modelEntityConverterService.convertToEntity(user);
 		merge(entity);
 	}
 
 	@Override
 	public void persistFileFilter(IFilter filter) {
 		FilterEntity en = null;
-		try {
-			en = modelEntityConverterService.convertToEntity(filter);
-		}
-		catch (NotConvertableException ex) {
-			PieLogger.error(this.getClass(), "Error converting Entity", ex);
-			return;
-		}
+		en = modelEntityConverterService.convertToEntity(filter);
 		persist(en);
 	}
 
 	@Override
 	public void removeFileFilter(IFilter filter) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
-		em.getTransaction().begin();
-
-		FilterEntity f = em.find(FilterEntity.class, filter.getEntity().getId());
-		em.remove(f);
-
-		em.getTransaction().commit();
+		FilterEntity f;
+		f = modelEntityConverterService.convertToEntity(filter);
+		remove(f);
 	}
 
 	@Override
@@ -183,13 +149,7 @@ public class DatabaseService implements IDatabaseService {
 	//@Override
 	public void persist(PieFile file) {
 		PieFileEntity entity;
-		try {
-			entity = this.modelEntityConverterService.convertToEntity(file);
-		}
-		catch (NotConvertableException ex) {
-			PieLogger.error(this.getClass(), "Error converting Entity", ex);
-			return;
-		}
+		entity = this.modelEntityConverterService.convertToEntity(file);
 		this.persist(entity);
 	}
 
@@ -221,5 +181,4 @@ public class DatabaseService implements IDatabaseService {
 		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, idFile.getPath());
 		return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
 	}
-
 }

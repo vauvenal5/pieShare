@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pieShareAppITs.helper;
 
 import java.io.BufferedReader;
@@ -37,60 +36,65 @@ import pieShareAppITs.helper.config.PieShareAppServiceConfig;
  * @author Svetoslav
  */
 public class ITUtil {
-	
+
 	public static String getMainWorkingDir() {
 		return "workingDirTestMain";
 	}
-	
+
 	public static String getMainTmpDir() {
 		return "pieTempTestMain";
 	}
-	
+
 	public static String getBotWorkingDir() {
 		return "workingDirTestBot";
 	}
-	
+
 	public static String getBotTmpDir() {
 		return "pieTempTestBot";
 	}
-	
+
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		PieShareAppModelITConfig.main = main;
 	}
-	
+
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
 		//shutdown application
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
-		
+
 		//get dirs to delete
 		PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
 		File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
 		File mainTmpDir = config.getTmpDir();
+		File configMain = config.getPwdFile();
 		config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
 		File botWorkingDir = config.getWorkingDir();
 		File botTmpDir = config.getTmpDir();
+		File configBot = config.getPwdFile();
 		
 		//stop context
 		context.close();
 		context = null;
 		boolean done = false;
-		
-		while(!done) {
+
+		while (!done) {
 			try {
 				FileUtils.deleteDirectory(mainWorkingDir);
 				FileUtils.deleteDirectory(mainTmpDir);
 				FileUtils.deleteDirectory(botWorkingDir);
 				FileUtils.deleteDirectory(botTmpDir);
+				configMain.delete();
+				configBot.delete();
 				done = true;
-			} catch(IOException ex) {
+			}
+			catch (IOException ex) {
 				Thread.sleep(1000);
 			}
 		}
 	}
-	
+
 	public static Process startProcess(Class mainClazz) throws IOException {
 		String separator = System.getProperty("file.separator");
 		String classpath = System.getProperty("java.class.path");
@@ -98,49 +102,52 @@ public class ITUtil {
 		ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath, mainClazz.getName());
 		return processBuilder.start();
 	}
-	
+
 	public static void waitForProcessToStartup(Process process) throws Exception {
 		InputStream stream = process.getInputStream();
 		InputStreamReader in = new InputStreamReader(stream);
 		BufferedReader reader = new BufferedReader(in);
 		String line = reader.readLine();
-		while(!line.equals("!loggedIn")) {
+		while (!line.equals("!loggedIn")) {
 			line = reader.readLine();
 		}
 	}
-	
+
 	public static boolean waitForFileToBeFreed(File file, int sec) {
 		boolean done = false;
 		int time = 0;
-			
+
 		//todo: this has to move to utils: this is a check if the access to the file has been restored
 		//after torrent work
-		while(!done || time >= sec) {
+		while (!done || time >= sec) {
 			try {
 				Thread.sleep(1000);
 				FileInputStream st = new FileInputStream(file);
 				done = true;
 				st.close();
 				return true;
-			} catch (FileNotFoundException ex) {
+			}
+			catch (FileNotFoundException ex) {
 				//nothing needed to do here
-			} catch (IOException ex) {
+			}
+			catch (IOException ex) {
 				//nothing needed to do here
-			} catch (InterruptedException ex) {
+			}
+			catch (InterruptedException ex) {
 				//nothing needed to do here
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context) throws Exception {
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
 		pwd.password = "test".getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName("test");
-		
+
 		command.setCallback(new ILoginFinished() {
 
 			@Override
@@ -157,12 +164,12 @@ public class ITUtil {
 			public void OK() {
 			}
 		});
-		
+
 		LoginTask task = context.getBean(LoginTask.class);
 		task.setEvent(command);
 		task.run();
 	}
-	
+
 	public static AnnotationConfigApplicationContext getContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
