@@ -12,8 +12,9 @@ import java.util.Arrays;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -32,16 +33,26 @@ import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncrypti
 public class LoginTask implements ILoginTask {
 
 	private final byte[] FILE_TEXT;
-	private IPieShareAppConfiguration config;
 	private IPasswordEncryptionService passwordEncryptionService;
 	private IEncodeService encodeService;
 	private IBeanService beanService;
 	private LoginCommand command;
 	private IDatabaseService databaseService;
 	private IClusterManagementService clusterManagementService;
+	private IConfigurationFactory configurationFactory;
+	private File pwdFile;
+	private IFileService fileService;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
+	}
+
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
+
+	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
+		this.configurationFactory = configurationFactory;
 	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
@@ -54,10 +65,6 @@ public class LoginTask implements ILoginTask {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
-	}
-
-	public void setPieShareAppConfig(IPieShareAppConfiguration pieShareAppConfiguration) {
-		this.config = pieShareAppConfiguration;
 	}
 
 	public void setPasswordEncryptionService(IPasswordEncryptionService service) {
@@ -75,17 +82,16 @@ public class LoginTask implements ILoginTask {
 
 	private void login() throws Exception {
 		EncryptedPassword pwd1 = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
-		//todo: clear plain text pwd... there should be a function somewhere
-		command.setPlainTextPassword(null);
 
-		File pwdFile = config.getPasswordFile();
+		PieUser user;
+		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+
+		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
+		pwdFile = user.getPieShareConfiguration().getPwdFile();
 
 		if (pwdFile.exists()) {
 			try {
-				if (Arrays.equals(encodeService.decrypt(pwd1, FileUtils.getBytes(pwdFile)), FILE_TEXT)) {
-					//return pwd1;
-				}
-				else {
+				if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.getBytes(pwdFile)), FILE_TEXT)) {
 					throw new WrongPasswordException("The given password was wrong.");
 				}
 			}
@@ -99,17 +105,18 @@ public class LoginTask implements ILoginTask {
 			createNewPwdFile(pwd1);
 		}
 
-		PieUser user;
-		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		user.setPassword(pwd1);
+		user.setHasPasswordFile(true);
 
 		if (user.getUserName() == null) {
 			user.setUserName(command.getUserName());
+			user.getPieShareConfiguration().setUser(user.getUserName());
 			databaseService.persistPieUser(user);
 		}
-
 		user.setIsLoggedIn(true);
+		fileService.initFileService();
 
+		//Check and create folders
 		try {
 			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
 		}
@@ -119,8 +126,6 @@ public class LoginTask implements ILoginTask {
 	}
 
 	private void createNewPwdFile(EncryptedPassword passwordForEncoding) throws Exception {
-
-		File pwdFile = config.getPasswordFile();
 
 		if (pwdFile.exists()) {
 			pwdFile.delete();
@@ -142,13 +147,14 @@ public class LoginTask implements ILoginTask {
 	public void run() {
 		try {
 			login();
-			command.getCallback().OK();		//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.OK));
+			command.getCallback().OK();
 		}
 		catch (WrongPasswordException ex) {
-			command.getCallback().wrongPassword(ex);	//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.WrongPassword, ex));
+			command.getCallback().wrongPassword(ex);
 		}
 		catch (Exception ex) {
-			command.getCallback().error(ex);//loginFinishedEventBase.fireEvent(new LoginFinished(config, LoginState.CryptoError, ex));
+			command.getCallback().error(ex);
 		}
 	}
+
 }

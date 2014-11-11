@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
@@ -14,13 +15,14 @@ import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileChangedTask;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileDeletedTask;
-import org.pieShare.pieShareApp.task.localTasks.base.FileEventTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileEventTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +59,7 @@ public class PieShareAppTasks {
 		task.setFileService(this.services.fileService());
 		task.setFileUtilsService(this.services.fileUtilsService());
 		task.setHashService(this.config.md5Service());
-		task.setPieAppConfig(this.services.pieShareAppConfiguration());
+		task.setBeanService(config.beanService());
 		task.setRequestService(this.services.requestService());
 		task.setShareService(this.services.shareService());
 		return task;
@@ -117,7 +119,17 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileListTask fileListTask() {
 		FileListTask task = new FileListTask();
+		task.setBeanService(this.config.beanService());
+		task.setExecutorService(this.config.pieExecutorService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public ComparePieFileTask comparePieFileTask() {
+		ComparePieFileTask task = new ComparePieFileTask();
 		task.setComparerService(this.services.comparerService());
+		task.setRequestService(this.services.requestService());
 		return task;
 	}
 
@@ -145,10 +157,11 @@ public class PieShareAppTasks {
 		LoginTask service = new LoginTask();
 		service.setBeanService(config.beanService());
 		service.setPasswordEncryptionService(config.passwordEncryptionService());
-		service.setPieShareAppConfig(services.pieShareAppConfiguration());
+		service.setConfigurationFactory(services.configurationFactory());
 		service.setEncodeService(config.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
+		service.setFileService(services.fileService());
 		return service;
 	}
 
@@ -168,7 +181,6 @@ public class PieShareAppTasks {
 	public ResetPwdTask resetPwdTask() {
 		ResetPwdTask task = new ResetPwdTask();
 		task.setBeanService(config.beanService());
-		task.setConfig(services.pieShareAppConfiguration());
 		task.setDatabaseService(services.databaseService());
 		return task;
 	}

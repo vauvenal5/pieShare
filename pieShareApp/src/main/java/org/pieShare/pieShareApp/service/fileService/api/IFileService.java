@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
@@ -19,18 +19,11 @@ import org.pieShare.pieShareApp.service.fileService.PieFile;
  */
 public interface IFileService {
 
-	//public void remoteFileChange(FileChangedMessage message);
+	void initFileService();
 
-	//public boolean checkMergeFile(PieFile pieFile);
-	
-	public List<PieFile> getAllFilesList() throws IOException;
-	
-//	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
-//	public void sendAllFilesSyncRequest();
+	List<PieFile> getAllFilesList() throws IOException;
 
-	public void deleteRecursive(PieFile file);
-	
-	public void waitUntilCopyFinished(String filePath);
-	
-	
+	void deleteRecursive(PieFile file);
+
+	void waitUntilCopyFinished(String filePath);
 }

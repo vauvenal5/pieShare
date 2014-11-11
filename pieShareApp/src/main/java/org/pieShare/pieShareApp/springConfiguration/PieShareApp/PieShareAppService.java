@@ -8,8 +8,10 @@ package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
+import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
+import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
@@ -17,13 +19,15 @@ import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.FileService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilsService;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieShareApp.task.localTasks.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -77,10 +81,8 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	public PieShareAppConfiguration pieShareAppConfiguration() {
-		PieShareAppConfiguration service = new PieShareAppConfiguration();
-		service.setConfigurationReader(this.utilities.configurationReader());
-		service.init();
+	public ApplicationConfigurationService applicationConfigurationService() {
+		ApplicationConfigurationService service = new ApplicationConfigurationService();
 		return service;
 	}
 
@@ -99,8 +101,7 @@ public class PieShareAppService {
 	public ComparerService comparerService() {
 		ComparerService service = new ComparerService();
 		service.setFileUtilsService(this.fileUtilsService());
-		service.setPieShareConfiguration(this.pieShareAppConfiguration());
-		service.setRequestService(this.requestService());
+		service.setBeanService(utilities.beanService());
 		return service;
 	}
 
@@ -145,10 +146,9 @@ public class PieShareAppService {
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setFileWatcher(this.fileWatcher());
 		service.setMd5Service(this.utilities.md5Service());
-		service.setPieShareAppConfiguration(this.pieShareAppConfiguration());
 		service.setRequestService(this.requestService());
 		service.setFileUtilsService(this.fileUtilsService());
-		service.initFileService();
+		//service.initFileService();
 		return service;
 	}
 
@@ -159,7 +159,6 @@ public class PieShareAppService {
 		service.setBase64Service(this.utilities.base64Service());
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setConfigurationService(this.pieShareAppConfiguration());
 		service.setFileUtilsService(this.fileUtilsService());
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
@@ -175,7 +174,6 @@ public class PieShareAppService {
 		FileUtilsService service = new FileUtilsService();
 		service.setBeanService(this.utilities.beanService());
 		service.setHashService(this.utilities.md5Service());
-		service.setPieAppConfig(this.pieShareAppConfiguration());
 		service.setFileListener(this.fileListenerService());
 		return service;
 	}
@@ -184,10 +182,26 @@ public class PieShareAppService {
 	@Lazy
 	public DatabaseService databaseService() {
 		DatabaseService service = new DatabaseService();
-		service.setPieShareAppConfiguration(pieShareAppConfiguration());
 		service.setBase64Service(utilities.base64Service());
 		service.setBeanService(utilities.beanService());
+		service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
+		service.setConfigurationFactory(configurationFactory());
+		service.setModelEntityConverterService(modelEntityConverterService());
 		return service;
+	}
+
+	public ModelEntityConverterService modelEntityConverterService() {
+		ModelEntityConverterService service = new ModelEntityConverterService();
+		service.setBeanService(utilities.beanService());
+		return service;
+	}
+
+	@Bean
+	@Lazy
+	public PieDatabaseManagerFactory pieDatabaseManagerFactory() {
+		PieDatabaseManagerFactory fac = new PieDatabaseManagerFactory();
+		fac.setApplicationConfigurationService(applicationConfigurationService());
+		return fac;
 	}
 
 	@Bean
@@ -205,5 +219,22 @@ public class PieShareAppService {
 		RegexFileFilter filter = new RegexFileFilter();
 		filter.setRegexService(utilities.regexService());
 		return filter;
+	}
+
+	@Bean
+	@Lazy
+	public ConfigurationFactory configurationFactory() {
+		ConfigurationFactory service = new ConfigurationFactory();
+		service.setApplicationConfiguration(applicationConfigurationService());
+		service.setBeanService(utilities.beanService());
+		return service;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public PieShareConfiguration pieShareConfiguration() {
+		PieShareConfiguration config = new PieShareConfiguration();
+		return config;
 	}
 }

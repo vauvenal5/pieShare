@@ -14,4 +14,6 @@ public interface IRegexService {
 	void setPattern(String pattern);
 
 	boolean matches(String text);
+
+	String replaceAll(String text, String replaceString);
 }
