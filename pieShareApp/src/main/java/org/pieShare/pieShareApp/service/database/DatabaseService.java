@@ -104,7 +104,6 @@ public class DatabaseService implements IDatabaseService {
 				PieLogger.error(this.getClass(), "Error converting Entity", ex);
 			}
 		});
-
 		return models;
 	}
 
@@ -119,7 +118,6 @@ public class DatabaseService implements IDatabaseService {
 			PieLogger.error(this.getClass(), "Error converting Entity", ex);
 			return;
 		}
-
 		remove(ent);
 	}
 
@@ -137,21 +135,20 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public void persistFileFilter(IFilter filter
-	) {
+	public void persistFileFilter(IFilter filter) {
 		FilterEntity en = null;
 		try {
 			en = modelEntityConverterService.convertToEntity(filter);
 		}
 		catch (NotConvertableException ex) {
-			Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error converting Entity", ex);
+			return;
 		}
-		persistBasicEntity(en.getClass(), en);
+		persist(en);
 	}
 
 	@Override
-	public void removeFileFilter(IFilter filter
-	) {
+	public void removeFileFilter(IFilter filter) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
 		em.getTransaction().begin();
 
@@ -187,25 +184,8 @@ public class DatabaseService implements IDatabaseService {
 		return list;
 	}
 
-	private void persistBasicEntity(Class clazz, BaseEntity basic) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
-		em.getTransaction().begin();
-		em.persist(basic);
-		em.getTransaction().commit();
-	}
-
 	//@Override
 	public void persist(PieFile file) {
-		//	todo:
-		//	all this can be abstracted by one single function for all  {	
-		//	}
-		//	default persists
-		//	BaseClass for all models
-		//	ConverterService.convertToEntity(BaseClass) 
-		//	--> throws Exception
-		//	--> overloads for all other types
-		//	persist(BaseClass) --> tada everything gets persisted by one function
-		//	and exception gets thrown if converter can't convert
 		PieFileEntity entity;
 		try {
 			entity = this.modelEntityConverterService.convertToEntity(file);
@@ -214,8 +194,7 @@ public class DatabaseService implements IDatabaseService {
 			PieLogger.error(this.getClass(), "Error converting Entity", ex);
 			return;
 		}
-		EntityManager em = emf.createEntityManager();
-		this.persistBasicEntity(PieFileEntity.class, entity);
+		this.persist(entity);
 	}
 
 	@Override
