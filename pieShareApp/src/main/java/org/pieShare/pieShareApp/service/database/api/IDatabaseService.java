@@ -34,4 +34,6 @@ public interface IDatabaseService {
 	void removeFileFilter(IFilter filter);
 
 	ArrayList<IFilter> findAllFilters();
+	
+	PieFile findPieFile(PieFile file);
 }
