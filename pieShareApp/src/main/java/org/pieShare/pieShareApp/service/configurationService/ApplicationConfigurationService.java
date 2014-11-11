@@ -6,9 +6,13 @@
 package org.pieShare.pieShareApp.service.configurationService;
 
 import java.io.File;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.Properties;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
+import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
+import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
@@ -21,9 +25,10 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 
 	private final String HOME_DIR;
 	private File BASE_CONFIG_FOLDER;
-	private IPropertiesReader configurationReader;
+	private IPropertiesReader propertiesReader;
 	private File configFile;
 	private Properties conf;
+	private IBeanService beanService;
 
 	public ApplicationConfigurationService() {
 		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
@@ -38,6 +43,50 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 	@Override
 	public File getBaseConfigPath() {
 		return this.BASE_CONFIG_FOLDER;
+	}
+
+	public void setPropertiesReader(IPropertiesReader propertiesReader) {
+		this.propertiesReader = propertiesReader;
+	}
+
+	@Override
+	public void setDatabaseFolder(File folder) {
+		File db = getDatabaseFolder();
+		addProperty("databaseDir", folder.toPath().toString());
+		IPieDatabaseManagerFactory fact = beanService.getBean(PieDatabaseManagerFactory.class);
+		fact.closeDB();
+		try {
+			for (File file : db.listFiles()) {
+				if (file.isDirectory()) {
+					FileUtils.moveDirectory(file, folder);
+				}
+				else {
+					FileUtils.moveFileToDirectory(file, folder, false);
+				}
+			}
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Error copy database to new location", ex);
+		}
+
+		fact.init();
+	}
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
+
+	private void addProperty(String key, String value) {
+		if (conf == null) {
+			conf = new Properties();
+		}
+		if (!conf.containsKey(key)) {
+			conf.put(key, value);
+		}
+		else {
+			conf.replace(key, value);
+		}
+		propertiesReader.saveConfig(conf, configFile);
 	}
 
 	public void setConfigPath(String folder) {
@@ -59,7 +108,7 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 
 		try {
 			//pieShare.properties
-			conf = configurationReader.getConfig(configFile);
+			conf = propertiesReader.getConfig(configFile);
 		}
 		catch (NoConfigFoundException ex) {
 			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);

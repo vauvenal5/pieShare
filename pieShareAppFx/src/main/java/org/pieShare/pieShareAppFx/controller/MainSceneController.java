@@ -89,6 +89,12 @@ public class MainSceneController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		mainAccordion.setExpandedPane(titelPaneClouds);
 
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -168,6 +174,21 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
+	public void loginComplete()
+	{
+		try {
+			setClusterSettingControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login cluster settings control", ex);
+		}
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+	}
+	
 	public InputStream getLoginControl() {
 		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
 		return st;

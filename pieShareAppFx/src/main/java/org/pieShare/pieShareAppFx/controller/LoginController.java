@@ -19,6 +19,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -166,12 +167,7 @@ public class LoginController implements Initializable {
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldWrong");
 						passwordField.getStyleClass().add("textfieldOK");
-						try {
-							mainSceneController.setClusterSettingControl();
-						}
-						catch (IOException ex) {
-							PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
-						}
+						mainSceneController.loginComplete();
 					}
 				});
 			}
@@ -203,7 +199,7 @@ public class LoginController implements Initializable {
 	 * Initializes the controller class.
 	 */
 	@Override
-	public void initialize(URL url, ResourceBundle rb) {
+	public void initialize(URL url, ResourceBundle rb) {	
 		mainSceneController.cloudAvailable(false);
 		animation = beanService.getBean(SpinAnimation.class);
 		animation.setNode(labelWaitIcon);
@@ -212,6 +208,7 @@ public class LoginController implements Initializable {
 		Image imageDelete = new Image(stDelete);
 		labelWaitIcon.setText("");
 		labelWaitIcon.setGraphic(new ImageView(imageDelete));
+		
 		labelWaitIcon.setVisible(false);
 		labelWaitIcon.setDisable(true);
 

@@ -83,6 +83,9 @@ public class PieShareAppService {
 	@Lazy
 	public ApplicationConfigurationService applicationConfigurationService() {
 		ApplicationConfigurationService service = new ApplicationConfigurationService();
+		service.setPropertiesReader(utilities.configurationReader());
+		service.setBeanService(utilities.beanService());
+		service.init();
 		return service;
 	}
 
