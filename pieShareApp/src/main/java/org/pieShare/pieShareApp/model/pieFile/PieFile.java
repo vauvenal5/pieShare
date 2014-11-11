@@ -8,20 +8,30 @@ package org.pieShare.pieShareApp.model.pieFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
  *
  * @author richy
  */
-public class PieFile {
+public class PieFile implements IBaseModel {
 
 	private byte[] md5;
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
+	private boolean deleted;
 
 	public PieFile() {
+		this.deleted = false;
+	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public byte[] getMd5() {

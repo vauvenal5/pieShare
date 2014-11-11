@@ -8,14 +8,15 @@ package org.pieShare.pieShareApp.model.entities;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 
 /**
  *
  * @author Richard
  */
 @MappedSuperclass
-public class BaseEntity{
-	
+public class BaseEntity implements IBaseEntity {
+
 	@Id
 	@GeneratedValue
 	private long id;

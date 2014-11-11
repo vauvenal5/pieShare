@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -40,10 +39,6 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
 import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
-import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
-import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
-import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -94,6 +89,12 @@ public class MainSceneController implements Initializable {
 	public void initialize(URL url, ResourceBundle rb) {
 		mainAccordion.setExpandedPane(titelPaneClouds);
 
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -121,7 +122,7 @@ public class MainSceneController implements Initializable {
 						setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
 					}
 					catch (IOException ex) {
-
+						PieLogger.error(this.getClass(), "Error while setting controller", ex);
 					}
 				}
 			}
@@ -173,6 +174,21 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
+	public void loginComplete()
+	{
+		try {
+			setClusterSettingControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login cluster settings control", ex);
+		}
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+	}
+	
 	public InputStream getLoginControl() {
 		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
 		return st;

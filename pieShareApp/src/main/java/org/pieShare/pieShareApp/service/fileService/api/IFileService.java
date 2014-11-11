@@ -19,11 +19,11 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  */
 public interface IFileService {
 
-	//public void remoteFileChange(FileChangedMessage message);
+	void initFileService();
 
 	//public boolean checkMergeFile(PieFile pieFile);
 	
-	public List<PieFile> getAllFilesList() throws IOException;
+	public List<PieFile> getAllFiles() throws IOException;
 	
 //	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
 //	public void sendAllFilesSyncRequest();
@@ -31,6 +31,4 @@ public interface IFileService {
 	public void deleteRecursive(PieFile file);
 	
 	public void waitUntilCopyFinished(String filePath);
-	
-	
 }

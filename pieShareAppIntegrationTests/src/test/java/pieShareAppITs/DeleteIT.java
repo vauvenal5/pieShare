@@ -17,8 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
