@@ -111,7 +111,8 @@ public class LoginTask implements ILoginTask {
 		if (user.getUserName() == null) {
 			user.setUserName(command.getUserName());
 			user.getPieShareConfiguration().setUser(user.getUserName());
-			databaseService.persistPieUser(user);
+			//databaseService.persistPieUser(user);
+			databaseService.persist(user);
 		}
 		user.setIsLoggedIn(true);
 		fileService.initFileService();

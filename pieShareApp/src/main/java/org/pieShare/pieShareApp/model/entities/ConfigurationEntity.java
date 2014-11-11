@@ -9,14 +9,16 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 
 /**
  *
  * @author Richard
  */
 @Entity
-public class ConfigurationEntity {
-	
+public class ConfigurationEntity implements IBaseEntity {
+
 	@Id
 	private String user;
 	private String workingDir;

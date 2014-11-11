@@ -8,19 +8,24 @@ package org.pieShare.pieShareApp.service.database;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.api.IBaseModel;
 import org.pieShare.pieShareApp.model.entities.BaseEntity;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
+import org.pieShare.pieShareApp.service.database.exception.NotConvertableException;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
@@ -63,47 +68,26 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	@Override
-	public void persistPieUser(PieUser user) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUserEntity entity = modelEntityConverterService.userToEntity(user);
-		em.getTransaction().begin();
-		em.persist(entity);
-		em.getTransaction().commit();
-	}
-
-	@Override
-	public void mergePieUser(PieUser user) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUserEntity entity = modelEntityConverterService.userToEntity(user);
-		em.getTransaction().begin();
-		em.merge(entity);
-		em.getTransaction().commit();
-	}
-
-	@Override
-	public PieUser getPieUser(String name) {
-		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUser user = null;
+	public void persist(PieUser model) {
+		PieUserEntity entity;
 		try {
-			PieUserEntity entity = em.find(PieUserEntity.class, name);
-			if (entity == null) {
-				return null;
-			}
-			user = modelEntityConverterService.entityToUser(entity);
+			entity = this.modelEntityConverterService.convertToEntity(model);
 		}
-		catch (IllegalArgumentException ex) {
-			return null;
+		catch (NotConvertableException ex) {
+			PieLogger.error(this.getClass(), "Error convertig model to entity", ex);
+			return;
 		}
-		return user;
+		persist(entity);
 	}
 
 	@Override
-	public PieUser findPieUser() {
+	public ArrayList<PieUser> findAllPieUser() {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
 
+		Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()));
 		PieUser user = null;
 		ArrayList<PieUserEntity> entities;
+		ArrayList<PieUser> models = new ArrayList<>();
 
 		try {
 			entities = (ArrayList<PieUserEntity>) query.getResultList();
@@ -112,39 +96,62 @@ public class DatabaseService implements IDatabaseService {
 			return null;
 		}
 
-		if (entities != null && entities.size() > 0) {
-			PieUserEntity entity = entities.get(0);
-			user = modelEntityConverterService.entityToUser(entity);
-		}
-		return user;
+		entities.forEach((en) -> {
+			try {
+				models.add(modelEntityConverterService.convertFromEntity(en));
+			}
+			catch (Exception ex) {
+				PieLogger.error(this.getClass(), "Error converting Entity", ex);
+			}
+		});
+
+		return models;
 	}
 
 	@Override
 	public void removePieUser(PieUser user) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
-		PieUserEntity ent = modelEntityConverterService.userToEntity(user);
-
-		//ToDo: Check Delete
-		//	= new PieUserEntity();//em.find(PieUserEntity.class, user.getUserName());
-		//ent.setUserName(user.getCloudName());
+		PieUserEntity ent;
 		try {
-			em.getTransaction().begin();
-			em.remove(ent);
-			em.getTransaction().commit();
+			ent = modelEntityConverterService.convertToEntity(user);
 		}
-		catch (Exception ex) {
+		catch (NotConvertableException ex) {
+			PieLogger.error(this.getClass(), "Error converting Entity", ex);
+			return;
+		}
+
+		remove(ent);
+	}
+
+	@Override
+	public void mergePieUser(PieUser user) {
+		PieUserEntity entity;
+		try {
+			entity = modelEntityConverterService.convertToEntity(user);
+		}
+		catch (NotConvertableException ex) {
 			PieLogger.error(this.getClass(), "Error removing User from DB", ex);
+			return;
 		}
+		merge(entity);
 	}
 
 	@Override
-	public void persistFileFilter(IFilter filter) {
-		FilterEntity en = modelEntityConverterService.filterToFilterEntity(filter);
-		persistBasicEntity(FilterEntity.class, en);
+	public void persistFileFilter(IFilter filter
+	) {
+		FilterEntity en = null;
+		try {
+			en = modelEntityConverterService.convertToEntity(filter);
+		}
+		catch (NotConvertableException ex) {
+			Logger.getLogger(DatabaseService.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		persistBasicEntity(en.getClass(), en);
 	}
 
 	@Override
-	public void removeFileFilter(IFilter filter) {
+	public void removeFileFilter(IFilter filter
+	) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
 		em.getTransaction().begin();
 
@@ -187,26 +194,58 @@ public class DatabaseService implements IDatabaseService {
 		em.getTransaction().commit();
 	}
 
-	@Override
+	//@Override
 	public void persist(PieFile file) {
-		//todo: all this can be abstracted by one single function for all default persists
-		//BaseClass for all models
-		//ConverterService.convertToEntity(BaseClass) 
+		//	todo:
+		//	all this can be abstracted by one single function for all  {	
+		//	}
+		//	default persists
+		//	BaseClass for all models
+		//	ConverterService.convertToEntity(BaseClass) 
 		//	--> throws Exception
 		//	--> overloads for all other types
-		//persist(BaseClass) --> tada everything gets persisted by one function
-		//and exception gets thrown if converter can't convert
-		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		//	persist(BaseClass) --> tada everything gets persisted by one function
+		//	and exception gets thrown if converter can't convert
+		PieFileEntity entity;
+		try {
+			entity = this.modelEntityConverterService.convertToEntity(file);
+		}
+		catch (NotConvertableException ex) {
+			PieLogger.error(this.getClass(), "Error converting Entity", ex);
+			return;
+		}
 		EntityManager em = emf.createEntityManager();
 		this.persistBasicEntity(PieFileEntity.class, entity);
 	}
 
 	@Override
-	public <T extends BaseEntity> T findEntity(Class<T> clazz, Object key) {
+	public <T extends IBaseEntity> T findEntity(Class<T> clazz, Object key) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(clazz);
 		em.getTransaction().begin();
 		T entity = em.find(clazz, key);
 		em.getTransaction().commit();
 		return entity;
 	}
+
+	private void persist(IBaseEntity entity) {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		em.getTransaction().begin();
+		em.persist(entity);
+		em.getTransaction().commit();
+	}
+
+	private void merge(IBaseEntity entity) {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		em.getTransaction().begin();
+		em.merge(entity);
+		em.getTransaction().commit();
+	}
+
+	private void remove(IBaseEntity entity) {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		em.getTransaction().begin();
+		em.remove(entity);
+		em.getTransaction().commit();
+	}
+
 }
