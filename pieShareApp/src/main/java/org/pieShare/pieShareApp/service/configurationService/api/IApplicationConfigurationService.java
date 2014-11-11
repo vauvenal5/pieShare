@@ -16,4 +16,6 @@ public interface IApplicationConfigurationService {
 	File getBaseConfigPath();
 
 	File getDatabaseFolder();
+
+	void setDatabaseFolder(File folder);
 }

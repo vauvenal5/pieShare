@@ -5,8 +5,7 @@
  */
 package org.pieShare.pieShareApp.model;
 
-import javax.persistence.Column;
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.api.IBaseModel;
 import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 
@@ -14,7 +13,7 @@ import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
  *
  * @author Svetoslav
  */
-public class PieUser {
+public class PieUser implements IBaseModel {
 
 	private EncryptedPassword password;
 	private String userName = null;
@@ -30,7 +29,7 @@ public class PieUser {
 	public void setPieShareConfiguration(PieShareConfiguration pieShareConfiguration) {
 		this.pieShareConfiguration = pieShareConfiguration;
 	}
-	
+
 	public boolean hasPasswordFile() {
 		return hasPasswordFile;
 	}
@@ -38,7 +37,7 @@ public class PieUser {
 	public void setHasPasswordFile(boolean hasPasswordFile) {
 		this.hasPasswordFile = hasPasswordFile;
 	}
-	
+
 	public boolean isIsLoggedIn() {
 		return isLoggedIn;
 	}
@@ -67,5 +66,5 @@ public class PieUser {
 	public String getCloudName() {
 		return cloudName;
 	}
-	
+
 }

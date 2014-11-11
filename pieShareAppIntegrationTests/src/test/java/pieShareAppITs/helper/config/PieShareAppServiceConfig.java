@@ -43,8 +43,8 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 	@Override
 	public DatabaseService databaseService() {
 		DatabaseService service = Mockito.mock(DatabaseService.class);
-		Mockito.when(service.getPieUser("test")).thenReturn(null);
-		Mockito.when(service.findPieUser()).thenReturn(null);
+		//Mockito.when(service.getPieUser("test")).thenReturn(null);
+		//Mockito.when(service.findPieUser()).thenReturn(null);
 		return service;
 	}
 	

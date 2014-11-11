@@ -5,10 +5,12 @@
  */
 package org.pieShare.pieShareApp.service;
 
+import java.util.ArrayList;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
+import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
@@ -44,7 +46,7 @@ public class PieShareService {
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
-	
+
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
 	}
@@ -76,7 +78,11 @@ public class PieShareService {
 		 } catch (Exception ex) {
 		 ex.printStackTrace();
 		 }*/
-		PieUser user = databaseService.findPieUser();
+		PieUser user;
+		ArrayList<PieUser> users = databaseService.findAllPieUser();
+		if (users != null && users.size() > 0) {
+			user = users.get(0);
+		}
 		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
