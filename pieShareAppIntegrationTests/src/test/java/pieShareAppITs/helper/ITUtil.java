@@ -17,6 +17,7 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
+import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
@@ -64,15 +65,13 @@ public class ITUtil {
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		
-		PieUser user = context.getBean(PieUser.class);
-		
 		//get dirs to delete
-		//IPieShareAppConfiguration config = context.getBean("pieShareAppConfiguration", PieShareAppConfiguration.class);
-		File mainWorkingDir = user.getPieShareConfiguration().getWorkingDir();//config.getWorkingDirectory();
-	//	File mainTmpDir = config.getTempCopyDirectory();
-	//	config = context.getBean("pieShareAppOtherConfiguration", PieShareAppConfiguration.class);
-	//	File botWorkingDir = config.getWorkingDirectory();
-	//	File botTmpDir = config.getTempCopyDirectory();
+		PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
+		File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
+		File mainTmpDir = config.getTmpDir();
+		config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
+		File botWorkingDir = config.getWorkingDir();
+		File botTmpDir = config.getTmpDir();
 		
 		//stop context
 		context.close();
@@ -82,9 +81,9 @@ public class ITUtil {
 		while(!done) {
 			try {
 				FileUtils.deleteDirectory(mainWorkingDir);
-			//	FileUtils.deleteDirectory(mainTmpDir);
-			//	FileUtils.deleteDirectory(botWorkingDir);
-			//	FileUtils.deleteDirectory(botTmpDir);
+				FileUtils.deleteDirectory(mainTmpDir);
+				FileUtils.deleteDirectory(botWorkingDir);
+				FileUtils.deleteDirectory(botTmpDir);
 				done = true;
 			} catch(IOException ex) {
 				Thread.sleep(1000);
