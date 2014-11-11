@@ -24,5 +24,18 @@ public interface IComparerService {
 	 * @throws IOException
 	 * @throws FileConflictException 
 	 */
-	public int comparePieFile(PieFile pieFile) throws IOException, FileConflictException;
+	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException;
+	
+	public int compareWithHistory(PieFile pieFile);
+	
+	/**
+	 * Returns 0 if both files are equal.
+	 * Returns -1 if file2 is newer.
+	 * Returns 1 if file1 is newer.
+	 * @param file1
+	 * @param file2
+	 * @return
+	 * @throws FileConflictException 
+	 */
+	public int comparePieFiles(PieFile file1, PieFile file2) throws FileConflictException;
 }

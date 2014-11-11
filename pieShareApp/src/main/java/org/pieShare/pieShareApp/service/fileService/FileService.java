@@ -122,22 +122,6 @@ public class FileService implements IFileService, IClusterAddedListener {
 		executorService.execute(fileWatcher);
 	}
 
-	private void registerAll(File file) throws IOException {
-		Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				//ToDO: Propergate All Files 
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-				//ToDO: Propergate All Files 
-				return FileVisitResult.CONTINUE;
-			}
-		});
-	}
-
 	@Override
 	public void waitUntilCopyFinished(String filePath) {
 		File file = new File(filePath);
@@ -200,7 +184,8 @@ public class FileService implements IFileService, IClusterAddedListener {
 	}
 
 	@Override
-	public List<PieFile> getAllFilesList() throws IOException {
+	public List<PieFile> getAllFiles() throws IOException {
+		//todo: try first to read DB
 		List<PieFile> pieFiles = new ArrayList();
 
 		//todo: maybe a own service or at least function?
