@@ -120,17 +120,6 @@ public class LoginLogoutRemoveIT {
 			public void pwdResetOK() {
 			}
 		});
-
-		ResetPwdTask resetPwdTask = context.getBean(ResetPwdTask.class);
-		resetPwdTask.setEvent(resetPwdCommand);
-
-		resetPwdTask.run();
-		Assert.assertFalse(config.getPwdFile().exists());
-		Assert.assertEquals(user.getCloudName(), userName);
-		Assert.assertNull(user.getPassword());
-		Assert.assertFalse(user.hasPasswordFile());
-		Assert.assertFalse(user.isIsLoggedIn());
-
 	}
 
 	@Test
@@ -255,5 +244,4 @@ public class LoginLogoutRemoveIT {
 			Assert.fail(ex.getMessage());
 		}
 	}
-
 }
