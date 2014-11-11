@@ -26,6 +26,11 @@ public class HistoryService implements IHistoryService {
 		PieFile dbFile = databaseService.findPieFile(pieFile);
 	}
 	
+	public void syncDeleteToHistory(PieFile file) {
+		file.setDeleted(true);
+		//todo-history: merge into DB
+	}
+	
 	public void syncLocalPieFilesWithHistory() {
 		try {
 			//todo: drop files in DB
