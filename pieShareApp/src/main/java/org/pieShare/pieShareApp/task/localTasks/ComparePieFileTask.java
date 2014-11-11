@@ -41,7 +41,7 @@ public class ComparePieFileTask implements IPieTask {
 	@Override
 	public void run() {
 		try {
-			switch(this.comparerService.comparePieFile(pieFile)) {
+			switch(this.comparerService.compareWithLocalPieFile(pieFile)) {
 				case 1:
 					this.requestService.requestFile(pieFile);
 					break;

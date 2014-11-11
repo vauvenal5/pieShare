@@ -40,7 +40,7 @@ public class FileListRequestTask extends PieEventTaskBase<FileListRequestMessage
 	public void run() {
 		List<PieFile> pieFiles;
 		try {
-			pieFiles = this.fileService.getAllFilesList();
+			pieFiles = this.fileService.getAllFiles();
 		
 			//todo: use bean service instead
 			FileListMessage reply = new FileListMessage();

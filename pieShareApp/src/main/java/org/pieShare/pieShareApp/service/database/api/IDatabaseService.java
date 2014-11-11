@@ -34,6 +34,4 @@ public interface IDatabaseService {
 	void removeFileFilter(IFilter filter);
 
 	ArrayList<IFilter> findAllFilters();
-
-	<T extends IBaseEntity> T findEntity(Class<T> clazz, Object key);
 }

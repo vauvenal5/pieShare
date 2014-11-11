@@ -35,7 +35,7 @@ public class ComparerService implements IComparerService {
 	}
 
 	@Override
-	public int comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
+	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
 
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 
@@ -50,23 +50,33 @@ public class ComparerService implements IComparerService {
 
 		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
+		return this.comparePieFiles(pieFile, localPieFile);
+	}
+
+	@Override
+	public int compareWithHistory(PieFile pieFile) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public int comparePieFiles(PieFile file1, PieFile file2) throws FileConflictException {
+		PieLogger.debug(this.getClass(), "Comparing file: {} with file: {}", file1.getRelativeFilePath(), file2.getRelativeFilePath());
 		//Remote File is older than local file
 		//todo: should compare also file name!!!
-		if (pieFile.getLastModified() == localFile.lastModified()) {
-			if (Arrays.equals(pieFile.getMd5(), localPieFile.getMd5())) {
-				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", pieFile.getRelativeFilePath());
+		if (file1.getLastModified() == file2.getLastModified()) {
+			if (Arrays.equals(file1.getMd5(), file2.getMd5())) {
 				return 0;
 			}
 			//todo: fix this exception: why does it take a PieFile?!
-			throw new FileConflictException(String.format("Same Modification Date but different MD5 sum: %s", pieFile.getRelativeFilePath()), pieFile);
+			//throw new FileConflictException(String.format("Same Modification Date but different MD5 sum: %s", pieFile.getRelativeFilePath()), pieFile);
 		} //Remote File is older than local file
-		else if (pieFile.getLastModified() < localFile.lastModified()) {
+		else if (file1.getLastModified() < file2.getLastModified()) {
 			return -1;
 		} //Remote File is newer than local file
-		else if (pieFile.getLastModified() > localFile.lastModified()) {
+		else if (file1.getLastModified() > file2.getLastModified()) {
 			return 1;
 		}
 
-		throw new FileConflictException("Cannot handle this file.", pieFile);
+		throw new FileConflictException("Cannot handle this fils.", file1);
 	}
 }
