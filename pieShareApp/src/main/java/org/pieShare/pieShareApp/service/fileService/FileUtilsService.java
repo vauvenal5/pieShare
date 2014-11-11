@@ -63,6 +63,7 @@ public class FileUtilsService implements IFileUtilsService {
 		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
 		 }*/
 
+		//todo-history: change to use dataBaseService
 		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
 		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());

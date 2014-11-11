@@ -19,9 +19,18 @@ public class PieFile {
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
+	private boolean deleted;
 
 	public PieFile() {
+		this.deleted = false;
+	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public byte[] getMd5() {
