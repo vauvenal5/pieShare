@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package pieShareAppITs.helper.config;
 
 import java.io.File;
@@ -19,20 +18,19 @@ import pieShareAppITs.helper.ITUtil;
  * @author Svetoslav
  */
 public class PieShareAppModelITConfig extends PieShareAppModel {
-	
+
 	public static boolean main;
-	
+
 	@Bean
 	@Lazy
 	@Override
 	public PieUser pieUser() {
-		if(main) {
+		if (main) {
 			return this.mainPieUser();
 		}
-		
 		return this.botPieUser();
 	}
-	
+
 	@Bean
 	@Lazy
 	public PieUser mainPieUser() {
@@ -44,7 +42,7 @@ public class PieShareAppModelITConfig extends PieShareAppModel {
 		user.setPieShareConfiguration(config);
 		return user;
 	}
-	
+
 	@Bean
 	@Lazy
 	public PieUser botPieUser() {
