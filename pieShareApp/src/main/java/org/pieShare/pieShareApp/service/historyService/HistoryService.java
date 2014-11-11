@@ -23,7 +23,7 @@ public class HistoryService implements IHistoryService {
 
 	@Override
 	public void syncPieFileWithDb(PieFile pieFile) {
-		PieFile dbFile = databaseService.findPieFile(pieFile);
+		//PieFile dbFile = databaseService.findPieFile(pieFile);
 	}
 	
 	public void syncDeleteToHistory(PieFile file) {

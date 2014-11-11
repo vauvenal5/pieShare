@@ -8,12 +8,13 @@ package org.pieShare.pieShareApp.model.pieFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
  *
  * @author richy
  */
-public class PieFile {
+public class PieFile implements IBaseModel {
 
 	private byte[] md5;
 	private String relativeFilePath;

@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -25,11 +24,6 @@ public class ResetPwdTask implements IResetPwdTask {
 	private IDatabaseService databaseService;
 	private IBeanService beanService;
 	private ResetPwdCommand command;
-	private IPieShareAppConfiguration config;
-
-	public void setConfig(IPieShareAppConfiguration config) {
-		this.config = config;
-	}
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -47,15 +41,17 @@ public class ResetPwdTask implements IResetPwdTask {
 	@Override
 	public void run() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		user.setHasPasswordFile(false);
+		databaseService.mergePieUser(user);
 
-		databaseService.removePieUser(user);
-		user.setUserName(null);
-		user.setIsLoggedIn(false);
-		try {
-			Files.delete(config.getPasswordFile().toPath());
-		}
-		catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error deleting password file. Maybe this is ok", ex);
+		if (user.getPieShareConfiguration().getPwdFile().exists()) {
+			try {
+				Files.delete(user.getPieShareConfiguration().getPwdFile().toPath());
+			}
+			catch (IOException ex) {
+				//ToDo: Add error callback.
+				PieLogger.error(this.getClass(), "Error deleting password file. Maybe this is ok", ex);
+			}
 		}
 		command.getCallback().pwdResetOK();
 	}

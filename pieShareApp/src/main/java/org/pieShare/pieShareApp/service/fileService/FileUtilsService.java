@@ -10,8 +10,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -24,14 +26,10 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
  */
 public class FileUtilsService implements IFileUtilsService {
 
-	private IPieShareAppConfiguration pieAppConfig;
 	private IBeanService beanService;
 	private IHashService hashService;
 	private IFileListenerService fileListener;
-
-	public void setPieAppConfig(IPieShareAppConfiguration pieAppConfig) {
-		this.pieAppConfig = pieAppConfig;
-	}
+	private IPieShareConfiguration configuration;
 
 	public void setFileListener(IFileListenerService fileListener) {
 		this.fileListener = fileListener;
@@ -44,12 +42,18 @@ public class FileUtilsService implements IFileUtilsService {
 	public void setHashService(IHashService hashService) {
 		this.hashService = hashService;
 	}
-	
+
+	@PostConstruct
+	public void init() {
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		configuration = user.getPieShareConfiguration();
+	}
+
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
 		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
-		File targetFile = new File(this.pieAppConfig.getWorkingDirectory(), file.getRelativeFilePath());
-		
+		File targetFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
+
 		this.fileListener.addPieFileToModifiedList(file);
 		if (!targetFile.setLastModified(file.getLastModified())) {
 			this.fileListener.removePieFileFromModifiedList(file);
@@ -57,7 +61,7 @@ public class FileUtilsService implements IFileUtilsService {
 		}
 	}
 
-    @Override
+	@Override
 	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
 		/*if (!file.exists()) {
 		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
@@ -77,16 +81,17 @@ public class FileUtilsService implements IFileUtilsService {
 
 		return pieFile;
 	}
-	
+
 	@Override
-    public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
+	public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
 		File file = new File(filePath);
 		return this.getPieFile(file);
 	}
 
+	@Override
 	public Path relitivizeFilePath(File file) {
-		Path pathBase = pieAppConfig.getWorkingDirectory().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-		Path pathAbsolute = file.toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		Path pathBase = configuration.getWorkingDir().getAbsoluteFile().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
+		Path pathAbsolute = file.getAbsoluteFile().toPath(); // Paths.get("/var/data/stuff/xyz.dat");
 		return pathBase.relativize(pathAbsolute);
 	}
 

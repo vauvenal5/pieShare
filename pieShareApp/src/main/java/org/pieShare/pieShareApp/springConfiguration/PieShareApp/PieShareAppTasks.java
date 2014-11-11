@@ -59,7 +59,7 @@ public class PieShareAppTasks {
 		task.setFileService(this.services.fileService());
 		task.setFileUtilsService(this.services.fileUtilsService());
 		task.setHashService(this.config.md5Service());
-		task.setPieAppConfig(this.services.pieShareAppConfiguration());
+		task.setBeanService(config.beanService());
 		task.setRequestService(this.services.requestService());
 		task.setShareService(this.services.shareService());
 		return task;
@@ -157,10 +157,11 @@ public class PieShareAppTasks {
 		LoginTask service = new LoginTask();
 		service.setBeanService(config.beanService());
 		service.setPasswordEncryptionService(config.passwordEncryptionService());
-		service.setPieShareAppConfig(services.pieShareAppConfiguration());
+		service.setConfigurationFactory(services.configurationFactory());
 		service.setEncodeService(config.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
+		service.setFileService(services.fileService());
 		return service;
 	}
 
@@ -180,7 +181,6 @@ public class PieShareAppTasks {
 	public ResetPwdTask resetPwdTask() {
 		ResetPwdTask task = new ResetPwdTask();
 		task.setBeanService(config.beanService());
-		task.setConfig(services.pieShareAppConfiguration());
 		task.setDatabaseService(services.databaseService());
 		return task;
 	}

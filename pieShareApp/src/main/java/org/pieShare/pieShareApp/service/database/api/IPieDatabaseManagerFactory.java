@@ -3,17 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.regexService;
+package org.pieShare.pieShareApp.service.database.api;
+
+import javax.persistence.EntityManager;
 
 /**
  *
  * @author Richard
  */
-public interface IRegexService {
+public interface IPieDatabaseManagerFactory {
 
-	void setPattern(String pattern);
+	EntityManager getEntityManger(Class clazz);
 
-	boolean matches(String text);
+	void closeDB();
 
-	String replaceAll(String text, String replaceString);
+	void init();
 }
