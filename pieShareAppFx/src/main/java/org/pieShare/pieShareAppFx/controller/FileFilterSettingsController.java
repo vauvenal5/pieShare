@@ -34,10 +34,10 @@ import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
+import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
 import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
@@ -55,7 +55,7 @@ public class FileFilterSettingsController implements Initializable {
 	private IRegexService regexService;
 	private IFileFilterService fileFilterService;
 	private IBeanService beanService;
-	private IFileUtilsService fileUtilsService;
+	private IFileService fileService;
 	private IPieShareConfiguration configuration;
 
 	@FXML
@@ -92,8 +92,8 @@ public class FileFilterSettingsController implements Initializable {
 		this.fXMLController = fXMLController;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	public void setRegexService(IRegexService regexService) {
@@ -195,7 +195,7 @@ public class FileFilterSettingsController implements Initializable {
 			return;
 		}
 
-		Path relative = fileUtilsService.relitivizeFilePath(choosenFile);
+		Path relative = fileService.relitivizeFilePath(choosenFile);
 
 		patternTextField.setText(String.format("%s/%s", relative.toString(), ".*"));
 	}
@@ -211,7 +211,7 @@ public class FileFilterSettingsController implements Initializable {
 			return;
 		}
 
-		Path relative = fileUtilsService.relitivizeFilePath(choosenFile);
+		Path relative = fileService.relitivizeFilePath(choosenFile);
 
 		patternTextField.setText(relative.toString());
 	}

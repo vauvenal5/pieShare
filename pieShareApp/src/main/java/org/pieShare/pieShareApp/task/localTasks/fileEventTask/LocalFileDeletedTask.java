@@ -8,31 +8,30 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileHistoryEventTask;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
 
 /**
  *
  * @author Svetoslav
  */
-public class LocalFileDeletedTask extends FileHistoryEventTask {
+public class LocalFileDeletedTask extends LocalFileEventTask {
 
 	@Override
 	public void run() {
-		//todo: for the time being we will just delete without checks
-		//later somekinde of persistency and check has to be added
-		//see base class of deleteMessage
-		FileDeletedMessage msg = this.beanService.getBean(PieShareAppBeanNames.getFileDeletedMessage());
-		//if(!checkFilter(file)) return;
-		super.doWork(msg);
+		try {
+			PieFile pieFile = this.prepareWork();
+			pieFile = this.historyService.syncDeleteToHistory(pieFile);
+			FileDeletedMessage msg = this.beanService.getBean(PieShareAppBeanNames.getFileDeletedMessage());
+			super.doWork(msg, pieFile);
+		} catch (IOException ex) {
+			//todo: do something here
+		}
 	}
 	
 }

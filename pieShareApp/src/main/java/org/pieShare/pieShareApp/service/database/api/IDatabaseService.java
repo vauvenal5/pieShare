@@ -40,6 +40,8 @@ public interface IDatabaseService {
 	
 	List<PieFile> findAllUnsyncedPieFiles();
 	
+	List<PieFile> findAllPieFiles();
+	
 	void resetAllPieFileSynchedFlags();
 	
 	void mergePieFile(PieFile file);

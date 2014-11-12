@@ -10,9 +10,10 @@ import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -23,12 +24,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav
  */
-public abstract class FileEventTask implements IPieTask {
+public abstract class LocalFileEventTask implements IPieTask {
 
 	protected String filePath;
 	protected IBeanService beanService;
 	protected IClusterManagementService clusterManagementService;
-	protected IFileUtilsService fileUtilsService;
+	protected IFileService fileService;
+	protected IHistoryService historyService;
 	private IFileFilterService fileFilterService;
 
 	public void setFileFilterService(IFileFilterService fileFilterService) {
@@ -43,33 +45,26 @@ public abstract class FileEventTask implements IPieTask {
 		this.clusterManagementService = clusterManagementService;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-
-	protected boolean checkFilter(PieFile file) {
-		return fileFilterService.checkFile(file);
-	}
-
-	protected boolean checkFilter(File file) {
-		return fileFilterService.checkFile(file);
-	}
-
-	protected void doWork(FileMessageBase msg) {
-		try {
-			this.doWork(msg, this.fileUtilsService.getPieFile(this.filePath));
-		} catch (IOException ex) {
-			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
+	
+	protected PieFile prepareWork() throws IOException {
+		File localFile = new File(this.filePath);
+		if(this.fileFilterService.checkFile(localFile)) {
+			return null;
 		}
+		this.fileService.waitUntilCopyFinished(this.filePath);
+		
+		return this.fileService.getPieFile(localFile);
 	}
 
 	protected void doWork(FileMessageBase msg, PieFile file) {
 		try {
-
 			msg.setFile(file);
 			//todo: need somewhere a match between working dir and belonging cloud
 			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());

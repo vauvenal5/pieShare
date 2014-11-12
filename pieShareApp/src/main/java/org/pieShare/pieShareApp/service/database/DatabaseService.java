@@ -220,4 +220,21 @@ public class DatabaseService implements IDatabaseService {
 		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
 		query.executeUpdate();
 	}
+
+	@Override
+	public List<PieFile> findAllPieFiles() {
+		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		String sqlQuery = String.format("SELECT f FROM %s f", PieFileEntity.class.getSimpleName());
+		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
+		
+		ArrayList<PieFile> files = new ArrayList<>();
+		
+		List<PieFileEntity> entities = query.getResultList();
+		
+		for(PieFileEntity entity: entities) {
+			files.add(this.modelEntityConverterService.convertFromEntity(entity));
+		}
+		
+		return files;
+	}
 }

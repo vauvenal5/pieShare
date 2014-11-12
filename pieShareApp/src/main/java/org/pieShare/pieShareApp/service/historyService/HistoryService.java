@@ -29,17 +29,18 @@ public class HistoryService implements IHistoryService {
 
 	@Override
 	public void syncPieFileWithDb(PieFile pieFile) {
-		PieFile dbFile = databaseService.findPieFile(pieFile);
-		//todo-history: finish this
+		databaseService.mergePieFile(pieFile);
 	}
 	
+	@Override
 	public PieFile syncDeleteToHistory(PieFile file) {
 		PieFile historyFile = this.databaseService.findPieFile(file);
 		historyFile.setDeleted(true);
-		this.databaseService.mergePieFile(file);
+		this.databaseService.mergePieFile(historyFile);
 		return historyFile;
 	}
 	
+	@Override
 	public List<PieFile> syncLocalPieFilesWithHistory() {
 		this.databaseService.resetAllPieFileSynchedFlags();
 		List<PieFile> filesToSend = new ArrayList<PieFile>();

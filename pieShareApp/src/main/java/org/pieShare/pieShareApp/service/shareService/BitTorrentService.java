@@ -29,10 +29,10 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -55,7 +55,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private IBeanService beanService;
 	private IBase64Service base64Service;
 	private INetworkService networkService;
-	private IFileUtilsService fileUtilsService;
+	private IFileService fileService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
 	private IShutdownService shutdownService;
 	private boolean shutdown = false;
@@ -95,8 +95,8 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		this.beanService = beanService;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
+	public void setFileUtilsService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
@@ -153,7 +153,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			torrent.save(baos);
 
-			PieFile pieFile = this.fileUtilsService.getPieFile(file);
+			PieFile pieFile = this.fileService.getPieFile(file);
 			this.initPieFileState(pieFile, 0);
 			this.manipulatePieFileState(pieFile, 1);
 
@@ -167,7 +167,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			this.sendMetaMessageAndHandleSharedTorrent(pieFile, new SharedTorrent(torrent, file.getParentFile(), true), metaMsg);
 
 			//todo: find out why ttorrent changes the date modified when sharing a file?!
-			this.fileUtilsService.setCorrectModificationDate(pieFile);
+			this.fileService.setCorrectModificationDate(pieFile);
 		}
 		catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
@@ -204,7 +204,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 
 			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-			this.fileUtilsService.setCorrectModificationDate(file);
+			this.fileService.setCorrectModificationDate(file);
 
 			//this.requestService.deleteRequestedFile(msg.getPieFile());
 			FileUtils.deleteDirectory(tmpDir);
