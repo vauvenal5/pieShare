@@ -3,20 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package org.pieShare.pieShareApp.service.fileService;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
-import javax.annotation.PostConstruct;
+import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
@@ -24,12 +29,11 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
  *
  * @author Svetoslav
  */
-public class FileUtilsService implements IFileUtilsService {
-
-	private IBeanService beanService;
-	private IHashService hashService;
+public abstract class FileServiceBase implements IFileService {
+	
+	protected IBeanService beanService;
+	protected IPieShareConfiguration configuration;
 	private IFileListenerService fileListener;
-	private IPieShareConfiguration configuration;
 
 	public void setFileListener(IFileListenerService fileListener) {
 		this.fileListener = fileListener;
@@ -38,17 +42,49 @@ public class FileUtilsService implements IFileUtilsService {
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
+	
+	@Override
+	public void waitUntilCopyFinished(String filePath) {
+		File file = new File(filePath);
+		FileInputStream st;
+		boolean isCopying = true;
 
-	public void setHashService(IHashService hashService) {
-		this.hashService = hashService;
+		while (isCopying) {
+
+			try {
+				Thread.sleep(2000);
+				st = new FileInputStream(file);
+				isCopying = false;
+				st.close();
+			}
+			catch (FileNotFoundException ex) {
+				isCopying = false;
+			}
+			catch (IOException ex) {
+				//nothing needed to do here
+			}
+			catch (InterruptedException ex) {
+				//nothing needed to do here
+			}
+		}
 	}
-
-	@PostConstruct
-	public void init() {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		configuration = user.getPieShareConfiguration();
+	
+	@Override
+	public void deleteRecursive(PieFile file) {
+		File localFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
+		try {
+			if (localFile.isDirectory()) {
+				FileUtils.deleteDirectory(localFile);
+			}
+			else {
+				localFile.delete();
+			}
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Deleting failed!", ex);
+		}
 	}
-
+	
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
 		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
@@ -60,39 +96,11 @@ public class FileUtilsService implements IFileUtilsService {
 			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getRelativeFilePath());
 		}
 	}
-
-	@Override
-	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
-		/*if (!file.exists()) {
-		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
-		 }*/
-
-		//todo-history: change to use dataBaseService
-		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
-
-		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
-
-		pieFile.setFileName(file.getName());
-		pieFile.setLastModified(file.lastModified());
-
-		if (file.exists()) {
-			pieFile.setMd5(hashService.hashStream(file));
-		}
-
-		return pieFile;
-	}
-
-	@Override
-	public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
-		File file = new File(filePath);
-		return this.getPieFile(file);
-	}
-
+	
 	@Override
 	public Path relitivizeFilePath(File file) {
 		Path pathBase = configuration.getWorkingDir().getAbsoluteFile().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
 		Path pathAbsolute = file.getAbsoluteFile().toPath(); // Paths.get("/var/data/stuff/xyz.dat");
 		return pathBase.relativize(pathAbsolute);
 	}
-
 }

@@ -13,7 +13,6 @@ import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -31,15 +30,10 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 	private IShareService shareService;
 	private IHashService hashService;
 	private IRequestService requestService;
-	private IFileUtilsService fileUtilsService;
 	private IBeanService beanService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
-	}
-
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
 	}
 
 	public void setShareService(IShareService shareService) {
@@ -77,7 +71,7 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 		PieFile pieFile = null;
 
 		try {
-			pieFile = this.fileUtilsService.getPieFile(file);
+			pieFile = this.fileService.getPieFile(file);
 		}
 		catch (IOException ex) {
 			PieLogger.error(this.getClass(), "File error.", ex);

@@ -17,10 +17,9 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
-import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -33,59 +32,17 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 /**
  * @author richy
  */
-public class FileService implements IFileService, IClusterAddedListener {
+public class LocalFileService extends FileServiceBase implements IClusterAddedListener{
 
-	private IExecutorService executorService = null;
-	private IFileWatcherService fileWatcher;
-	private IBeanService beanService;
 	private IHashService hashService;
-	private IRequestService requestService;
 	private IClusterManagementService clusterManagementService;
-	private IFileUtilsService fileUtilsService;
-	private IPieShareConfiguration configuration;
-	
-	public FileService() {
-	}
+	private IExecutorService executorService;
+	private IFileWatcherService fileWatcher;
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
-	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
-
-	public void setRequestService(IRequestService requestService) {
-		this.requestService = requestService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
-
-	public void setMd5Service(IHashService hashService) {
+	public void setHashService(IHashService hashService) {
 		this.hashService = hashService;
 	}
-
-	@Override
-	public void initFileService() {
-		/*  try
-		 {
-		 registerAll(pieAppConfig.getWorkingDirectory());
-
-		 }
-		 catch (IOException ex)
-		 {
-		 logger.error("Error parsing workingDir at startup");
-		 }
-		 */
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		configuration = user.getPieShareConfiguration();
-		addWatchDirectory(configuration.getWorkingDir());
-
-		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
-	}
-
+	
 	public void setFileWatcher(IFileWatcherService fileWatcher) {
 		this.fileWatcher = fileWatcher;
 	}
@@ -93,68 +50,28 @@ public class FileService implements IFileService, IClusterAddedListener {
 	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
 	}
-
+	
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
+	}
+	
+	public void initFileService() {
+		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
+	}
+	
 	private void addWatchDirectory(File file) {
 		fileWatcher.setWatchDir(file);
 		executorService.execute(fileWatcher);
 	}
-
-	@Override
-	public void waitUntilCopyFinished(String filePath) {
-		File file = new File(filePath);
-		FileInputStream st;
-		boolean isCopying = true;
-
-		while (isCopying) {
-
-			try {
-				Thread.sleep(2000);
-				st = new FileInputStream(file);
-				isCopying = false;
-				st.close();
-			}
-			catch (FileNotFoundException ex) {
-				//nothing needed to do here
-			}
-			catch (IOException ex) {
-				//nothing needed to do here
-			}
-			catch (InterruptedException ex) {
-				//nothing needed to do here
-			}
-		}
-	}
-
-	/*@Override
-	 public boolean checkMergeFile(PieFile pieFile) {
-	 File file = new File(pieAppConfig.getWorkingDirectory(), pieFile.getRelativeFilePath());
-
-	 if (!file.exists()) {
-	 return true;
-	 }
-
-	 PieFile localPieFile = null;
-
-	 try {
-	 localPieFile = this.fileUtilsService.getPieFile(file);
-	 } catch (IOException ex) {
-	 //ToDo: DO conflict handling
-	 PieLogger.error(this.getClass(), "File error.", ex);
-	 return false;
-	 }
-
-	 if (!hashService.isMD5Equal(localPieFile.getMd5(), pieFile.getMd5())) {
-	 return true;
-	 }
-
-	 return false;
-	 }*/
+	
 	@Override
 	public void handleObject(ClusterAddedEvent event) {
 		try {
 			//when a cluster is added this actually means that this client has entered a cloud
 			//todo: request all files list!!!!
 			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+			configuration = user.getPieShareConfiguration();
+			addWatchDirectory(configuration.getWorkingDir());
 			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
 		}
 		catch (ClusterManagmentServiceException ex) {
@@ -175,7 +92,7 @@ public class FileService implements IFileService, IClusterAddedListener {
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				File realFile = file.toFile();
 
-				PieFile pieFile = fileUtilsService.getPieFile(realFile);
+				PieFile pieFile = getPieFile(realFile);
 				pieFiles.add(pieFile);
 
 				return FileVisitResult.CONTINUE;
@@ -186,18 +103,28 @@ public class FileService implements IFileService, IClusterAddedListener {
 	}
 
 	@Override
-	public void deleteRecursive(PieFile file) {
-		File localFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
-		try {
-			if (localFile.isDirectory()) {
-				FileUtils.deleteDirectory(localFile);
-			}
-			else {
-				localFile.delete();
-			}
+	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
+		/*if (!file.exists()) {
+		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
+		 }*/
+
+		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
+
+		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
+
+		pieFile.setFileName(file.getName());
+		pieFile.setLastModified(file.lastModified());
+
+		if (file.exists()) {
+			pieFile.setMd5(hashService.hashStream(file));
 		}
-		catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Deleting failed!", ex);
-		}
+
+		return pieFile;
+	}
+
+	@Override
+	public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
+		File file = new File(filePath);
+		return this.getPieFile(file);
 	}
 }

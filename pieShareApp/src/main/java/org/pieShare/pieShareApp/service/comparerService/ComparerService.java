@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -23,15 +23,15 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ComparerService implements IComparerService {
 
-	private IFileUtilsService fileUtilsService;
+	private IFileService fileService;
 	private IBeanService beanService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	@Override
@@ -47,8 +47,9 @@ public class ComparerService implements IComparerService {
 			//todo: a history check has to be done here to check for deleted files
 			return 1;
 		}
-
-		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
+		
+		//todo-history: can be read from history instead
+		PieFile localPieFile = this.fileService.getPieFile(localFile);
 
 		return this.comparePieFiles(pieFile, localPieFile);
 	}

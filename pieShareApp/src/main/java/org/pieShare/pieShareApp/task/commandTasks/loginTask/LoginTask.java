@@ -115,7 +115,6 @@ public class LoginTask implements ILoginTask {
 			databaseService.persist(user);
 		}
 		user.setIsLoggedIn(true);
-		fileService.initFileService();
 
 		//Check and create folders
 		try {
