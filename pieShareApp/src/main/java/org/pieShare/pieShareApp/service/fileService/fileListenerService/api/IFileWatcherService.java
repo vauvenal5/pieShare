@@ -6,13 +6,16 @@
 package org.pieShare.pieShareApp.service.fileService.fileListenerService.api;
 
 import java.io.File;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import java.io.IOException;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Richard
  */
-public interface IFileWatcherService extends IPieTask {
-
-	public void setWatchDir(File watchDir);
+public interface IFileWatcherService extends IShutdownableService {
+	void watchDir(File file) throws IOException;
+	void addPieFileToModifiedList(PieFile pieFile);
+	boolean removePieFileFromModifiedList(PieFile file);
 }

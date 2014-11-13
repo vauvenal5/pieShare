@@ -33,7 +33,4 @@ public interface IFileService {
 	void setCorrectModificationDate(PieFile file);
 	
 	Path relitivizeFilePath(File file);
-	
-	void addPieFileToModifiedList(PieFile pieFile);
-	boolean removePieFileFromModifiedList(PieFile file);
 }

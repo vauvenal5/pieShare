@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.model;
 
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcher;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 
 /**
@@ -73,9 +73,5 @@ public class PieShareAppBeanNames {
 	
 	public static Class<FileChangedMessage> getFileChangedMessage() {
 		return FileChangedMessage.class;
-	}
-	
-	public static Class<ApacheFileWatcher> getFileWatcherService() {
-		return ApacheFileWatcher.class;
 	}
 }

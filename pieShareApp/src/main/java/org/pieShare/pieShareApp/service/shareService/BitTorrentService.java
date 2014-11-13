@@ -32,6 +32,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -60,11 +61,16 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private Semaphore readPorts;
 	private Semaphore writePorts;
 	private IPieShareConfiguration configuration;
+	private IFileWatcherService fileWatcherService;
 
 	@PostConstruct
 	public void init() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		configuration = user.getPieShareConfiguration();
+	}
+
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
 
 	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
@@ -247,7 +253,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		try {
 			this.readPorts.acquire();
 
-			this.fileService.addPieFileToModifiedList(pieFile);
+			this.fileWatcherService.addPieFileToModifiedList(pieFile);
 			//todo: handle ports out problem!!!
 			//todo: this should run somehow over the beans
 			Client client = new Client(networkService.getLocalHost(), torrent);

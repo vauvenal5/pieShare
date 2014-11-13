@@ -38,40 +38,15 @@ public abstract class FileServiceBase implements IFileService {
 	
 	protected IBeanService beanService;
 	protected IPieShareConfiguration configuration;
-	private IClusterManagementService clusterManagementService;
-	
-	
-	private List<PieFile> modifiedFiles;
-
-	//todo-megaShit: there are two file services
-		//the problem is that in this case the registration on the event happens twice
-		//and also the whole modified file stuff is at two places
-	
-	
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
+	protected IFileWatcherService fileWatcherService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
-	
-	public void initFileService() {
-		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
-		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
+
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
-	
-	@Override
-	public void addPieFileToModifiedList(PieFile pieFile) {
-		this.modifiedFiles.add(pieFile);
-	}
-	
-	@Override
-	public boolean removePieFileFromModifiedList(PieFile file) {
-		return this.modifiedFiles.remove(file);
-	}
-	
-	
 	
 	@Override
 	public void waitUntilCopyFinished(File file) {
@@ -119,9 +94,9 @@ public abstract class FileServiceBase implements IFileService {
 		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
 		File targetFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
 
-		this.addPieFileToModifiedList(file);
+		this.fileWatcherService.addPieFileToModifiedList(file);
 		if (!targetFile.setLastModified(file.getLastModified())) {
-			this.removePieFileFromModifiedList(file);
+			this.fileWatcherService.removePieFileFromModifiedList(file);
 			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getRelativeFilePath());
 		}
 	}

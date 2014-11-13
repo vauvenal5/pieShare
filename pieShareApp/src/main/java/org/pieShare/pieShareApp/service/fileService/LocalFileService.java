@@ -26,43 +26,12 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 /**
  * @author richy
  */
-public class LocalFileService extends FileServiceBase, IClusterAddedListener {
+public class LocalFileService extends FileServiceBase {
 
 	private IHashService hashService;
-	private IExecutorService executorService;
 
 	public void setHashService(IHashService hashService) {
 		this.hashService = hashService;
-	}
-	
-	public void setExecutorService(IExecutorService executorService) {
-		this.executorService = executorService;
-	}
-	
-	private void addWatchDirectory(File file) {
-		PieLogger.info(this.getClass(), "Adding file watcher!!!");
-		IFileWatcherService fileWatcher = this.beanService.getBean(PieShareAppBeanNames.getFileWatcherService());
-		fileWatcher.setWatchDir(file);
-		executorService.execute(fileWatcher);
-	}
-	
-	@Override
-	public void handleObject(ClusterAddedEvent event) {
-		//todo-arch: is the fileService truly responsible for this?
-		// --> if not who is responsible for starting the fileWatcher?
-		try {
-			PieLogger.info(this.getClass(), "The FileService has following id {}", this.toString());
-			//when a cluster is added this actually means that this client has entered a cloud
-			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-			this.configuration = user.getPieShareConfiguration();
-			addWatchDirectory(this.configuration.getWorkingDir());
-			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
-		}
-		catch (ClusterManagmentServiceException ex) {
-			//todo: error handling
-			PieLogger.error(this.getClass(), "File error.", ex);
-		}
-		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
 	}
 
 	@Override
