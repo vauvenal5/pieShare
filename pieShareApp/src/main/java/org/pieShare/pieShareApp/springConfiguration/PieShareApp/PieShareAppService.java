@@ -15,7 +15,7 @@ import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheDefaultFileListener;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcher;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
@@ -122,19 +122,18 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
-	public ApacheFileWatcher fileWatcher() {
-		ApacheFileWatcher watcher = new ApacheFileWatcher();
-		watcher.setFileListener(this.fileListenerService());
-		watcher.registerToShutdownService(this.shutdownService());
+	public ApacheFileWatcherService apacheFileWatcherService() {
+		ApacheFileWatcherService watcher = new ApacheFileWatcherService();
+		watcher.setBeanService(this.utilities.beanService());
+		watcher.setClusterManagementService(this.plate.clusterManagementService());
+		watcher.setShutdownService(this.shutdownService());
+		watcher.init();
 		return watcher;
 	}
 	
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
-		base.setClusterManagementService(this.plate.clusterManagementService());
-		base.setExecutorService(this.utilities.pieExecutorService());
-		base.initFileService();
+		base.setFileWatcherService(this.apacheFileWatcherService());
 	}
 
 	@Bean
@@ -172,8 +171,8 @@ public class PieShareAppService {
 		service.setFileUtilsService(this.localFileService());
 		service.setNetworkService(this.networkService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
-		
-		service.registerToShutdownService(this.shutdownService());
+		service.setFileWatcherService(this.apacheFileWatcherService());
+		service.setShutdownService(this.shutdownService());
 		service.bitTorrentServicePost();
 		return service;
 	}
@@ -201,7 +200,7 @@ public class PieShareAppService {
 	public PieDatabaseManagerFactory pieDatabaseManagerFactory() {
 		PieDatabaseManagerFactory fac = new PieDatabaseManagerFactory();
 		fac.setApplicationConfigurationService(applicationConfigurationService());
-		fac.registerToShutdownService(this.shutdownService());
+		fac.setShutdownService(this.shutdownService());
 		return fac;
 	}
 

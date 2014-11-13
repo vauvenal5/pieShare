@@ -103,6 +103,7 @@ public class PieShareAppTasks {
 		LocalFileChangedTask task = new LocalFileChangedTask();
 		this.fileEventTask(task);
 		task.setFileService(this.services.localFileService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
 		return task;
 	}
 
