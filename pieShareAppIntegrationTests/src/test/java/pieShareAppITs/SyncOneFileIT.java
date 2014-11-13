@@ -13,7 +13,7 @@ import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.tasks.TestTask;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
@@ -72,21 +72,25 @@ public class SyncOneFileIT {
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
 		ITFileUtils.createFile(filex, 2048);
-		File file = new File(config.getWorkingDir(), "test.txt");
-		FileUtils.moveFile(filex, file);
+		File fileMain = new File(config.getWorkingDir(), "test.txt");
+		
+		PieUser botUser = context.getBean("botPieUser", PieUser.class);
+		PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
+		File fileBot = new File(botConfig.getWorkingDir(), "test.txt");
+		
+		FileUtils.moveFile(filex, fileMain);
+		
 		while (counter.getCount(FileTransferCompleteTask.class) < 1) {
 			Thread.sleep(5000);
 		}
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
-			PieUser botUser = context.getBean("botPieUser", PieUser.class);
-			PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
-			File file1 = new File(botConfig.getWorkingDir(), "test.txt");
-			boolean filesAreEqual = FileUtils.contentEquals(file, file1);
+			
+			boolean filesAreEqual = FileUtils.contentEquals(fileMain, fileBot);
 
 			assertTrue(filesAreEqual);
-			assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
-			assertTrue(ITUtil.waitForFileToBeFreed(file1, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
 		}
 		else {
 			fail("To much file transerfers?!");

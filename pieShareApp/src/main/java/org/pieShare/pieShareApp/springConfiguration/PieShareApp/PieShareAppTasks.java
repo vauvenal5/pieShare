@@ -77,6 +77,7 @@ public class PieShareAppTasks {
 	public NewFileTask newFileTask() {
 		NewFileTask task = new NewFileTask();
 		task.setComparerService(this.services.comparerService());
+		task.setRequestService(services.requestService());
 		return task;
 	}
 
@@ -84,6 +85,7 @@ public class PieShareAppTasks {
 		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setFileFilterService(services.fileFilterService());
+		task.setHistoryService(services.historyService());
 	}
 
 	@Bean
@@ -91,7 +93,6 @@ public class PieShareAppTasks {
 	public LocalFileCreatedTask localFileCreatedTask() {
 		LocalFileCreatedTask task = new LocalFileCreatedTask();
 		this.fileEventTask(task);
-		
 		task.setFileService(this.services.localFileService());
 		return task;
 	}
@@ -101,9 +102,7 @@ public class PieShareAppTasks {
 	public LocalFileChangedTask localFileChangedTask() {
 		LocalFileChangedTask task = new LocalFileChangedTask();
 		this.fileEventTask(task);
-		
 		task.setFileService(this.services.localFileService());
-		task.setFileListener(this.services.fileListenerService());
 		return task;
 	}
 
@@ -112,7 +111,6 @@ public class PieShareAppTasks {
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
 		this.fileEventTask(task);
-		
 		task.setFileService(this.services.historyFileService());
 		return task;
 	}

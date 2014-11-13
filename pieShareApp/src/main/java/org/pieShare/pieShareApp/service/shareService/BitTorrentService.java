@@ -31,7 +31,6 @@ import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -39,7 +38,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFolderService;
 
@@ -57,26 +55,16 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private INetworkService networkService;
 	private IFileService fileService;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
-	private IShutdownService shutdownService;
 	private boolean shutdown = false;
 	private URI trackerUri;
 	private Semaphore readPorts;
 	private Semaphore writePorts;
-	private IFileListenerService fileListener;
 	private IPieShareConfiguration configuration;
 
 	@PostConstruct
 	public void init() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		configuration = user.getPieShareConfiguration();
-	}
-
-	public void setShutdownService(IShutdownService shutdownService) {
-		this.shutdownService = shutdownService;
-	}
-
-	public void setFileListener(IFileListenerService fileListener) {
-		this.fileListener = fileListener;
 	}
 
 	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
@@ -135,8 +123,6 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		catch (URISyntaxException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
-
-		this.shutdownService.registerListener(this);
 	}
 
 	@Override
@@ -261,7 +247,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 		try {
 			this.readPorts.acquire();
 
-			this.fileListener.addPieFileToModifiedList(pieFile);
+			this.fileService.addPieFileToModifiedList(pieFile);
 			//todo: handle ports out problem!!!
 			//todo: this should run somehow over the beans
 			Client client = new Client(networkService.getLocalHost(), torrent);

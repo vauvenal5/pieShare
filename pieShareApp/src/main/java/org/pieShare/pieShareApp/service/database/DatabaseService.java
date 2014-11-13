@@ -162,7 +162,7 @@ public class DatabaseService implements IDatabaseService {
 		em.getTransaction().commit();
 	}
 
-	private void merge(IBaseEntity entity) {
+	private synchronized void merge(IBaseEntity entity) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
 		em.getTransaction().begin();
 		em.merge(entity);

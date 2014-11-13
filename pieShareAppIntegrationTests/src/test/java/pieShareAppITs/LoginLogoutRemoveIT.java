@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;

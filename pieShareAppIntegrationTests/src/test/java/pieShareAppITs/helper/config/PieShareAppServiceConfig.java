@@ -33,40 +33,12 @@ import pieShareAppITs.helper.ITUtil;
  */
 @Configuration
 public class PieShareAppServiceConfig extends PieShareAppService {	
-	@Autowired
-	protected PieShareAppTasks tasks;
-	
-	@Bean
-	@Lazy
-	@Override
-	public DatabaseService databaseService() {
-		DatabaseService service = Mockito.mock(DatabaseService.class);
-		Mockito.when(service.findAllPieUser()).thenReturn(null);
-		return service;
-	}
+	public static boolean main;
 	
 	@Bean
 	@Lazy
 	public ITTasksCounter itTasksCounter() {
 		return new ITTasksCounter();
-	}
-	
-	/*@Bean
-	@Lazy
-	public FileTranserferCompleteTestTask fileTransferCompleteTestTask() {
-		FileTranserferCompleteTestTask task = new FileTranserferCompleteTestTask();
-		task.setShareService(this.shareService());
-		task.setUtil(this.itTasksCounter());
-		return task;
-	}*/
-	
-	@Bean
-	@Lazy
-	public TestTask testTask() {
-		TestTask task = new TestTask();
-		task.setFactory(this.testTaskFactory());
-		task.setUtil(this.itTasksCounter());
-		return task;
 	}
 	
 	@Bean

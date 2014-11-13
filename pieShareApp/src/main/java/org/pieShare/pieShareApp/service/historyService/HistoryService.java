@@ -27,6 +27,18 @@ public class HistoryService implements IHistoryService {
 	private IFileService fileService;
 	private IComparerService comparerService;
 
+	public void setDatabaseService(IDatabaseService databaseService) {
+		this.databaseService = databaseService;
+	}
+
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
+
+	public void setComparerService(IComparerService comparerService) {
+		this.comparerService = comparerService;
+	}
+
 	@Override
 	public void syncPieFileWithDb(PieFile pieFile) {
 		databaseService.mergePieFile(pieFile);

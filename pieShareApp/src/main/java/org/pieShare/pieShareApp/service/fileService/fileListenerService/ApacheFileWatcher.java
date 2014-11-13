@@ -3,28 +3,31 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileListenerService;
+package org.pieShare.pieShareApp.service.fileService.fileListenerService;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.commons.vfs2.FileListener;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Richard
  */
-public class ApacheFileWatcher implements IFileWatcherService {
+public class ApacheFileWatcher implements IFileWatcherService, IShutdownableService {
 
+	private IFileListenerService fileListener;
+	
 	private File watchDir;
-	private FileListener fileListener;
+	private DefaultFileMonitor fileMonitor;
 
-	public void setFileListener(FileListener fileListener) {
+	public void setFileListener(IFileListenerService fileListener) {
 		this.fileListener = fileListener;
 	}
 
@@ -39,12 +42,11 @@ public class ApacheFileWatcher implements IFileWatcherService {
 		FileObject dirToWatchFO = null;
 		dirToWatchFO = fileSystemManager.resolveFile(watchDir.getAbsolutePath());
 
-		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(fileListener);
+		fileMonitor = new DefaultFileMonitor(fileListener);
 
 		fileMonitor.setRecursive(true);
 		fileMonitor.addFile(dirToWatchFO);
 		fileMonitor.start();
-		//todo: shutdown service: fileMonitor.stop() has to be executed
 	}
 
 	@Override
@@ -54,5 +56,10 @@ public class ApacheFileWatcher implements IFileWatcherService {
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Watcher error", ex);
 		}
+	}
+
+	@Override
+	public void shutdown() {
+		fileMonitor.stop();
 	}
 }

@@ -12,6 +12,10 @@ package org.pieShare.pieTools.pieUtilities.service.shutDownService.api;
  */
 public interface IShutdownableService {
 	
+	default void registerToShutdownService(IShutdownService service) {
+		service.registerListener(this);
+	}
+	
 	void shutdown();
 	
 }

@@ -33,6 +33,10 @@ public abstract class LocalFileEventTask implements IPieTask {
 	protected IHistoryService historyService;
 	private IFileFilterService fileFilterService;
 
+	public void setHistoryService(IHistoryService historyService) {
+		this.historyService = historyService;
+	}
+	
 	public void setFileFilterService(IFileFilterService fileFilterService) {
 		this.fileFilterService = fileFilterService;
 	}
@@ -46,6 +50,7 @@ public abstract class LocalFileEventTask implements IPieTask {
 	}
 
 	public void setFileService(IFileService fileService) {
+		PieLogger.info(this.getClass(), "Setting FileService!");
 		this.fileService = fileService;
 	}
 
@@ -55,10 +60,12 @@ public abstract class LocalFileEventTask implements IPieTask {
 	
 	protected PieFile prepareWork() throws IOException {
 		File localFile = new File(this.filePath);
-		if(this.fileFilterService.checkFile(localFile)) {
+		
+		if(!this.fileFilterService.checkFile(localFile)) {
 			return null;
 		}
-		this.fileService.waitUntilCopyFinished(this.filePath);
+		
+		this.fileService.waitUntilCopyFinished(localFile);
 		
 		return this.fileService.getPieFile(localFile);
 	}

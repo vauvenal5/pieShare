@@ -17,6 +17,7 @@ import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -24,19 +25,14 @@ import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEven
  */
 public class LocalFileCreatedTask extends LocalFileEventTask {
 
-	private IFileService fileService;
-
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
-
 	@Override
 	public void run() {
 		try {
 			PieFile pieFile = this.prepareWork();
 			
 			//todo: why do we scip directories?!
-			if ((new File(this.filePath)).isDirectory()) {
+			if (pieFile == null || (new File(this.filePath)).isDirectory()) {
+				PieLogger.info(this.getClass(), "Sciping new file: {}", filePath);
 				return;
 			}
 			

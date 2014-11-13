@@ -24,7 +24,7 @@ public interface IFileService {
 
 	void deleteRecursive(PieFile file);
 	
-	void waitUntilCopyFinished(String filePath);
+	void waitUntilCopyFinished(File file);
 	
 	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
 	
@@ -33,4 +33,7 @@ public interface IFileService {
 	void setCorrectModificationDate(PieFile file);
 	
 	Path relitivizeFilePath(File file);
+	
+	void addPieFileToModifiedList(PieFile pieFile);
+	boolean removePieFileFromModifiedList(PieFile file);
 }
