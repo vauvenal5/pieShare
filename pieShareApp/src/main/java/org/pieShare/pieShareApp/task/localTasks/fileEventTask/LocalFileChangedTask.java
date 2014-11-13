@@ -8,31 +8,19 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
 public class LocalFileChangedTask extends LocalFileEventTask {
 
-	private IFileListenerService fileListener;
-
-	public void setFileListener(IFileListenerService fileListener) {
-		this.fileListener = fileListener;
-	}
-
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
-
 	@Override
 	public void run() {
 		try {
 			PieFile file = this.prepareWork();
 			
-			if(this.fileListener.removePieFileFromModifiedList(file)) {
+			if(this.fileService.removePieFileFromModifiedList(file)) {
 				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", file.getRelativeFilePath());
 				return;
 			}

@@ -11,19 +11,24 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
  *
@@ -33,19 +38,43 @@ public abstract class FileServiceBase implements IFileService {
 	
 	protected IBeanService beanService;
 	protected IPieShareConfiguration configuration;
-	private IFileListenerService fileListener;
+	private IClusterManagementService clusterManagementService;
+	
+	
+	private List<PieFile> modifiedFiles;
 
-	public void setFileListener(IFileListenerService fileListener) {
-		this.fileListener = fileListener;
+	//todo-megaShit: there are two file services
+		//the problem is that in this case the registration on the event happens twice
+		//and also the whole modified file stuff is at two places
+	
+	
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
 	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 	
+	public void initFileService() {
+		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
+		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
+	}
+	
 	@Override
-	public void waitUntilCopyFinished(String filePath) {
-		File file = new File(filePath);
+	public void addPieFileToModifiedList(PieFile pieFile) {
+		this.modifiedFiles.add(pieFile);
+	}
+	
+	@Override
+	public boolean removePieFileFromModifiedList(PieFile file) {
+		return this.modifiedFiles.remove(file);
+	}
+	
+	
+	
+	@Override
+	public void waitUntilCopyFinished(File file) {
 		FileInputStream st;
 		boolean isCopying = true;
 
@@ -90,9 +119,9 @@ public abstract class FileServiceBase implements IFileService {
 		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
 		File targetFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
 
-		this.fileListener.addPieFileToModifiedList(file);
+		this.addPieFileToModifiedList(file);
 		if (!targetFile.setLastModified(file.getLastModified())) {
-			this.fileListener.removePieFileFromModifiedList(file);
+			this.removePieFileFromModifiedList(file);
 			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getRelativeFilePath());
 		}
 	}

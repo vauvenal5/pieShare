@@ -12,19 +12,13 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileWatcherService;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
@@ -32,46 +26,36 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 /**
  * @author richy
  */
-public class LocalFileService extends FileServiceBase implements IClusterAddedListener{
+public class LocalFileService extends FileServiceBase, IClusterAddedListener {
 
 	private IHashService hashService;
-	private IClusterManagementService clusterManagementService;
 	private IExecutorService executorService;
-	private IFileWatcherService fileWatcher;
 
 	public void setHashService(IHashService hashService) {
 		this.hashService = hashService;
 	}
 	
-	public void setFileWatcher(IFileWatcherService fileWatcher) {
-		this.fileWatcher = fileWatcher;
-	}
-
 	public void setExecutorService(IExecutorService executorService) {
 		this.executorService = executorService;
 	}
 	
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
-	
-	public void initFileService() {
-		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
-	}
-	
 	private void addWatchDirectory(File file) {
+		PieLogger.info(this.getClass(), "Adding file watcher!!!");
+		IFileWatcherService fileWatcher = this.beanService.getBean(PieShareAppBeanNames.getFileWatcherService());
 		fileWatcher.setWatchDir(file);
 		executorService.execute(fileWatcher);
 	}
 	
 	@Override
 	public void handleObject(ClusterAddedEvent event) {
+		//todo-arch: is the fileService truly responsible for this?
+		// --> if not who is responsible for starting the fileWatcher?
 		try {
+			PieLogger.info(this.getClass(), "The FileService has following id {}", this.toString());
 			//when a cluster is added this actually means that this client has entered a cloud
-			//todo: request all files list!!!!
 			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-			configuration = user.getPieShareConfiguration();
-			addWatchDirectory(configuration.getWorkingDir());
+			this.configuration = user.getPieShareConfiguration();
+			addWatchDirectory(this.configuration.getWorkingDir());
 			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
 		}
 		catch (ClusterManagmentServiceException ex) {

@@ -5,9 +5,8 @@
  */
 package org.pieShare.pieShareApp.service.configurationService;
 
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import java.io.File;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;

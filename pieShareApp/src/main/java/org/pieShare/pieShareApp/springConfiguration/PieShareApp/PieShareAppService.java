@@ -14,14 +14,16 @@ import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
-import org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener;
-import org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheDefaultFileListener;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcher;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
+import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
 import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
+import org.pieShare.pieShareApp.service.historyService.HistoryService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -110,54 +112,53 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	@Scope(value = "prototype")
-	public LocalFileCreatedTask fileCreatedTask() {
-		LocalFileCreatedTask task = new LocalFileCreatedTask();
-		task.setFileService(this.localFileService());
-		return task;
-	}
-
-	@Bean
-	@Lazy
-	public FileListener fileListener() {
+	@Scope(value="prototype")
+	public IFileListenerService fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
-		listener.init();
 		return listener;
 	}
 
 	@Bean
 	@Lazy
-	public IFileListenerService fileListenerService() {
-		return (ApacheDefaultFileListener) this.fileListener();
-	}
-
-	@Bean
-	@Lazy
+	@Scope(value="prototype")
 	public ApacheFileWatcher fileWatcher() {
 		ApacheFileWatcher watcher = new ApacheFileWatcher();
-		watcher.setFileListener(this.fileListener());
+		watcher.setFileListener(this.fileListenerService());
+		watcher.registerToShutdownService(this.shutdownService());
 		return watcher;
+	}
+	
+	private void fileServiceBase(FileServiceBase base) {
+		base.setBeanService(this.utilities.beanService());
+		base.setClusterManagementService(this.plate.clusterManagementService());
+		base.setExecutorService(this.utilities.pieExecutorService());
+		base.initFileService();
 	}
 
 	@Bean
 	public LocalFileService localFileService() {
 		LocalFileService service = new LocalFileService();
-		service.setBeanService(this.utilities.beanService());
-		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setExecutorService(this.utilities.pieExecutorService());
-		service.setFileWatcher(this.fileWatcher());
+		this.fileServiceBase(service);
 		service.setHashService(this.utilities.md5Service());
-		service.initFileService();
 		return service;
 	}
 	
+	@Bean
 	public HistoryFileService historyFileService() {
 		HistoryFileService service = new HistoryFileService();
-		service.setBeanService(this.utilities.beanService());
+		this.fileServiceBase(service);
 		service.setDatabaseService(this.databaseService());
-		service.setFileListener(this.fileListenerService());
+		return service;
+	}
+	
+	@Bean
+	public HistoryService historyService() {
+		HistoryService service = new HistoryService();
+		service.setComparerService(this.comparerService());
+		service.setDatabaseService(this.databaseService());
+		service.setFileService(this.localFileService());
 		return service;
 	}
 
@@ -170,9 +171,9 @@ public class PieShareAppService {
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setFileUtilsService(this.localFileService());
 		service.setNetworkService(this.networkService());
-		service.setShutdownService(this.shutdownService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
-		service.setFileListener(this.fileListenerService());
+		
+		service.registerToShutdownService(this.shutdownService());
 		service.bitTorrentServicePost();
 		return service;
 	}
@@ -200,6 +201,7 @@ public class PieShareAppService {
 	public PieDatabaseManagerFactory pieDatabaseManagerFactory() {
 		PieDatabaseManagerFactory fac = new PieDatabaseManagerFactory();
 		fac.setApplicationConfigurationService(applicationConfigurationService());
+		fac.registerToShutdownService(this.shutdownService());
 		return fac;
 	}
 
@@ -229,11 +231,5 @@ public class PieShareAppService {
 		return service;
 	}
 
-	@Bean
-	@Lazy
-	@Scope(value = "prototype")
-	public PieShareConfiguration pieShareConfiguration() {
-		PieShareConfiguration config = new PieShareConfiguration();
-		return config;
-	}
+	
 }
