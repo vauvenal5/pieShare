@@ -26,11 +26,16 @@ public interface IFileService {
 	
 	void waitUntilCopyFinished(File file);
 	
+	//todo-FileServie: which is the best way to handle not existing files:
+			//return null
+			//throw Exception
+			//pieFile.exists()
 	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
 	
-    PieFile getPieFile(String filePath) throws FileNotFoundException, IOException;
+    PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
 	
 	void setCorrectModificationDate(PieFile file);
 	
 	Path relitivizeFilePath(File file);
+	Path getAbsolutePath(PieFile file);
 }

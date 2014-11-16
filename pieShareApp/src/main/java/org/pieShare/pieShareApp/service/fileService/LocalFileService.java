@@ -14,13 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
-import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
-import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
@@ -57,10 +50,6 @@ public class LocalFileService extends FileServiceBase {
 
 	@Override
 	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
-		/*if (!file.exists()) {
-		 throw new FileNotFoundException("File: " + file.getPath() + " does not exist");
-		 }*/
-
 		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
 		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
@@ -73,11 +62,5 @@ public class LocalFileService extends FileServiceBase {
 		}
 
 		return pieFile;
-	}
-
-	@Override
-	public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
-		File file = new File(filePath);
-		return this.getPieFile(file);
 	}
 }

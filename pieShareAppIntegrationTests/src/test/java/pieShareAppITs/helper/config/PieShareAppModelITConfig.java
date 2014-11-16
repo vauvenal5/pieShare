@@ -39,7 +39,7 @@ public class PieShareAppModelITConfig extends PieShareAppModel {
 	public PieUser mainPieUser() {
 		PieUser user = new PieUser();
 		PieShareConfiguration config = new PieShareConfiguration();
-		config.setPwdFile(new File("testMainKey"));
+		config.setPwdFile(new File(ITUtil.getMainKey()));
 		config.setTmpDir(new File(ITUtil.getMainTmpDir()));
 		config.setWorkingDir(new File(ITUtil.getMainWorkingDir()));
 		user.setPieShareConfiguration(config);
@@ -51,7 +51,7 @@ public class PieShareAppModelITConfig extends PieShareAppModel {
 	public PieUser botPieUser() {
 		PieUser user = new PieUser();
 		PieShareConfiguration config = new PieShareConfiguration();
-		config.setPwdFile(new File("testBotKey"));
+		config.setPwdFile(new File(ITUtil.getBotKey()));
 		config.setTmpDir(new File(ITUtil.getBotTmpDir()));
 		config.setWorkingDir(new File(ITUtil.getBotWorkingDir()));
 		user.setPieShareConfiguration(config);

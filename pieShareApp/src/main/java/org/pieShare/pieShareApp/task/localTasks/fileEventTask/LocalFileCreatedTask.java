@@ -31,8 +31,8 @@ public class LocalFileCreatedTask extends LocalFileEventTask {
 			PieFile pieFile = this.prepareWork();
 			
 			//todo: why do we scip directories?!
-			if (pieFile == null || (new File(this.filePath)).isDirectory()) {
-				PieLogger.info(this.getClass(), "Sciping new file: {}", filePath);
+			if (pieFile == null || this.file.isDirectory()) {
+				PieLogger.info(this.getClass(), "Sciping new file: {}", this.file.getName());
 				return;
 			}
 			

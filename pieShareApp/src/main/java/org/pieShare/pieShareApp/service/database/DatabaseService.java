@@ -178,9 +178,8 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public PieFile findPieFile(PieFile file) {
-		File idFile = new File(file.getRelativeFilePath(), file.getFileName());
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, idFile.getPath());
+		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativeFilePath());
 		return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
 	}
 
@@ -199,7 +198,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public List<PieFile> findAllUnsyncedPieFiles() {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-		String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched IS TRUE", PieFileEntity.class.getSimpleName());
+		String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched=TRUE", PieFileEntity.class.getSimpleName());
 		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
 		
 		ArrayList<PieFile> files = new ArrayList<>();
@@ -218,7 +217,9 @@ public class DatabaseService implements IDatabaseService {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
 		String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFileEntity.class.getSimpleName());
 		TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
+		em.getTransaction().begin();
 		query.executeUpdate();
+		em.getTransaction().commit();
 	}
 
 	@Override

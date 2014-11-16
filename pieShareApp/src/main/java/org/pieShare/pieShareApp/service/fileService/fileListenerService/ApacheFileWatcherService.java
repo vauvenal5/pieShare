@@ -52,6 +52,7 @@ public class ApacheFileWatcherService implements IFileWatcherService, IClusterAd
 	}
 	
 	public void init() {
+		this.fileMonitors = new ArrayList();
 		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
 		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
 	}

@@ -26,12 +26,13 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public abstract class LocalFileEventTask implements IPieTask {
 
-	protected String filePath;
 	protected IBeanService beanService;
 	protected IClusterManagementService clusterManagementService;
 	protected IFileService fileService;
 	protected IHistoryService historyService;
 	private IFileFilterService fileFilterService;
+	
+	protected File file;
 
 	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
@@ -54,20 +55,18 @@ public abstract class LocalFileEventTask implements IPieTask {
 		this.fileService = fileService;
 	}
 
-	public void setFilePath(String filePath) {
-		this.filePath = filePath;
+	public void setFile(File file) {
+		this.file = file;
 	}
 	
-	protected PieFile prepareWork() throws IOException {
-		File localFile = new File(this.filePath);
-		
-		if(!this.fileFilterService.checkFile(localFile)) {
+	protected PieFile prepareWork() throws IOException {		
+		if(!this.fileFilterService.checkFile(this.file)) {
 			return null;
 		}
 		
-		this.fileService.waitUntilCopyFinished(localFile);
+		this.fileService.waitUntilCopyFinished(this.file);
 		
-		return this.fileService.getPieFile(localFile);
+		return this.fileService.getPieFile(this.file);
 	}
 
 	protected void doWork(FileMessageBase msg, PieFile file) {

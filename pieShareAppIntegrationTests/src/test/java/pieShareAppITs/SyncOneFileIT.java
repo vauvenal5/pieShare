@@ -42,6 +42,7 @@ public class SyncOneFileIT {
 
 	@BeforeMethod
 	public void setUpMethod() throws Exception {
+		ITUtil.performTearDownDelete();
 		context = ITUtil.getContext();
 	}
 
