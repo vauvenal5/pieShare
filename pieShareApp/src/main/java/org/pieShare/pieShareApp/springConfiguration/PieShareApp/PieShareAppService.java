@@ -105,7 +105,7 @@ public class PieShareAppService {
 	@Lazy
 	public ComparerService comparerService() {
 		ComparerService service = new ComparerService();
-		service.setFileService(this.localFileService());
+		service.setFileService(this.historyFileService());
 		service.setBeanService(utilities.beanService());
 		return service;
 	}
@@ -113,7 +113,7 @@ public class PieShareAppService {
 	@Bean
 	@Lazy
 	@Scope(value="prototype")
-	public IFileListenerService fileListenerService() {
+	public ApacheDefaultFileListener fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
 		listener.setExecutorService(this.utilities.pieExecutorService());
@@ -134,6 +134,7 @@ public class PieShareAppService {
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
+		base.init();
 	}
 
 	@Bean

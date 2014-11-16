@@ -36,20 +36,12 @@ public class ComparerService implements IComparerService {
 
 	@Override
 	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
-
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-
-		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), pieFile.getRelativeFilePath());
-
-		if (!localFile.exists()) {
+		PieFile localPieFile = this.fileService.getPieFile(pieFile.getRelativeFilePath());
+		
+		if(localPieFile == null) {
 			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", pieFile.getRelativeFilePath());
-
-			//todo: a history check has to be done here to check for deleted files
 			return 1;
 		}
-		
-		//todo-history: can be read from history instead
-		PieFile localPieFile = this.fileService.getPieFile(localFile);
 
 		return this.comparePieFiles(pieFile, localPieFile);
 	}

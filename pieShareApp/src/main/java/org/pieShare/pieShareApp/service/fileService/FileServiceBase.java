@@ -48,6 +48,11 @@ public abstract class FileServiceBase implements IFileService {
 		this.fileWatcherService = fileWatcherService;
 	}
 	
+	public void init() {
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		this.configuration = user.getPieShareConfiguration();
+	}
+	
 	@Override
 	public void waitUntilCopyFinished(File file) {
 		FileInputStream st;
@@ -75,7 +80,7 @@ public abstract class FileServiceBase implements IFileService {
 	
 	@Override
 	public void deleteRecursive(PieFile file) {
-		File localFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
+		File localFile = this.getAbsolutePath(file).toFile();
 		try {
 			if (localFile.isDirectory()) {
 				FileUtils.deleteDirectory(localFile);
@@ -92,7 +97,7 @@ public abstract class FileServiceBase implements IFileService {
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
 		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
-		File targetFile = new File(this.configuration.getWorkingDir(), file.getRelativeFilePath());
+		File targetFile = this.getAbsolutePath(file).toFile();
 
 		this.fileWatcherService.addPieFileToModifiedList(file);
 		if (!targetFile.setLastModified(file.getLastModified())) {
@@ -103,8 +108,21 @@ public abstract class FileServiceBase implements IFileService {
 	
 	@Override
 	public Path relitivizeFilePath(File file) {
-		Path pathBase = configuration.getWorkingDir().getAbsoluteFile().toPath();//new File(pieAppConfig.getWorkingDirectory().getAbsolutePath()).toPath();
-		Path pathAbsolute = file.getAbsoluteFile().toPath(); // Paths.get("/var/data/stuff/xyz.dat");
+		Path pathBase = configuration.getWorkingDir().getAbsoluteFile().toPath();
+		Path pathAbsolute = file.getAbsoluteFile().toPath();
 		return pathBase.relativize(pathAbsolute);
+	}
+	
+	@Override
+	public Path getAbsolutePath(PieFile file) {
+		File localFile = new File(configuration.getWorkingDir(), file.getRelativeFilePath());
+		return localFile.toPath();
+	}
+	
+	@Override
+	public PieFile getPieFile(String relativeFilePath) throws FileNotFoundException, IOException {
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
+		return this.getPieFile(localFile);
 	}
 }

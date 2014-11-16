@@ -163,6 +163,7 @@ public class PieShareAppTasks {
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
 		service.setFileService(services.localFileService());
+		service.setHistoryService(services.historyService());
 		return service;
 	}
 

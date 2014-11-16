@@ -38,9 +38,9 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		entity.setLastModified(file.getLastModified());
 		entity.setFileName(file.getFileName());
 		entity.setRelativeFilePath(file.getRelativeFilePath());
+		entity.setDeleted(file.isDeleted());
 		
-		File idFile = new File(file.getRelativeFilePath(), file.getFileName());
-		entity.setAbsoluteWorkingPath(idFile.getPath());
+		entity.setAbsoluteWorkingPath(file.getRelativeFilePath());
 		return entity;
 	}
 
@@ -55,6 +55,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		file.setLastModified(entity.getLastModified());
 		file.setMd5(entity.getMd5());
 		file.setRelativeFilePath(entity.getRelativeFilePath());
+		file.setDeleted(entity.isDeleted());
 		return file;
 	}
 

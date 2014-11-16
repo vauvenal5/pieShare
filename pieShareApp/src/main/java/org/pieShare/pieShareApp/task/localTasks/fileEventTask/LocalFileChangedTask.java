@@ -34,9 +34,6 @@ public class LocalFileChangedTask extends LocalFileEventTask {
 			
 			this.historyService.syncPieFileWithDb(file);
 			
-			//todo: for the time being we will just delete without checks
-			//later somekinde of persistency and check has to be added
-			//see base class of changedMessage
 			FileChangedMessage msg = beanService.getBean(PieShareAppBeanNames.getFileChangedMessage());
 			
 			super.doWork(msg, file);

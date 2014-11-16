@@ -63,7 +63,7 @@ public class HistoryService implements IHistoryService {
 			for(PieFile file: files) {
 				PieFile historyFile = this.databaseService.findPieFile(file);
 				
-				this.databaseService.persistPieFile(file);
+				this.databaseService.mergePieFile(file);
 				
 				//in this case there is a new file
 				if(historyFile == null) {

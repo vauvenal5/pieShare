@@ -53,11 +53,28 @@ public class ITUtil {
 	public static String getBotTmpDir() {
 		return "pieTempTestBot";
 	}
+	
+	public static String getMainKey() {
+		return "testMainKey";
+	}
+	
+	public static String getBotKey() {
+		return "testBotKey";
+	}
 
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		PieShareAppServiceConfig.main = main;
+	}
+	
+	public static void performTearDownDelete() throws Exception {
+		FileUtils.deleteDirectory(new File(getMainWorkingDir()));
+		FileUtils.deleteDirectory(new File(getMainTmpDir()));
+		FileUtils.deleteDirectory(new File(getBotWorkingDir()));
+		FileUtils.deleteDirectory(new File(getBotTmpDir()));
+		(new File(getMainKey())).delete();
+		(new File(getBotKey())).delete();
 	}
 
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
@@ -78,22 +95,6 @@ public class ITUtil {
 		//stop context
 		context.close();
 		context = null;
-		boolean done = false;
-
-		while (!done) {
-			try {
-				FileUtils.deleteDirectory(mainWorkingDir);
-				FileUtils.deleteDirectory(mainTmpDir);
-				FileUtils.deleteDirectory(botWorkingDir);
-				FileUtils.deleteDirectory(botTmpDir);
-				configMain.delete();
-				configBot.delete();
-				done = true;
-			}
-			catch (IOException ex) {
-				Thread.sleep(1000);
-			}
-		}
 	}
 
 	public static Process startProcess(Class mainClazz) throws IOException {
@@ -153,7 +154,8 @@ public class ITUtil {
 
 			@Override
 			public void error(Exception ex) {
-				Assert.fail(ex.getMessage());
+				ex.printStackTrace();
+				Assert.fail(ex.getLocalizedMessage());
 			}
 
 			@Override

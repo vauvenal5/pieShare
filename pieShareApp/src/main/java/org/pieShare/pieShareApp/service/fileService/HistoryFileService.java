@@ -38,10 +38,4 @@ public class HistoryFileService extends FileServiceBase {
 		PieFile foundFile = this.databaseService.findPieFile(pieFile);
 		return foundFile;
 	}
-
-	@Override
-	public PieFile getPieFile(String filePath) throws FileNotFoundException, IOException {
-		return this.getPieFile(new File(filePath));
-	}
-	
 }
