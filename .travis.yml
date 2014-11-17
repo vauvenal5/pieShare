@@ -12,6 +12,6 @@ before_install:
   - mvn clean
 
 after_success:
-  - mvn clean cobertura:cobertura 
-  - mvn replacer:replace 
-  - mvn coveralls:cobertura
+  - mvn clean test jacoco:report
+  #- mvn replacer:replace 
+  - mvn coveralls:report
