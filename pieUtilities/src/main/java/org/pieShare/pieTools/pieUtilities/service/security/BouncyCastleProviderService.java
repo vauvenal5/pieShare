@@ -37,4 +37,9 @@ public class BouncyCastleProviderService implements IProviderService {
 		return "PBEWithSHAAndTwofish-CBC";
 	}
 
+	@Override
+	public String getEnDeCryptAlgorithm() {
+		return "AES/CBC/PKCS5Padding";
+	}
+
 }

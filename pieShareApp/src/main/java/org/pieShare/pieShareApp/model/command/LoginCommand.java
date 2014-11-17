@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.model.command;
 
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
 
@@ -12,7 +13,7 @@ import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
  *
  * @author Svetoslav
  */
-public class LoginCommand implements ICommand {
+public class LoginCommand extends BaseCommand<ILoginFinished> implements ICommand<ILoginFinished> {
 
 	private String userName;
 	private PlainTextPassword password;

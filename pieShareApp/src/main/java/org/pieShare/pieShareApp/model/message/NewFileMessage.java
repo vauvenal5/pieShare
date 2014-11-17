@@ -5,22 +5,11 @@
  */
 package org.pieShare.pieShareApp.model.message;
 
-import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
+import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class NewFileMessage extends HeaderMessage {
-
-	private PieFile pieFile;
-
-	public PieFile getPieFile() {
-		return pieFile;
-	}
-
-	public void setPieFile(PieFile pieFile) {
-		this.pieFile = pieFile;
-	}
+public class NewFileMessage extends FileMessageBase {
 }

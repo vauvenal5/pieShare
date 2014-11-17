@@ -20,22 +20,27 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TitledPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareAppFx.conrolExtensions.PreferencesListViewItems;
-import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
+import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * FXML Controller class
@@ -44,7 +49,7 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  */
 public class MainSceneController implements Initializable {
 
-	private ClusterSettingsController clusterSettingsController;
+	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
 
 	@FXML
@@ -57,17 +62,24 @@ public class MainSceneController implements Initializable {
 	private SplitPane mainSplitPane;
 
 	@FXML
-	private ListView<IPreferencesEntry> settingsListView;
-	private ObservableList<IPreferencesEntry> settingsListViewItems;
+	private Accordion mainAccordion;
 
-	private AnchorPane centerPane;
-	
+	@FXML
+	private TitledPane titelPaneClouds;
+
+	@FXML
+	private Button addButton;
+
+	@FXML
+	private ListView<ITwoColumnListView> settingsListView;
+	private ObservableList<ITwoColumnListView> settingsListViewItems;
+
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setClusterSettingsController(ClusterSettingsController settingsController) {
-		this.clusterSettingsController = settingsController;
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
 	}
 
 	/**
@@ -75,7 +87,14 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		centerPane = new AnchorPane();
+		mainAccordion.setExpandedPane(titelPaneClouds);
+
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -87,7 +106,8 @@ public class MainSceneController implements Initializable {
 		InputStream cloudsListViewStream = getClass().getResourceAsStream("/fxml/CloudsListView.fxml");
 		try {
 			this.cloudsStackPane.getChildren().add(loader.load(cloudsListViewStream));
-		} catch (IOException ex) {
+		}
+		catch (IOException ex) {
 			//ToDO: Handle
 			Logger.getLogger(MainSceneController.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -98,59 +118,110 @@ public class MainSceneController implements Initializable {
 			@Override
 			public void handle(MouseEvent arg0) {
 				if (settingsListView.getSelectionModel().getSelectedItems() != null) {
-					setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+					try {
+						setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Error while setting controller", ex);
+					}
 				}
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<IPreferencesEntry>, ListCell<IPreferencesEntry>>() {
+		settingsListView.setCellFactory(new Callback<ListView<ITwoColumnListView>, ListCell<ITwoColumnListView>>() {
 			@Override
-			public ListCell<IPreferencesEntry> call(final ListView<IPreferencesEntry> param) {
-				return new PreferencesListViewItems();
+			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
+				return new TwoColumnListView();
 			}
 		});
 
 		//Set entries for settings list view
 		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
+		settingsListViewItems.add(new ITwoColumnListView() {
+
+			@Override
+			public Node getSecondColumn() {
+				return new Label("Filter Settings");
+			}
+
+			@Override
+			public Node getFirstColumn() {
+				InputStream st = getClass().getResourceAsStream("/images/filter_16.png");
+				Image image = new Image(st);
+				Label label = new Label("", new ImageView(image));
+				return label;
+			}
+
+			@Override
+			public String getPanelPath() {
+				return "/fxml/settingsPanels/FileFilterSettingPanel.fxml";
+			}
+		});
 		settingsListView.setItems(settingsListViewItems);
+	}
+
+	public void cloudAvailable(boolean isAvailabe) {
+		addButton.setDisable(isAvailabe);
 	}
 
 	@FXML
 	private void handleAddCloudAction(ActionEvent event) {
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/Login.fxml");
-			mainBorderPane.setCenter(loader.load(url));
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
+			setLoginControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login control", ex);
 		}
 	}
 
-	public void setClusterSettingControl(IClusterService cluster) {
-		clusterSettingsController.setClusterFile(cluster);
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+	public void loginComplete()
+	{
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
-			mainBorderPane.setCenter(loader.load(url));
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
+			setClusterSettingControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login cluster settings control", ex);
+		}
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+	}
+	
+	public InputStream getLoginControl() {
+		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
+		return st;
+	}
+
+	public InputStream getClusterSettingControl() {
+		return getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
+	}
+
+	public void setToMainCenter(Node node) {
+		mainBorderPane.setCenter(node);
+	}
+
+	public void setLoginControl() throws IOException {
+		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+		setToMainCenter(loader.load(getLoginControl()));
+	}
+
+	public void setClusterSettingControl() throws IOException {
+		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		if (user.isIsLoggedIn()) {
+			setToMainCenter(loader.load(getClusterSettingControl()));
+		}
+		else {
+			setToMainCenter(loader.load(getLoginControl()));
 		}
 	}
 
-	public void setPreferencesControl(IPreferencesEntry cluster) {
+	public void setPreferencesControl(ITwoColumnListView entry) throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/BasePreferencesPanel.fxml");
-			centerPane.getChildren().clear();
-			centerPane.getChildren().add(loader.load(url));
-			boolean cc = centerPane.isResizable();
-			mainBorderPane.setCenter(centerPane);
-			mainBorderPane.setAlignment(centerPane, Pos.CENTER);
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
-		}
+		InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
+		setToMainCenter((loader.load(url)));
 	}
 }
