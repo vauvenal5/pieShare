@@ -14,4 +14,4 @@ before_install:
 after_success:
   - mvn clean test jacoco:report
   #- mvn replacer:replace 
-  - mvn coveralls:report
+  - mvn coveralls:jacoco
