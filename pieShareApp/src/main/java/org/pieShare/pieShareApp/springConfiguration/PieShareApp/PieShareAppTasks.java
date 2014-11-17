@@ -87,6 +87,7 @@ public class PieShareAppTasks {
         public FileChangedTask fileChangedTask() {
             FileChangedTask task = new FileChangedTask();
             task.setComparerService(this.services.comparerService());
+            task.setRequestService(this.services.requestService());
             return task;
         }
 
