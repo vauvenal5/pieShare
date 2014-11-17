@@ -10,7 +10,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -55,11 +57,11 @@ public class SyncChangesIT {
 		context = ITUtil.getContext();
 		
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
-		executorFactory.removeTaskRegistration(FileChangedMessage.class);
-		executorFactory.registerTask(FileChangedMessage.class, TestTask.class);
-		
+		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
+		executorFactory.registerTask(FileTransferCompleteMessage.class, TestTask.class);
+
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTask(FileChangedMessage.class, FileChangedTask.class);
+		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 	}
 
 	@AfterMethod
@@ -68,7 +70,7 @@ public class SyncChangesIT {
 		ITUtil.performTearDown(context);
 	}
 	
-	@Test
+	@Test(timeOut = 120000)
 	public void testOneFileChanged() throws Exception {
 		ITUtil.waitForProcessToStartup(this.process);
 		
@@ -78,11 +80,11 @@ public class SyncChangesIT {
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
 		
-		while(counter.getCount(FileChangedTask.class) <= 0) {
+		while(counter.getCount(FileTransferCompleteTask.class) <= 0) {
 			Thread.sleep(1000);
 		}
 		
-		if(counter.getCount(FileChangedTask.class) == 1) {
+		if(counter.getCount(FileTransferCompleteTask.class) == 1) {
 			File botFile = new File(ITUtil.getBotWorkingDir(), "test");
 			
 			boolean filesAreEqual = FileUtils.contentEquals(this.file, botFile);

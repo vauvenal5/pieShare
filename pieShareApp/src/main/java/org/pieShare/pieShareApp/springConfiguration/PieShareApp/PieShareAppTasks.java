@@ -22,6 +22,7 @@ import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEven
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -80,6 +81,15 @@ public class PieShareAppTasks {
 		task.setRequestService(services.requestService());
 		return task;
 	}
+        
+        @Bean
+	@Scope(value = "prototype")
+        public FileChangedTask fileChangedTask() {
+            FileChangedTask task = new FileChangedTask();
+            task.setComparerService(this.services.comparerService());
+            task.setRequestService(this.services.requestService());
+            return task;
+        }
 
 	private void fileEventTask(LocalFileEventTask task) {
 		task.setBeanService(this.config.beanService());

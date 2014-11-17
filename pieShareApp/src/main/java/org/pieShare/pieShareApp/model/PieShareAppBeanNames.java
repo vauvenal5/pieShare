@@ -40,7 +40,7 @@ public class PieShareAppBeanNames {
 	}
 
 	public static String getFileChangedTaskName() {
-		return "fileChangedTask";
+		return "localFileChangedTask";
 	}
 
 	public static String getPieShareAppConfigurationName() {
