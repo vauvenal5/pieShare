@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieTools.pieUtilities.model;
 
+import javax.crypto.SecretKey;
+
 /**
  *
  * @author Svetoslav
@@ -12,12 +14,21 @@ package org.pieShare.pieTools.pieUtilities.model;
 public class EncryptedPassword {
 
 	private byte[] password;
-
+	private SecretKey secretKey;
+	
 	public void setPassword(byte[] pwd) {
 		this.password = pwd;
 	}
 
 	public byte[] getPassword() {
 		return this.password;
+	}
+
+	public SecretKey getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(SecretKey secretKey) {
+		this.secretKey = secretKey;
 	}
 }

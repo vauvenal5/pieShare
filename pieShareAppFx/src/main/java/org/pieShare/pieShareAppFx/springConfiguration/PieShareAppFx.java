@@ -5,16 +5,22 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import javafx.fxml.FXMLLoader;
 import org.pieShare.pieShareAppFx.ControllerFactory;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.controller.BasePreferencesController;
 import org.pieShare.pieShareAppFx.controller.CloudsListViewController;
 import org.pieShare.pieShareAppFx.controller.ClusterSettingsController;
+import org.pieShare.pieShareAppFx.controller.FileFilterSettingsController;
 import org.pieShare.pieShareAppFx.controller.LoginController;
 import org.pieShare.pieShareAppFx.controller.MainSceneController;
-import org.pieShare.pieShareAppFx.preferences.BasePreferencesEntry;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
+import org.pieShare.pieShareAppFx.animations.SpinAnimation;
+import org.pieShare.pieShareAppFx.controller.WorkingMessageController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,10 +42,12 @@ public class PieShareAppFx {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieShareAppService appService;
+	@Autowired
+	private PieShareAppTasks tasks;
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public FXMLLoader fxmlLoader() {
 		FXMLLoader loader = new FXMLLoader();
 		loader.setControllerFactory(controllerFactory());
@@ -60,7 +68,7 @@ public class PieShareAppFx {
 	public MainSceneController mainSceneController() {
 		MainSceneController controller = new MainSceneController();
 		controller.setBeanService(this.utilities.beanService());
-		controller.setClusterSettingsController(clusterSettingsController());
+		controller.setClusterManagementService(plate.clusterManagementService());
 		return controller;
 	}
 
@@ -68,6 +76,10 @@ public class PieShareAppFx {
 	@Lazy
 	public ClusterSettingsController clusterSettingsController() {
 		ClusterSettingsController controller = new ClusterSettingsController();
+		controller.setBeanService(utilities.beanService());
+		controller.setExecuterService(utilities.pieExecutorService());
+		controller.setMainSceneController(mainSceneController());
+		controller.setLogoutTask(tasks.logoutTask());
 		return controller;
 	}
 
@@ -79,15 +91,17 @@ public class PieShareAppFx {
 		return controller;
 	}
 
-	
 	@Bean
 	@Lazy
 	public LoginController loginController() {
 		LoginController controller = new LoginController();
-		controller.setLoginCommandService(this.services.loginCommandService());
+		controller.setLoginTask(tasks.loginTask());
+		controller.setPieExecutorService(utilities.pieExecutorService());
+		controller.setBeanService(utilities.beanService());
+		controller.setMainSceneController(mainSceneController());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public CloudsListViewController cloudsListViewController() {
@@ -97,16 +111,18 @@ public class PieShareAppFx {
 		controller.setMainSceneController(mainSceneController());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public BasePreferencesController basePreferencesController() {
 		BasePreferencesController controller = new BasePreferencesController();
 		controller.setFXMLController(this.mainController());
-		controller.setPieShareAppConfiguration(appService.pieShareAppConfiguration());
+		controller.setBeanService(utilities.beanService());
+		controller.setDatabaseService(services.databaseService());
+		controller.setApplicationConfigurationService(services.applicationConfigurationService());
 		return controller;
 	}
-	
+
 	@Bean
 	@Lazy
 	public BasePreferencesEntry basePreferencesEntry() {
@@ -114,6 +130,34 @@ public class PieShareAppFx {
 		controller.setBasePreferencesController(basePreferencesController());
 		return controller;
 	}
-	
-	
+
+	@Bean
+	@Lazy
+	public FileFilterSettingsController fileFilterSettingsController() {
+		FileFilterSettingsController controller = new FileFilterSettingsController();
+		controller.setRegexService(utilities.regexService());
+		controller.setFileFilterService(services.fileFilterService());
+		controller.setBeanService(utilities.beanService());
+		controller.setFXMLController(mainController());
+		controller.setFileService(services.localFileService());
+		return controller;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public SpinAnimation spinAnimation() {
+		SpinAnimation animation = new SpinAnimation();
+		return animation;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public WorkingMessageController workingMessageController() {
+		WorkingMessageController controller = new WorkingMessageController();
+		controller.setBeanService(utilities.beanService());
+		return controller;
+	}
+
 }

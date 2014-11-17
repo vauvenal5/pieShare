@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.comparerService.exceptions;
 
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *

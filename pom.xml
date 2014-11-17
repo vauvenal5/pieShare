@@ -12,6 +12,7 @@
 		<module>piePlate</module>
 		<module>pieShareApp</module>
 		<module>pieShareAppFx</module>
+	 <module>pieShareAppIntegrationTests</module>
 	</modules>
 
 	<dependencies>	
@@ -25,6 +26,13 @@
 				  <groupId>commons-logging</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		
+		<!--todo:not needed if we don't log into lilith-->
+		<dependency>
+			<groupId>de.huxhorn.lilith</groupId>
+			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
+			<version>0.9.44</version>
 		</dependency>
 		
 		<dependency> 

@@ -13,13 +13,13 @@
          <items>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="234.0">
                <children>
-                  <Accordion prefHeight="398.0" prefWidth="201.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Accordion fx:id="mainAccordion" prefHeight="398.0" prefWidth="201.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <panes>
-                        <TitledPane animated="false" contentDisplay="RIGHT" text="Clouds">
+                        <TitledPane fx:id="titelPaneClouds" animated="false" contentDisplay="RIGHT" text="Clouds">
                            <graphic>
                               <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="55.0">
                                  <children>
-                                    <Button mnemonicParsing="false" onAction="#handleAddCloudAction" text="+" />
+                                    <Button mnemonicParsing="false" fx:id="addButton" onAction="#handleAddCloudAction" text="+" />
                                  </children>
                               </StackPane>
                            </graphic>

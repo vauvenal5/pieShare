@@ -9,7 +9,10 @@
 <AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.LoginController">
 	<children>
 		<TextField fx:id="userNameField" layoutX="14.0" layoutY="14.0" promptText="username" />
-		<PasswordField fx:id="passwordField" layoutX="14.0" layoutY="46.0" promptText="password" />
-		<Button defaultButton="true" layoutX="63.0" layoutY="80.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+		<PasswordField fx:id="passwordField" layoutX="14.0" layoutY="47.0" promptText="password" />
+		<Button defaultButton="true" layoutX="186.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+      <Label fx:id="labelWaitIcon" layoutX="186.0" layoutY="73.0" text="Label WAIT sync" />
+      <PasswordField fx:id="passwordFieldRepeat" layoutX="14.0" layoutY="80.0" promptText="repeat password" />
+      <Hyperlink fx:id="resetPasswordLink" layoutX="180.0" layoutY="48.0" onAction="#handlePasswordResetLink" text="Reset Password" />
 	</children>
 </AnchorPane>

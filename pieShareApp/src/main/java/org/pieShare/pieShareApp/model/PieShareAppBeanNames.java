@@ -5,6 +5,10 @@
  */
 package org.pieShare.pieShareApp.model;
 
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+
 /**
  *
  * @author Svetoslav
@@ -36,7 +40,7 @@ public class PieShareAppBeanNames {
 	}
 
 	public static String getFileChangedTaskName() {
-		return "fileChangedTask";
+		return "localFileChangedTask";
 	}
 
 	public static String getPieShareAppConfigurationName() {
@@ -53,5 +57,21 @@ public class PieShareAppBeanNames {
 	
 	public static String getGUILoader() {
 		return "fxmlLoader";
+	}
+	
+	public static String getLocalFileCreatedTask() {
+		return "localFileCreatedTask";
+	}
+	
+	public static String getFileDeletedMessage() {
+		return "fileDeletedMessage";
+	}
+	
+	public static String getLocalFileDeletedTask() {
+		return "localFileDeletedTask";
+	}
+	
+	public static Class<FileChangedMessage> getFileChangedMessage() {
+		return FileChangedMessage.class;
 	}
 }

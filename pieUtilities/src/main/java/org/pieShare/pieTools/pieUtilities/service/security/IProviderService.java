@@ -16,4 +16,6 @@ public interface IProviderService {
 	String getFileHashAlorithm();
 
 	String getPasswordEncryptionAlgorithm();
+
+	String getEnDeCryptAlgorithm();
 }

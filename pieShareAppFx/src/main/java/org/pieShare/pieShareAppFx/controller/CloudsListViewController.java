@@ -5,25 +5,29 @@
  */
 package org.pieShare.pieShareAppFx.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -48,8 +52,8 @@ public class CloudsListViewController implements Initializable {
 	private IClusterManagementService clusterManagementService;
 
 	@FXML
-	private ListView<IClusterService> cloudsListView;
-	private ObservableList<IClusterService> listItems;
+	private ListView<PieUser> cloudsListView;
+	private ObservableList<PieUser> listItems;
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
@@ -60,15 +64,15 @@ public class CloudsListViewController implements Initializable {
 		listItems = FXCollections.observableArrayList();
 		cloudsListView.setItems(listItems);
 
-		cloudsListView.setCellFactory(new Callback<ListView<IClusterService>, ListCell<IClusterService>>() {
+		cloudsListView.setCellFactory(new Callback<ListView<PieUser>, ListCell<PieUser>>() {
 			@Override
-			public ListCell<IClusterService> call(ListView<IClusterService> p) {
-				ListCell<IClusterService> cell = new ListCell<IClusterService>() {
+			public ListCell<PieUser> call(ListView<PieUser> p) {
+				ListCell<PieUser> cell = new ListCell<PieUser>() {
 					@Override
-					protected void updateItem(IClusterService t, boolean bln) {
+					protected void updateItem(PieUser t, boolean bln) {
 						super.updateItem(t, bln);
 						if (t != null) {
-							setText(t.getName());
+							setText(t.getCloudName());
 						}
 					}
 				};
@@ -76,37 +80,51 @@ public class CloudsListViewController implements Initializable {
 			}
 		});
 
-		cloudsListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<IClusterService>() {
+		cloudsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public void changed(ObservableValue<? extends IClusterService> observable, IClusterService oldValue, IClusterService newValue) {
-				if (newValue != null) {
-					mainSceneController.setClusterSettingControl(newValue);
+			public void handle(MouseEvent arg0) {
+				if (cloudsListView.getSelectionModel().getSelectedItems() != null) {
+					try {
+						mainSceneController.setClusterSettingControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
+					}
 				}
 			}
 		});
 
 		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
-
 			@Override
 			public void handleObject(ClusterAddedEvent event) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
 
 		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
-
 			@Override
 			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
-				refreshCloudList();
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						refreshCloudList();
+					}
+				});
 			}
 		});
-
+		refreshCloudList();
 	}
 
 	private void refreshCloudList() {
 		listItems.clear();
-		clusterManagementService.getClusters().entrySet().stream().forEach((cluster) -> {
-			listItems.add(cluster.getValue());
-		});
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		if (user.getCloudName() != null) {
+			listItems.add(user);
+		}
 	}
 }
