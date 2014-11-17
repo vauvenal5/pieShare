@@ -11,6 +11,7 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.message.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
@@ -22,6 +23,7 @@ import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -90,6 +92,7 @@ public class PieShareService {
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
 		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
+                this.executorFactory.registerTask(FileChangedMessage.class, FileChangedTask.class);
 
 		this.executorFactory.registerTask(LoginCommand.class, LoginTask.class);
 		this.executorFactory.registerTask(LogoutCommand.class, LogoutTask.class);
