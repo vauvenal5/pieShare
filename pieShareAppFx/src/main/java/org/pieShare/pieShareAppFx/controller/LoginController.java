@@ -54,7 +54,10 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private Hyperlink resetPasswordLink;
-
+	
+	@FXML
+	private AnchorPane additionalOptionsPane;
+	
 	private SpinAnimation animation;
 	private MainSceneController mainSceneController;
 	private PieExecutorService executorService;
@@ -221,6 +224,7 @@ public class LoginController implements Initializable {
 
 		if (user.hasPasswordFile()) {
 			passwordFieldRepeat.setVisible(false);
+			//a
 		}
 	}
 }

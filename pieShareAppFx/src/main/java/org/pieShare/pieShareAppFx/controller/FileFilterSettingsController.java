@@ -6,6 +6,7 @@
 package org.pieShare.pieShareAppFx.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
@@ -17,6 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -39,8 +41,9 @@ import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
 import org.pieShare.pieShareAppFx.FXMLController;
-import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
-import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
+import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListViewEntry;
+import org.pieShare.pieShareAppFx.controller.api.IController;
+import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
@@ -48,7 +51,7 @@ import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
  *
  * @author Richard
  */
-public class FileFilterSettingsController implements Initializable {
+public class FileFilterSettingsController implements IController, ITwoColumnListViewItem {
 
 	private FXMLController fXMLController;
 	private boolean isCorrectRegex = false;
@@ -59,7 +62,7 @@ public class FileFilterSettingsController implements Initializable {
 	private IPieShareConfiguration configuration;
 
 	@FXML
-	private ListView<ITwoColumnListView> listViewFilters;
+	private ListView<ITwoColumnListViewItem> listViewFilters;
 
 	@FXML
 	private TextField patternTextField;
@@ -76,7 +79,7 @@ public class FileFilterSettingsController implements Initializable {
 	@FXML
 	private Button buttonDelete;
 
-	private ObservableList<ITwoColumnListView> listItems;
+	private ObservableList<ITwoColumnListViewItem> listItems;
 
 	@PostConstruct
 	public void init() {
@@ -131,10 +134,10 @@ public class FileFilterSettingsController implements Initializable {
 		listItems = FXCollections.observableArrayList();
 		listViewFilters.setItems(listItems);
 
-		listViewFilters.setCellFactory(new Callback<ListView<ITwoColumnListView>, ListCell<ITwoColumnListView>>() {
+		listViewFilters.setCellFactory(new Callback<ListView<ITwoColumnListViewItem>, ListCell<ITwoColumnListViewItem>>() {
 			@Override
-			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
-				return new TwoColumnListView();
+			public ListCell<ITwoColumnListViewItem> call(final ListView<ITwoColumnListViewItem> param) {
+				return new TwoColumnListViewEntry();
 			}
 		});
 
@@ -233,7 +236,7 @@ public class FileFilterSettingsController implements Initializable {
 	public void refreshList() {
 		listItems.clear();
 		for (IFilter filter : fileFilterService.getAllFilters()) {
-			listItems.add(new ITwoColumnListView() {
+			listItems.add(new ITwoColumnListViewItem() {
 
 				@Override
 				public Object getObject() {
@@ -253,11 +256,35 @@ public class FileFilterSettingsController implements Initializable {
 				}
 
 				@Override
-				public String getPanelPath() {
+				public IController getController() {
 					return null;
 				}
 			});
 		}
+	}
+
+	@Override
+	public Node getSecondColumn() {
+		return new Label("Filter Settings");
+	}
+
+	@Override
+	public Node getFirstColumn() {
+		InputStream st = getClass().getResourceAsStream("/images/filter_16.png");
+		Image image = new Image(st);
+		Label label = new Label("", new ImageView(image));
+		return label;
+	}
+
+	@Override
+	public IController getController() {
+		return this;
+	}
+
+	@Override
+	public Node getControl() throws IOException {
+		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+		return loader.load(getClass().getResourceAsStream("/fxml/settingsPanels/FileFilterSettingPanel.fxml"));
 	}
 
 }

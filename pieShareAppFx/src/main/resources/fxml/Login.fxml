@@ -14,5 +14,6 @@
       <Label fx:id="labelWaitIcon" layoutX="186.0" layoutY="73.0" text="Label WAIT sync" />
       <PasswordField fx:id="passwordFieldRepeat" layoutX="14.0" layoutY="80.0" promptText="repeat password" />
       <Hyperlink fx:id="resetPasswordLink" layoutX="180.0" layoutY="48.0" onAction="#handlePasswordResetLink" text="Reset Password" />
+      <AnchorPane fx:id="additionalOptionsPane" layoutX="14.0" layoutY="118.0" />
 	</children>
 </AnchorPane>

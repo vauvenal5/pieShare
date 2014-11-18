@@ -9,12 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,21 +21,21 @@ import javafx.scene.Node;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.util.Callback;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListView;
-import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
+import org.pieShare.pieShareAppFx.controller.api.IController;
+import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -51,12 +48,14 @@ public class MainSceneController implements Initializable {
 
 	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
+	private TwoColumnListViewController preferencesListViewController;
+	private TwoColumnListViewController cloudsListViewController;
 
 	@FXML
 	private BorderPane mainBorderPane;
 
 	@FXML
-	private StackPane cloudsStackPane;
+	private AnchorPane cloudsPane;
 
 	@FXML
 	private SplitPane mainSplitPane;
@@ -71,8 +70,15 @@ public class MainSceneController implements Initializable {
 	private Button addButton;
 
 	@FXML
-	private ListView<ITwoColumnListView> settingsListView;
-	private ObservableList<ITwoColumnListView> settingsListViewItems;
+	private AnchorPane preferencesPane;
+
+	public void setPreferencesListViewController(TwoColumnListViewController preferencesListViewController) {
+		this.preferencesListViewController = preferencesListViewController;
+	}
+
+	public void setCloudsListViewController(TwoColumnListViewController cloudsListViewController) {
+		this.cloudsListViewController = cloudsListViewController;
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -87,9 +93,38 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		mainAccordion.setExpandedPane(titelPaneClouds);
 
-		PieUser user = beanService.getBean(PieUser.class);
+		try {
+			preferencesPane.getChildren().add(preferencesListViewController.getControl());
+			cloudsPane.getChildren().add(cloudsListViewController.getControl());
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Error setting PreferencesListView to Main Scene", ex);
+			return;
+		}
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		if (user.getCloudName() != null) {
+			cloudsListViewController.addItem(new ITwoColumnListViewItem() {
+
+				@Override
+				public Node getSecondColumn() {
+					return new Label("AAAAAAAAAAAAAAAAAAAAAAAAA");//user.getCloudName());
+				}
+
+				@Override
+				public Node getFirstColumn() {
+					return new Label("AAAAAAAAAAAAAAAAAAAAAAAAA");//user.getCloudName());
+				}
+
+				@Override
+				public IController getController() {
+					return null;
+				}
+			});
+		}
+
+		mainAccordion.setExpandedPane(titelPaneClouds);
 
 		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
 			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
@@ -102,24 +137,56 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		InputStream cloudsListViewStream = getClass().getResourceAsStream("/fxml/CloudsListView.fxml");
-		try {
-			this.cloudsStackPane.getChildren().add(loader.load(cloudsListViewStream));
-		}
-		catch (IOException ex) {
-			//ToDO: Handle
-			Logger.getLogger(MainSceneController.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
+			@Override
+			public void handleObject(ClusterAddedEvent event) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+						if (user.getCloudName() == null) {
+							return;
+						}
+						cloudsListViewController.addItem(new ITwoColumnListViewItem() {
 
-		settingsListViewItems = FXCollections.observableArrayList();
+							@Override
+							public Node getSecondColumn() {
+								return null;
+							}
 
-		settingsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+							@Override
+							public Node getFirstColumn() {
+								return new Label(user.getCloudName());
+							}
+
+							@Override
+							public IController getController() {
+								return null;
+							}
+						});
+					}
+				});
+			}
+		});
+
+		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+			@Override
+			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						//refreshCloudList();
+					}
+				});
+			}
+		});
+
+		preferencesListViewController.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
-				if (settingsListView.getSelectionModel().getSelectedItems() != null) {
+				if (preferencesListViewController.getSelectedItem() != null) {
 					try {
-						setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+						setPreferencesControl(preferencesListViewController.getSelectedItem());
 					}
 					catch (IOException ex) {
 						PieLogger.error(this.getClass(), "Error while setting controller", ex);
@@ -128,36 +195,24 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<ITwoColumnListView>, ListCell<ITwoColumnListView>>() {
+		cloudsListViewController.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public ListCell<ITwoColumnListView> call(final ListView<ITwoColumnListView> param) {
-				return new TwoColumnListView();
+			public void handle(MouseEvent arg0) {
+				if (cloudsListViewController.getSelectedItem() != null) {
+					try {
+						setClusterSettingControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
+					}
+				}
 			}
 		});
 
 		//Set entries for settings list view
-		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
-		settingsListViewItems.add(new ITwoColumnListView() {
+		preferencesListViewController.addItem(beanService.getBean(FileFilterSettingsController.class));
+		preferencesListViewController.addItem(beanService.getBean(BasePreferencesController.class));
 
-			@Override
-			public Node getSecondColumn() {
-				return new Label("Filter Settings");
-			}
-
-			@Override
-			public Node getFirstColumn() {
-				InputStream st = getClass().getResourceAsStream("/images/filter_16.png");
-				Image image = new Image(st);
-				Label label = new Label("", new ImageView(image));
-				return label;
-			}
-
-			@Override
-			public String getPanelPath() {
-				return "/fxml/settingsPanels/FileFilterSettingPanel.fxml";
-			}
-		});
-		settingsListView.setItems(settingsListViewItems);
 	}
 
 	public void cloudAvailable(boolean isAvailabe) {
@@ -174,8 +229,7 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void loginComplete()
-	{
+	public void loginComplete() {
 		try {
 			setClusterSettingControl();
 		}
@@ -188,7 +242,7 @@ public class MainSceneController implements Initializable {
 			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
 		}
 	}
-	
+
 	public InputStream getLoginControl() {
 		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
 		return st;
@@ -219,9 +273,7 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void setPreferencesControl(ITwoColumnListView entry) throws IOException {
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		InputStream url = getClass().getResourceAsStream(entry.getPanelPath());
-		setToMainCenter((loader.load(url)));
+	public void setPreferencesControl(ITwoColumnListViewItem entry) throws IOException {
+		setToMainCenter(entry.getController().getControl());
 	}
 }
