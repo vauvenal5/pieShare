@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -40,6 +41,8 @@ public class LoginTask implements ILoginTask {
 	private IDatabaseService databaseService;
 	private IClusterManagementService clusterManagementService;
 	private IConfigurationFactory configurationFactory;
+	private IHistoryService historyService;
+	
 	private File pwdFile;
 	private IFileService fileService;
 
@@ -47,6 +50,10 @@ public class LoginTask implements ILoginTask {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
 	}
 
+	public void setHistoryService(IHistoryService historyService) {
+		this.historyService = historyService;
+	}
+	
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
 	}
@@ -110,12 +117,12 @@ public class LoginTask implements ILoginTask {
 
 		if (user.getUserName() == null) {
 			user.setUserName(command.getUserName());
-			user.getPieShareConfiguration().setUser(user.getUserName());
 			//databaseService.persistPieUser(user);
 			databaseService.persist(user);
 		}
 		user.setIsLoggedIn(true);
-		fileService.initFileService();
+		
+		this.historyService.syncLocalPieFilesWithHistory();
 
 		//Check and create folders
 		try {

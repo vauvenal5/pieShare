@@ -18,12 +18,13 @@ import org.jgroups.util.BoundedHashMap;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Richard
  */
-public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory {
+public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory, IShutdownableService {
 
 	private IApplicationConfigurationService appConfiguration;
 	private EntityManagerFactory emf;
@@ -94,6 +95,11 @@ public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory {
 			PieLogger.error(this.getClass(), "Error with database lock.", ex);
 			return null;
 		}
+	}
+
+	@Override
+	public void shutdown() {
+		this.closeDB();
 	}
 
 }

@@ -6,50 +6,37 @@
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.service.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileHistoryEventTask;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
-public class LocalFileChangedTask extends FileHistoryEventTask {
+public class LocalFileChangedTask extends LocalFileEventTask {
+	
+	private IFileWatcherService fileWatcherService;
 
-	private IFileService fileService;
-	private IFileListenerService fileListener;
-
-	public void setFileListener(IFileListenerService fileListener) {
-		this.fileListener = fileListener;
-	}
-
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
 
 	@Override
 	public void run() {
 		try {
-			PieFile file = this.fileUtilsService.getPieFile(this.filePath);
+			PieFile file = this.prepareWork();
 			
-			if(!checkFilter(file)) return;
-			
-			if(this.fileListener.removePieFileFromModifiedList(file)) {
+			if(this.fileWatcherService.removePieFileFromModifiedList(file)) {
 				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", file.getRelativeFilePath());
 				return;
 			}
 			
-			this.fileService.waitUntilCopyFinished(this.filePath);
+			this.historyService.syncPieFileWithDb(file);
 			
-			//todo: for the time being we will just delete without checks
-			//later somekinde of persistency and check has to be added
-			//see base class of changedMessage
 			FileChangedMessage msg = beanService.getBean(PieShareAppBeanNames.getFileChangedMessage());
 			
-			super.doWork(msg);
+			super.doWork(msg, file);
 		} catch (IOException ex) {
 			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
 		}

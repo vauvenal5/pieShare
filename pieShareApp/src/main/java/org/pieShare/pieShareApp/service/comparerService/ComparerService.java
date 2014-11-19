@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -23,32 +23,25 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ComparerService implements IComparerService {
 
-	private IFileUtilsService fileUtilsService;
+	private IFileService fileService;
 	private IBeanService beanService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-		this.fileUtilsService = fileUtilsService;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	@Override
 	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
-
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-
-		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), pieFile.getRelativeFilePath());
-
-		if (!localFile.exists()) {
+		PieFile localPieFile = this.fileService.getPieFile(pieFile.getRelativeFilePath());
+		
+		if(localPieFile == null) {
 			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", pieFile.getRelativeFilePath());
-
-			//todo: a history check has to be done here to check for deleted files
 			return 1;
 		}
-
-		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
 		return this.comparePieFiles(pieFile, localPieFile);
 	}

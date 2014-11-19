@@ -6,7 +6,6 @@
 package org.pieShare.pieShareApp.model;
 
 import org.pieShare.pieShareApp.model.api.IBaseModel;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 
 /**

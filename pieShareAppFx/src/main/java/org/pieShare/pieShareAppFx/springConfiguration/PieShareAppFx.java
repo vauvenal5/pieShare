@@ -134,7 +134,7 @@ public class PieShareAppFx {
 		controller.setFileFilterService(services.fileFilterService());
 		controller.setBeanService(utilities.beanService());
 		controller.setFXMLController(mainController());
-		controller.setFileUtilsService(services.fileUtilsService());
+		controller.setFileService(services.localFileService());
 		return controller;
 	}
 

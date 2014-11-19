@@ -11,7 +11,7 @@ import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
@@ -31,7 +31,7 @@ public interface IModelEntityConverterService {
 
 	PieShareConfiguration convertFromEntity(ConfigurationEntity entity);
 
-	ConfigurationEntity convertToEntity(PieShareConfiguration conf);
+	ConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user);
 
 	FilterEntity convertToEntity(IFilter filter);
 

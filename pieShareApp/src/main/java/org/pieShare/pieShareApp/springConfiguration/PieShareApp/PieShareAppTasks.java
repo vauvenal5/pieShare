@@ -18,10 +18,11 @@ import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.FileEventTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,8 +57,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileRequestTask fileRequestTask() {
 		FileRequestTask task = new FileRequestTask();
-		task.setFileService(this.services.fileService());
-		task.setFileUtilsService(this.services.fileUtilsService());
+		task.setFileService(this.services.historyFileService());
 		task.setHashService(this.config.md5Service());
 		task.setBeanService(config.beanService());
 		task.setRequestService(this.services.requestService());
@@ -78,14 +78,24 @@ public class PieShareAppTasks {
 	public NewFileTask newFileTask() {
 		NewFileTask task = new NewFileTask();
 		task.setComparerService(this.services.comparerService());
+		task.setRequestService(services.requestService());
 		return task;
 	}
+        
+        @Bean
+	@Scope(value = "prototype")
+        public FileChangedTask fileChangedTask() {
+            FileChangedTask task = new FileChangedTask();
+            task.setComparerService(this.services.comparerService());
+            task.setRequestService(this.services.requestService());
+            return task;
+        }
 
-	private void fileEventTask(FileEventTask task) {
+	private void fileEventTask(LocalFileEventTask task) {
 		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setFileFilterService(services.fileFilterService());
-		task.setFileUtilsService(this.services.fileUtilsService());
+		task.setHistoryService(services.historyService());
 	}
 
 	@Bean
@@ -93,17 +103,17 @@ public class PieShareAppTasks {
 	public LocalFileCreatedTask localFileCreatedTask() {
 		LocalFileCreatedTask task = new LocalFileCreatedTask();
 		this.fileEventTask(task);
-		task.setFileService(this.services.fileService());
+		task.setFileService(this.services.localFileService());
 		return task;
 	}
 
 	@Bean
 	@Scope(value = "prototype")
-	public LocalFileChangedTask fileChangedTask() {
+	public LocalFileChangedTask localFileChangedTask() {
 		LocalFileChangedTask task = new LocalFileChangedTask();
 		this.fileEventTask(task);
-		task.setFileService(this.services.fileService());
-		task.setFileListener(this.services.fileListenerService());
+		task.setFileService(this.services.localFileService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
 		return task;
 	}
 
@@ -112,6 +122,7 @@ public class PieShareAppTasks {
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
 		this.fileEventTask(task);
+		task.setFileService(this.services.historyFileService());
 		return task;
 	}
 
@@ -138,7 +149,7 @@ public class PieShareAppTasks {
 	public FileListRequestTask fileListRequestTask() {
 		FileListRequestTask task = new FileListRequestTask();
 		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileService(this.services.fileService());
+		task.setFileService(this.services.historyFileService());
 		return task;
 	}
 
@@ -146,7 +157,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileDeletedTask fileDeletedTask() {
 		FileDeletedTask task = new FileDeletedTask();
-		task.setFileService(this.services.fileService());
+		task.setFileService(this.services.historyFileService());
 		return task;
 	}
 
@@ -161,7 +172,8 @@ public class PieShareAppTasks {
 		service.setEncodeService(config.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
-		service.setFileService(services.fileService());
+		service.setFileService(services.localFileService());
+		service.setHistoryService(services.historyService());
 		return service;
 	}
 

@@ -4,17 +4,14 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.service.historyService;
+package org.pieShare.pieShareApp.service.fileService.fileListenerService.api;
 
-import java.util.List;
+import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IHistoryService {
-	void syncPieFileWithDb(PieFile pieFile);
-	PieFile syncDeleteToHistory(PieFile file);
-	List<PieFile> syncLocalPieFilesWithHistory();
+public interface IFileListenerService extends FileListener {
 }

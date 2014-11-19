@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
@@ -30,6 +30,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.testng.Assert;
 import pieShareAppITs.helper.config.PieShareAppModelITConfig;
 import pieShareAppITs.helper.config.PieShareAppServiceConfig;
+import pieShareAppITs.helper.config.PieShareUtilitiesITConfig;
 
 /**
  *
@@ -52,11 +53,38 @@ public class ITUtil {
 	public static String getBotTmpDir() {
 		return "pieTempTestBot";
 	}
+	
+	public static String getMainKey() {
+		return "testMainKey";
+	}
+	
+	public static String getBotKey() {
+		return "testBotKey";
+	}
+        
+        public static String getMainDbDir() {
+            return "mainDb";
+        }
+        
+        public static String getBotDbDir() {
+            return "botDb";
+        }
 
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
-		PieShareAppModelITConfig.main = main;
+		PieShareAppServiceConfig.main = main;
+	}
+	
+	public static void performTearDownDelete() throws Exception {
+		FileUtils.deleteDirectory(new File(getMainWorkingDir()));
+		FileUtils.deleteDirectory(new File(getMainTmpDir()));
+		FileUtils.deleteDirectory(new File(getBotWorkingDir()));
+		FileUtils.deleteDirectory(new File(getBotTmpDir()));
+                FileUtils.deleteDirectory(new File(getMainDbDir()));
+                FileUtils.deleteDirectory(new File(getBotDbDir()));
+		(new File(getMainKey())).delete();
+		(new File(getBotKey())).delete();
 	}
 
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
@@ -77,22 +105,6 @@ public class ITUtil {
 		//stop context
 		context.close();
 		context = null;
-		boolean done = false;
-
-		while (!done) {
-			try {
-				FileUtils.deleteDirectory(mainWorkingDir);
-				FileUtils.deleteDirectory(mainTmpDir);
-				FileUtils.deleteDirectory(botWorkingDir);
-				FileUtils.deleteDirectory(botTmpDir);
-				configMain.delete();
-				configBot.delete();
-				done = true;
-			}
-			catch (IOException ex) {
-				Thread.sleep(1000);
-			}
-		}
 	}
 
 	public static Process startProcess(Class mainClazz) throws IOException {
@@ -152,7 +164,8 @@ public class ITUtil {
 
 			@Override
 			public void error(Exception ex) {
-				Assert.fail(ex.getMessage());
+				ex.printStackTrace();
+				Assert.fail(ex.getLocalizedMessage());
 			}
 
 			@Override
@@ -172,7 +185,7 @@ public class ITUtil {
 
 	public static AnnotationConfigApplicationContext getContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.register(PieUtilitiesConfiguration.class);
+		context.register(PieShareUtilitiesITConfig.class);
 		context.register(PiePlateConfiguration.class);
 		context.register(PieShareAppModelITConfig.class);
 		context.register(PieShareAppServiceConfig.class);

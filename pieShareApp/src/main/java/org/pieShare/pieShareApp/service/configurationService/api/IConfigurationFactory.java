@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.configurationService.api;
 
-import org.pieShare.pieShareApp.service.configurationService.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
 
 /**
  *
