@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.configurationService;
+package org.pieShare.pieShareApp.model;
 
 import java.io.File;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
@@ -17,7 +17,6 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	private File workingDir;
 	private File tmpDir;
 	private File pwdFile;
-	private String user; 
 	
 	@Override
 	public File getWorkingDir() {
@@ -47,13 +46,5 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	@Override
 	public void setPwdFile(File pwdFile) {
 		this.pwdFile = pwdFile;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
 	}
 }

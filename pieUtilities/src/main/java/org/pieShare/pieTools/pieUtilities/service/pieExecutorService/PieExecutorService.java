@@ -14,6 +14,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
@@ -35,17 +36,26 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 	public void setExecutorFactory(IPieExecutorTaskFactory executorFactory) {
 		this.executorFactory = executorFactory;
 	}
+	
+	private void executeInExecutorService(IPieTask task) {
+		
+	}
 
 	@Override
 	public void execute(IPieTask task) {
 		Validate.notNull(task);
-		this.executor.execute(task);
+		try{
+			this.executor.execute(task);
+		}
+		catch(NullPointerException ex) {
+			PieLogger.info(this.getClass(), "Exception in PieExecutorService!", ex);
+		}
 	}
 
 	@Override
 	public void handlePieEvent(IPieEvent event) throws PieExecutorTaskFactoryException {
 		IPieEventTask task = this.executorFactory.getTask(event);
-		this.executor.execute(task);
+		this.execute(task);
 	}
 
 	@Override

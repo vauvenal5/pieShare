@@ -6,6 +6,8 @@
 package org.pieShare.pieShareApp.model;
 
 import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 
 /**
  *
@@ -38,7 +40,7 @@ public class PieShareAppBeanNames {
 	}
 
 	public static String getFileChangedTaskName() {
-		return "fileChangedTask";
+		return "localFileChangedTask";
 	}
 
 	public static String getPieShareAppConfigurationName() {

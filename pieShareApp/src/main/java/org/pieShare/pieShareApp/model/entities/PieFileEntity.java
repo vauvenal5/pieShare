@@ -7,21 +7,54 @@
 package org.pieShare.pieShareApp.model.entities;
 
 import javax.persistence.Entity;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import javax.persistence.Id;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 
 /**
  *
  * @author Svetoslav
  */
 @Entity
-public class PieFileEntity extends BaseEntity {
+public class PieFileEntity implements IBaseEntity{
 	private byte[] md5;
+	@Id
+	private String absoluteWorkingPath;
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
+	private boolean deleted;
+	private boolean synched;
+	
+	public PieFileEntity(){
+		this.synched = true;
+	}
 
+	public boolean isSynched() {
+		return synched;
+	}
+
+	public void setSynched(boolean synched) {
+		this.synched = synched;
+	}
+	
+	public String getAbsoluteWorkingPath() {
+		return absoluteWorkingPath;
+	}
+
+	public void setAbsoluteWorkingPath(String absoluteWorkingPath) {
+		this.absoluteWorkingPath = absoluteWorkingPath;
+	}
+	
 	public byte[] getMd5() {
 		return md5;
+	}
+
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
 	}
 
 	public void setMd5(byte[] md5) {
