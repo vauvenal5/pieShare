@@ -6,10 +6,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.ClusterSettingsController">
-   <children>
-      <Label fx:id="TextCloudName" layoutX="14.0" layoutY="6.0" text="Cloud Name:" />
-      <Label fx:id="labelCloudName" layoutX="89.0" layoutY="6.0" text="Label" />
-      <Button fx:id="ButtonLogout" layoutX="31.0" layoutY="23.0" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
-   </children>
-</AnchorPane>
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.ClusterSettingsController">
+   <top>
+      <AnchorPane BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="TextCloudName" layoutX="14.0" layoutY="6.0" text="Cloud Name:" />
+            <Label fx:id="labelCloudName" layoutX="87.0" layoutY="6.0" text="Label" />
+            <Button fx:id="ButtonLogout" layoutX="32.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
+         </children>
+      </AnchorPane>
+   </top>
+</BorderPane>

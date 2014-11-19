@@ -6,8 +6,5 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.TwoColumnListViewController">
-   <children>
-      <ListView fx:id="listView" />
-   </children>
-</AnchorPane>
+
+<ListView fx:id="listView" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.TwoColumnListViewController"/>

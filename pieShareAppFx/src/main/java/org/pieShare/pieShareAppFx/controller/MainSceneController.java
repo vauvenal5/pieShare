@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -24,13 +26,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.GridPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
+import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
+import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
@@ -50,12 +53,17 @@ public class MainSceneController implements Initializable {
 	private IBeanService beanService;
 	private TwoColumnListViewController preferencesListViewController;
 	private TwoColumnListViewController cloudsListViewController;
+	private LoginController loginController;
+	private ClusterSettingsController clusterSettingsController;
+
+	@FXML
+	private GridPane mainGridPane;
 
 	@FXML
 	private BorderPane mainBorderPane;
 
 	@FXML
-	private AnchorPane cloudsPane;
+	private BorderPane borderPaneClouds;
 
 	@FXML
 	private SplitPane mainSplitPane;
@@ -70,10 +78,18 @@ public class MainSceneController implements Initializable {
 	private Button addButton;
 
 	@FXML
-	private AnchorPane preferencesPane;
+	private BorderPane preferencesBorderPane;
+
+	public void setClusterSettingsController(ClusterSettingsController clusterSettingsController) {
+		this.clusterSettingsController = clusterSettingsController;
+	}
 
 	public void setPreferencesListViewController(TwoColumnListViewController preferencesListViewController) {
 		this.preferencesListViewController = preferencesListViewController;
+	}
+
+	public void setLoginController(LoginController loginController) {
+		this.loginController = loginController;
 	}
 
 	public void setCloudsListViewController(TwoColumnListViewController cloudsListViewController) {
@@ -94,27 +110,33 @@ public class MainSceneController implements Initializable {
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 
+		mainGridPane.setGridLinesVisible(false);
+		mainGridPane.getStyleClass().add("gridPane");
+		mainBorderPane.setCenter(mainGridPane);
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+
 		try {
-			preferencesPane.getChildren().add(preferencesListViewController.getControl());
-			cloudsPane.getChildren().add(cloudsListViewController.getControl());
+			preferencesBorderPane.setCenter(preferencesListViewController.getControl());
+			borderPaneClouds.setCenter(cloudsListViewController.getControl());
 		}
 		catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Error setting PreferencesListView to Main Scene", ex);
 			return;
 		}
 
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		if (user.getCloudName() != null) {
+			addButton.setDisable(true);
 			cloudsListViewController.addItem(new ITwoColumnListViewItem() {
 
 				@Override
 				public Node getSecondColumn() {
-					return new Label("AAAAAAAAAAAAAAAAAAAAAAAAA");//user.getCloudName());
+					return new Label(user.getCloudName());
 				}
 
 				@Override
 				public Node getFirstColumn() {
-					return new Label("AAAAAAAAAAAAAAAAAAAAAAAAA");//user.getCloudName());
+					return null;
 				}
 
 				@Override
@@ -147,16 +169,17 @@ public class MainSceneController implements Initializable {
 						if (user.getCloudName() == null) {
 							return;
 						}
+						cloudsListViewController.clearAll();
 						cloudsListViewController.addItem(new ITwoColumnListViewItem() {
 
 							@Override
 							public Node getSecondColumn() {
-								return null;
+								return new Label(user.getCloudName());
 							}
 
 							@Override
 							public Node getFirstColumn() {
-								return new Label(user.getCloudName());
+								return null;
 							}
 
 							@Override
@@ -209,14 +232,34 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
+		loginController.getLoginStateChangedEventBase().addEventListener(new ILoginStateChangedListener() {
+
+			@Override
+			public void handleObject(LoginStateChangedEvent event) {
+				if (event.isIsLoggedIn()) {
+					loginComplete();
+				}
+			}
+		});
+
+		clusterSettingsController.getLoginStateChangedEvent().addEventListener(new ILoginStateChangedListener() {
+
+			@Override
+			public void handleObject(LoginStateChangedEvent event) {
+				if (!event.isIsLoggedIn()) {
+					try {
+						setLoginControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Error setting login control", ex);
+					}
+				}
+			}
+		});
+
 		//Set entries for settings list view
 		preferencesListViewController.addItem(beanService.getBean(FileFilterSettingsController.class));
 		preferencesListViewController.addItem(beanService.getBean(BasePreferencesController.class));
-
-	}
-
-	public void cloudAvailable(boolean isAvailabe) {
-		addButton.setDisable(isAvailabe);
 	}
 
 	@FXML
@@ -229,7 +272,7 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public void loginComplete() {
+	private void loginComplete() {
 		try {
 			setClusterSettingControl();
 		}
@@ -243,22 +286,13 @@ public class MainSceneController implements Initializable {
 		}
 	}
 
-	public InputStream getLoginControl() {
-		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
-		return st;
-	}
-
-	public InputStream getClusterSettingControl() {
-		return getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
-	}
-
 	public void setToMainCenter(Node node) {
-		mainBorderPane.setCenter(node);
+		mainGridPane.getChildren().clear();
+		mainGridPane.add(node, 0, 1);
 	}
 
 	public void setLoginControl() throws IOException {
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		setToMainCenter(loader.load(getLoginControl()));
+		setToMainCenter(loginController.getControl());
 	}
 
 	public void setClusterSettingControl() throws IOException {
@@ -266,10 +300,10 @@ public class MainSceneController implements Initializable {
 
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		if (user.isIsLoggedIn()) {
-			setToMainCenter(loader.load(getClusterSettingControl()));
+			setToMainCenter(clusterSettingsController.getControl());
 		}
 		else {
-			setToMainCenter(loader.load(getLoginControl()));
+			setLoginControl();
 		}
 	}
 

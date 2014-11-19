@@ -56,6 +56,10 @@ public class TwoColumnListViewController implements IController {
 		listViewItems.remove(item);
 	}
 
+	public void clearAll() {
+		listViewItems.clear();
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		listViewItems = FXCollections.observableArrayList();

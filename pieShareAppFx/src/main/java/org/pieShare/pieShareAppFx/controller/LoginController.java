@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -20,6 +23,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -29,8 +33,12 @@ import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdCalback;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
+import org.pieShare.pieShareAppFx.controller.api.IController;
+import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
+import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -38,7 +46,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 /**
  * FXML Controller class
  */
-public class LoginController implements Initializable {
+public class LoginController implements IController {
 
 	@FXML
 	private TextField userNameField;
@@ -54,15 +62,28 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private Hyperlink resetPasswordLink;
-	
+
 	@FXML
-	private AnchorPane additionalOptionsPane;
-	
+	private BorderPane additionalOptionsPane;
+
 	private SpinAnimation animation;
-	private MainSceneController mainSceneController;
 	private PieExecutorService executorService;
 	private ILoginTask loinTask;
 	private IBeanService beanService;
+	private IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChangedEvent;
+	private BasePreferencesController basePreferencesController;
+
+	public void setBasePreferencesController(BasePreferencesController basePreferencesController) {
+		this.basePreferencesController = basePreferencesController;
+	}
+
+	public void setLoginStateChangedEventBase(IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChangedEvent) {
+		this.loginStateChangedEvent = loginStateChangedEvent;
+	}
+
+	public IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> getLoginStateChangedEventBase() {
+		return this.loginStateChangedEvent;
+	}
 
 	public void setPieExecutorService(PieExecutorService executorService) {
 		this.executorService = executorService;
@@ -70,10 +91,6 @@ public class LoginController implements Initializable {
 
 	public void setLoginTask(ILoginTask loginTask) {
 		this.loinTask = loginTask;
-	}
-
-	public void setMainSceneController(MainSceneController controller) {
-		this.mainSceneController = controller;
 	}
 
 	public void setBeanService(IBeanService beanService) {
@@ -89,7 +106,6 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						mainSceneController.cloudAvailable(false);
 						passwordFieldRepeat.setVisible(true);
 						passwordField.clear();
 						disableWaitTextField();
@@ -140,7 +156,6 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						mainSceneController.cloudAvailable(false);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldOK");
 						passwordField.getStyleClass().add("textfieldWrong");
@@ -153,7 +168,6 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						mainSceneController.cloudAvailable(false);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldOK");
 						passwordField.getStyleClass().add("textfieldWrong");
@@ -166,11 +180,10 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						mainSceneController.cloudAvailable(true);
 						disableWaitTextField();
 						passwordField.getStyleClass().remove("textfieldWrong");
 						passwordField.getStyleClass().add("textfieldOK");
-						mainSceneController.loginComplete();
+						loginStateChangedEvent.fireEvent(new LoginStateChangedEvent(this, true));
 					}
 				});
 			}
@@ -202,8 +215,7 @@ public class LoginController implements Initializable {
 	 * Initializes the controller class.
 	 */
 	@Override
-	public void initialize(URL url, ResourceBundle rb) {	
-		mainSceneController.cloudAvailable(false);
+	public void initialize(URL url, ResourceBundle rb) {
 		animation = beanService.getBean(SpinAnimation.class);
 		animation.setNode(labelWaitIcon);
 
@@ -211,20 +223,38 @@ public class LoginController implements Initializable {
 		Image imageDelete = new Image(stDelete);
 		labelWaitIcon.setText("");
 		labelWaitIcon.setGraphic(new ImageView(imageDelete));
-		
+
 		labelWaitIcon.setVisible(false);
 		labelWaitIcon.setDisable(true);
 
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		if (user.getCloudName() != null) {
-			mainSceneController.cloudAvailable(true);
 			userNameField.setText(user.getCloudName());
 			userNameField.disableProperty().set(true);
 		}
 
 		if (user.hasPasswordFile()) {
-			passwordFieldRepeat.setVisible(false);
-			//a
+			try {
+				passwordFieldRepeat.setVisible(false);
+
+				if (!user.isIsLoggedIn()) {
+					additionalOptionsPane.setCenter(basePreferencesController.getControl());
+				}
+				else {
+					additionalOptionsPane.getChildren().clear();
+				}
+			}
+			catch (IOException ex) {
+				PieLogger.error(this.getClass(), "Error setting BasePreferences Control", ex);
+			}
 		}
+
+	}
+
+	@Override
+	public Node getControl() throws IOException {
+		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+		InputStream st = getClass().getResourceAsStream("/fxml/Login.fxml");
+		return loader.load(st);
 	}
 }
