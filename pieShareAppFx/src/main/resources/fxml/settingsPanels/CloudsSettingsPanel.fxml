@@ -11,7 +11,7 @@
       <AnchorPane BorderPane.alignment="CENTER">
          <children>
             <Label fx:id="TextCloudName" layoutX="14.0" layoutY="6.0" text="Cloud Name:" />
-            <Label fx:id="labelCloudName" layoutX="87.0" layoutY="6.0" text="Label" />
+            <Label fx:id="labelCloudName" layoutX="101.0" layoutY="6.0" text="Label" />
             <Button fx:id="ButtonLogout" layoutX="32.0" layoutY="26.0" mnemonicParsing="false" onAction="#handleLogoutAction" text="Logout" />
          </children>
       </AnchorPane>
