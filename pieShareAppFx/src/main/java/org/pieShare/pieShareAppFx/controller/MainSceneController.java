@@ -287,6 +287,7 @@ public class MainSceneController implements Initializable {
 	}
 
 	public void setToMainCenter(Node node) {
+	    
 		mainGridPane.getChildren().clear();
 		mainGridPane.add(node, 0, 1);
 	}
