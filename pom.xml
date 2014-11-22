@@ -71,7 +71,7 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>2.2.0</version>
+				<version>3.0.1</version>
 				<configuration>
 					<sourceEncoding>utf8</sourceEncoding>
 					<sourceDirectories>
@@ -87,26 +87,27 @@
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>replacer</artifactId>
 				<version>1.5.2</version>
+				<inherited>false</inherited>
 				<configuration>
 					<!--file>/home/travis/build/vauvenal5/pieShare/target/site/jacoco/jacoco.xml</file-->
 					<file>${jacoco.out.path}/site/jacoco/jacoco.xml</file>
 					<regex>true</regex>
 					<replacements>
 						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/pieUtilities)</token>
-							<value>filename=\"pieUtilities/src/main/java/</value>
+							<token>package name=\"(?=org/pieShare/pieTools/pieUtilities)</token>
+							<value>package name=\"pieUtilities/src/main/java/</value>
 						</replacement>
 						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/pieCeption)</token>
-							<value>filename=\"pieCeption/src/main/java/</value>
+							<token>package name=\"(?=org/pieShare/pieTools/pieCeption)</token>
+							<value>package name=\"pieCeption/src/main/java/</value>
 						</replacement>
 						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/piePlate)</token>
-							<value>filename=\"piePlate/src/main/java/</value>
+							<token>package name=\"(?=org/pieShare/pieTools/piePlate)</token>
+							<value>package name=\"piePlate/src/main/java/</value>
 						</replacement>
 						<replacement>
-							<token>filename=\"(?=org/pieShare/pieShareApp)</token>
-							<value>filename=\"pieShareApp/src/main/java/</value>
+							<token>package name=\"(?=org/pieShare/pieShareApp)</token>
+							<value>package name=\"pieShareApp/src/main/java/</value>
 						</replacement>
 					</replacements>
 				</configuration>
