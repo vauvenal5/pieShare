@@ -82,36 +82,6 @@
 					</sourceDirectories>
 				</configuration>
 			</plugin>
-            
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.2</version>
-				<inherited>false</inherited>
-				<configuration>
-					<!--file>/home/travis/build/vauvenal5/pieShare/target/site/jacoco/jacoco.xml</file-->
-					<file>${jacoco.out.path}/site/jacoco/jacoco.xml</file>
-					<regex>true</regex>
-					<replacements>
-						<replacement>
-							<token>package name=\"(?=org/pieShare/pieTools/pieUtilities)</token>
-							<value>package name=\"pieUtilities/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>package name=\"(?=org/pieShare/pieTools/pieCeption)</token>
-							<value>package name=\"pieCeption/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>package name=\"(?=org/pieShare/pieTools/piePlate)</token>
-							<value>package name=\"piePlate/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>package name=\"(?=org/pieShare/pieShareApp)</token>
-							<value>package name=\"pieShareApp/src/main/java/</value>
-						</replacement>
-					</replacements>
-				</configuration>
-			</plugin>
 			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -120,6 +90,8 @@
 				<configuration>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
+				<!--todo:Stop copying all classes after jacoco has be reconfigured to be able to work with
+				multimodule maven projects. See https://github.com/jacoco/jacoco/pull/97-->
 				<executions>
 				  <execution>
 					<phase>verify</phase>
@@ -138,6 +110,8 @@
 				</executions>
 			</plugin>
 			
+			<!--todo:Reconfigure jacoco when https://github.com/jacoco/jacoco/pull/97 is merged and 
+			new version is released!-->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

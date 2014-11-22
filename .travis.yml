@@ -16,5 +16,4 @@ script:
 
 after_success:
   - mvn jacoco:report
-  #- mvn replacer:replace 
   - mvn coveralls:report
