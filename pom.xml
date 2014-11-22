@@ -75,7 +75,10 @@
 				<configuration>
 					<sourceEncoding>utf8</sourceEncoding>
 					<sourceDirectories>
-						<sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieUtilities/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/piePlate/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareApp/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareAppFx/src/main/java</sourceDirectory>
 					</sourceDirectories>
 				</configuration>
 			</plugin>
@@ -85,7 +88,8 @@
 				<artifactId>replacer</artifactId>
 				<version>1.5.2</version>
 				<configuration>
-					<file>/home/travis/build/vauvenal5/pieShare/target/site/cobertura/coverage.xml</file>
+					<!--file>/home/travis/build/vauvenal5/pieShare/target/site/jacoco/jacoco.xml</file-->
+					<file>${jacoco.out.path}/site/jacoco/jacoco.xml</file>
 					<regex>true</regex>
 					<replacements>
 						<replacement>
