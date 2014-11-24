@@ -72,6 +72,8 @@ public class PieShareAppService {
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setShutdownService(this.shutdownService());
 		service.setDatabaseService(databaseService());
+		service.setConfigurationFactory(this.configurationFactory());
+		service.setBeanService(utilities.beanService());
 		service.start();
 		return service;
 	}

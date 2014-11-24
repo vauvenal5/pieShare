@@ -88,7 +88,8 @@ public class LoginTask implements ILoginTask {
 		PieUser user;
 		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 
-		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
+		//PieShaeService does this now
+		//user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
 		pwdFile = user.getPieShareConfiguration().getPwdFile();
 
 		if (pwdFile.exists()) {
