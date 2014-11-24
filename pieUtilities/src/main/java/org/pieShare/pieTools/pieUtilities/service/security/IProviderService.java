@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.security;
 
+import javax.crypto.Cipher;
+
 /**
  *
  * @author Svetoslav
@@ -15,7 +17,7 @@ public interface IProviderService {
 
 	String getFileHashAlorithm();
 
-	String getPasswordEncryptionAlgorithm();
+	Cipher getPasswordEncryptioCipher();
 
-	String getEnDeCryptAlgorithm();
+	Cipher getEnDeCryptCipher();
 }
