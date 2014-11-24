@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane id="AnchorPane" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="org.pieShare.pieShareAppFx.controller.WorkingMessageController">
+   <children>
+      <VBox layoutX="14.0" layoutY="14.0">
+         <children>
+            <Label fx:id="labelImage" prefHeight="64.0" prefWidth="64.0" text="Label Image" />
+            <Label fx:id="labelMessage" text="Label Message" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -11,7 +11,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -49,6 +49,7 @@ public class RequestService implements IRequestService {
 	@Override
 	public void requestFile(PieFile pieFile) {
 		if(this.requestedFiles.containsKey(pieFile)) {
+                    PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
 			return;
 		}
 		
@@ -56,6 +57,7 @@ public class RequestService implements IRequestService {
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.setPieFile(pieFile);
 		try {
+                    PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
 			clusterManagementService.sendMessage(msg, user.getCloudName());
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {

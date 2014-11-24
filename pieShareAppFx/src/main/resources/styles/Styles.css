@@ -1,3 +1,33 @@
 .button {
     -fx-font-weight: bold;
 }
+
+.gridPane
+{
+	-fx-padding: 10 10 10 10;
+}
+
+.text-field
+{
+	-fx-border-radius: 20;
+    -fx-background-radius: 00;
+    -fx-padding: 5;
+}
+//Defines the textfield colors when an input is flase.
+.textfieldWrong
+{
+	-fx-background-color: rgba(214, 0, 0, .7);
+}
+//Defines the textfield colors when an input is OK.
+.textfieldOK
+{
+	-fx-background-color: rgba(0, 214, 0, .7);
+}
+.testBorder
+{
+	-fx-stroke: green;
+    -fx-stroke-width: 5;
+    -fx-stroke-dash-array: 12 2 4 2;
+    -fx-stroke-dash-offset: 6;
+    -fx-stroke-line-cap: butt;
+}

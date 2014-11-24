@@ -8,13 +8,13 @@ package org.pieShare.pieShareApp.service.comparerService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareAppConfiguration;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileUtilsService;
-import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -23,72 +23,53 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ComparerService implements IComparerService {
 
-	private IPieShareAppConfiguration pieAppConfig;
-	private IRequestService requestService;
-        private IFileUtilsService fileUtilsService;
+	private IFileService fileService;
+	private IBeanService beanService;
 
-	public void setRequestService(IRequestService requestService) {
-		this.requestService = requestService;
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
 	}
 
-        public void setFileUtilsService(IFileUtilsService fileUtilsService) {
-            this.fileUtilsService = fileUtilsService;
-        }
-
-	public void setPieShareConfiguration(IPieShareAppConfiguration pieAppConfig) {
-		this.pieAppConfig = pieAppConfig;
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	@Override
-	public boolean isPieFileDesired(PieFile remotePieFile) throws IOException, FileConflictException {
-
-		PieLogger.debug(this.getClass(), "Comparing file: {}", remotePieFile.getRelativeFilePath());
-
-		File localFile = new File(pieAppConfig.getWorkingDirectory(), remotePieFile.getRelativeFilePath());
+	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
+		PieFile localPieFile = this.fileService.getPieFile(pieFile.getRelativeFilePath());
 		
-		if (!localFile.exists()) {
-			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", remotePieFile.getRelativeFilePath());
-			return true;
+		if(localPieFile == null) {
+			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", pieFile.getRelativeFilePath());
+			return 1;
 		}
-		
-		PieFile localPieFile = this.fileUtilsService.getPieFile(localFile);
 
+		return this.comparePieFiles(pieFile, localPieFile);
+	}
 
+	@Override
+	public int compareWithHistory(PieFile pieFile) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	@Override
+	public int comparePieFiles(PieFile file1, PieFile file2) throws FileConflictException {
+		PieLogger.debug(this.getClass(), "Comparing file: {} with file: {}", file1.getRelativeFilePath(), file2.getRelativeFilePath());
 		//Remote File is older than local file
-		if (remotePieFile.getLastModified() == localFile.lastModified()) {
-			if (Arrays.equals(remotePieFile.getMd5(), localPieFile.getMd5())) {
-				PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
-				return false;
+		//todo: should compare also file name!!!
+		if (file1.getLastModified() == file2.getLastModified()) {
+			if (Arrays.equals(file1.getMd5(), file2.getMd5())) {
+				return 0;
 			}
-			PieLogger.debug(this.getClass(), "{} is already there. Do not request.", remotePieFile.getRelativeFilePath());
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+			//todo: fix this exception: why does it take a PieFile?!
+			//throw new FileConflictException(String.format("Same Modification Date but different MD5 sum: %s", pieFile.getRelativeFilePath()), pieFile);
 		} //Remote File is older than local file
-		else if (remotePieFile.getLastModified() < localFile.lastModified()) {
-			throw new FileConflictException("Same Modification Date but different MD5 sum.", remotePieFile);
+		else if (file1.getLastModified() < file2.getLastModified()) {
+			return -1;
 		} //Remote File is newer than local file
-		else if (remotePieFile.getLastModified() > localFile.lastModified()) {
-			return true;
+		else if (file1.getLastModified() > file2.getLastModified()) {
+			return 1;
 		}
 
-		throw new FileConflictException("Cannot handle this file.", remotePieFile);
+		throw new FileConflictException("Cannot handle this fils.", file1);
 	}
-
-	@Override
-	public void comparePieFileList(List<PieFile> list) throws IOException, FileConflictException {
-
-		for (PieFile pieFile : list) {
-			comparePieFile(pieFile);
-		}
-	}
-
-	@Override
-	public void comparePieFile(PieFile pieFile) throws IOException, FileConflictException {
-                
-                //todo: the requestService could do the check of the requestedFileList internally!?!
-		if (isPieFileDesired(pieFile)) {
-			requestService.requestFile(pieFile);
-		}
-
-	}
-
 }

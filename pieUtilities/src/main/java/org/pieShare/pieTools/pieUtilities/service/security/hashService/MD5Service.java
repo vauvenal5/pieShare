@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.security.hashService;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
@@ -56,6 +58,8 @@ public class MD5Service implements IHashService {
 
 	@Override
 	public byte[] hashStream(InputStream stream) throws IOException {
+		//todo: maybe the stream should be created in here instead outside
+		//this way this function can close the stream in the end
 		MessageDigest messageDigest = this.getMessageDigest();
 		
 		byte[] buffer = new byte[1024];
@@ -69,6 +73,14 @@ public class MD5Service implements IHashService {
 		byte[] resultByte = messageDigest.digest();
 		messageDigest.reset();
 		return resultByte;
+	}
+	
+	@Override
+	public byte[] hashStream(File file) throws IOException {
+		FileInputStream fis = new FileInputStream(file);
+		byte[] res = this.hashStream(fis);
+		fis.close();
+		return res;
 	}
 
 	@Override

@@ -6,12 +6,13 @@
 package org.pieShare.pieShareApp.model.command;
 
 import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
 
 /**
  *
  * @author Svetoslav
  */
-public class SimpleMessageCommand implements ICommand {
+public class SimpleMessageCommand extends BaseCommand<IPieCallable> implements ICommand<IPieCallable> {
 
 	private String msg;
 
