@@ -6,21 +6,25 @@
 package org.pieShare.pieShareAppFx.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutFinished;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
+import org.pieShare.pieShareAppFx.controller.api.IController;
+import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
+import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -29,17 +33,21 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Richard
  */
-public class ClusterSettingsController implements Initializable {
+public class ClusterSettingsController implements IController {
 
 	private IBeanService beanService;
 	private PieExecutorService executorService;
 	private ILogoutTask logoutTask;
-	private MainSceneController mainSceneController;
+	private IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChanged;
 
-	public void setMainSceneController(MainSceneController mainSceneController) {
-		this.mainSceneController = mainSceneController;
+	public IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> getLoginStateChangedEvent() {
+		return loginStateChanged;
 	}
 
+	public void setLoginStateChangedEvent(IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChanged) {
+		this.loginStateChanged = loginStateChanged;
+	}
+	
 	public void setLogoutTask(ILogoutTask logoutTask) {
 		this.logoutTask = logoutTask;
 	}
@@ -66,12 +74,7 @@ public class ClusterSettingsController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						try {
-							mainSceneController.setLoginControl();
-						}
-						catch (IOException ex) {
-							PieLogger.error(this.getClass(), "Not able to set Login Control", ex);
-						}
+						loginStateChanged.fireEvent(new LoginStateChangedEvent(this, false));
 					}
 				});
 			}
@@ -89,5 +92,12 @@ public class ClusterSettingsController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		labelCloudName.setText(user.getCloudName());
+	}
+
+	@Override
+	public Node getControl() throws IOException {
+		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+		InputStream st = getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
+		return loader.load(st);
 	}
 }

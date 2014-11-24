@@ -17,6 +17,7 @@ import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoC
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import pieShareAppITs.helper.ITUtil;
 import static pieShareAppITs.helper.config.PieShareAppServiceConfig.main;
 
 /**
@@ -32,10 +33,10 @@ public class PieShareUtilitiesITConfig extends PieUtilitiesConfiguration {
 		Properties prop = new Properties();
 		
 		if(PieShareAppServiceConfig.main) {
-			prop.put("databaseDir", "mainDb");
+			prop.put("databaseDir", ITUtil.getMainDbDir());
 		}
 		else {
-			prop.put("databaseDir", "botDb");
+			prop.put("databaseDir", ITUtil.getBotDbDir());
 		}
 		
 		PropertiesReader reader = Mockito.mock(PropertiesReader.class);

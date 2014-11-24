@@ -61,6 +61,14 @@ public class ITUtil {
 	public static String getBotKey() {
 		return "testBotKey";
 	}
+        
+        public static String getMainDbDir() {
+            return "mainDb";
+        }
+        
+        public static String getBotDbDir() {
+            return "botDb";
+        }
 
 	public static void setUpEnviroment(boolean main) {
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -73,6 +81,8 @@ public class ITUtil {
 		FileUtils.deleteDirectory(new File(getMainTmpDir()));
 		FileUtils.deleteDirectory(new File(getBotWorkingDir()));
 		FileUtils.deleteDirectory(new File(getBotTmpDir()));
+                FileUtils.deleteDirectory(new File(getMainDbDir()));
+                FileUtils.deleteDirectory(new File(getBotDbDir()));
 		(new File(getMainKey())).delete();
 		(new File(getBotKey())).delete();
 	}
