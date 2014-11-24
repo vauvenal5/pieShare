@@ -8,20 +8,34 @@ package org.pieShare.pieShareApp.service.fileService.api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import java.nio.file.Path;
+import java.util.List;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
  * @author richy
  */
-public interface IFileService
-{
+public interface IFileService {
+	
+	List<PieFile> getAllFiles() throws IOException;
 
-	//public void remoteFileChange(FileChangedMessage message);
-    public PieFile genPieFile(File file) throws FileNotFoundException, IOException;
-	public boolean checkMergeFile(PieFile pieFile);
-    public void localFileChange(File file);
-
-//	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
-//	public void sendAllFilesSyncRequest();
+	void deleteRecursive(PieFile file);
+	
+	void waitUntilCopyFinished(File file);
+	
+	//todo-FileServie: which is the best way to handle not existing files:
+			//return null
+			//throw Exception
+			//pieFile.exists()
+	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+	
+    PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
+	
+	void setCorrectModificationDate(PieFile file);
+	
+	Path relitivizeFilePath(File file);
+	Path getAbsolutePath(PieFile file);
 }

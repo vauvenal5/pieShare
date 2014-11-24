@@ -3,10 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.model.message;
 
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
@@ -14,23 +13,23 @@ import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
  * @author Svetoslav
  */
 public class FileTransferMetaMessage extends HeaderMessage {
-    
-    private PieFile pieFile;
-    private byte[] metaInfo;
-   
-    public PieFile getPieFile() {
-        return pieFile;
-    }
 
-    public void setPieFile(PieFile pieFile) {
-        this.pieFile = pieFile;
-    }
+	private PieFile pieFile;
+	private byte[] metaInfo;
 
-    public byte[] getMetaInfo() {
-        return metaInfo;
-    }
+	public PieFile getPieFile() {
+		return pieFile;
+	}
 
-    public void setMetaInfo(byte[] metaInfo) {
-        this.metaInfo = metaInfo;
-    }
+	public void setPieFile(PieFile pieFile) {
+		this.pieFile = pieFile;
+	}
+
+	public byte[] getMetaInfo() {
+		return metaInfo;
+	}
+
+	public void setMetaInfo(byte[] metaInfo) {
+		this.metaInfo = metaInfo;
+	}
 }

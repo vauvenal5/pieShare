@@ -3,21 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.service.shareService;
 
 import java.io.File;
+import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
  * @author Svetoslav
  */
 public interface IShareService {
-    
-    void shareFile(File file);
-    
-    void handleFile(FileTransferMetaMessage msg);
-    
+
+	void shareFile(File file);
+
+	void handleFile(FileTransferMetaMessage msg);
+	
+	void fileTransferComplete(FileTransferCompleteMessage msg);
+	
+	void handleActiveShare(PieFile pieFile);
 }

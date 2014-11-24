@@ -12,19 +12,16 @@ import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Servi
  *
  * @author richy
  */
-public class Base64Service implements IBase64Service
-{
+public class Base64Service implements IBase64Service {
 
-    @Override
-    public byte[] encode(byte[] in)
-    {
-        return Base64.encodeBase64(in);
-    }
+	@Override
+	public byte[] encode(byte[] in) {
+		return Base64.encodeBase64(in);
+	}
 
-    @Override
-    public byte[] decode(byte[] in)
-    {
-        return Base64.decodeBase64(in);
-    }
+	@Override
+	public byte[] decode(byte[] in) {
+		return Base64.decodeBase64(in);
+	}
 
 }
