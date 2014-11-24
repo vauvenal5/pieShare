@@ -7,5 +7,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
  * Created by vauvenal5 on 12/12/13.
  */
 public interface IReceiver extends Receiver {
-    void setExecutorService(IExecutorService service);
+
+	void setExecutorService(IExecutorService service);
+	void setClusterName(String name);
 }
