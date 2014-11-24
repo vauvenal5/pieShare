@@ -13,6 +13,7 @@ import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -30,9 +31,14 @@ public abstract class LocalFileEventTask implements IPieTask {
 	protected IClusterManagementService clusterManagementService;
 	protected IFileService fileService;
 	protected IHistoryService historyService;
-	private IFileFilterService fileFilterService;
+	protected IFileFilterService fileFilterService;
+	protected IFileEncryptionService fileEncrypterService;
 	
 	protected File file;
+
+	public void setFileEncrypterService(IFileEncryptionService fileEncrypterService) {
+		this.fileEncrypterService = fileEncrypterService;
+	}
 
 	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
@@ -66,7 +72,7 @@ public abstract class LocalFileEventTask implements IPieTask {
 		
 		this.fileService.waitUntilCopyFinished(this.file);
 		
-		return this.fileService.getPieFile(this.file);
+		return this.fileEncrypterService.encryptFile(this.fileService.getPieFile(file));
 	}
 
 	protected void doWork(FileMessageBase msg, PieFile file) {

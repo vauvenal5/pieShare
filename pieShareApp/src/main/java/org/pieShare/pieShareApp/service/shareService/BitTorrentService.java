@@ -32,6 +32,7 @@ import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -62,11 +63,16 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private Semaphore writePorts;
 	private IPieShareConfiguration configuration;
 	private IFileWatcherService fileWatcherService;
+	private IFileEncryptionService fileEncryptionService;
 
 	@PostConstruct
 	public void init() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		configuration = user.getPieShareConfiguration();
+	}
+
+	public void setFileEncryptionService(IFileEncryptionService fileEncryptionService) {
+		this.fileEncryptionService = fileEncryptionService;
 	}
 
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
@@ -194,7 +200,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 				targetFile.getParentFile().mkdirs();
 			}
 
-			Files.move(tmpFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			this.fileEncryptionService.decryptFile(file);
 
 			this.fileService.setCorrectModificationDate(file);
 
