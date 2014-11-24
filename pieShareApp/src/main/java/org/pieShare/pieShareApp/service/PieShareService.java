@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service;
 
 import java.util.ArrayList;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
@@ -19,6 +20,7 @@ import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
@@ -48,6 +50,12 @@ public class PieShareService {
 	private IClusterManagementService clusterManagementService;
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
+	private IConfigurationFactory configurationFactory;
+	private IBeanService beanService;
+
+	public void setBeanService(IBeanService beanService) {
+		this.beanService = beanService;
+	}
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -65,6 +73,10 @@ public class PieShareService {
 		this.clusterManagementService = service;
 	}
 
+	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
+		this.configurationFactory = configurationFactory;
+	}
+
 	public void start() {
 		//this.executorService.registerTask(SimpleMessage.class, PrintEventTask.class);
 
@@ -80,11 +92,18 @@ public class PieShareService {
 		 } catch (Exception ex) {
 		 ex.printStackTrace();
 		 }*/
-		PieUser user;
+		PieUser user = null;
 		ArrayList<PieUser> users = databaseService.findAllPieUser();
 		if (users != null && users.size() > 0) {
 			user = users.get(0);
 		}
+
+		if (user == null) {
+			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		}
+		
+		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), false));
+
 		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
@@ -92,7 +111,7 @@ public class PieShareService {
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
 		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
-                this.executorFactory.registerTask(FileChangedMessage.class, FileChangedTask.class);
+		this.executorFactory.registerTask(FileChangedMessage.class, FileChangedTask.class);
 
 		this.executorFactory.registerTask(LoginCommand.class, LoginTask.class);
 		this.executorFactory.registerTask(LogoutCommand.class, LogoutTask.class);
