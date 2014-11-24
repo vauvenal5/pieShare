@@ -125,4 +125,15 @@ public abstract class FileServiceBase implements IFileService {
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
 		return this.getPieFile(localFile);
 	}
+	
+	@Override
+	public PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException {
+		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativeFilePath());
+		return this.getPieFile(tmpFile);
+	}
+	
+	@Override
+	public PieFile getWorkingPieFile(PieFile file)  throws FileNotFoundException, IOException {
+		return this.getPieFile(file.getRelativeFilePath());
+	}
 }

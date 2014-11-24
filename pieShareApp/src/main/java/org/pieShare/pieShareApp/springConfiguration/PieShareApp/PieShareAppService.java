@@ -23,6 +23,7 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
 import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
+import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
@@ -98,6 +99,15 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setShareService(this.shareService());
+		return service;
+	}
+	
+	@Bean
+	@Lazy
+	public FileEncryptionService fileEncryptionService() {
+		FileEncryptionService service = new FileEncryptionService();
+		service.setFileService(this.localFileService());
+		service.setProviderService(this.utilities.providerService());
 		return service;
 	}
 
@@ -177,6 +187,7 @@ public class PieShareAppService {
 		service.setTmpFolderService(this.utilities.tempFolderService());
 		service.setFileWatcherService(this.apacheFileWatcherService());
 		service.setShutdownService(this.shutdownService());
+		service.setFileEncryptionService(this.fileEncryptionService());
 		service.bitTorrentServicePost();
 		return service;
 	}
