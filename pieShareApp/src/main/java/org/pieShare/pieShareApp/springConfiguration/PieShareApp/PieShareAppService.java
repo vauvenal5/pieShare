@@ -108,6 +108,7 @@ public class PieShareAppService {
 		FileEncryptionService service = new FileEncryptionService();
 		service.setFileService(this.localFileService());
 		service.setProviderService(this.utilities.providerService());
+		service.setBeanService(this.utilities.beanService());
 		return service;
 	}
 
