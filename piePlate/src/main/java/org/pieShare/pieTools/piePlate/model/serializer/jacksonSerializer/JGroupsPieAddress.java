@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer;
 
 import org.jgroups.Address;
@@ -14,25 +13,25 @@ import org.pieShare.pieTools.piePlate.model.IPieAddress;
  * @author Svetoslav
  */
 public class JGroupsPieAddress implements IPieAddress {
-    
-    private Address address;
-    private String cluster;
-    
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-    
-    public Address getAddress() {
-        return this.address;
-    }
 
-    @Override
-    public String getClusterName() {
-        return this.cluster;
-    }
+	private Address address;
+	private String cluster;
 
-    @Override
-    public void setClusterName(String cluster) {
-        this.cluster = cluster;
-    }
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Address getAddress() {
+		return this.address;
+	}
+
+	@Override
+	public String getClusterName() {
+		return this.cluster;
+	}
+
+	@Override
+	public void setClusterName(String cluster) {
+		this.cluster = cluster;
+	}
 }

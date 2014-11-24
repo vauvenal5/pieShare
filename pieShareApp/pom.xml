@@ -10,33 +10,46 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>pieShareApp</artifactId>
+	<repositories>
+		<repository>
+			<id>objectdb</id>
+			<name>ObjectDB Repository</name>
+			<url>http://m2.objectdb.com</url>
+		</repository>
+	</repositories>
 
+	<artifactId>pieShareApp</artifactId>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
       
+		<dependency>
+			<groupId>com.objectdb</groupId>
+			<artifactId>objectdb</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-vfs2</artifactId>
 			<version>2.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.0.2.RELEASE</version>
 		</dependency>
         
 		<dependency>
 			<groupId>org.pieShare.pieTools</groupId>
 			<artifactId>piePlate</artifactId>
 			<version>1.0-SNAPSHOT</version>
-		</dependency>
-        
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
 		</dependency>
             
 		<dependency>
@@ -45,7 +58,24 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
-        
+		
+		<dependency>
+			<groupId>com.turn</groupId>
+			<artifactId>ttorrent</artifactId>
+			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-log4j12</artifactId>
+				</exclusion>
+			</exclusions>   
+		</dependency>
+	 <dependency>
+	  <groupId>org.testng</groupId>
+	  <artifactId>testng</artifactId>
+	  <version>6.8.1</version>
+	  <scope>test</scope>
+	 </dependency>
 	</dependencies>
    
 </project>

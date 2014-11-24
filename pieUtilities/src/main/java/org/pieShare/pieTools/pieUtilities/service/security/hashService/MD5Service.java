@@ -6,11 +6,10 @@
 package org.pieShare.pieTools.pieUtilities.service.security.hashService;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.security.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
@@ -19,40 +18,81 @@ import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
  *
  * @author richy
  */
-public class MD5Service
-{
-    private static final PieLogger  md5Logger =  new PieLogger(MD5Service.class);
-    private MessageDigest messageDigest = null;
-    
-    private IProviderService provider;
-    
-    public void setProviderService(IProviderService service) {
-        this.provider = service;
-        
-        try
-        {
-            messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
-        }
-        catch (NoSuchAlgorithmException ex)
-        {
-            md5Logger.error("Error in MD5 Hash Algorithm, this shold no happen. Message: " + ex.getMessage());
-        } catch (NoSuchProviderException ex) {
-            //todo: error handling
-        }
-    }
-    
-    public MD5Service() {
-        
-    }
+public class MD5Service implements IHashService {
 
-    public byte[] hash(byte[] data)
-    {   
-        Validate.notNull(this.messageDigest);
+	private IProviderService provider;
 
-	messageDigest.update(data);
-	byte[] resultByte = messageDigest.digest();
-        this.messageDigest.reset();
+	public void setProviderService(IProviderService service) {
+		this.provider = service;
+	}
 
-        return resultByte;
-    }
+	public MD5Service() {
+
+	}
+
+	@Override
+	public byte[] hash(byte[] data) {
+		MessageDigest messageDigest = this.getMessageDigest();
+		Validate.notNull(messageDigest);
+		messageDigest.update(data);
+		byte[] resultByte = messageDigest.digest();
+		messageDigest.reset();
+
+		return resultByte;
+	}
+	
+	private MessageDigest getMessageDigest() {
+		MessageDigest messageDigest = null;
+		
+		try {
+			messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
+		} catch (NoSuchAlgorithmException ex) {
+			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm, this should not happen.", ex);
+		} catch (NoSuchProviderException ex) {
+			//todo: error handling
+			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm.", ex);
+		}
+		
+		return messageDigest;
+	}
+
+	@Override
+	public byte[] hashStream(InputStream stream) throws IOException {
+		//todo: maybe the stream should be created in here instead outside
+		//this way this function can close the stream in the end
+		MessageDigest messageDigest = this.getMessageDigest();
+		
+		byte[] buffer = new byte[1024];
+		int read = 0;
+		
+		while ((read = stream.read(buffer)) != -1) {
+			Validate.notNull(messageDigest);
+			messageDigest.update(buffer, 0, read);
+		}
+
+		byte[] resultByte = messageDigest.digest();
+		messageDigest.reset();
+		return resultByte;
+	}
+	
+	@Override
+	public byte[] hashStream(File file) throws IOException {
+		FileInputStream fis = new FileInputStream(file);
+		byte[] res = this.hashStream(fis);
+		fis.close();
+		return res;
+	}
+
+	@Override
+	public boolean isMD5Equal(byte[] first, byte[] second) {
+		if(first.length != second.length) return false;
+		
+		for(int i = 0; i < first.length; i++){
+			if(first[i] != second[i]){
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

@@ -1,7 +1,6 @@
 language: java
 jdk:
-  - oraclejdk7
-  - openjdk7
+  - oraclejdk8
 
 # whitelist
 branches:
@@ -12,7 +11,9 @@ branches:
 before_install:
   - mvn clean
 
+script:
+  - mvn verify
+
 after_success:
-  - mvn clean cobertura:cobertura 
-  - mvn replacer:replace 
-  - mvn coveralls:cobertura
+  - mvn jacoco:report
+  - mvn coveralls:report
