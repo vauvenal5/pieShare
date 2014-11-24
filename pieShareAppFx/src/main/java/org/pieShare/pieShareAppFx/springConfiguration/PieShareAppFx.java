@@ -11,15 +11,15 @@ import javafx.fxml.FXMLLoader;
 import org.pieShare.pieShareAppFx.ControllerFactory;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.controller.BasePreferencesController;
-import org.pieShare.pieShareAppFx.controller.CloudsListViewController;
 import org.pieShare.pieShareAppFx.controller.ClusterSettingsController;
 import org.pieShare.pieShareAppFx.controller.FileFilterSettingsController;
 import org.pieShare.pieShareAppFx.controller.LoginController;
 import org.pieShare.pieShareAppFx.controller.MainSceneController;
-import org.pieShare.pieShareAppFx.entryModels.BasePreferencesEntry;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
+import org.pieShare.pieShareAppFx.FXMLLoaderExistingController;
 import org.pieShare.pieShareAppFx.animations.SpinAnimation;
+import org.pieShare.pieShareAppFx.controller.TwoColumnListViewController;
 import org.pieShare.pieShareAppFx.controller.WorkingMessageController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +56,14 @@ public class PieShareAppFx {
 
 	@Bean
 	@Lazy
+	@Scope(value = "prototype")
+	public FXMLLoaderExistingController fxmlLoaderExistingController() {
+		FXMLLoaderExistingController loader = new FXMLLoaderExistingController();
+		return loader;
+	}
+
+	@Bean
+	@Lazy
 	public FXMLController mainController() {
 		FXMLController controller = new FXMLController();
 		controller.setBeanService(this.utilities.beanService());
@@ -69,6 +77,10 @@ public class PieShareAppFx {
 		MainSceneController controller = new MainSceneController();
 		controller.setBeanService(this.utilities.beanService());
 		controller.setClusterManagementService(plate.clusterManagementService());
+		controller.setPreferencesListViewController(twoColumnListViewController());
+		controller.setCloudsListViewController(twoColumnListViewController());
+		controller.setLoginController(loginController());
+		controller.setClusterSettingsController(clusterSettingsController());
 		return controller;
 	}
 
@@ -78,7 +90,7 @@ public class PieShareAppFx {
 		ClusterSettingsController controller = new ClusterSettingsController();
 		controller.setBeanService(utilities.beanService());
 		controller.setExecuterService(utilities.pieExecutorService());
-		controller.setMainSceneController(mainSceneController());
+		controller.setLoginStateChangedEvent(utilities.eventBase());
 		controller.setLogoutTask(tasks.logoutTask());
 		return controller;
 	}
@@ -98,17 +110,8 @@ public class PieShareAppFx {
 		controller.setLoginTask(tasks.loginTask());
 		controller.setPieExecutorService(utilities.pieExecutorService());
 		controller.setBeanService(utilities.beanService());
-		controller.setMainSceneController(mainSceneController());
-		return controller;
-	}
-
-	@Bean
-	@Lazy
-	public CloudsListViewController cloudsListViewController() {
-		CloudsListViewController controller = new CloudsListViewController();
-		controller.setBeanService(utilities.beanService());
-		controller.setClusterManagementService(plate.clusterManagementService());
-		controller.setMainSceneController(mainSceneController());
+		controller.setLoginStateChangedEventBase(utilities.eventBase());
+		controller.setBasePreferencesController(basePreferencesController());
 		return controller;
 	}
 
@@ -120,14 +123,6 @@ public class PieShareAppFx {
 		controller.setBeanService(utilities.beanService());
 		controller.setDatabaseService(services.databaseService());
 		controller.setApplicationConfigurationService(services.applicationConfigurationService());
-		return controller;
-	}
-
-	@Bean
-	@Lazy
-	public BasePreferencesEntry basePreferencesEntry() {
-		BasePreferencesEntry controller = new BasePreferencesEntry();
-		controller.setBasePreferencesController(basePreferencesController());
 		return controller;
 	}
 
@@ -156,6 +151,15 @@ public class PieShareAppFx {
 	@Scope(value = "prototype")
 	public WorkingMessageController workingMessageController() {
 		WorkingMessageController controller = new WorkingMessageController();
+		controller.setBeanService(utilities.beanService());
+		return controller;
+	}
+
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public TwoColumnListViewController twoColumnListViewController() {
+		TwoColumnListViewController controller = new TwoColumnListViewController();
 		controller.setBeanService(utilities.beanService());
 		return controller;
 	}

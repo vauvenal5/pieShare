@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class FXMLController {
 
@@ -36,7 +37,7 @@ public class FXMLController {
 			mainStage.show();
 		} catch (IOException ex) {
 			//todo-sv: error handling
-			ex.printStackTrace();
+			PieLogger.error(this.getClass(), "Error", ex);
 		}
 	}
 
