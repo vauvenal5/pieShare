@@ -20,9 +20,14 @@ public class PieLogger {
 		log.info(message, th);
 	}
 	
+	public static void info(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.info(message, o);
+	}
+	
 	public static void info(Class clazz, String message, Object... os) {
 		Logger log = getLogger(clazz);
-		log.info(message);
+		log.info(message, os);
 	}
 	
 	public static void debug(Class clazz, String message) {
@@ -43,5 +48,20 @@ public class PieLogger {
 	public static void error(Class clazz, String message, Throwable thr) {
 		Logger log = getLogger(clazz);
 		log.error(message, thr);
+	}
+	
+	public static void warn(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.warn(message, o);
+	}
+	
+	public static void trace(Class clazz, String message, Object o) {
+		Logger log = getLogger(clazz);
+		log.trace(message, o);
+	}
+	
+	public static void trace(Class clazz, String message, Object... o) {
+		Logger log = getLogger(clazz);
+		log.trace(message, o);
 	}
 }

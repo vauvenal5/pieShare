@@ -11,31 +11,36 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
+import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
-import javafx.util.Callback;
+import javafx.scene.layout.GridPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareAppFx.conrolExtensions.PreferencesListViewItems;
-import org.pieShare.pieShareAppFx.preferences.api.IPreferencesEntry;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareAppFx.controller.api.IController;
+import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
+import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
+import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
+import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * FXML Controller class
@@ -44,30 +49,59 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  */
 public class MainSceneController implements Initializable {
 
-	private ClusterSettingsController clusterSettingsController;
+	private IClusterManagementService clusterManagementService;
 	private IBeanService beanService;
+	private TwoColumnListViewController preferencesListViewController;
+	private TwoColumnListViewController cloudsListViewController;
+	private LoginController loginController;
+	private ClusterSettingsController clusterSettingsController;
+
+	@FXML
+	private GridPane mainGridPane;
 
 	@FXML
 	private BorderPane mainBorderPane;
 
 	@FXML
-	private StackPane cloudsStackPane;
+	private BorderPane borderPaneClouds;
 
 	@FXML
 	private SplitPane mainSplitPane;
 
 	@FXML
-	private ListView<IPreferencesEntry> settingsListView;
-	private ObservableList<IPreferencesEntry> settingsListViewItems;
+	private Accordion mainAccordion;
 
-	private AnchorPane centerPane;
-	
+	@FXML
+	private TitledPane titelPaneClouds;
+
+	@FXML
+	private Button addButton;
+
+	@FXML
+	private BorderPane preferencesBorderPane;
+
+	public void setClusterSettingsController(ClusterSettingsController clusterSettingsController) {
+		this.clusterSettingsController = clusterSettingsController;
+	}
+
+	public void setPreferencesListViewController(TwoColumnListViewController preferencesListViewController) {
+		this.preferencesListViewController = preferencesListViewController;
+	}
+
+	public void setLoginController(LoginController loginController) {
+		this.loginController = loginController;
+	}
+
+	public void setCloudsListViewController(TwoColumnListViewController cloudsListViewController) {
+		this.cloudsListViewController = cloudsListViewController;
+	}
+
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
 
-	public void setClusterSettingsController(ClusterSettingsController settingsController) {
-		this.clusterSettingsController = settingsController;
+	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
+		this.clusterManagementService = clusterManagementService;
 	}
 
 	/**
@@ -75,7 +109,49 @@ public class MainSceneController implements Initializable {
 	 */
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
-		centerPane = new AnchorPane();
+
+		mainGridPane.setGridLinesVisible(false);
+		mainGridPane.getStyleClass().add("gridPane");
+		mainBorderPane.setCenter(mainGridPane);
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+
+		try {
+			preferencesBorderPane.setCenter(preferencesListViewController.getControl());
+			borderPaneClouds.setCenter(cloudsListViewController.getControl());
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Error setting PreferencesListView to Main Scene", ex);
+			return;
+		}
+
+		if (user.getCloudName() != null) {
+			addButton.setDisable(true);
+			cloudsListViewController.addItem(new ITwoColumnListViewItem() {
+
+				@Override
+				public Node getSecondColumn() {
+					return new Label(user.getCloudName());
+				}
+
+				@Override
+				public Node getFirstColumn() {
+					return null;
+				}
+
+				@Override
+				public IController getController() {
+					return null;
+				}
+			});
+		}
+
+		mainAccordion.setExpandedPane(titelPaneClouds);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
+		}
+
 		mainSplitPane.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
@@ -83,74 +159,156 @@ public class MainSceneController implements Initializable {
 			}
 		});
 
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		InputStream cloudsListViewStream = getClass().getResourceAsStream("/fxml/CloudsListView.fxml");
-		try {
-			this.cloudsStackPane.getChildren().add(loader.load(cloudsListViewStream));
-		} catch (IOException ex) {
-			//ToDO: Handle
-			Logger.getLogger(MainSceneController.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		clusterManagementService.getClusterAddedEventBase().addEventListener(new IClusterAddedListener() {
+			@Override
+			public void handleObject(ClusterAddedEvent event) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+						if (user.getCloudName() == null) {
+							return;
+						}
+						cloudsListViewController.clearAll();
+						cloudsListViewController.addItem(new ITwoColumnListViewItem() {
 
-		settingsListViewItems = FXCollections.observableArrayList();
+							@Override
+							public Node getSecondColumn() {
+								return new Label(user.getCloudName());
+							}
 
-		settingsListView.setOnMouseClicked(new EventHandler<MouseEvent>() {
+							@Override
+							public Node getFirstColumn() {
+								return null;
+							}
+
+							@Override
+							public IController getController() {
+								return null;
+							}
+						});
+					}
+				});
+			}
+		});
+
+		clusterManagementService.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+			@Override
+			public void handleObject(ClusterRemovedEvent ClusterRemovedEvent) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						//refreshCloudList();
+					}
+				});
+			}
+		});
+
+		preferencesListViewController.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent arg0) {
-				if (settingsListView.getSelectionModel().getSelectedItems() != null) {
-					setPreferencesControl(settingsListView.getSelectionModel().getSelectedItem());
+				if (preferencesListViewController.getSelectedItem() != null) {
+					try {
+						setPreferencesControl(preferencesListViewController.getSelectedItem());
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Error while setting controller", ex);
+					}
 				}
 			}
 		});
 
-		settingsListView.setCellFactory(new Callback<ListView<IPreferencesEntry>, ListCell<IPreferencesEntry>>() {
+		cloudsListViewController.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
-			public ListCell<IPreferencesEntry> call(final ListView<IPreferencesEntry> param) {
-				return new PreferencesListViewItems();
+			public void handle(MouseEvent arg0) {
+				if (cloudsListViewController.getSelectedItem() != null) {
+					try {
+						setClusterSettingControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Not able to set ClusterSettings Control", ex);
+					}
+				}
+			}
+		});
+
+		loginController.getLoginStateChangedEventBase().addEventListener(new ILoginStateChangedListener() {
+
+			@Override
+			public void handleObject(LoginStateChangedEvent event) {
+				if (event.isIsLoggedIn()) {
+					loginComplete();
+				}
+			}
+		});
+
+		clusterSettingsController.getLoginStateChangedEvent().addEventListener(new ILoginStateChangedListener() {
+
+			@Override
+			public void handleObject(LoginStateChangedEvent event) {
+				if (!event.isIsLoggedIn()) {
+					try {
+						setLoginControl();
+					}
+					catch (IOException ex) {
+						PieLogger.error(this.getClass(), "Error setting login control", ex);
+					}
+				}
 			}
 		});
 
 		//Set entries for settings list view
-		settingsListViewItems.add(beanService.getBean("basePreferencesEntry"));
-		settingsListView.setItems(settingsListViewItems);
+		preferencesListViewController.addItem(beanService.getBean(FileFilterSettingsController.class));
+		preferencesListViewController.addItem(beanService.getBean(BasePreferencesController.class));
 	}
 
 	@FXML
 	private void handleAddCloudAction(ActionEvent event) {
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/Login.fxml");
-			mainBorderPane.setCenter(loader.load(url));
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
+			setLoginControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login control", ex);
 		}
 	}
 
-	public void setClusterSettingControl(IClusterService cluster) {
-		clusterSettingsController.setClusterFile(cluster);
-		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
+	private void loginComplete() {
 		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/CloudsSettingsPanel.fxml");
-			mainBorderPane.setCenter(loader.load(url));
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
+			setClusterSettingControl();
+		}
+		catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Not able to set login cluster settings control", ex);
+		}
+		PieUser user = beanService.getBean(PieUser.class);
+
+		for (int i = 1; i < mainAccordion.getPanes().size(); i++) {
+			mainAccordion.getPanes().get(i).setDisable(!user.isIsLoggedIn());
 		}
 	}
 
-	public void setPreferencesControl(IPreferencesEntry cluster) {
+	public void setToMainCenter(Node node) {
+	    
+		mainGridPane.getChildren().clear();
+		mainGridPane.add(node, 0, 1);
+	}
+
+	public void setLoginControl() throws IOException {
+		setToMainCenter(loginController.getControl());
+	}
+
+	public void setClusterSettingControl() throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
-		try {
-			InputStream url = getClass().getResourceAsStream("/fxml/settingsPanels/BasePreferencesPanel.fxml");
-			centerPane.getChildren().clear();
-			centerPane.getChildren().add(loader.load(url));
-			boolean cc = centerPane.isResizable();
-			mainBorderPane.setCenter(centerPane);
-			mainBorderPane.setAlignment(centerPane, Pos.CENTER);
-		} catch (IOException ex) {
-			//ToDO: Handle
-			ex.printStackTrace();
+
+		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		if (user.isIsLoggedIn()) {
+			setToMainCenter(clusterSettingsController.getControl());
 		}
+		else {
+			setLoginControl();
+		}
+	}
+
+	public void setPreferencesControl(ITwoColumnListViewItem entry) throws IOException {
+		setToMainCenter(entry.getController().getControl());
 	}
 }

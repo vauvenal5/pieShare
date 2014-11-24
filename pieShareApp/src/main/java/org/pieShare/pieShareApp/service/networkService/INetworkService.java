@@ -20,4 +20,6 @@ public interface INetworkService {
 	InetAddress getLocalHost(boolean invalidate);
 	
 	int getAvailablePortStartingFrom(int port);
+	
+	int getNumberOfAvailablePorts(int firstPort, int lastPort);
 }

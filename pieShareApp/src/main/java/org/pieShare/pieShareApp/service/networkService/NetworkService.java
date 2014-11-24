@@ -37,18 +37,25 @@ public class NetworkService implements INetworkService {
 	public int getAvailablePortStartingFrom(int port) {
 		
 		for (int p = port; p <= this.maxPort; p++) {
-			try {
+			if(this.checkPort(p))
+			{
+				return p;
+			}
+		}
+		//todo: throw exception
+		return -1;
+	}
+	
+	private boolean checkPort(int p) {
+		try {
 				ServerSocket tmpSocket = new ServerSocket(p);
 				tmpSocket.setReuseAddress(true);
 				tmpSocket.close();
-				return p;
+				return true;
 			} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "Find port failed!", ex);
 			}
-		}
-
-		//todo: throw exception
-		return -1;
+		return false;
 	}
 
 	@Override
@@ -123,5 +130,18 @@ public class NetworkService implements INetworkService {
 
 		this.address = possibleAds.get(0);
 		return this.address;
+	}
+
+	@Override
+	public int getNumberOfAvailablePorts(int firstPort, int lastPort) {
+		int count = 0;
+		
+		for(int i = firstPort; i <= lastPort; i++) {
+			if(this.checkPort(i)) {
+				count++;
+			}
+		}
+		
+		return count;
 	}
 }

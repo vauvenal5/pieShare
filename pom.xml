@@ -6,15 +6,22 @@
 	<artifactId>pieShare</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jacoco.out.path>${session.executionRootDirectory}/target</jacoco.out.path>
+		<jacoco.out.file>jacoco.exec</jacoco.out.file>
+	</properties>
 
 	<modules>
 		<module>pieUtilities</module>
 		<module>piePlate</module>
 		<module>pieShareApp</module>
 		<module>pieShareAppFx</module>
+		<module>pieShareAppIntegrationTests</module>
 	</modules>
 
-	<dependencies>	
+	<dependencies>		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -25,6 +32,13 @@
 				  <groupId>commons-logging</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		
+		<!--todo:not needed if we don't log into lilith-->
+		<dependency>
+			<groupId>de.huxhorn.lilith</groupId>
+			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
+			<version>0.9.44</version>
 		</dependency>
 		
 		<dependency> 
@@ -41,7 +55,7 @@
 	</dependencies>
 	
 
-	<build>
+	<build>		
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -57,70 +71,73 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
-				<version>2.2.0</version>
+				<version>3.0.1</version>
 				<configuration>
 					<sourceEncoding>utf8</sourceEncoding>
 					<sourceDirectories>
-						<sourceDirectory>/home/travis/build/vauvenal5/pieShare</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieUtilities/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/piePlate/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareApp/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareAppFx/src/main/java</sourceDirectory>
 					</sourceDirectories>
 				</configuration>
 			</plugin>
-            
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<formats>
-						<format>xml</format>
-						<format>html</format>
-					</formats>
-					<maxmem>256m</maxmem>
-                    
-					<!-- aggregated reports for multi-module projects -->
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-            
-			<plugin>
-				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>replacer</artifactId>
-				<version>1.5.2</version>
-				<configuration>
-					<file>/home/travis/build/vauvenal5/pieShare/target/site/cobertura/coverage.xml</file>
-					<regex>true</regex>
-					<replacements>
-						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/pieUtilities)</token>
-							<value>filename=\"pieUtilities/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/pieCeption)</token>
-							<value>filename=\"pieCeption/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>filename=\"(?=org/pieShare/pieTools/piePlate)</token>
-							<value>filename=\"piePlate/src/main/java/</value>
-						</replacement>
-						<replacement>
-							<token>filename=\"(?=org/pieShare/pieShareApp)</token>
-							<value>filename=\"pieShareApp/src/main/java/</value>
-						</replacement>
-					</replacements>
-				</configuration>
-			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.4.3</version>
+				<version>2.7</version>
 				<configuration>
 					<encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
+				<!--todo:Stop copying all classes after jacoco has be reconfigured to be able to work with
+				multimodule maven projects. See https://github.com/jacoco/jacoco/pull/97-->
+				<executions>
+				  <execution>
+					<phase>verify</phase>
+					<goals>
+					  <goal>copy-resources</goal>
+					</goals>
+					<configuration>
+					  <outputDirectory>${jacoco.out.path}/classes</outputDirectory>
+					  <resources>          
+						<resource>
+						  <directory>${project.build.directory}/classes</directory>
+						</resource>
+					  </resources>              
+					</configuration>            
+				  </execution>
+				</executions>
 			</plugin>
-            
+			
+			<!--todo:Reconfigure jacoco when https://github.com/jacoco/jacoco/pull/97 is merged and 
+			new version is released!-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.2.201409121644</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${jacoco.out.path}/${jacoco.out.file}</destFile>
+							<propertyName>jacoco.agent.arg</propertyName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18</version>
+				<configuration>
+				  <argLine>${jacoco.agent.arg}</argLine>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 </project>

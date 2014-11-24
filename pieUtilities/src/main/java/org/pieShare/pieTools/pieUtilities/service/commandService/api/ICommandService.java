@@ -13,5 +13,5 @@ import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
  */
 public interface ICommandService<T extends ICommand> {
 
-	public void executeCommand(T command);
+	void executeCommand(T command);
 }
