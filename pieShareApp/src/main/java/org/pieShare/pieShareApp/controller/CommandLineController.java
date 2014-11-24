@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.controller;
 
 import org.pieShare.pieShareApp.controller.api.ISimpleMessageController;
@@ -15,16 +14,16 @@ import org.pieShare.pieTools.pieUtilities.service.commandService.api.ICommandSer
  * @author Svetoslav
  */
 public class CommandLineController implements ISimpleMessageController {
-    
-    private ICommandService<SimpleMessageCommand> simpleMessageService;
-    
-    public void setSimpleMessageService(ICommandService<SimpleMessageCommand> service) {
-        this.simpleMessageService = service;
-    }
 
-    @Override
-    public void handleCommand(SimpleMessageCommand command) {
-        this.simpleMessageService.executeCommand(command);
-    }
-    
+	private ICommandService<SimpleMessageCommand> simpleMessageService;
+
+	public void setSimpleMessageService(ICommandService<SimpleMessageCommand> service) {
+		this.simpleMessageService = service;
+	}
+
+	@Override
+	public void handleCommand(SimpleMessageCommand command) {
+		this.simpleMessageService.executeCommand(command);
+	}
+
 }

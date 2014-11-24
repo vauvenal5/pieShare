@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.pieShare.pieShareAppFx.controller.LoginController">
+	<children>
+		<TextField fx:id="userNameField" promptText="username" />
+		<PasswordField fx:id="passwordField" layoutY="33.0" promptText="password" />
+		<Button defaultButton="true" layoutX="172.0" mnemonicParsing="false" onAction="#handleLoginAction" text="Login" />
+      <Label fx:id="labelWaitIcon" layoutX="172.0" layoutY="59.0" text="Label WAIT sync" />
+      <PasswordField fx:id="passwordFieldRepeat" layoutY="66.0" promptText="repeat password" />
+      <Hyperlink fx:id="resetPasswordLink" layoutX="166.0" layoutY="34.0" onAction="#handlePasswordResetLink" text="Reset Password" />
+      <BorderPane fx:id="additionalOptionsPane" layoutY="104.0" />
+	</children>
+</AnchorPane>

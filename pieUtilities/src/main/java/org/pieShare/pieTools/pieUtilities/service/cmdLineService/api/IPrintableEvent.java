@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.cmdLineService.api;
 
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 
 /**
  *
  * @author Svetoslav
  */
 public interface IPrintableEvent extends IPieEvent {
-    public String getText();
+
+	public String getText();
 }

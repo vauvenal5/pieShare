@@ -5,30 +5,37 @@
  */
 package org.pieShare.pieShareApp.service.fileService.api;
 
-import org.pieShare.pieShareApp.model.message.AllFilesSyncMessage;
-import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMessageBlocked;
-import org.pieShare.pieShareApp.model.message.FileTransferRequestMessage;
-import org.pieShare.pieShareApp.service.fileService.PieFile;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import org.pieShare.pieShareApp.model.message.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
  * @author richy
  */
-public interface IFileService
-{
+public interface IFileService {
+	
+	List<PieFile> getAllFiles() throws IOException;
 
-	public void remoteFileChange(FileChangedMessage message);
-
-	public void localFileChange(FileChangedMessage message);
-
-	public void remoteAllFilesSyncRequest(AllFilesSyncMessage msg);
-
-	public void sendAllFilesSyncRequest();
-
-	public void fileTransferRequestReceived(FileTransferRequestMessage msg);
-
-	public void fileTransfereMessage(FileTransferMessageBlocked msg);
-
-	public void sendFileTransferRequenst(FileTransferRequestMessage requestMsg);
+	void deleteRecursive(PieFile file);
+	
+	void waitUntilCopyFinished(File file);
+	
+	//todo-FileServie: which is the best way to handle not existing files:
+			//return null
+			//throw Exception
+			//pieFile.exists()
+	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+	
+    PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
+	
+	void setCorrectModificationDate(PieFile file);
+	
+	Path relitivizeFilePath(File file);
+	Path getAbsolutePath(PieFile file);
 }

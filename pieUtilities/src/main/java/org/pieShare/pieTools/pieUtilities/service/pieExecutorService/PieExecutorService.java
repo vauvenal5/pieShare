@@ -3,92 +3,63 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEvent;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieEventTask;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieTask;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Svetoslav
  */
-public class PieExecutorService implements IExecutorService{
-    
-    private ExecutorService executor;
-    private Map<Class, Class> tasks;
-    private IBeanService beanService;
-    
-    public PieExecutorService() {
-    }
-    
-    public void setExecutorService(ExecutorService executor) {
-        this.executor = executor;
-    }
-    
-    public void setBeanService(IBeanService service) {
-        this.beanService = service;
-    }
-    
-    public void setMap(Map<Class, Class> map) {
-        this.tasks = map;
-    }
+public class PieExecutorService implements IExecutorService, IShutdownableService {
 
-    @Override
-    public void execute(IPieTask task) {
-            Validate.notNull(task);
-            this.executor.execute(task);
-    }
-    
-    @Override
-    public void handlePieEvent(IPieEvent event) throws PieExecutorServiceException {
-        Validate.notNull(event);
-        Class taskClass = this.tasks.get(event.getClass());
-        
-        try {
-            Validate.notNull(taskClass);
-        } catch(NullPointerException ex) {
-            throw new PieExecutorServiceException("No task registered for given event!", ex);
-        }
-        
-        IPieEventTask task = null;
-        try {
-            task = (IPieEventTask)this.beanService.getBean(taskClass);
-        } catch(BeanServiceError ex) {
-            throw new PieExecutorServiceException("Could not create task!", ex);
-        }
-        
-        task.setMsg(event);
-        this.executor.execute(task);
-    }
-    
-    private void register(Class event, Class task) {
-        Validate.notNull(event);
-        Validate.notNull(task);
-        
-        this.tasks.put(event, task);
-    }
+	private ExecutorService executor;
+	private IPieExecutorTaskFactory executorFactory;
 
-    @Override
-    public <P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<P> event, Class<T> task) {
-        this.register(event, task);
-    }
+	public PieExecutorService() {
+	}
 
-    @Override
-    public <X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerExtendedTask(Class<X> event, Class<T> task) {
-        this.register(event, task);
-    }
-    
+	public void setExecutor(ExecutorService executor) {
+		this.executor = executor;
+	}
+
+	public void setExecutorFactory(IPieExecutorTaskFactory executorFactory) {
+		this.executorFactory = executorFactory;
+	}
+	
+	private void executeInExecutorService(IPieTask task) {
+		
+	}
+
+	@Override
+	public void execute(IPieTask task) {
+		Validate.notNull(task);
+		try{
+			this.executor.execute(task);
+		}
+		catch(NullPointerException ex) {
+			PieLogger.info(this.getClass(), "Exception in PieExecutorService!", ex);
+		}
+	}
+
+	@Override
+	public void handlePieEvent(IPieEvent event) throws PieExecutorTaskFactoryException {
+		IPieEventTask task = this.executorFactory.getTask(event);
+		this.execute(task);
+	}
+
+	@Override
+	public void shutdown() {
+		this.executor.shutdown();
+	}
 }
