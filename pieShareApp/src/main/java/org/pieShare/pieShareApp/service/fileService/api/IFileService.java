@@ -34,6 +34,10 @@ public interface IFileService {
 	
     PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
 	
+	PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException;
+	
+	PieFile getWorkingPieFile(PieFile file) throws FileNotFoundException, IOException;
+	
 	void setCorrectModificationDate(PieFile file);
 	
 	Path relitivizeFilePath(File file);
