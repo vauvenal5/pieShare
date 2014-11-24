@@ -44,7 +44,6 @@ public class LoginTask implements ILoginTask {
 	private IHistoryService historyService;
 	
 	private File pwdFile;
-	private IFileService fileService;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
@@ -52,10 +51,6 @@ public class LoginTask implements ILoginTask {
 
 	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
-	}
-	
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
 	}
 
 	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
