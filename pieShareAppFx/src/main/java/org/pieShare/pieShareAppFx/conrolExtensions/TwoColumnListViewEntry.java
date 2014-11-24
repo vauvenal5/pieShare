@@ -3,7 +3,7 @@ package org.pieShare.pieShareAppFx.conrolExtensions;
 import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.GridPane;
-import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
+import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
 
 /**
  *
@@ -11,10 +11,10 @@ import org.pieShare.pieShareAppFx.conrolExtensions.api.ITwoColumnListView;
  *
  * Inspired by: http://www.billmann.de/2013/07/03/javafx-custom-listcell/
  */
-public class TwoColumnListView extends ListCell<ITwoColumnListView> {
+public class TwoColumnListViewEntry extends ListCell<ITwoColumnListViewItem> {
 
 	@Override
-	public void updateItem(ITwoColumnListView entry, boolean empty) {
+	public void updateItem(ITwoColumnListViewItem entry, boolean empty) {
 		super.updateItem(entry, empty);
 		if (empty) {
 			setText(null);

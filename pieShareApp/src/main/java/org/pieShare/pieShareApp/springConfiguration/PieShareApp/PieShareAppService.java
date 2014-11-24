@@ -138,6 +138,7 @@ public class PieShareAppService {
 	}
 
 	@Bean
+        @Lazy
 	public LocalFileService localFileService() {
 		LocalFileService service = new LocalFileService();
 		this.fileServiceBase(service);
@@ -146,6 +147,7 @@ public class PieShareAppService {
 	}
 	
 	@Bean
+        @Lazy
 	public HistoryFileService historyFileService() {
 		HistoryFileService service = new HistoryFileService();
 		this.fileServiceBase(service);
@@ -154,6 +156,7 @@ public class PieShareAppService {
 	}
 	
 	@Bean
+        @Lazy
 	public HistoryService historyService() {
 		HistoryService service = new HistoryService();
 		service.setComparerService(this.comparerService());
