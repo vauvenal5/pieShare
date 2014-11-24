@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 
 /**
@@ -32,7 +31,7 @@ public class MD5Service implements IHashService {
 
 	@Override
 	public byte[] hash(byte[] data) {
-		MessageDigest messageDigest = this.getMessageDigest();
+		MessageDigest messageDigest = provider.getMessageDigest();
 		Validate.notNull(messageDigest);
 		messageDigest.update(data);
 		byte[] resultByte = messageDigest.digest();
@@ -40,31 +39,16 @@ public class MD5Service implements IHashService {
 
 		return resultByte;
 	}
-	
-	private MessageDigest getMessageDigest() {
-		MessageDigest messageDigest = null;
-		
-		try {
-			messageDigest = MessageDigest.getInstance(this.provider.getFileHashAlorithm(), this.provider.getProviderName());
-		} catch (NoSuchAlgorithmException ex) {
-			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm, this should not happen.", ex);
-		} catch (NoSuchProviderException ex) {
-			//todo: error handling
-			PieLogger.error(this.getClass(), "Error in MD5 Hash Algorithm.", ex);
-		}
-		
-		return messageDigest;
-	}
 
 	@Override
 	public byte[] hashStream(InputStream stream) throws IOException {
 		//todo: maybe the stream should be created in here instead outside
 		//this way this function can close the stream in the end
-		MessageDigest messageDigest = this.getMessageDigest();
-		
+		MessageDigest messageDigest = provider.getMessageDigest();
+
 		byte[] buffer = new byte[1024];
 		int read = 0;
-		
+
 		while ((read = stream.read(buffer)) != -1) {
 			Validate.notNull(messageDigest);
 			messageDigest.update(buffer, 0, read);
@@ -74,7 +58,7 @@ public class MD5Service implements IHashService {
 		messageDigest.reset();
 		return resultByte;
 	}
-	
+
 	@Override
 	public byte[] hashStream(File file) throws IOException {
 		FileInputStream fis = new FileInputStream(file);
@@ -85,14 +69,15 @@ public class MD5Service implements IHashService {
 
 	@Override
 	public boolean isMD5Equal(byte[] first, byte[] second) {
-		if(first.length != second.length) return false;
-		
-		for(int i = 0; i < first.length; i++){
-			if(first[i] != second[i]){
+		if (first.length != second.length) {
+			return false;
+		}
+
+		for (int i = 0; i < first.length; i++) {
+			if (first[i] != second[i]) {
 				return false;
 			}
 		}
 		return true;
 	}
-
 }

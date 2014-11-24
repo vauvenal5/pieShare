@@ -5,7 +5,9 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.security;
 
+import java.security.MessageDigest;
 import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
 
 /**
  *
@@ -15,9 +17,13 @@ public interface IProviderService {
 
 	String getProviderName();
 
-	String getFileHashAlorithm();
+	Cipher getFileHashCipher();
 
 	Cipher getPasswordEncryptioCipher();
 
 	Cipher getEnDeCryptCipher();
+	
+	SecretKeyFactory getSecretKeyFactory();
+	
+	MessageDigest getMessageDigest();
 }
