@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - oraclejdk8
+
+# whitelist
+branches:
+  only:
+    - master
+    - development
+
+before_install:
+  - mvn clean
+
+script:
+  - mvn verify
+
+after_success:
+  - mvn jacoco:report
+  - mvn coveralls:report

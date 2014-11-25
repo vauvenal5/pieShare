@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+   
+	<import resource="classpath*:contexts/piePlateApplicationContext.xml" />
+	<import resource="classpath*:contexts/pieUtilitiesApplicationContext.xml" />
+	<import resource="classpath*:contexts/pieShareAppModel.xml" />
+	<import resource="classpath*:contexts/service/pieShareAppAction.xml" />
+    
+  
+	<bean id="pieFile" class="org.pieShare.pieShareApp.service.fileService.PieFile" scope="prototype">
+	</bean> 
+ 
+	<bean id="pieShareService" class="org.pieShare.pieShareApp.service.PieShareService">
+		<property name="executorService" ref="pieExecutorService"/>
+		<property name="parserService" ref="pieCommandParser"/>
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+		<property name="shutdownService" ref="shutdownService"/>
+	</bean>
+
+  
+	<bean id="fileService" class="org.pieShare.pieShareApp.service.fileService.FileService" lazy-init="true">
+		<property name="executorService" ref="pieExecutorService"/>
+		<property name="shareService" ref="shareService"/>
+		<property name="fileWatcher" ref="fileWatcher"/>
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="pieShareAppConfiguration" ref="pieShareAppConfiguration"/>
+		<property name="md5Service" ref="md5Service"/>
+		<property name="comparerService" ref="comparerService"/>
+		<property name="requestService" ref="requestService"/>
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+	</bean>
+    
+	<bean id="fileWatcher" class="org.pieShare.pieShareApp.service.fileListenerService.ApacheFileWatcher" lazy-init="true">    
+		<property name="fileListener" ref="fileListener"/>
+	</bean>
+    
+	<bean id="fileListener" class="org.pieShare.pieShareApp.service.fileListenerService.ApacheDefaultFileListener" lazy-init="true">
+		<property name="fileObserver" ref="fileObserver"/>   
+		<property name="executorService" ref="pieExecutorService"/> 
+		<property name="beanService" ref="pieBeanService"/>     
+	</bean>
+    
+	<bean id="simpleMessageCommandService" lazy-init="true" class="org.pieShare.pieShareApp.service.commandService.SimpleMessageCommandService">
+	</bean>
+    
+	<bean id="simpleMessageActionService" class="org.pieShare.pieShareApp.service.actionService.SimpleMessageActionService" lazy-init="true">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="commandService" ref="simpleMessageCommandService"/>
+	</bean>
+    
+	<bean id="pieShareAppConfiguration" class="org.pieShare.pieShareApp.service.configurationService.PieShareAppConfiguration" lazy-init="true">
+		<property name="configurationReader" ref="configurationReader"/>
+	</bean>
+    
+	<bean id="loginCommandService" class="org.pieShare.pieShareApp.service.commandService.LoginCommandService">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="passwordEncryptionService" ref="passwordEncryptionService"/>
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+	</bean>
+
+	<bean id="fileObserver" class="org.pieShare.pieShareApp.service.fileService.FileObserver" scope="prototype">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="executorService" ref="pieExecutorService"/>
+	</bean>
+    
+	<bean id="shareService" class="org.pieShare.pieShareApp.service.shareService.BitTorrentService" lazy-init="true">
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+		<property name="configurationService" ref="pieShareAppConfiguration"/>
+		<property name="fileUtileService" ref="fileUtileService"/>
+		<property name="tmpFolderService" ref="tempFolderService"/>
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="base64Service" ref="base64Service"/>
+		<property name="networkService" ref="networkService"/>
+		<property name="fileService" ref="fileService"/>
+		<property name="requestService" ref="requestService"/>
+		<property name="shutdownService" ref="shutdownService"/>
+	</bean>
+    
+	<bean id="fileMetaTask" class="org.pieShare.pieShareApp.model.task.FileMetaTask">
+		<property name="requestService" ref="requestService"/>
+	</bean>
+	
+	<bean id="fileRequestTask" class="org.pieShare.pieShareApp.model.task.FileRequestTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
+	
+	<bean id="fileTransferCompleteTask" class="org.pieShare.pieShareApp.model.task.FileTransferCompleteTask">
+		<property name="shareService" ref="shareService"/>
+	</bean>
+	
+	<bean id="newFileTask" class="org.pieShare.pieShareApp.model.task.NewFileTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
+    
+	<bean id="networkService" class="org.pieShare.pieShareApp.service.networkService.NetworkService">
+	</bean>
+    
+	<bean id="fileCreatedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileCreatedTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
+    
+	<bean id="fileChangedTask" class="org.pieShare.pieShareApp.service.fileService.task.FileChangedTask">
+		<property name="fileService" ref="fileService"/>
+	</bean>
+    
+	<bean id="requestService" class="org.pieShare.pieShareApp.service.requestService.RequestService">
+		<property name="beanService" ref="pieBeanService"/>
+		<property name="clusterManagementService" ref="clusterManagementService"/>
+		<property name="shareService" ref="shareService"/>
+	</bean>
+    
+	<bean id="comparerService" class="org.pieShare.pieShareApp.service.comparerService.ComparerService">
+		<property name="fileService" ref="fileService"/>
+		<property name="pieShareConfiguration" ref="pieShareAppConfiguration"/>
+		<property name="requestService" ref="requestService"/>
+	</bean>
+	
+	<bean id="shutdownService" class="org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService" lazy-init="true">
+		<property name="listener" ref="pieExecutorService"/>
+	</bean>
+	
+</beans>
