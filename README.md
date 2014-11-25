@@ -24,7 +24,7 @@ At the moment PieShare is being developed as a Bachelor project at the Technical
 
 ## Current state.
 Currently the LAN part of the project is almost ready to use. However this is only a unstable alpha. It uses basic encryption and no key derivation protocols at the moment. There are also no sharing features implemented for now. Encrypted synchronization between multiple devices should allready work properly.
-For a first look you will need to build the project with JDK8u25 and Mave v3.2. The newest "stable" state is always on the development branch. The master branch gets all view weeks synchronized.
+For a first look you will need to build the project with at least JDK8u25 and Mave v3.2. The newest "stable" state is always on the development branch. The master branch gets all view weeks synchronized.
 
 ### Upcoming
 The next features that will be worked on:
