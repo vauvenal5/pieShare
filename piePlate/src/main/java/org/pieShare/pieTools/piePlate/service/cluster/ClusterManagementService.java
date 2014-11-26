@@ -17,6 +17,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
@@ -60,8 +61,8 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
-		this.sendMessage(message, message.getAddress().getClusterName());
+	public void sendMessage(IPieMessage message, EncryptedPassword key) throws ClusterManagmentServiceException {
+		this.sendMessage(message, message.getAddress().getClusterName(), key);
 	}
 
 	@Override
@@ -95,13 +96,13 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException {
+	public void sendMessage(IPieMessage message, String cloudName, EncryptedPassword key) throws ClusterManagmentServiceException {
 		if (!this.clusters.containsKey(cloudName)) {
 			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
 		}
 
 		try {
-			this.clusters.get(cloudName).sendMessage(message);
+			this.clusters.get(cloudName).sendMessage(message, key);
 		}
 		catch (ClusterServiceException ex) {
 			throw new ClusterManagmentServiceException(ex);

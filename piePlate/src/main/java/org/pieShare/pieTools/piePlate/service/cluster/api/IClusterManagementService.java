@@ -13,6 +13,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
@@ -25,9 +26,9 @@ public interface IClusterManagementService {
 
 	IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase();
 
-	void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
+	void sendMessage(IPieMessage message, EncryptedPassword key) throws ClusterManagmentServiceException;
 
-	void sendMessage(IPieMessage message, String cloudName) throws ClusterManagmentServiceException;
+	void sendMessage(IPieMessage message, String cloudName, EncryptedPassword key) throws ClusterManagmentServiceException;
 
 	IClusterService connect(String id) throws ClusterManagmentServiceException;
 

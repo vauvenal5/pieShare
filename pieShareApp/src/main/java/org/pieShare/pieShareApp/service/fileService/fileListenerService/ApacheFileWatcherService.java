@@ -93,7 +93,7 @@ public class ApacheFileWatcherService implements IFileWatcherService, IClusterAd
 			this.watchDir(configuration.getWorkingDir());
 			
 			//todo: who is responsible for this message?
-			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName());
+			this.clusterManagementService.sendMessage(new FileListRequestMessage(), user.getCloudName(), user.getPassword());
 		}
 		catch (ClusterManagmentServiceException ex) {
 			//todo: error handling

@@ -11,8 +11,10 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListe
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api.IReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
 
 public class JGroupsClusterService implements IClusterService {
 
@@ -23,6 +25,7 @@ public class JGroupsClusterService implements IClusterService {
 	private JChannel channel;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	private String id;
+	private IEncodeService encoderService;
 
 	public JGroupsClusterService() {
 	}
@@ -34,6 +37,10 @@ public class JGroupsClusterService implements IClusterService {
 
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
 		this.clusterRemovedEventBase = clusterRemovedEventBase;
+	}
+
+	public void setEncoderService(IEncodeService encoderService) {
+		this.encoderService = encoderService;
 	}
 
 	public void setChannel(JChannel channel) {
@@ -76,16 +83,18 @@ public class JGroupsClusterService implements IClusterService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage msg) throws ClusterServiceException {
+	public void sendMessage(IPieMessage msg, EncryptedPassword encPwd) throws ClusterServiceException {
 		Address ad = null;
-
+		//todo: this may cause problems at some point in the future!!!
+		this.receiver.setPassword(encPwd);
 		if (msg.getAddress() instanceof JGroupsPieAddress) {
 			ad = ((JGroupsPieAddress) msg.getAddress()).getAddress();
 		}
 
 		try {
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
-			this.channel.send(ad, this.serializerService.serialize(msg));
+			byte[] serMsg = this.serializerService.serialize(msg);
+			this.channel.send(ad, this.encoderService.encrypt(encPwd, serMsg));
 		} catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}

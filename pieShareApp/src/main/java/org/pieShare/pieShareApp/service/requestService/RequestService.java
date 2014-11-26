@@ -58,7 +58,7 @@ public class RequestService implements IRequestService {
 		msg.setPieFile(pieFile);
 		try {
                     PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
-			clusterManagementService.sendMessage(msg, user.getCloudName());
+			clusterManagementService.sendMessage(msg, user.getCloudName(), user.getPassword());
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);

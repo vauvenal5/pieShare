@@ -1,6 +1,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.api;
 
 import org.jgroups.Receiver;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 
 /**
@@ -10,4 +11,5 @@ public interface IReceiver extends Receiver {
 
 	void setExecutorService(IExecutorService service);
 	void setClusterName(String name);
+	void setPassword(EncryptedPassword password);
 }
