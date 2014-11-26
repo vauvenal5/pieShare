@@ -1,9 +1,12 @@
 package piePlateITs;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import junit.framework.Assert;
 import org.jgroups.JChannel;
 import org.junit.Before;
@@ -18,6 +21,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceEx
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import piePlateITs.helper.ClusterServiceTestHelper;
@@ -35,6 +39,7 @@ public class ClusterServiceIT {
 	private JChannel channel1;
 	private JChannel channel2;
 	private JChannel channel3;
+	private EncryptedPassword pwd;
 
 	@Before
 	public void before() throws Exception {
@@ -78,6 +83,11 @@ public class ClusterServiceIT {
 		this.service3.setSerializerService(serializer);
 		this.service3.setReceiver(rec3);
 		this.service3.setChannel(channel3);
+		
+		pwd = new EncryptedPassword();
+		PBEKeySpec keySpec = new PBEKeySpec("test".toCharArray());
+		pwd.setSecretKey(SecretKeyFactory.getInstance("test").generateSecret(keySpec));
+		pwd.setPassword("test".getBytes());
 	}
 
 	@Test(timeout = 50000)
@@ -116,7 +126,7 @@ public class ClusterServiceIT {
 			public void run() {
 				try {
 					this.getService().connect("myTestCluster2");
-					this.getService().sendMessage(msg);
+					this.getService().sendMessage(msg, pwd);
 					this.setDone(true);
 				} catch (ClusterServiceException e) {
 					e.printStackTrace();
@@ -162,7 +172,7 @@ public class ClusterServiceIT {
 			public void run() {
 				try {
 					this.getService().connect(clusterName);
-					this.getService().sendMessage(msg);
+					this.getService().sendMessage(msg, pwd);
 					this.setDone(true);
 				} catch (ClusterServiceException e) {
 					e.printStackTrace();
@@ -209,7 +219,7 @@ public class ClusterServiceIT {
 
 					for (int i = 0; i < values.length; i++) {
 						msg.setMsg(String.valueOf(values[i]));
-						this.getService().sendMessage(msg);
+						this.getService().sendMessage(msg, pwd);
 					}
 
 					this.setDone(true);

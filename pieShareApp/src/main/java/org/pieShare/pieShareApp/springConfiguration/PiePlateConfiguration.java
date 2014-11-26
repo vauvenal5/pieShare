@@ -52,6 +52,7 @@ public class PiePlateConfiguration {
 		receiver.setBeanService(this.utilitiesConfiguration.beanService());
 		receiver.setExecutorService(this.utilitiesConfiguration.pieExecutorService());
 		receiver.setSerializerService(this.jacksonSerializerService());
+		receiver.setEncoderService(this.utilitiesConfiguration.encodeService());
 		return receiver;
 	}
 	
@@ -71,6 +72,7 @@ public class PiePlateConfiguration {
 		service.setSerializerService(this.jacksonSerializerService());
 		service.setChannel(this.channel());
 		service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
+		service.setEncoderService(this.utilitiesConfiguration.encodeService());
 		return service;
 	}
 	

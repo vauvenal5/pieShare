@@ -4,6 +4,7 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 
@@ -20,7 +21,7 @@ public interface IClusterService {
 	
 	void disconnect() throws ClusterServiceException;
 
-	void sendMessage(IPieMessage msg) throws ClusterServiceException;
+	void sendMessage(IPieMessage msg, EncryptedPassword encPwd) throws ClusterServiceException;
 
 	int getMembersCount();
 
