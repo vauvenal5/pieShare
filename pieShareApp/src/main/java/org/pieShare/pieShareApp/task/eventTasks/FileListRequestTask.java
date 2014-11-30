@@ -50,14 +50,16 @@ public class FileListRequestTask extends PieEventTaskBase<FileListRequestMessage
 			pieFiles = this.fileService.getAllFiles();
 		
 			//todo: use bean service instead
-			FileListMessage reply = new FileListMessage();
-                        reply.setFileList(pieFiles);
+			FileListMessage reply = this.beanService.getBean(FileListMessage.class);
+            reply.setFileList(pieFiles);
 			reply.setAddress(this.msg.getAddress());
 			
 			PieUser user = this.beanService.getBean(PieUser.class);
+			reply.getAddress().setChannelId(user.getUserName());
+			reply.getAddress().setClusterName(user.getCloudName());
 
 			try {
-				this.clusterManagementService.sendMessage(reply, user.getPassword());
+				this.clusterManagementService.sendMessage(reply);
 			}
 			catch(ClusterManagmentServiceException ex) {
 				//todo: error handling

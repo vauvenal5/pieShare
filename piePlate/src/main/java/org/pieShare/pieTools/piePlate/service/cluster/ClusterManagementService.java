@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
@@ -60,18 +63,7 @@ public class ClusterManagementService implements IClusterManagementService {
 		this.clusters = map;
 	}
 
-	@Override
-	public void sendMessage(IPieMessage message, EncryptedPassword key) throws ClusterManagmentServiceException {
-		this.sendMessage(message, message.getAddress().getClusterName(), key);
-	}
-
-	@Override
-	public void disconnect(String id) throws ClusterServiceException {
-		this.clusters.get(id).disconnect();
-	}
-
-	@Override
-	public IClusterService connect(String id) throws ClusterManagmentServiceException {
+	private IClusterService connect(String id) throws ClusterManagmentServiceException {
 		if (this.clusters.containsKey(id)) {
 			return this.clusters.get(id);
 		}
@@ -96,17 +88,41 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage message, String cloudName, EncryptedPassword key) throws ClusterManagmentServiceException {
-		if (!this.clusters.containsKey(cloudName)) {
-			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", cloudName));
+	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
+		if (!this.clusters.containsKey(message.getAddress().getClusterName())) {
+			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", message.getAddress().getClusterName()));
 		}
 
 		try {
-			this.clusters.get(cloudName).sendMessage(message, key);
+			this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
 		}
 		catch (ClusterServiceException ex) {
 			throw new ClusterManagmentServiceException(ex);
 		}
+	}
+	
+	@Override
+	public void registerChannel(String clusterId, IIncomingChannel channel) throws ClusterManagmentServiceException {
+		IClusterService cluster = this.connect(clusterId);
+		cluster.registerIncomingChannel(channel);
+	}
+	
+	@Override
+	public void registerChannel(String clusterId, IOutgoingChannel channel) throws ClusterManagmentServiceException {
+		IClusterService cluster = this.connect(clusterId);
+		cluster.registerOutgoingChannel(channel);
+	}
+	
+	@Override
+	public void registerChannel(String clusterId, ITwoWayChannel channel) throws ClusterManagmentServiceException {
+		IClusterService cluster = this.connect(clusterId);
+		cluster.registerIncomingChannel(channel);
+		cluster.registerOutgoingChannel(channel);
+	}
+	
+	@Override
+	public void disconnect(String id) throws ClusterServiceException {
+		this.clusters.get(id).disconnect();
 	}
 
 	@Override

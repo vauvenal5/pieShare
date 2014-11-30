@@ -7,6 +7,9 @@ package org.pieShare.pieTools.piePlate.service.cluster.api;
 
 import java.util.Map;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -26,15 +29,17 @@ public interface IClusterManagementService {
 
 	IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase();
 
-	void sendMessage(IPieMessage message, EncryptedPassword key) throws ClusterManagmentServiceException;
-
-	void sendMessage(IPieMessage message, String cloudName, EncryptedPassword key) throws ClusterManagmentServiceException;
-
-	IClusterService connect(String id) throws ClusterManagmentServiceException;
+	void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
 
 	void disconnect(String id) throws ClusterServiceException;
 
 	void diconnectAll() throws ClusterManagmentServiceException;
 
 	Map<String, IClusterService> getClusters();
+	
+	void registerChannel(String clusterId, IIncomingChannel channel) throws ClusterManagmentServiceException;
+	
+	void registerChannel(String clusterId, IOutgoingChannel channel) throws ClusterManagmentServiceException;
+	
+	void registerChannel(String clusterId, ITwoWayChannel channel) throws ClusterManagmentServiceException;
 }

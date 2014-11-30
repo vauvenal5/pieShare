@@ -16,6 +16,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.PlainTextChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
@@ -52,37 +54,41 @@ public class ClusterServiceIT {
 
 		ObjectBasedReceiver rec1 = new ObjectBasedReceiver();
 		rec1.setBeanService(beanService);
-		rec1.setSerializerService(serializer);
 		rec1.setExecutorService(executor1);
 
 		ObjectBasedReceiver rec2 = new ObjectBasedReceiver();
 		rec2.setBeanService(beanService);
-		rec2.setSerializerService(serializer);
 		rec2.setExecutorService(executor2);
 
 		ObjectBasedReceiver rec3 = new ObjectBasedReceiver();
 		rec3.setBeanService(beanService);
-		rec3.setSerializerService(serializer);
 		rec3.setExecutorService(executor3);
+		
+		PlainTextChannel channel = new PlainTextChannel();
+		channel.setChannelId("testChannel");
+		channel.setSerializerService(serializer);
 
 		channel1 = new JChannel();
 		channel2 = new JChannel();
 		channel3 = new JChannel();
 
 		this.service1 = new JGroupsClusterService();
-		this.service1.setSerializerService(serializer);
 		this.service1.setReceiver(rec1);
 		this.service1.setChannel(channel1);
+		this.service1.registerIncomingChannel(channel);
+		this.service1.registerOutgoingChannel(channel);
 
 		this.service2 = new JGroupsClusterService();
-		this.service2.setSerializerService(serializer);
 		this.service2.setReceiver(rec2);
 		this.service2.setChannel(channel2);
+		this.service2.registerIncomingChannel(channel);
+		this.service2.registerOutgoingChannel(channel);
 
 		this.service3 = new JGroupsClusterService();
-		this.service3.setSerializerService(serializer);
 		this.service3.setReceiver(rec3);
 		this.service3.setChannel(channel3);
+		this.service3.registerIncomingChannel(channel);
+		this.service3.registerOutgoingChannel(channel);
 		
 		pwd = new EncryptedPassword();
 		PBEKeySpec keySpec = new PBEKeySpec("test".toCharArray());
@@ -126,7 +132,7 @@ public class ClusterServiceIT {
 			public void run() {
 				try {
 					this.getService().connect("myTestCluster2");
-					this.getService().sendMessage(msg, pwd);
+					this.getService().sendMessage(msg);
 					this.setDone(true);
 				} catch (ClusterServiceException e) {
 					e.printStackTrace();
@@ -172,7 +178,7 @@ public class ClusterServiceIT {
 			public void run() {
 				try {
 					this.getService().connect(clusterName);
-					this.getService().sendMessage(msg, pwd);
+					this.getService().sendMessage(msg);
 					this.setDone(true);
 				} catch (ClusterServiceException e) {
 					e.printStackTrace();
@@ -219,7 +225,7 @@ public class ClusterServiceIT {
 
 					for (int i = 0; i < values.length; i++) {
 						msg.setMsg(String.valueOf(values[i]));
-						this.getService().sendMessage(msg, pwd);
+						this.getService().sendMessage(msg);
 					}
 
 					this.setDone(true);

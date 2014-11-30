@@ -207,10 +207,12 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			//this.requestService.deleteRequestedFile(msg.getPieFile());
 			FileUtils.deleteDirectory(tmpDir);
 
-			FileTransferCompleteMessage msgComplete = new FileTransferCompleteMessage();
+			FileTransferCompleteMessage msgComplete = this.beanService.getBean(FileTransferCompleteMessage.class);
 			msgComplete.setPieFile(msg.getPieFile());
 			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-			this.clusterManagementService.sendMessage(msgComplete, user.getCloudName(), user.getPassword());
+			msgComplete.getAddress().setChannelId(user.getUserName());
+			msgComplete.getAddress().setClusterName(user.getCloudName());
+			this.clusterManagementService.sendMessage(msgComplete);
 
 			//todo: start sharing
 		}
@@ -243,7 +245,9 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			this.writePorts.acquire();
 			//todo: think about some kind o PieAdress factory
 			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-			this.clusterManagementService.sendMessage(msg, user.getCloudName(), user.getPassword());
+			msg.getAddress().setChannelId(user.getUserName());
+			msg.getAddress().setClusterName(user.getCloudName());
+			this.clusterManagementService.sendMessage(msg);
 			handleSharedTorrent(pieFile, torrent);
 			this.writePorts.release();
 		}
