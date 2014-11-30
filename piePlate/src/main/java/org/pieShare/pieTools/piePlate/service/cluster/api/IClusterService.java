@@ -1,12 +1,16 @@
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
+import java.util.List;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 
 /**
  * Created by vauvenal5 on 12/12/13.
@@ -21,11 +25,17 @@ public interface IClusterService {
 	
 	void disconnect() throws ClusterServiceException;
 
-	void sendMessage(IPieMessage msg, EncryptedPassword encPwd) throws ClusterServiceException;
+	void sendMessage(IPieMessage msg) throws ClusterServiceException;
 
 	int getMembersCount();
 
 	boolean isConnectedToCluster();
 	
 	IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase();
+	
+	void registerIncomingChannel(IIncomingChannel channel);
+	
+	void registerOutgoingChannel(IOutgoingChannel channel);
+	
+	List<IIncomingChannel> getIncomingChannels();
 }

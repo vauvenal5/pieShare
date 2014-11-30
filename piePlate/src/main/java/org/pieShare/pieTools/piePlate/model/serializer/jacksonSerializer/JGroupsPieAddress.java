@@ -16,6 +16,7 @@ public class JGroupsPieAddress implements IPieAddress {
 
 	private Address address;
 	private String cluster;
+	private String channelId;
 
 	public void setAddress(Address address) {
 		this.address = address;
@@ -33,5 +34,15 @@ public class JGroupsPieAddress implements IPieAddress {
 	@Override
 	public void setClusterName(String cluster) {
 		this.cluster = cluster;
+	}
+
+	@Override
+	public String getChannelId() {
+		return this.channelId;
+	}
+
+	@Override
+	public void setChannelId(String id) {
+		this.channelId = id;
 	}
 }

@@ -39,6 +39,9 @@ public class EncodeService implements IEncodeService {
 		removeCryptographyRestrictions();
 	}
 
+	//todo: rewrite encoderService not to throw general Exception
+	//todo: encoderService has to be renamed: it is a symmetric encoding
+			//we will also need asymmetric
 	@Override
 	public byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception {
 		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);

@@ -9,6 +9,7 @@ package org.pieShare.pieShareApp.springConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
@@ -51,15 +52,13 @@ public class PiePlateConfiguration {
 		ObjectBasedReceiver receiver = new ObjectBasedReceiver();
 		receiver.setBeanService(this.utilitiesConfiguration.beanService());
 		receiver.setExecutorService(this.utilitiesConfiguration.pieExecutorService());
-		receiver.setSerializerService(this.jacksonSerializerService());
-		receiver.setEncoderService(this.utilitiesConfiguration.encodeService());
 		return receiver;
 	}
 	
 	@Bean
 	@Lazy
 	@Scope(value="prototype")
-	public JChannel channel() throws Exception {
+	public JChannel jChannel() throws Exception {
 		return new JChannel();
 	}
 	
@@ -69,10 +68,8 @@ public class PiePlateConfiguration {
 	public JGroupsClusterService clusterService() throws Exception {
 		JGroupsClusterService service = new JGroupsClusterService();
 		service.setReceiver(this.objectReceiver());
-		service.setSerializerService(this.jacksonSerializerService());
-		service.setChannel(this.channel());
+		service.setChannel(this.jChannel());
 		service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
-		service.setEncoderService(this.utilitiesConfiguration.encodeService());
 		return service;
 	}
 	
@@ -80,5 +77,15 @@ public class PiePlateConfiguration {
 	@Lazy
 	public JGroupsPieAddress jgroupsPieAddress() {
 		return new JGroupsPieAddress();
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value="prototype")
+	public SymmetricEncryptedChannel symmetricEncryptedChannel() {
+		SymmetricEncryptedChannel channel = new SymmetricEncryptedChannel();
+		channel.setEncoderService(this.utilitiesConfiguration.encodeService());
+		channel.setSerializerService(this.jacksonSerializerService());
+		return channel;
 	}
 }
