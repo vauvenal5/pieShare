@@ -2,6 +2,7 @@ package org.pieShare.pieTools.piePlate.model.message;
 
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 
 /**
  * Created by Svetoslav on 19.03.14.
