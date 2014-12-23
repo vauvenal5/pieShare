@@ -36,10 +36,6 @@ public class PieExecutorService implements IExecutorService, IShutdownableServic
 	public void setExecutorFactory(IPieExecutorTaskFactory executorFactory) {
 		this.executorFactory = executorFactory;
 	}
-	
-	private void executeInExecutorService(IPieTask task) {
-		
-	}
 
 	@Override
 	public void execute(IPieTask task) {

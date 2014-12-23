@@ -31,61 +31,66 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class Client {
 
-	private final ExecutorService executor;
+    private final ExecutorService executor;
 
-	public Client() {
-		executor = Executors.newCachedThreadPool();
-	}
+    public Client() {
+        executor = Executors.newCachedThreadPool();
+    }
 
-	public void connect() {
+    public void connect(String from, String to) {
 
-		String serverAddress = "localhost";
-		String clientAddress = null;
-		int serverPort = 6312;
-		String clientName = "richy";
+        String serverAddress = "172.25.12.98";
+        String clientAddress = null;
+        int serverPort = 6312;
 
-		String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":\"%s\", \"privateAddress\":\"%s\", \"privatePort\":\"%s\"}";
-		String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
-		String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
-		try {
+        String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":\"%s\", \"privateAddress\":\"%s\", \"privatePort\":\"%s\"}";
+        String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
+        String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
+        try {
 
-			Socket socket = new Socket(serverAddress, serverPort);
-			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Socket socket = new Socket(serverAddress, serverPort);
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-			//Send out Register
-			String text = String.format(registerMsg, clientName, socket.getLocalAddress().toString(), socket.getLocalPort(), socket.getInetAddress().toString(), socket.getPort());
-			out.println(text);
+            //Send out Register
+            String text = String.format(registerMsg, from, socket.getLocalAddress().toString(), socket.getLocalPort(), socket.getInetAddress().toString(), socket.getPort());
+            out.println(text);
+            out.flush();
 
-			//Send out Connection if available
-			//###
-			//Wait fot response
-			String fromServer;
-			while ((fromServer = in.readLine()) != null) {
-				PieLogger.info(this.getClass(), fromServer);
+            if (to != null) {
+                text = String.format(connectMsg, from, to);
+                out.println(text);
+                out.flush();
+            }
 
-				JsonObject input = processInput(fromServer);
+            //Send out Connection if available
+            //###
+            //Wait fot response
+            String fromServer = null;
+            while ((fromServer = in.readLine()) != null) {
+                PieLogger.info(this.getClass(), String.format("Server answere: %s", fromServer));
 
-				if (input.getString("type").equals("connections")) {
-					
-					ClientCommunicationTask task = new ClientCommunicationTask();
-					task.setClientData(input.getJsonObject("client"));
-					task.setLocalClientName(clientName);
-					executor.execute(task);
-				}
-			}
+                JsonObject input = processInput(fromServer);
 
-		}
-		catch (IOException ex) {
-			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+                if (input.getString("type").equals("connection")) {
 
-	public JsonObject processInput(String input) {
-		ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
-		JsonReader jsonReader = Json.createReader(byteInStream);
-		JsonObject ob = jsonReader.readObject();
-		PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-		return ob;
-	}
+                    ClientCommunicationTask task = new ClientCommunicationTask();
+                    task.setClientData(input.getJsonObject("client"));
+                    task.setLocalClientName(from);
+                    executor.execute(task);
+                }
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public JsonObject processInput(String input) {
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+        JsonReader jsonReader = Json.createReader(byteInStream);
+        JsonObject ob = jsonReader.readObject();
+        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
+        return ob;
+    }
 }
