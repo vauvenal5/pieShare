@@ -26,9 +26,13 @@ public class App {
 		context.register(PieShareClientServiceConfiguration.class);
 		context.refresh();
 		
+                String from = args[0];
+                String to = null;
+                if(args.length == 2)
+                 to = args[1];
 		
 		Client client  = new Client();
-		client.connect();
+		client.connect(from, to);
 		
 	}
 }
