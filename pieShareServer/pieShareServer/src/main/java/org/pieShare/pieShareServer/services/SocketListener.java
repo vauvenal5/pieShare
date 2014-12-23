@@ -41,10 +41,12 @@ public class SocketListener implements ISocketListener {
 
 		try {
 			server = new ServerSocket(port);
-			Socket sock = server.accept();
-			IIncomeTask task = beanService.getBean(IncomeTask.class);
-			task.setSocket(sock);
-			executor.execute(task);
+			while (true) {
+				Socket sock = server.accept();
+				IIncomeTask task = beanService.getBean(IncomeTask.class);
+				task.setSocket(sock);
+				executor.execute(task);
+			}
 		}
 		catch (IOException ex) {
 			PieLogger.info(this.getClass(), "Listener Error", ex);
