@@ -14,4 +14,8 @@ public interface IPieAddress {
 	String getClusterName();
 
 	void setClusterName(String cluster);
+	
+	String getChannelId();
+	
+	void setChannelId(String id);
 }

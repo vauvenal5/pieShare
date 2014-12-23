@@ -18,6 +18,9 @@ import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -29,53 +32,12 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class PieShareAppModel {
+	
 	@Bean
 	@Lazy
 	@Scope(value="prototype")
 	public SimpleMessageCommand simpleMessageCommand() {
 		return new SimpleMessageCommand();
-	}
-	
-	@Bean
-	@Lazy
-	@Scope(value="prototype")
-	public FileRequestMessage fileRequestMessage() {
-		return new FileRequestMessage();
-	}
-	
-	@Bean
-	@Lazy
-	@Scope(value="prototype")
-	public FileTransferCompleteMessage fileTransferCompleteMessage() {
-		return new FileTransferCompleteMessage();
-	}
-	
-	@Bean
-	@Lazy
-	@Scope(value="prototype")
-	public NewFileMessage newFileMessage() {
-		return new NewFileMessage();
-	}
-        
-        @Bean
-	@Lazy
-	@Scope(value="prototype")
-        public FileListMessage fileListMessage() {
-            return new FileListMessage();
-        }
-        
-        @Bean
-	@Lazy
-	@Scope(value="prototype")
-        public FileListRequestMessage fileListRequestMessage() {
-            return new FileListRequestMessage();
-        }
-	
-	@Bean
-	@Lazy
-	@Scope(value="prototype")
-	public FileDeletedMessage fileDeletedMessage() {
-		return new FileDeletedMessage();
 	}
 	
 	@Bean
@@ -88,12 +50,6 @@ public class PieShareAppModel {
 	@Lazy
 	public PieUser pieUser() {
 		return new PieUser();
-	}
-	
-	@Bean
-	@Lazy
-	public FileChangedMessage fileChangedMessage() {
-		return new FileChangedMessage();
 	}
 	
 	@Bean

@@ -18,6 +18,8 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -122,7 +124,11 @@ public class LoginTask implements ILoginTask {
 
 		//Check and create folders
 		try {
-			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
+			//todo: beanService
+			SymmetricEncryptedChannel channel = this.beanService.getBean(SymmetricEncryptedChannel.class);
+			channel.setChannelId(user.getUserName());
+			channel.setEncPwd(user.getPassword());
+			this.clusterManagementService.registerChannel(user.getCloudName(), channel);
 		}
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
@@ -147,9 +153,11 @@ public class LoginTask implements ILoginTask {
 			command.getCallback().OK();
 		}
 		catch (WrongPasswordException ex) {
+			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().wrongPassword(ex);
 		}
 		catch (Exception ex) {
+			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().error(ex);
 		}
 	}
