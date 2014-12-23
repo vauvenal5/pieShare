@@ -19,6 +19,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -64,6 +66,7 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 	private IPieShareConfiguration configuration;
 	private IFileWatcherService fileWatcherService;
 	private IFileEncryptionService fileEncryptionService;
+	private Timer timer = new Timer();
 
 	@PostConstruct
 	public void init() {
@@ -272,7 +275,17 @@ public class BitTorrentService implements IShareService, IShutdownableService {
 			//todo: won't work for server and client the same way: problem with this timeout the server
 			//shuts down after 30 seconds... implement other timeout strategy or rerequest messages
 			//reregquest is maybe the better way
-			client.share(30);
+			client.share();
+			
+			this.timer.schedule(new TimerTask() {
+
+				@Override
+				public void run() {
+					if(client.isSeed() && client.getPeers().isEmpty()) {
+						client.stop();
+					}
+				}
+			}, 60000, 30000);
 
 			/*if(torrent.isSeeder()) {
 			 client.share();

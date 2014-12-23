@@ -93,7 +93,7 @@ public class ApacheFileWatcherService implements IFileWatcherService, IClusterAd
 			this.watchDir(configuration.getWorkingDir());
 			
 			//todo: who is responsible for this message?
-			FileListRequestMessage msg = new FileListRequestMessage();
+			FileListRequestMessage msg = this.beanService.getBean(PieShareAppBeanNames.getFileListRequestMessage());
 			msg.getAddress().setClusterName(user.getCloudName());
 			msg.getAddress().setChannelId(user.getUserName());
 			this.clusterManagementService.sendMessage(msg);
