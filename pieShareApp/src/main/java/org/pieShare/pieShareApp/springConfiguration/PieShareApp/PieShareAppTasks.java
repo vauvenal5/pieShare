@@ -96,6 +96,7 @@ public class PieShareAppTasks {
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setFileFilterService(services.fileFilterService());
 		task.setHistoryService(services.historyService());
+		task.setFileEncrypterService(services.fileEncryptionService());
 	}
 
 	@Bean
@@ -172,7 +173,6 @@ public class PieShareAppTasks {
 		service.setEncodeService(config.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
-		service.setFileService(services.localFileService());
 		service.setHistoryService(services.historyService());
 		return service;
 	}

@@ -39,11 +39,14 @@ public class EncodeService implements IEncodeService {
 		removeCryptographyRestrictions();
 	}
 
+	//todo: rewrite encoderService not to throw general Exception
+	//todo: encoderService has to be renamed: it is a symmetric encoding
+			//we will also need asymmetric
 	@Override
 	public byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception {
 		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
-		Cipher cipher = Cipher.getInstance(providerService.getEnDeCryptAlgorithm(), providerService.getProviderName());
+		Cipher cipher = providerService.getEnDeCryptCipher();
 		cipher.init(Cipher.ENCRYPT_MODE, key);
 		return cipher.doFinal(plaintext);
 	}
@@ -52,7 +55,7 @@ public class EncodeService implements IEncodeService {
 	public byte[] decrypt(EncryptedPassword passphrase, byte[] ciphertext) throws Exception {
 		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
-		Cipher cipher = Cipher.getInstance(providerService.getEnDeCryptAlgorithm(), providerService.getProviderName());
+		Cipher cipher = providerService.getEnDeCryptCipher();
 		cipher.init(Cipher.DECRYPT_MODE, key);
 		return cipher.doFinal(ciphertext);
 	}

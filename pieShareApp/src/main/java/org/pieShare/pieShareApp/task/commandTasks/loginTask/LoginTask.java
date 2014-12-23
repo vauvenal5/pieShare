@@ -18,6 +18,8 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -44,7 +46,6 @@ public class LoginTask implements ILoginTask {
 	private IHistoryService historyService;
 	
 	private File pwdFile;
-	private IFileService fileService;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
@@ -52,10 +53,6 @@ public class LoginTask implements ILoginTask {
 
 	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
-	}
-	
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
 	}
 
 	public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
@@ -93,7 +90,8 @@ public class LoginTask implements ILoginTask {
 		PieUser user;
 		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 
-		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
+		//PieShaeService does this now
+		//user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
 		pwdFile = user.getPieShareConfiguration().getPwdFile();
 
 		if (pwdFile.exists()) {
@@ -126,7 +124,11 @@ public class LoginTask implements ILoginTask {
 
 		//Check and create folders
 		try {
-			IClusterService clusterService = this.clusterManagementService.connect(user.getCloudName());
+			//todo: beanService
+			SymmetricEncryptedChannel channel = this.beanService.getBean(SymmetricEncryptedChannel.class);
+			channel.setChannelId(user.getUserName());
+			channel.setEncPwd(user.getPassword());
+			this.clusterManagementService.registerChannel(user.getCloudName(), channel);
 		}
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
@@ -151,9 +153,11 @@ public class LoginTask implements ILoginTask {
 			command.getCallback().OK();
 		}
 		catch (WrongPasswordException ex) {
+			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().wrongPassword(ex);
 		}
 		catch (Exception ex) {
+			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().error(ex);
 		}
 	}

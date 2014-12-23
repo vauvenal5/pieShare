@@ -29,16 +29,15 @@ public class ConfigurationFactory implements IConfigurationFactory {
 	}
 
 	@Override
-	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config) {
+	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config, boolean create) {
 		if (config == null) {
 			config = beanService.getBean(PieShareConfiguration.class);
 		}
-		checkAndCreateFolders(config);
+		checkAndCreateFolders(config, create);
 		return config;
 	}
 
-	
-	private void checkAndCreateFolders(PieShareConfiguration conf) {
+	private void checkAndCreateFolders(PieShareConfiguration conf, boolean createFolders) {
 
 		if (conf.getPwdFile() == null) {
 			conf.setPwdFile(new File(String.format("%s/%s", configurationService.getBaseConfigPath(), "pwd.pie")));
@@ -48,7 +47,7 @@ public class ConfigurationFactory implements IConfigurationFactory {
 			conf.setTmpDir(new File("tmpDir"));
 		}
 
-		if (!conf.getTmpDir().exists()) {
+		if (!conf.getTmpDir().exists() && createFolders) {
 			conf.getTmpDir().mkdirs();
 		}
 
@@ -56,7 +55,7 @@ public class ConfigurationFactory implements IConfigurationFactory {
 			conf.setWorkingDir(new File("workingDir"));
 		}
 
-		if (!conf.getWorkingDir().exists()) {
+		if (!conf.getWorkingDir().exists() && createFolders) {
 			conf.getWorkingDir().mkdirs();
 		}
 	}

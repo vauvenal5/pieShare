@@ -55,10 +55,12 @@ public class RequestService implements IRequestService {
 		
 		FileRequestMessage msg = beanService.getBean(PieShareAppBeanNames.getFileRequestMessageName());
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+		msg.getAddress().setClusterName(user.getCloudName());
+		msg.getAddress().setChannelId(user.getUserName());
 		msg.setPieFile(pieFile);
 		try {
-                    PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
-			clusterManagementService.sendMessage(msg, user.getCloudName());
+            PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
+			clusterManagementService.sendMessage(msg);
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);
