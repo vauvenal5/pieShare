@@ -49,7 +49,7 @@ public class IncomeTask implements IIncomeTask {
 	@Override
 	public void run() {
 
-		String connectionMsg = "{\"type\":\"connection\", \"client\":\"%s\"}";
+		String connectionMsg = "{\"type\":\"connection\", \"client\":%s}";
 		PieLogger.info(this.getClass(), "New Connection.");
 
 		try {
@@ -84,7 +84,7 @@ public class IncomeTask implements IIncomeTask {
 
 	@Override
 	public void sendData(String data) {
-		out.write(data);
+		out.println(data);
 	}
 
 	public JsonObject processInput(String input) {
