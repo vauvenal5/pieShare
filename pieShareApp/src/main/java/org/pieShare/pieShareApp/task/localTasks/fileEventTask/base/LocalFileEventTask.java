@@ -80,8 +80,10 @@ public abstract class LocalFileEventTask implements IPieTask {
 			msg.setFile(file);
 			//todo: need somewhere a match between working dir and belonging cloud
 			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			msg.getAddress().setChannelId(user.getUserName());
+			msg.getAddress().setClusterName(user.getCloudName());
 
-			this.clusterManagementService.sendMessage(msg, user.getCloudName());
+			this.clusterManagementService.sendMessage(msg);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
 		}

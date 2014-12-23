@@ -1,9 +1,12 @@
 package piePlateITs;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import junit.framework.Assert;
 import org.jgroups.JChannel;
 import org.junit.Before;
@@ -13,11 +16,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.PlainTextChannel;
+import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
+import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import piePlateITs.helper.ClusterServiceTestHelper;
@@ -35,6 +41,7 @@ public class ClusterServiceIT {
 	private JChannel channel1;
 	private JChannel channel2;
 	private JChannel channel3;
+	private EncryptedPassword pwd;
 
 	@Before
 	public void before() throws Exception {
@@ -47,37 +54,46 @@ public class ClusterServiceIT {
 
 		ObjectBasedReceiver rec1 = new ObjectBasedReceiver();
 		rec1.setBeanService(beanService);
-		rec1.setSerializerService(serializer);
 		rec1.setExecutorService(executor1);
 
 		ObjectBasedReceiver rec2 = new ObjectBasedReceiver();
 		rec2.setBeanService(beanService);
-		rec2.setSerializerService(serializer);
 		rec2.setExecutorService(executor2);
 
 		ObjectBasedReceiver rec3 = new ObjectBasedReceiver();
 		rec3.setBeanService(beanService);
-		rec3.setSerializerService(serializer);
 		rec3.setExecutorService(executor3);
+		
+		PlainTextChannel channel = new PlainTextChannel();
+		channel.setChannelId("testChannel");
+		channel.setSerializerService(serializer);
 
 		channel1 = new JChannel();
 		channel2 = new JChannel();
 		channel3 = new JChannel();
 
 		this.service1 = new JGroupsClusterService();
-		this.service1.setSerializerService(serializer);
 		this.service1.setReceiver(rec1);
 		this.service1.setChannel(channel1);
+		this.service1.registerIncomingChannel(channel);
+		this.service1.registerOutgoingChannel(channel);
 
 		this.service2 = new JGroupsClusterService();
-		this.service2.setSerializerService(serializer);
 		this.service2.setReceiver(rec2);
 		this.service2.setChannel(channel2);
+		this.service2.registerIncomingChannel(channel);
+		this.service2.registerOutgoingChannel(channel);
 
 		this.service3 = new JGroupsClusterService();
-		this.service3.setSerializerService(serializer);
 		this.service3.setReceiver(rec3);
 		this.service3.setChannel(channel3);
+		this.service3.registerIncomingChannel(channel);
+		this.service3.registerOutgoingChannel(channel);
+		
+		pwd = new EncryptedPassword();
+		PBEKeySpec keySpec = new PBEKeySpec("test".toCharArray());
+		pwd.setSecretKey(SecretKeyFactory.getInstance("test").generateSecret(keySpec));
+		pwd.setPassword("test".getBytes());
 	}
 
 	@Test(timeout = 50000)
