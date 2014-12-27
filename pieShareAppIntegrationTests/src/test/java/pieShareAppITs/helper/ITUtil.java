@@ -18,7 +18,6 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;

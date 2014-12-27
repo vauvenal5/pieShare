@@ -6,13 +6,13 @@
 
 package org.pieShare.pieShareApp.service.fileService.fileEncryptionService;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import java.io.File;
 
 /**
  *
  * @author Svetoslav
  */
 public interface IFileEncryptionService {
-	public PieFile encryptFile(PieFile file);
-	public PieFile decryptFile(PieFile file);
+	public void encryptFile(File source, File target);
+	public void decryptFile(File source, File target);
 }

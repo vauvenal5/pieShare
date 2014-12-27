@@ -5,31 +5,39 @@
  */
 package org.pieShare.pieShareApp.model.message;
 
+import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileTransferMetaMessage extends HeaderMessage {
+public class FileTransferMetaMessage extends FileMessageBase implements IFileTransferMetaMessage{
 
-	private PieFile pieFile;
 	private byte[] metaInfo;
+	private PieFile tmpFile;
 
-	public PieFile getPieFile() {
-		return pieFile;
-	}
-
-	public void setPieFile(PieFile pieFile) {
-		this.pieFile = pieFile;
-	}
-
+	@Override
 	public byte[] getMetaInfo() {
 		return metaInfo;
 	}
 
+	@Override
 	public void setMetaInfo(byte[] metaInfo) {
 		this.metaInfo = metaInfo;
+	}
+
+	@Override
+	public PieFile getTmpFile() {
+		return this.tmpFile;
+	}
+
+	@Override
+	public void setTmpFile(PieFile file) {
+		this.tmpFile = file;
 	}
 }

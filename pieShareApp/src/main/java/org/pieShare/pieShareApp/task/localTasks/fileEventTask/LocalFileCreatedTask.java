@@ -9,11 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
@@ -36,7 +32,7 @@ public class LocalFileCreatedTask extends LocalFileEventTask {
 				return;
 			}
 			
-			NewFileMessage msg = beanService.getBean(PieShareAppBeanNames.getNewFileMessageName());
+			INewFileMessage msg = this.messageFactoryService.getNewFileMessage();
 			
 			this.historyService.syncPieFileWithDb(pieFile);
 			

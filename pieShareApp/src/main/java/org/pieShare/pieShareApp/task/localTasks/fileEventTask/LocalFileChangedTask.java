@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.message.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
@@ -34,7 +34,7 @@ public class LocalFileChangedTask extends LocalFileEventTask {
 			
 			this.historyService.syncPieFileWithDb(file);
 			
-			FileChangedMessage msg = beanService.getBean(PieShareAppBeanNames.getFileChangedMessage());
+			IFileChangedMessage msg = this.messageFactoryService.getFileChangedMessage();
 			
 			super.doWork(msg, file);
 		} catch (IOException ex) {
