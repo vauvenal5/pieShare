@@ -8,6 +8,10 @@ package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
+import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
+import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -15,15 +19,12 @@ import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
-import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,6 +51,7 @@ public class PieShareAppTasks {
 	public FileMetaTask fileMetaTask() {
 		FileMetaTask task = new FileMetaTask();
 		task.setRequestService(this.services.requestService());
+		task.setShareService(this.services.shareService());
 		return task;
 	}
 
@@ -97,6 +99,7 @@ public class PieShareAppTasks {
 		task.setFileFilterService(services.fileFilterService());
 		task.setHistoryService(services.historyService());
 		task.setFileEncrypterService(services.fileEncryptionService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 	}
 
 	@Bean
@@ -151,6 +154,8 @@ public class PieShareAppTasks {
 		FileListRequestTask task = new FileListRequestTask();
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setFileService(this.services.historyFileService());
+		task.setBeanService(this.config.beanService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -174,6 +179,8 @@ public class PieShareAppTasks {
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
 		service.setHistoryService(services.historyService());
+		service.setFileWatcherService(this.services.apacheFileWatcherService());
+		service.setMessageFactoryService(this.services.messageFactoryService());
 		return service;
 	}
 
@@ -194,6 +201,18 @@ public class PieShareAppTasks {
 		ResetPwdTask task = new ResetPwdTask();
 		task.setBeanService(config.beanService());
 		task.setDatabaseService(services.databaseService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public TorrentTask torrentTask() {
+		TorrentTask task = new TorrentTask();
+		task.setNetworkService(this.services.networkService());
+		task.setShareService(this.services.shareService());
+		task.setShutdownService(this.services.shutdownService());
+		task.setBitTorrentService(this.services.bitTorrentService());
 		return task;
 	}
 }

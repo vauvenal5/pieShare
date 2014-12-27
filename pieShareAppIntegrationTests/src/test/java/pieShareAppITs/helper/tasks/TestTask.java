@@ -7,16 +7,13 @@
 package pieShareAppITs.helper.tasks;
 
 import pieShareAppITs.helper.ITTasksCounter;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
-import org.springframework.context.ApplicationContext;
 
 /**
  *

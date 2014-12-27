@@ -9,8 +9,10 @@ import java.io.File;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.base.FileMessageBase;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
@@ -33,8 +35,13 @@ public abstract class LocalFileEventTask implements IPieTask {
 	protected IHistoryService historyService;
 	protected IFileFilterService fileFilterService;
 	protected IFileEncryptionService fileEncrypterService;
+	protected IMessageFactoryService messageFactoryService;
 	
 	protected File file;
+
+	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
+		this.messageFactoryService = messageFactoryService;
+	}
 
 	public void setFileEncrypterService(IFileEncryptionService fileEncrypterService) {
 		this.fileEncrypterService = fileEncrypterService;
@@ -72,12 +79,12 @@ public abstract class LocalFileEventTask implements IPieTask {
 		
 		this.fileService.waitUntilCopyFinished(this.file);
 		
-		return this.fileEncrypterService.encryptFile(this.fileService.getPieFile(file));
+		return this.fileService.getPieFile(file);
 	}
 
-	protected void doWork(FileMessageBase msg, PieFile file) {
+	protected void doWork(IFileMessageBase msg, PieFile file) {
 		try {
-			msg.setFile(file);
+			msg.setPieFile(file);
 			//todo: need somewhere a match between working dir and belonging cloud
 			PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 			msg.getAddress().setChannelId(user.getUserName());

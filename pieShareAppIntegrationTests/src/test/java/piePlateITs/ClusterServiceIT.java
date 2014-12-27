@@ -1,5 +1,6 @@
 package piePlateITs;
 
+import java.security.Security;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import junit.framework.Assert;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jgroups.JChannel;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +44,7 @@ public class ClusterServiceIT {
 	private JChannel channel2;
 	private JChannel channel3;
 	private EncryptedPassword pwd;
+	private String testChannelId;
 
 	@Before
 	public void before() throws Exception {
@@ -64,8 +67,10 @@ public class ClusterServiceIT {
 		rec3.setBeanService(beanService);
 		rec3.setExecutorService(executor3);
 		
+		this.testChannelId = "testChannel";
+		
 		PlainTextChannel channel = new PlainTextChannel();
-		channel.setChannelId("testChannel");
+		channel.setChannelId(this.testChannelId);
 		channel.setSerializerService(serializer);
 
 		channel1 = new JChannel();
@@ -90,9 +95,12 @@ public class ClusterServiceIT {
 		this.service3.registerIncomingChannel(channel);
 		this.service3.registerOutgoingChannel(channel);
 		
+		BouncyCastleProvider prov = new BouncyCastleProvider();
+		Security.addProvider(prov);
+		
 		pwd = new EncryptedPassword();
 		PBEKeySpec keySpec = new PBEKeySpec("test".toCharArray());
-		pwd.setSecretKey(SecretKeyFactory.getInstance("test").generateSecret(keySpec));
+		pwd.setSecretKey(SecretKeyFactory.getInstance("PBEWithSHAAndTwofish-CBC", prov.getName()).generateSecret(keySpec));
 		pwd.setPassword("test".getBytes());
 	}
 
@@ -124,6 +132,7 @@ public class ClusterServiceIT {
 		msg.setType(TestMessage.class.getName());
 		msg.setMsg("This is a msg!");
 		msg.setAddress(new JGroupsPieAddress());
+		msg.getAddress().setChannelId(this.testChannelId);
 
 		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(new JGroupsPieAddress());
 
@@ -169,9 +178,14 @@ public class ClusterServiceIT {
 		final TestMessage msg = new TestMessage();
 		msg.setType(TestMessage.class.getName());
 		msg.setMsg("This is a msg!");
-		msg.setAddress(new JGroupsPieAddress());
+		
+		JGroupsPieAddress add = new JGroupsPieAddress();
+		add.setChannelId(this.testChannelId);
+		add.setClusterName(clusterName);
+		
+		msg.setAddress(add);
 
-		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(new JGroupsPieAddress());
+		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(add);
 
 		ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper(this.service1) {
 			@Override
@@ -210,6 +224,7 @@ public class ClusterServiceIT {
 
 		final TestMessage msg = new TestMessage();
 		msg.setType(TestMessage.class.getName());
+		msg.getAddress().setChannelId(this.testChannelId);
 
 		final String value = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
 		Integer expectedCountPerLetter = 2;
