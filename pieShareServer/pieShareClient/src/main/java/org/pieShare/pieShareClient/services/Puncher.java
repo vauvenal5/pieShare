@@ -46,7 +46,7 @@ public class Puncher implements Runnable {
                 JsonObject input = processInput(fromServer);
 
                 if (input.getString("type").equals("ACK")) {
-                    back.Handle();
+                  //  back.Handle();
                     return;
                 }
 
