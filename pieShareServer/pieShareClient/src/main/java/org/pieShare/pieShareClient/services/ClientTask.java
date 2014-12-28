@@ -60,10 +60,7 @@ public class ClientTask implements Runnable{
                 {
                     System.out.println("Message Arrived: " + input.getString("msg"));
                 }
-                
             }
-            
-            
         }
     }
     
