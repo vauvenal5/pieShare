@@ -51,6 +51,5 @@ public class SocketListener implements ISocketListener {
 		catch (IOException ex) {
 			PieLogger.info(this.getClass(), "Listener Error", ex);
 		}
-
 	}
 }
