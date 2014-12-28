@@ -12,11 +12,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import org.pieShare.pieShareClient.api.Callback;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -25,116 +28,124 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClientCommunicationTask implements Runnable {
 
-	private JsonObject clientData;
-	private String localClientName;
+    private JsonObject clientData;
+    private String localClientName;
+    private boolean found = false;
 
-	public void setClientData(JsonObject data) {
-		clientData = data;
-	}
+    private final ExecutorService executor;
 
-	public void setLocalClientName(String localClientName) {
-		this.localClientName = localClientName;
-	}
+    public ClientCommunicationTask() {
+        executor = Executors.newCachedThreadPool();
+    }
 
-	public void run() {
+    public void setClientData(JsonObject data) {
+        clientData = data;
+    }
 
-		String punchMsg = "{\"type\":\"punch\", \"from\":\"%s\", \"to\":\"%s\"}";
+    public void setLocalClientName(String localClientName) {
+        this.localClientName = localClientName;
+    }
 
-		boolean found = false;
-		Socket socketToClient = null;
+    public void run() {
 
-		PrintWriter out = null;
-		BufferedReader in = null;
+        String punchMsg = "{\"type\":\"punch\", \"from\":\"%s\", \"to\":\"%s\"}";
 
-		while (!found) {
-			try {
-				socketToClient = new Socket(clientData.getString("localAddress"), clientData.getInt("localPort"));
-				socketToClient.setSoTimeout(3000);
-				out = new PrintWriter(socketToClient.getOutputStream(), true);
+        Socket socketToClient = null;
 
-				String msg = String.format(punchMsg, localClientName, clientData.getString("name"));
-				PieLogger.info(this.getClass(), String.format("WriteToClient: %s", msg));
-				out.write(msg);
+        PrintWriter out = null;
+        BufferedReader in = null;
 
-				in = new BufferedReader(new InputStreamReader(socketToClient.getInputStream()));
+        while(true)
+        {
+        try {
+            socketToClient = new Socket(clientData.getString("localAddress"), clientData.getInt("localPort"));
+            socketToClient.setSoTimeout(3000);
+            out = new PrintWriter(socketToClient.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socketToClient.getInputStream()));
 
-				found = WaitForACKPunch(in, out);
+            Puncher puncher = new Puncher();
+            puncher.setOut(out);
+            puncher.setReader(in);
 
-			}
-			catch (IOException ex) {
-				Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
-			}
+            Callback back = new Callback() {
+                public void Handle() {
+                    found = true;
+                }
+            };
 
-			if (!found) {
-				try {
-					socketToClient = new Socket(clientData.getString("privateAddress"), clientData.getInt("privatePort"));
-					socketToClient.setSoTimeout(3000);
-					out = new PrintWriter(socketToClient.getOutputStream(), true);
+            puncher.setBack(back);
 
-					String msg = String.format(punchMsg, localClientName, clientData.getString("name"));
-					PieLogger.info(this.getClass(), String.format("WriteToClient: %s", msg));
-					out.write(msg);
+            executor.execute(puncher);
 
-					in = new BufferedReader(new InputStreamReader(socketToClient.getInputStream()));
+            String msg = String.format(punchMsg, localClientName, clientData.getString("name"));
 
-					found = WaitForACKPunch(in, out);
+            while (!found) {
+                PieLogger.info(this.getClass(), String.format("WriteToClient: %s", msg));
+                out.println(msg);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        }
 
-				}
-				catch (IOException ex) {
-					Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
-				}
-			}
-		}
+        if (!found) {
+            try {
+                socketToClient = new Socket(clientData.getString("privateAddress"), clientData.getInt("privatePort"));
 
-		try {
-			socketToClient.setSoTimeout(0);
+                socketToClient.setSoTimeout(3000);
+                out = new PrintWriter(socketToClient.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(socketToClient.getInputStream()));
 
-			PieLogger.info(this.getClass(), "ACK Recieved");
-			out.write("Hello From" + localClientName);
+                Puncher puncher = new Puncher();
+                puncher.setOut(out);
+                puncher.setReader(in);
 
-			String fromServer;
+                Callback back = new Callback() {
+                    public void Handle() {
+                        found = true;
+                    }
+                };
 
-			while ((fromServer = in.readLine()) != null) {
-				PieLogger.info(this.getClass(), "Received: " + fromServer);
-			}
-		}
-		catch (SocketException ex) {
-			Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		catch (IOException ex) {
-			Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+                puncher.setBack(back);
 
-	public boolean WaitForACKPunch(BufferedReader reader, PrintWriter out) {
+                executor.execute(puncher);
 
-		String ackMsg = "{\"type\":\"ACK\"}";
-		try {
-			String fromServer;
+                String msg = String.format(punchMsg, localClientName, clientData.getString("name"));
 
-			while ((fromServer = reader.readLine()) != null) {
+                while (!found) {
+                    PieLogger.info(this.getClass(), String.format("WriteToClient: %s", msg));
+                    out.println(msg);
+                }
+            } 
+            catch (IOException ex) {
+                Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
-				JsonObject input = processInput(fromServer);
-				if (input.getString("type").equals("ACK")) {
-					return true;
-				}
-				else if (input.getString("type").equals("ACK")) {
-					out.write(ackMsg);
-				}
-			}
-		}
-		catch (Exception ex) {
-			Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return false;
-	}
+        try {
+            socketToClient.setSoTimeout(0);
 
-	public JsonObject processInput(String input) {
-		ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
-		JsonReader jsonReader = Json.createReader(byteInStream);
-		JsonObject ob = jsonReader.readObject();
-		PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-		return ob;
-	}
+            PieLogger.info(this.getClass(), "ACK Recieved");
+            out.write("Hello From" + localClientName);
 
+            String fromServer;
+
+            while ((fromServer = in.readLine()) != null) {
+                PieLogger.info(this.getClass(), "Received: " + fromServer);
+            }
+        } catch (SocketException ex) {
+            Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ClientCommunicationTask.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public JsonObject processInput(String input) {
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+        JsonReader jsonReader = Json.createReader(byteInStream);
+        JsonObject ob = jsonReader.readObject();
+        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
+        return ob;
+    }
 }
