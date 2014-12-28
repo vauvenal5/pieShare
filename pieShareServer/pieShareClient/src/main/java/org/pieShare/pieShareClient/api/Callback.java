@@ -5,10 +5,12 @@
  */
 package org.pieShare.pieShareClient.api;
 
+import javax.json.JsonObject;
+
 /**
  *
  * @author RicLeo00
  */
 public interface Callback {
-    void Handle();
+    void Handle(JsonObject client);
 }
