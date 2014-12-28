@@ -51,7 +51,7 @@ public class IncomeTask implements IIncomeTask {
 
 		String connectionMsg = "{\"type\":\"connection\", \"client\":%s}";
 		PieLogger.info(this.getClass(), "New Connection.");
-
+/*
 		try {
 
 			out = new PrintWriter(clientSocket.getOutputStream(), true);
@@ -79,7 +79,7 @@ public class IncomeTask implements IIncomeTask {
 		}
 		catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Error in IncomeTask.", ex);
-		}
+		}*/
 	}
 
 	@Override
