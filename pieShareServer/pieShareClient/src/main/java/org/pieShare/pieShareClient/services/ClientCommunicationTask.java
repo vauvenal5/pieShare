@@ -46,9 +46,10 @@ public class ClientCommunicationTask implements Runnable {
         this.localClientName = localClientName;
     }
 
+
     public void run() {
 
-        String punchMsg = "{\"type\":\"punch\", \"from\":\"%s\", \"to\":\"%s\"}";
+      /*  String punchMsg = "{\"type\":\"punch\", \"from\":\"%s\", \"to\":\"%s\"}";
 
         Socket socketToClient = null;
 
@@ -67,11 +68,6 @@ public class ClientCommunicationTask implements Runnable {
             puncher.setOut(out);
             puncher.setReader(in);
 
-            Callback back = new Callback() {
-                public void Handle() {
-                    found = true;
-                }
-            };
 
             puncher.setBack(back);
 
@@ -101,11 +97,7 @@ public class ClientCommunicationTask implements Runnable {
                 puncher.setOut(out);
                 puncher.setReader(in);
 
-                Callback back = new Callback() {
-                    public void Handle() {
-                        found = true;
-                    }
-                };
+               
 
                 puncher.setBack(back);
 
@@ -147,5 +139,5 @@ public class ClientCommunicationTask implements Runnable {
         JsonObject ob = jsonReader.readObject();
         PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
         return ob;
-    }
-}
+    }*/
+}}

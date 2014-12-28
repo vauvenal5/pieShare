@@ -37,7 +37,7 @@ public class Server implements IServer {
 	@Override
 	public void start() {
 		PieLogger.info(this.getClass(), "Server Started");
-		executor.execute(listener);
+		executor.execute(new InputTask());
 	}
 
 }
