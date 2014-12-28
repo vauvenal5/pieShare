@@ -50,18 +50,17 @@ public class ClientSendTask implements Runnable {
     public void run() {
         while(true)
         {
-            byte[] msg = "Hello my Frend".getBytes();
+            String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
+            byte[] msg = String.format(testMessage, "Hello").getBytes();
             
             try {
-                DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByAddress(host.getBytes()), port);
+                DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
                 socket.send(packet);
             } catch (UnknownHostException ex) {
                 Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
                 Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
         }
     }
-    
 }

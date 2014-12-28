@@ -19,7 +19,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class Server implements IServer {
 
 	private IBeanService beanService;
-	private SocketListener listener;
+        private InputTask task;
 	private final ExecutorService executor;
 
 	public Server() {
@@ -30,14 +30,14 @@ public class Server implements IServer {
 		this.beanService = beanService;
 	}
 
-	public void setListener(SocketListener listener) {
-		this.listener = listener;
+	public void setInputTask(InputTask task) {
+		this.task = task;
 	}
 
 	@Override
 	public void start() {
 		PieLogger.info(this.getClass(), "Server Started");
-		executor.execute(new InputTask());
+		executor.execute(task);
 	}
 
 }

@@ -51,7 +51,7 @@ public class Client {
 
     public void connect(String from, String to) {
 
-        String serverAddress = "192.168.0.22";
+        String serverAddress = "127.0.0.1";//"192.168.0.22";
         int serverPort = 6312;
 
         String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
@@ -70,24 +70,27 @@ public class Client {
             }
         });
 
-        try {
-            //task.setSocket(socket);
+        task.setSocket(socket);
+        executor.execute(task);
 
-           // Socket test = new Socket("www.google.com", 80);
-            
-            //executor.execute(task);
+        try {
             DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, "temp", -1, packet.getAddress(), packet.getPort());
+            String text = String.format(registerMsg, from, "packet.getAddress()", packet.getPort(), packet.getAddress(), packet.getPort());
+            packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+
             socket.send(packet);
-          
+
+            if (to != null) {
+                text = String.format(connectMsg, from, to);
+                packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+                socket.send(packet);
+            }
+
         } catch (UnknownHostException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-         //Send out Register
-        // text = String.format(registerMsg, from, socket.getLocalAddress().toString().replace("/", ""), socket.getLocalPort(), socket.getInetAddress().toString().replace("/", ""), socket.getPort());
     }
 
     public JsonObject processInput(String input) {
@@ -97,5 +100,4 @@ public class Client {
         PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
         return ob;
     }
-
 }
