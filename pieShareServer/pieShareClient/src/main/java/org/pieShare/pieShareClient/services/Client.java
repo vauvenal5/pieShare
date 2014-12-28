@@ -40,20 +40,24 @@ public class Client {
     public void connect(String from, String to) {
 
         String serverAddress = "172.25.12.98";
-        String clientAddress = null;
         int serverPort = 6312;
 
-        String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":\"%s\", \"privateAddress\":\"%s\", \"privatePort\":\"%s\"}";
+        String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
         String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
         String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
         try {
 
-            Socket socket = new Socket(serverAddress, serverPort);
+            Socket socket = new Socket(serverAddress, 80);
+             String text = String.format(registerMsg, from, socket.getLocalAddress().toString().replace("/", ""), socket.getLocalPort(), socket.getInetAddress().toString().replace("/", ""), socket.getPort());
+           
+             socket = new Socket(serverAddress, serverPort);
+            
+            
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             //Send out Register
-            String text = String.format(registerMsg, from, socket.getLocalAddress().toString(), socket.getLocalPort(), socket.getInetAddress().toString(), socket.getPort());
+            text = String.format(registerMsg, from, socket.getLocalAddress().toString().replace("/", ""), socket.getLocalPort(), socket.getInetAddress().toString().replace("/", ""), socket.getPort());
             out.println(text);
             out.flush();
 
@@ -63,8 +67,6 @@ public class Client {
                 out.flush();
             }
 
-            //Send out Connection if available
-            //###
             //Wait fot response
             String fromServer = null;
             while ((fromServer = in.readLine()) != null) {
