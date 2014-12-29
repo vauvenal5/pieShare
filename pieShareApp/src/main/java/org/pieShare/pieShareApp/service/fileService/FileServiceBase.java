@@ -120,6 +120,12 @@ public abstract class FileServiceBase implements IFileService {
 	}
 	
 	@Override
+	public Path getAbsoluteTmpPath(PieFile file) {
+		File localFile = new File(configuration.getTmpDir(), file.getRelativeFilePath());
+		return localFile.toPath();
+	}
+	
+	@Override
 	public PieFile getPieFile(String relativeFilePath) throws FileNotFoundException, IOException {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);

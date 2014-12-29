@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.NewFileMessage;
+import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
@@ -17,7 +17,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
+public class NewFileTask extends PieEventTaskBase<INewFileMessage> {
 
 	private IComparerService comparerService;
 	private IRequestService requestService;
@@ -33,8 +33,8 @@ public class NewFileTask extends PieEventTaskBase<NewFileMessage> {
 	@Override
 	public void run() {
 		try {
-				if(comparerService.compareWithLocalPieFile(msg.getFile())==1) {
-					this.requestService.requestFile(msg.getFile());
+				if(comparerService.compareWithLocalPieFile(msg.getPieFile())==1) {
+					this.requestService.requestFile(msg.getPieFile());
 				}
 		} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "New File Task error.", ex);
