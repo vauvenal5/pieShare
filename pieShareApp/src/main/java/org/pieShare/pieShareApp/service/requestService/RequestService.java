@@ -9,9 +9,10 @@ import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
@@ -29,9 +30,14 @@ public class RequestService implements IRequestService {
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IShareService shareService;
+	private IMessageFactoryService messageFactoryService;
 
 	public RequestService() {
 		requestedFiles = new ConcurrentHashMap<>();
+	}
+
+	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
+		this.messageFactoryService = messageFactoryService;
 	}
 
 	public void setShareService(IShareService shareService) {
@@ -47,13 +53,13 @@ public class RequestService implements IRequestService {
 	}
 
 	@Override
-	public void requestFile(PieFile pieFile) {
+	public synchronized void requestFile(PieFile pieFile) {
 		if(this.requestedFiles.containsKey(pieFile)) {
-                    PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
+			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
 			return;
 		}
 		
-		FileRequestMessage msg = beanService.getBean(PieShareAppBeanNames.getFileRequestMessageName());
+		IFileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
@@ -66,15 +72,19 @@ public class RequestService implements IRequestService {
 			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);
 		}
 	}
+	
+	//todo: is this really needed?
+	/*@Override
+	public void requestIsBeingHandled(PieFile file) {
+		requestedFiles.replace(file, true);
+	}*/
 
 	@Override
-	public void anncounceRecived(FileTransferMetaMessage message) {
-		if (requestedFiles.containsKey(message.getPieFile()) && requestedFiles.get(message.getPieFile()) == false) {
-
-			requestedFiles.replace(message.getPieFile(), true);
-			shareService.handleFile(message);
-			this.deleteRequestedFile(message.getPieFile());
+	public synchronized boolean isRequested(PieFile file) {
+		if (requestedFiles.containsKey(file)) {
+			return true;
 		}
+		return false;
 	}
 	
 	/**
@@ -82,13 +92,12 @@ public class RequestService implements IRequestService {
 	 * very same file from us we want to keep our seeder open so we notify the shareService about it.
 	 * @param pieFile 
 	 */
-	@Override
+	/*@Override
 	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
-		
 		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
-			shareService.handleActiveShare(pieFile);
+			return true;
 		}
-	}
+	}*/
 
 	@Override
 	public synchronized boolean deleteRequestedFile(PieFile pieFile) {
