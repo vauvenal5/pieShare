@@ -39,7 +39,7 @@ public class Client {
 
     private DatagramSocket socket;
     private final ExecutorService executor;
-
+	private String name = null;
     public Client() {
         try {
             socket = new DatagramSocket();
@@ -51,6 +51,7 @@ public class Client {
 
     public void connect(String from, String to) {
 
+		this.name = from;
         String serverAddress = "127.0.0.1";//"192.168.0.22";
         int serverPort = 6312;
 
@@ -63,9 +64,10 @@ public class Client {
 
             public void Handle(JsonObject client) {
                 ClientSendTask sendTask = new ClientSendTask();
-                sendTask.setHost(client.getString("privateHost"));
+                sendTask.setHost(client.getString("privateAddress"));
                 sendTask.setPort(client.getInt("privatePort"));
                 sendTask.setSocket(socket);
+				sendTask.setName(name);
                 executor.execute(sendTask);
             }
         });
@@ -74,8 +76,8 @@ public class Client {
         executor.execute(task);
 
         try {
-            DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, "packet.getAddress()", packet.getPort(), packet.getAddress(), packet.getPort());
+			DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
+            String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
             packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
             socket.send(packet);
