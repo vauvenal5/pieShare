@@ -5,10 +5,8 @@
  */
 package org.pieShare.pieShareServer.springConfiguraton;
 
-import org.pieShare.pieShareServer.services.IncomeTask;
 import org.pieShare.pieShareServer.services.InputTask;
 import org.pieShare.pieShareServer.services.Server;
-import org.pieShare.pieShareServer.services.SocketListener;
 import org.pieShare.pieShareServer.services.UserPersistenceService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.springframework.context.annotation.Bean;
@@ -37,24 +35,6 @@ public class PieShareServerServiceConfiguration {
 	public BeanService beanService() {
 		BeanService beanService = new BeanService();
 		return beanService;
-	}
-
-	@Bean
-	@Lazy
-	@Scope(value = "prototype")
-	public IncomeTask incomeTask() {
-		IncomeTask incomeTask = new IncomeTask();
-		incomeTask.setServer(server());
-		incomeTask.setUserPersistenceService(userPersistenceService());
-		return incomeTask;
-	}
-
-	@Bean
-	@Lazy
-	public SocketListener socketListener() {
-		SocketListener socketListener = new SocketListener();
-		socketListener.setBeanService(beanService());
-		return socketListener;
 	}
 
 	@Bean
