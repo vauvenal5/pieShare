@@ -54,6 +54,9 @@ public class InputTask implements Runnable {
 					UserData to = userPersistenceService.getUser(input.getString("to"));
 
 					to.getTask().sendData(String.format(connectionMsg, from.getConnectionInfo().toString()), to);
+					
+					Thread.sleep(1000);
+					
 					from.getTask().sendData(String.format(connectionMsg, to.getConnectionInfo().toString()), from);
 				}
 			}
