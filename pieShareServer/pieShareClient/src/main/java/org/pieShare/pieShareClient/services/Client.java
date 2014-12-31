@@ -52,7 +52,7 @@ public class Client {
     public void connect(String from, String to) {
 
 		this.name = from;
-        String serverAddress = "127.0.0.1";//"192.168.0.22";
+        String serverAddress = "192.168.1.118";//"192.168.0.22";
         int serverPort = 6312;
 
         String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
