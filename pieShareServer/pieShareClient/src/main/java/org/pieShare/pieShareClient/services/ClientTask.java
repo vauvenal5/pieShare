@@ -26,7 +26,12 @@ public class ClientTask implements Runnable {
 
 	private DatagramSocket socket;
 	private Callback callback;
+	private ClientSendTask sendTask;
 
+	public void setSendTask(ClientSendTask sendTask) {
+		this.sendTask = sendTask;
+	}
+	
 	public DatagramSocket getSocket() {
 		return socket;
 	}
@@ -56,6 +61,9 @@ public class ClientTask implements Runnable {
 				}
 				if (input.getString("type").equals("msg")) {
 					System.out.println("Message Arrived: " + input.getString("msg"));
+				}
+				if (input.getString("type").equals("punch")) {
+					
 				}
 			}
 			catch (IOException ex) {
