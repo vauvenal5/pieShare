@@ -80,12 +80,15 @@ public class ClientSendTask implements Runnable {
         try {
             DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
             socket.send(packet);
+            Thread.sleep(500);
         } catch (UnknownHostException ex) {
             PieLogger.debug(this.getClass(), "UnknownHost .. may be ok, while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         } catch (IOException ex) {
             PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
             return false;
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
         }
         return true;
     }
