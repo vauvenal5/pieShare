@@ -80,8 +80,9 @@ public class Client {
         executor.execute(task);
 
         try {
+            
             DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
+            String text = String.format(registerMsg, from, packet.getAddress().getHostAddress(), packet.getPort(), packet.getAddress().getHostAddress(), packet.getPort());
             packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
             socket.send(packet);
