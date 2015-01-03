@@ -24,6 +24,8 @@ public class ClientSendTask implements Runnable {
 	private int port = -1;
 	private DatagramSocket socket;
 	private String name;
+	private String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
+	private String punchMsg = "{\"type\":\"punch\", \"client\":\"%s\"}";
 
 	public void setName(String name) {
 		this.name = name;
@@ -55,21 +57,29 @@ public class ClientSendTask implements Runnable {
 
 	public void run() {
 		while (true) {
-			String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
+
 			byte[] msg = String.format(testMessage, "Hello from: " + name).getBytes();
 
 			PieLogger.debug(this.getClass(), String.format("%s is attempting to send to host: %s with port: %s", name, host, port));
 
-			try {
-				DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
-				socket.send(packet);
-			}
-			catch (UnknownHostException ex) {
-				PieLogger.debug(this.getClass(), "UnknownHost .. may be ok, while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
-			}
-			catch (IOException ex) {
-				PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			send(msg, host, port);
 		}
 	}
+
+	private boolean send(byte[] msg, String host, int port) {
+		try {
+			DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
+			socket.send(packet);
+		}
+		catch (UnknownHostException ex) {
+			PieLogger.debug(this.getClass(), "UnknownHost .. may be ok, while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+		}
+		catch (IOException ex) {
+			PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+			return false;
+		}
+		return true;
+	}
+
 }
