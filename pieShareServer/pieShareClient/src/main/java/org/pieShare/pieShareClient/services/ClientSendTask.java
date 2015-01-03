@@ -57,7 +57,7 @@ public class ClientSendTask implements Runnable {
 		while (true) {
 			String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
 			byte[] msg = String.format(testMessage, "Hello from: " + name).getBytes();
-
+  
 			PieLogger.debug(this.getClass(), String.format("%s is attempting to send to host: %s with port: %s", name, host, port));
 
 			try {
