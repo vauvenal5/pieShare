@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.json.JsonObject;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -26,7 +27,12 @@ public class ClientSendTask implements Runnable {
 	private String name;
 	private String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
 	private String punchMsg = "{\"type\":\"punch\", \"client\":\"%s\"}";
+	private JsonObject connectionData;
 
+	public void setConnectionData(JsonObject connectionData) {
+		this.connectionData = connectionData;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -64,6 +70,11 @@ public class ClientSendTask implements Runnable {
 
 			send(msg, host, port);
 		}
+	}
+	
+	private void waitForACK()
+	{
+		
 	}
 
 	private boolean send(byte[] msg, String host, int port) {
