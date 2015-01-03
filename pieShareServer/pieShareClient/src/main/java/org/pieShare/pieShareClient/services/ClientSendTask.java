@@ -21,76 +21,73 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClientSendTask implements Runnable {
 
-	private String host = null;
-	private int port = -1;
-	private DatagramSocket socket;
-	private String name;
-	private String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
-	private String punchMsg = "{\"type\":\"punch\", \"client\":\"%s\"}";
-	private JsonObject connectionData;
+    private String host = null;
+    private int port = -1;
+    private DatagramSocket socket;
+    private String name;
+    private String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
+    private String punchMsg = "{\"type\":\"punch\", \"client\":\"%s\"}";
+    private JsonObject connectionData;
 
-	public void setConnectionData(JsonObject connectionData) {
-		this.connectionData = connectionData;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setConnectionData(JsonObject connectionData) {
+        this.connectionData = connectionData;
+    }
 
-	public DatagramSocket getSocket() {
-		return socket;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setSocket(DatagramSocket socket) {
-		this.socket = socket;
-	}
+    public DatagramSocket getSocket() {
+        return socket;
+    }
 
-	public String getHost() {
-		return host;
-	}
+    public void setSocket(DatagramSocket socket) {
+        this.socket = socket;
+    }
 
-	public void setHost(String host) {
-		this.host = host;
-	}
+    public String getHost() {
+        return host;
+    }
 
-	public int getPort() {
-		return port;
-	}
+    public void setHost(String host) {
+        this.host = host;
+    }
 
-	public void setPort(int port) {
-		this.port = port;
-	}
+    public int getPort() {
+        return port;
+    }
 
-	public void run() {
-		while (true) {
+    public void setPort(int port) {
+        this.port = port;
+    }
 
-			byte[] msg = String.format(testMessage, "Hello from: " + name).getBytes();
+    public void run() {
+        while (true) {
 
-			PieLogger.debug(this.getClass(), String.format("%s is attempting to send to host: %s with port: %s", name, host, port));
+            byte[] msg = String.format(testMessage, "Hello from: " + name).getBytes();
 
-			send(msg, host, port);
-		}
-	}
-	
-	private void waitForACK()
-	{
-		
-	}
+            PieLogger.debug(this.getClass(), String.format("%s is attempting to send to host: %s with port: %s", name, host, port));
 
-	private boolean send(byte[] msg, String host, int port) {
-		try {
-			DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
-			socket.send(packet);
-		}
-		catch (UnknownHostException ex) {
-			PieLogger.debug(this.getClass(), "UnknownHost .. may be ok, while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
-			return false;
-		}
-		catch (IOException ex) {
-			PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
-			return false;
-		}
-		return true;
-	}
+            send(msg, host, port);
+        }
+    }
+
+    private void waitForACK() {
+
+    }
+
+    private boolean send(byte[] msg, String host, int port) {
+        try {
+            DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
+            socket.send(packet);
+        } catch (UnknownHostException ex) {
+            PieLogger.debug(this.getClass(), "UnknownHost .. may be ok, while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
+            PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
 
 }
