@@ -39,7 +39,8 @@ public class Client {
 
     private DatagramSocket socket;
     private final ExecutorService executor;
-	private String name = null;
+    private String name = null;
+
     public Client() {
         try {
             socket = new DatagramSocket();
@@ -51,8 +52,8 @@ public class Client {
 
     public void connect(String from, String to) {
 
-		this.name = from;
-        String serverAddress = "127.0.0.1";//"192.168.0.22";
+        this.name = from;
+        String serverAddress = "192.168.1.118";//"192.168.0.22";
         int serverPort = 6312;
 
         String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
@@ -67,7 +68,7 @@ public class Client {
                 sendTask.setHost(client.getString("privateAddress"));
                 sendTask.setPort(client.getInt("privatePort"));
                 sendTask.setSocket(socket);
-				sendTask.setName(name);
+                sendTask.setName(name);
                 executor.execute(sendTask);
             }
         });
@@ -76,12 +77,19 @@ public class Client {
         executor.execute(task);
 
         try {
-			DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
+            DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
             String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
             packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
             socket.send(packet);
 
+            //Remove this by insert new message for registering and ocnnecting at same time
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
             if (to != null) {
                 text = String.format(connectMsg, from, to);
                 packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
