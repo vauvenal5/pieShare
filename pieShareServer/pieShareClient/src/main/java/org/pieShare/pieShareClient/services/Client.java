@@ -37,69 +37,76 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class Client {
 
-    private DatagramSocket socket;
-    private final ExecutorService executor;
+	private DatagramSocket socket;
+	private final ExecutorService executor;
 	private String name = null;
-    public Client() {
-        try {
-            socket = new DatagramSocket();
-        } catch (SocketException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        executor = Executors.newCachedThreadPool();
-    }
+	private ClientSendTask sendTask;
+	private ClientTask task;
 
-    public void connect(String from, String to) {
+	public Client() {
+		task = new ClientTask();
+		sendTask = new ClientSendTask();
+		task.setSendTask(sendTask);
+		try {
+			socket = new DatagramSocket();
+		}
+		catch (SocketException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		executor = Executors.newCachedThreadPool();
+	}
+
+	public void connect(String from, String to) {
 
 		this.name = from;
-        String serverAddress = "192.168.1.118";//"192.168.0.22";
-        int serverPort = 6312;
+		String serverAddress = "192.168.1.118";//"192.168.0.22";
+		int serverPort = 6312;
+		String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
+		String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
+		String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
 
-        String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
-        String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
-        String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
+		task.setCallback(new Callback() {
 
-        ClientTask task = new ClientTask();
-        task.setCallback(new Callback() {
-
-            public void Handle(JsonObject client) {
-                ClientSendTask sendTask = new ClientSendTask();
-                sendTask.setHost(client.getString("privateAddress"));
-                sendTask.setPort(client.getInt("privatePort"));
-                sendTask.setSocket(socket);
+			public void Handle(JsonObject client) {
+				sendTask.setConnectionData(client);
+				sendTask.setHost(client.getString("privateAddress"));
+				sendTask.setPort(client.getInt("privatePort"));
+				sendTask.setSocket(socket);
 				sendTask.setName(name);
-                executor.execute(sendTask);
-            }
-        });
+				executor.execute(sendTask);
+			}
+		});
 
-        task.setSocket(socket);
-        executor.execute(task);
+		task.setSocket(socket);
+		executor.execute(task);
 
-        try {
+		try {
 			DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
-            packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+			String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
+			packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
-            socket.send(packet);
+			socket.send(packet);
 
-            if (to != null) {
-                text = String.format(connectMsg, from, to);
-                packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
-                socket.send(packet);
-            }
+			if (to != null) {
+				text = String.format(connectMsg, from, to);
+				packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+				socket.send(packet);
+			}
 
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+		}
+		catch (UnknownHostException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		catch (IOException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
 
-    public JsonObject processInput(String input) {
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
-        JsonReader jsonReader = Json.createReader(byteInStream);
-        JsonObject ob = jsonReader.readObject();
-        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-        return ob;
-    }
+	public JsonObject processInput(String input) {
+		ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+		JsonReader jsonReader = Json.createReader(byteInStream);
+		JsonObject ob = jsonReader.readObject();
+		PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
+		return ob;
+	}
 }
