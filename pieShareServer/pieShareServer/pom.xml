@@ -58,6 +58,7 @@
                     <index>true</index>
                     <manifest>
                         <addClasspath>true</addClasspath>
+                        <mainClass>org.pieShare.pieShareServer.App</mainClass>
                     </manifest>
                     <manifestEntries>
                         <mode>development</mode>
