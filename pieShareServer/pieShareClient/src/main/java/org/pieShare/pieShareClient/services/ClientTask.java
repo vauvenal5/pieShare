@@ -24,62 +24,65 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClientTask implements Runnable {
 
-	private DatagramSocket socket;
-	private Callback callback;
-	private ClientSendTask sendTask;
+    private DatagramSocket socket;
+    private Callback callback;
+    private ClientSendTask sendTask;
+    private String ackMsg = "{\"type\":\"ACK\"}";
 
-	public void setSendTask(ClientSendTask sendTask) {
-		this.sendTask = sendTask;
-	}
-	
-	public DatagramSocket getSocket() {
-		return socket;
-	}
+    public void setSendTask(ClientSendTask sendTask) {
+        this.sendTask = sendTask;
+    }
 
-	public void setSocket(DatagramSocket socket) {
-		this.socket = socket;
-	}
+    public DatagramSocket getSocket() {
+        return socket;
+    }
 
-	public void setCallback(Callback callback) {
-		this.callback = callback;
-	}
+    public void setSocket(DatagramSocket socket) {
+        this.socket = socket;
+    }
 
-	public void run() {
-		while (true) {
-			byte[] bytes = new byte[1024];
-			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
+    public void setCallback(Callback callback) {
+        this.callback = callback;
+    }
 
-			try {
-                                Thread.sleep(500);
-				socket.receive(packet);
-				bytes = Arrays.copyOfRange(bytes, 0, packet.getLength());
-				JsonObject input = processInput(new String(bytes));
+    public void run() {
+        while (true) {
+            byte[] bytes = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
-				if (input.getString("type").equals("connection")) {
-					JsonObject newClient = input.getJsonObject("client");
-					callback.Handle(newClient);
-				}
-				if (input.getString("type").equals("msg")) {
-					System.out.println("Message Arrived: " + input.getString("msg"));
-				}
-				if (input.getString("type").equals("punch")) {
-					
-				}
-			}
-			catch (IOException ex) {
-				PieLogger.debug(this.getClass(), "Error receive:", ex);
-			} catch (InterruptedException ex) {
-                        Logger.getLogger(ClientTask.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-		}
-	}
+            try {
+                Thread.sleep(500);
+                socket.receive(packet);
+                bytes = Arrays.copyOfRange(bytes, 0, packet.getLength());
+                JsonObject input = processInput(new String(bytes));
 
-	public JsonObject processInput(String input) {
-		ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
-		JsonReader jsonReader = Json.createReader(byteInStream);
-		JsonObject ob = jsonReader.readObject();
-		PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-		return ob;
-	}
+                if (input.getString("type").equals("connection")) {
+                    JsonObject newClient = input.getJsonObject("client");
+                    callback.Handle(newClient);
+                }
+                if (input.getString("type").equals("msg")) {
+                    System.out.println("Message Arrived: " + input.getString("msg"));
+                }
+                if (input.getString("type").equals("punch")) {
+                    sendTask.send(ackMsg.getBytes(), packet.getAddress().getHostAddress(), packet.getPort());
+                }
+                if (input.getString("type").equals("ACK")) {
+                    sendTask.setACK(true);
+                }
+            } catch (IOException ex) {
+                PieLogger.debug(this.getClass(), "Error receive:", ex);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ClientTask.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public JsonObject processInput(String input) {
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+        JsonReader jsonReader = Json.createReader(byteInStream);
+        JsonObject ob = jsonReader.readObject();
+        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
+        return ob;
+    }
 
 }
