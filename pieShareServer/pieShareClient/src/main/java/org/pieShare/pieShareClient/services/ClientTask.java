@@ -50,8 +50,8 @@ public class ClientTask implements Runnable {
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
 			try {
+                                Thread.sleep(500);
 				socket.receive(packet);
-
 				bytes = Arrays.copyOfRange(bytes, 0, packet.getLength());
 				JsonObject input = processInput(new String(bytes));
 
@@ -68,7 +68,9 @@ public class ClientTask implements Runnable {
 			}
 			catch (IOException ex) {
 				PieLogger.debug(this.getClass(), "Error receive:", ex);
-			}
+			} catch (InterruptedException ex) {
+                        Logger.getLogger(ClientTask.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 		}
 	}
 

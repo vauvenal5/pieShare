@@ -58,7 +58,7 @@ public class Client {
     public void connect(String from, String to) {
 
         this.name = from;
-        String serverAddress = "192.168.1.118";//"192.168.0.22";
+        String serverAddress = "richy.ddns.net";//"192.168.0.22";
         int serverPort = 6312;
         String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
         String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
@@ -80,8 +80,9 @@ public class Client {
         executor.execute(task);
 
         try {
+            
             DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, packet.getAddress().toString().replace("/", ""), packet.getPort(), packet.getAddress().toString().replace("/", ""), packet.getPort());
+            String text = String.format(registerMsg, from, packet.getAddress().getHostAddress(), packet.getPort(), packet.getAddress().getHostAddress(), packet.getPort());
             packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
             socket.send(packet);
