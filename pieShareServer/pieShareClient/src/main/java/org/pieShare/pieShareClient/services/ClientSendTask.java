@@ -123,6 +123,10 @@ public class ClientSendTask implements Runnable {
             PieLogger.debug(this.getClass(), "IOException while connecting.", ex);//Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
+        catch (NullPointerException ex) {
+            PieLogger.debug(this.getClass(), "NullPointerException..OK while connecting");
+            return false;
+        }
         return true;
     }
 
