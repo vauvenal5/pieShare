@@ -42,13 +42,14 @@ public class Client {
     private String name = null;
     private ClientSendTask sendTask;
     private ClientTask task;
+    private int localPort = 4321;
 
     public Client() {
         task = new ClientTask();
         sendTask = new ClientSendTask();
         task.setSendTask(sendTask);
         try {
-            socket = new DatagramSocket();
+            socket = new DatagramSocket(localPort);
         } catch (SocketException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -79,11 +80,14 @@ public class Client {
         task.setSocket(socket);
         executor.execute(task);
 
-        try {
+       
+
+        try { 
+            InetAddress IP = InetAddress.getLocalHost();
+            String localIP = IP.getHostAddress();
             
-            DatagramPacket packet = new DatagramPacket("temp".getBytes(), 4, InetAddress.getByName(serverAddress), serverPort);
-            String text = String.format(registerMsg, from, packet.getAddress().getHostAddress(), packet.getPort(), packet.getAddress().getHostAddress(), packet.getPort());
-            packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+            String text = String.format(registerMsg, from, localIP, localPort, localIP, localPort);
+            DatagramPacket packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
 
             socket.send(packet);
 
