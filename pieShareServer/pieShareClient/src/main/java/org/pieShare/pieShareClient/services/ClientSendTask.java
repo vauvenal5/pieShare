@@ -69,6 +69,11 @@ public class ClientSendTask implements Runnable {
             PieLogger.debug(this.getClass(), String.format("%s is attempting to send to host: %s with port: %s", name, host, port));
 
             send(msg, host, port);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
