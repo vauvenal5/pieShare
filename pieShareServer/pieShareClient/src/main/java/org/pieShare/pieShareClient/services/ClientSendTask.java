@@ -28,6 +28,11 @@ public class ClientSendTask implements Runnable {
     private String testMessage = "{\"type\":\"msg\", \"msg\":\"%s\"}";
     private String punchMsg = "{\"type\":\"punch\", \"client\":\"%s\"}";
     private JsonObject connectionData;
+    private boolean ACK = false;
+
+    public void setACK(boolean ACK) {
+        this.ACK = ACK;
+    }
 
     public void setConnectionData(JsonObject connectionData) {
         this.connectionData = connectionData;
@@ -62,6 +67,32 @@ public class ClientSendTask implements Runnable {
     }
 
     public void run() {
+
+        int addressType = 0;
+        while (!ACK) {
+
+            if (addressType == 0) {
+                host = connectionData.getString("localAddress");
+                port = connectionData.getInt("localPort");
+                addressType = 1;
+            } else {
+                host = connectionData.getString("privateAddress");
+                port = connectionData.getInt("privatePort");
+                addressType = 0;
+            }
+
+            byte[] msg = String.format(punchMsg, name).getBytes();
+            PieLogger.debug(this.getClass(), String.format("%s is sending punch to host: %s with port: %s", name, host, port));
+
+            send(msg, host, port);
+            
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
         while (true) {
 
             byte[] msg = String.format(testMessage, "Hello from: " + name).getBytes();
@@ -81,7 +112,7 @@ public class ClientSendTask implements Runnable {
 
     }
 
-    private boolean send(byte[] msg, String host, int port) {
+    public synchronized boolean send(byte[] msg, String host, int port) {
         try {
             DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
             socket.send(packet);
