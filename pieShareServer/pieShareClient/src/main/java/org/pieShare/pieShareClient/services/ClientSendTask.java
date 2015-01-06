@@ -87,6 +87,7 @@ public class ClientSendTask implements Runnable {
             send(msg, host, port);
             
             try {
+                //Wait for ACK
                 Thread.sleep(2000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ClientSendTask.class.getName()).log(Level.SEVERE, null, ex);
@@ -107,11 +108,7 @@ public class ClientSendTask implements Runnable {
             }
         }
     }
-
-    private void waitForACK() {
-
-    }
-
+    
     public synchronized boolean send(byte[] msg, String host, int port) {
         try {
             DatagramPacket packet = new DatagramPacket(msg, msg.length, InetAddress.getByName(host), port);
@@ -129,5 +126,4 @@ public class ClientSendTask implements Runnable {
         }
         return true;
     }
-
 }
