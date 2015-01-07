@@ -51,10 +51,11 @@ public class ClientTask implements Runnable {
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
             try {
-                Thread.sleep(500);
+                //Thread.sleep(500);
                 socket.receive(packet);
                 bytes = Arrays.copyOfRange(bytes, 0, packet.getLength());
-                JsonObject input = processInput(new String(bytes));
+                PieLogger.info(this.getClass(), String.format("Input Message: %s", new String(bytes)));
+                JsonObject input = processInput(bytes);
 
                 if (input.getString("type").equals("connection")) {
                     JsonObject newClient = input.getJsonObject("client");
@@ -71,14 +72,12 @@ public class ClientTask implements Runnable {
                 }
             } catch (IOException ex) {
                 PieLogger.debug(this.getClass(), "Error receive:", ex);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ClientTask.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
 
-    public JsonObject processInput(String input) {
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+    public JsonObject processInput(byte[] input) {
+        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input);
         JsonReader jsonReader = Json.createReader(byteInStream);
         JsonObject ob = jsonReader.readObject();
         PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
