@@ -59,28 +59,29 @@ public class Client {
     public void connect(String from, String to) {
 
         this.name = from;
-        String serverAddress = "128.130.172.205";//richy.ddns.net";//"192.168.0.22";
+        String serverAddress = "128.130.172.205";//"richy.ddns.net";//"192.168.0.22";
         int serverPort = 6312;
         String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
         String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
         String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
 
+        task.setSocket(socket);
+        
+        sendTask.setSocket(socket);
+        sendTask.setName(name);
+                
+        
         task.setCallback(new Callback() {
 
             public void Handle(JsonObject client) {
                 sendTask.setConnectionData(client);
                 sendTask.setHost(client.getString("privateAddress"));
                 sendTask.setPort(client.getInt("privatePort"));
-                sendTask.setSocket(socket);
-                sendTask.setName(name);
                 executor.execute(sendTask);
             }
         });
-
-        task.setSocket(socket);
+        
         executor.execute(task);
-
-       
 
         try { 
             InetAddress IP = InetAddress.getLocalHost();
