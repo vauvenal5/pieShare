@@ -160,6 +160,8 @@ public class PieShareAppTasks {
 		FileListRequestTask task = new FileListRequestTask();
 		this.aMessageSendingTask(task);
 		task.setFileService(this.services.historyFileService());
+		task.setBeanService(this.config.beanService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 

@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.model;
 
-import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 /**
  *
  * @author Svetoslav
@@ -58,9 +57,5 @@ public class PieShareAppBeanNames {
 	
 	public static String getTorrentTask() {
 		return "torrentTask";
-	}
-	
-	public static Class<FileListRequestMessage> getFileListRequestMessage() {
-		return FileListRequestMessage.class;
 	}
 }
