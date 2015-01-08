@@ -14,6 +14,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
+import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -87,5 +88,14 @@ public class PiePlateConfiguration {
 		channel.setEncoderService(this.utilitiesConfiguration.encodeService());
 		channel.setSerializerService(this.jacksonSerializerService());
 		return channel;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value="prototype")
+	public ChannelTask channelTask() {
+		ChannelTask task = new ChannelTask();
+		task.setExecutorService(this.utilitiesConfiguration.pieExecutorService());
+		return task;
 	}
 }

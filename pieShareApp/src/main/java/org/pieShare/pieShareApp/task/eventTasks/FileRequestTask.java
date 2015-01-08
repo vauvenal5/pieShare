@@ -9,10 +9,11 @@ import java.io.File;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -24,13 +25,14 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
+public class FileRequestTask extends PieEventTaskBase<IFileRequestMessage> {
 
 	private IFileService fileService;
 	private IShareService shareService;
 	private IHashService hashService;
 	private IRequestService requestService;
 	private IBeanService beanService;
+	private IFileEncryptionService fileEncryptionService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -58,12 +60,15 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		IPieShareConfiguration configuration = user.getPieShareConfiguration();
 
+		//todo: fileExists maybe belongs into fileservice
 		File file = new File(configuration.getWorkingDir(), this.msg.getPieFile().getRelativeFilePath());
-
+		
 		if (!file.exists()) {
 			//if the file doesn't exist on this client it could be due the fact that itself
 			//is requesting it right now
-			requestService.checkForActiveFileHandle(msg.getPieFile());
+			if(requestService.isRequested(msg.getPieFile())) {
+				shareService.handleRemoteRequestForActiveShare(msg.getPieFile());
+			}
 			return;
 		}
 
@@ -79,9 +84,9 @@ public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
 		}
 
 		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
-			shareService.shareFile(file);
+			this.shareService.shareFile(pieFile);
+			//todo: what happens when it is the "same file" with different MD5?!
 		}
-		//todo: what happens when it is the "same file" with different MD5?!
 	}
 
 }

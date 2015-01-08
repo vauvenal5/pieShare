@@ -33,10 +33,9 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  *
  * @author Richard
  */
-public class ApacheFileWatcherService implements IFileWatcherService, IClusterAddedListener {
+public class ApacheFileWatcherService implements IFileWatcherService {
 
 	private IBeanService beanService;
-	private IClusterManagementService clusterManagementService;
 	
 	private List<DefaultFileMonitor> fileMonitors;
 	//todo: does the part with modified files belong in here or maybe even into the listener?
@@ -46,14 +45,9 @@ public class ApacheFileWatcherService implements IFileWatcherService, IClusterAd
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
-	}
 	
 	public void init() {
 		this.fileMonitors = new ArrayList();
-		this.clusterManagementService.getClusterAddedEventBase().addEventListener(this);
 		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
 	}
 	
@@ -83,35 +77,16 @@ public class ApacheFileWatcherService implements IFileWatcherService, IClusterAd
 		
 		this.fileMonitors.add(fileMonitor);
 	}
-	
-	@Override
-	public void handleObject(ClusterAddedEvent event) {
-		try {
-			//when a cluster is added this actually means that this client has entered a cloud
-			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-			PieShareConfiguration configuration = user.getPieShareConfiguration();
-			this.watchDir(configuration.getWorkingDir());
-			
-			//todo: who is responsible for this message?
-			FileListRequestMessage msg = this.beanService.getBean(PieShareAppBeanNames.getFileListRequestMessage());
-			msg.getAddress().setClusterName(user.getCloudName());
-			msg.getAddress().setChannelId(user.getUserName());
-			this.clusterManagementService.sendMessage(msg);
-		}
-		catch (ClusterManagmentServiceException ex) {
-			//todo: error handling
-			PieLogger.error(this.getClass(), "File error.", ex);
-		}
-		catch(IOException ex) {
-			PieLogger.error(this.getClass(), "File error.", ex);
-		}
-		//todo: unite FileService, CompareService and all other regarding FileHandling in one package
-	}
 
 	@Override
 	public void shutdown() {
 		for(DefaultFileMonitor fm: this.fileMonitors) {
 			fm.stop();
 		}
+	}
+
+	@Override
+	public boolean isPieFileModifiedByUs(PieFile file) {
+		return this.modifiedFiles.contains(file);
 	}
 }

@@ -7,8 +7,6 @@
 package org.pieShare.pieShareApp.task.localTasks;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
