@@ -9,11 +9,11 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.I
  */
 public interface IPieMessage extends IPieEvent {
 
-	public IPieAddress getAddress();
+	IPieAddress getAddress();
 
-	public void setAddress(IPieAddress address);
+	void setAddress(IPieAddress address);
 
-	public String getType();
+	String getType();
 
-	public void setType(String type);
+	void setType(String type);
 }

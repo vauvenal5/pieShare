@@ -36,14 +36,26 @@
 			<plugin>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<version>2.17</version>
+				<configuration>
+					<forkCount>1</forkCount>
+					<reuseForks>false</reuseForks>
+				</configuration>
 				<executions>
 				  <execution>
+					<phase>integration-test</phase>
 					<goals>
 					  <goal>integration-test</goal>
 					</goals>
 					<configuration>
 						<argLine>${jacoco.agent.arg}</argLine>
 					</configuration>
+				  </execution>
+				  <execution>
+					  <id>verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>verify</goal>
+						</goals>
 				  </execution>
 				</executions>
 			  </plugin>

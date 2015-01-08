@@ -6,8 +6,7 @@
 
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import java.util.concurrent.ExecutorService;
-import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
@@ -18,7 +17,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileListTask extends PieEventTaskBase<FileListMessage>  {
+public class FileListTask extends PieEventTaskBase<IFileListMessage>  {
 	
 	private BeanService beanService;
 	private PieExecutorService executorService;

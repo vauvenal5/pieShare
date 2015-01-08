@@ -9,8 +9,12 @@ package org.pieShare.pieShareApp.service.fileService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,8 +24,8 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
@@ -29,6 +33,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagment
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import sun.nio.ch.FileChannelImpl;
 
 /**
  *
@@ -61,18 +66,15 @@ public abstract class FileServiceBase implements IFileService {
 		while (isCopying) {
 
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(2000);			
 				st = new FileInputStream(file);
-				isCopying = false;
 				st.close();
+				isCopying = false;
 			}
 			catch (FileNotFoundException ex) {
 				isCopying = false;
 			}
-			catch (IOException ex) {
-				//nothing needed to do here
-			}
-			catch (InterruptedException ex) {
+			catch (Exception ex) {
 				//nothing needed to do here
 			}
 		}
@@ -120,9 +122,26 @@ public abstract class FileServiceBase implements IFileService {
 	}
 	
 	@Override
+	public Path getAbsoluteTmpPath(PieFile file) {
+		File localFile = new File(configuration.getTmpDir(), file.getRelativeFilePath());
+		return localFile.toPath();
+	}
+	
+	@Override
 	public PieFile getPieFile(String relativeFilePath) throws FileNotFoundException, IOException {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
 		return this.getPieFile(localFile);
+	}
+	
+	@Override
+	public PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException {
+		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativeFilePath());
+		return this.getPieFile(tmpFile);
+	}
+	
+	@Override
+	public PieFile getWorkingPieFile(PieFile file)  throws FileNotFoundException, IOException {
+		return this.getPieFile(file.getRelativeFilePath());
 	}
 }

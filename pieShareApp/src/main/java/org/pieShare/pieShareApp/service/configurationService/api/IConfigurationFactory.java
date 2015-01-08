@@ -13,5 +13,5 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
  */
 public interface IConfigurationFactory {
 
-	PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config);
+	PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config, boolean create);
 }

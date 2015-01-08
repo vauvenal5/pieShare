@@ -4,14 +4,13 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieTools.piePlate.service.replicatedHashMapService;
+package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
-import java.util.Map;
+import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IReplicatedHashMap<K,V> {
-	Map<K,V> getMap();
+public class NewFileMessage extends FileMessageBase implements INewFileMessage {
 }
