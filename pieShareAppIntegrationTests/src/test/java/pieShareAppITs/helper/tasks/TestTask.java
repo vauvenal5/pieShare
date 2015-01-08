@@ -7,12 +7,11 @@
 package pieShareAppITs.helper.tasks;
 
 import pieShareAppITs.helper.ITTasksCounter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -39,7 +38,7 @@ public class TestTask extends PieEventTaskBase<IPieMessage> {
 			task.run();
 			this.counter.increment(task.getClass());
 		} catch (PieExecutorTaskFactoryException ex) {
-			Logger.getLogger(TestTask.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		}
 	}
 }

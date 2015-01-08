@@ -33,6 +33,7 @@ public class SyncChangesIT {
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private File file;
+	private File fileBot;
 	
 	public SyncChangesIT() {
 	}
@@ -47,7 +48,8 @@ public class SyncChangesIT {
 		ITUtil.performTearDownDelete();
 		
 		file = ITFileUtils.createFile(new File(ITUtil.getMainWorkingDir(), "test"), 2048);
-		FileUtils.copyFile(file, new File(ITUtil.getBotWorkingDir(), "test"), true);
+		fileBot = new File(ITUtil.getBotWorkingDir(), "test");
+		FileUtils.copyFile(file, fileBot, true);
 		
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 		
@@ -76,6 +78,7 @@ public class SyncChangesIT {
 		ITUtil.executeLoginToTestCloud(context);
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
+		//FileUtils.writeByteArrayToFile(fileBot, "hello world".getBytes(), true);
 		
 		while(counter.getCount(FileTransferCompleteTask.class) <= 0) {
 			Thread.sleep(1000);

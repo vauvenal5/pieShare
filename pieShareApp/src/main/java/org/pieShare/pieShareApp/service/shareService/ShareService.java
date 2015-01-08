@@ -10,9 +10,9 @@ import com.turn.ttorrent.client.SharedTorrent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -24,6 +24,7 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfig
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
@@ -52,6 +53,7 @@ public class ShareService implements IShareService{
 	
 	private IFileEncryptionService fileEncryptionService;
 	private IMessageFactoryService messageFactoryService;
+	private IFileWatcherService fileWatcherService;
 
 	public void init() {
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
@@ -69,6 +71,10 @@ public class ShareService implements IShareService{
 
 	public void setFileEncryptionService(IFileEncryptionService fileEncryptionService) {
 		this.fileEncryptionService = fileEncryptionService;
+	}
+
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
 
 	public void setSharedFiles(ConcurrentHashMap<PieFile, Integer> sharedFiles) {
@@ -101,7 +107,9 @@ public class ShareService implements IShareService{
 			//PieFile tmpFile = this.fileService.getTmpPieFile(file);
 			File localFile = this.fileService.getAbsolutePath(file).toFile();
 			//File localTmpFile = this.fileService.getAbsoluteTmpPath(tmpFile).toFile();
-			File localTmpFile = this.fileService.getAbsoluteTmpPath(file).toFile();
+			File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
+			File localTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
+			
 			
 			this.fileEncryptionService.encryptFile(localFile, localTmpFile);
 			
@@ -193,9 +201,10 @@ public class ShareService implements IShareService{
 	public void localFileTransferComplete(PieFile file, boolean source) {
 		try {
 			File localTmpFile = this.fileService.getAbsoluteTmpPath(file).toFile();
+			File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
+			File localEncTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
 		
 			if(!source) {
-			
 				File localFile = this.fileService.getAbsolutePath(file).toFile();
 				
 				//todo: does this belong into the fileService?
@@ -203,24 +212,28 @@ public class ShareService implements IShareService{
 					localFile.getParentFile().mkdirs();
 				}
 				
-				this.fileEncryptionService.decryptFile(localTmpFile, localFile);
+				this.fileEncryptionService.decryptFile(localEncTmpFile, localTmpFile);
 				
+				this.fileWatcherService.addPieFileToModifiedList(file);
+				Files.move(localTmpFile.toPath(), localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				
+				//this.fileWatcherService.addPieFileToModifiedList(file);
+				//FileUtils.moveFile(localTmpFile, localFile);
+				//todo: this i wrong here!
+				//todo: has to move to the according task
+				this.fileWatcherService.removePieFileFromModifiedList(file);
+				
+				this.fileWatcherService.addPieFileToModifiedList(file);
 				this.fileService.setCorrectModificationDate(file);
 				
-				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
-				msgComplete.setPieFile(file);
-				PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-				msgComplete.getAddress().setChannelId(user.getUserName());
-				msgComplete.getAddress().setClusterName(user.getCloudName());
-				this.clusterManagementService.sendMessage(msgComplete);
-			
+				//todo: is it better to delete the enc file or not?
 			}
 		
 			//localTmpFile.delete();
 		
 			this.manipulatePieFileState(file, -1);
-		} catch (ClusterManagmentServiceException ex) {
-			Logger.getLogger(ShareService.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Error!", ex);
 		}
 	}
 	
@@ -235,7 +248,7 @@ public class ShareService implements IShareService{
 			PieFile tmpFile = this.fileService.getTmpPieFile(pieFile);
 			this.manipulatePieFileState(tmpFile, 1);
 		} catch (IOException ex) {
-			Logger.getLogger(ShareService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		}
 	}
 	

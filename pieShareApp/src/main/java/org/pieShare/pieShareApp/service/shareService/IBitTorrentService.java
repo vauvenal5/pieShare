@@ -18,7 +18,6 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  */
 public interface IBitTorrentService {
 	void initTorrentService();
-	void anounceTorrent(Torrent torrent);
 	
 	void torrentClientDone(boolean seeder);
 	void shareTorrent(PieFile file, File localFile, OutputStream out);

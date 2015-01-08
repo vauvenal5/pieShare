@@ -15,9 +15,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.FileLock;
 import java.security.InvalidKeyException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
@@ -66,7 +65,7 @@ public class FileEncryptionService implements IFileEncryptionService {
 	
 	private void rewriteFile(InputStream inStream, OutputStream outStream) throws IOException {
 		byte bytes[] = new byte[1024];
-		int length = 0;
+		int length = 0;		
 		while((length = inStream.read(bytes)) != -1) {
 			outStream.write(bytes, 0, length);
 		}
@@ -104,11 +103,11 @@ public class FileEncryptionService implements IFileEncryptionService {
 			FileOutputStream outputStream = new FileOutputStream(target);
 			this.rewriteFile(stream, outputStream);
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(FileEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		} catch (IOException ex) {
-			Logger.getLogger(FileEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		} catch (InvalidKeyException ex) {
-			Logger.getLogger(FileEncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		}
 	}
 }

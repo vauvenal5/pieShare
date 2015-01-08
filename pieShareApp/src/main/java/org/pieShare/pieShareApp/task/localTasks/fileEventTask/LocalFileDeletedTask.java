@@ -9,18 +9,23 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author Svetoslav
  */
-public class LocalFileDeletedTask extends LocalFileEventTask {
+public class LocalFileDeletedTask extends ALocalFileEventTask {
 
 	@Override
 	public void run() {
 		try {
 			PieFile pieFile = this.prepareWork();
+			
+			if(pieFile == null) {
+				return;
+			}
+			
 			pieFile = this.historyService.syncDeleteToHistory(pieFile);
 			IFileDeletedMessage msg = this.messageFactoryService.getFileDeletedMessage();
 			super.doWork(msg, pieFile);
