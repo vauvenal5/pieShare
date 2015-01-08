@@ -128,16 +128,6 @@ public class ShareService implements IShareService{
 			metaMsg.getAddress().setChannelId(user.getUserName());
 			metaMsg.getAddress().setClusterName(user.getCloudName());
 			this.clusterManagementService.sendMessage(metaMsg);
-			
-			//todo: there is still some problem with the modification date!!! somewhere...
-			//todo: ther is a bug when triing to share 0 byte files
-			//todo: error handling when torrent null
-			//todo: replace name by nodeName			
-			//URI uri = tracker.getAnnounceUrl().toURI();
-			//share torrent
-			//PieFile pieFile = this.fileService.getPieFile(file);
-			//todo: find out why ttorrent changes the date modified when sharing a file?!
-			//this.fileService.setCorrectModificationDate(encTmpFile);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}

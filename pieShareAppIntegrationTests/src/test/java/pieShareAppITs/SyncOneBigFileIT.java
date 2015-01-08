@@ -78,7 +78,17 @@ public class SyncOneBigFileIT {
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
 		
-		ProcessBuilder pb = new ProcessBuilder("fsutil", "file", "createnew", filex.getAbsolutePath(), "1073741824");
+		ProcessBuilder pb;
+		
+		if(System.getProperty("os.name").toLowerCase().contains("win")) {
+			//fsutil file createnew file.out 1000000000 
+			pb = new ProcessBuilder("fsutil", "file", "createnew", filex.getAbsolutePath(), "1073741824");
+		}
+		else {
+			//dd if=/dev/zero of=file.out bs=1MB count=1024 
+			pb = new ProcessBuilder("dd", "if=/dev/zero", "of="+filex.getAbsolutePath(), "bs=1MB", "count=1024");
+		}
+		
 		Process p = pb.start();
 		p.waitFor();
 		

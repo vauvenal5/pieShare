@@ -83,6 +83,9 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 				tracker.start();
 			}
 
+			//todo: ther is a bug when triing to share 0 byte files
+			//todo: error handling when torrent null
+			//todo: replace name by nodeName
 			Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
