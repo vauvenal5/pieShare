@@ -18,7 +18,6 @@ import java.net.URISyntaxException;
 import java.util.concurrent.Semaphore;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -35,7 +34,6 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private INetworkService networkService;
 	private IBeanService beanService;
 	private IExecutorService executorService;
-	private IFileService fileService;
 	
 	private Tracker tracker;
 	private URI trackerUri;
@@ -55,14 +53,9 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		this.executorService = executorService;
 	}
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
-
 	@Override
 	public void initTorrentService() {
-		this.shutdown = false;
-		try {
+			this.shutdown = false;
 			//this section inits the semaphores
 			int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
 			if (availablePorts == 0) {
@@ -70,48 +63,50 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
 			}
 			this.writePorts = new Semaphore((availablePorts / 2) - 1);
-			this.readPorts = new Semaphore(availablePorts);
-			
-			//this section inits the local tracker
-			//todo: use beanService
-			int port = this.networkService.getAvailablePortStartingFrom(6969);
-			this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
-			PieLogger.info(this.getClass(), this.trackerUri.toString());
-			InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
-			this.tracker = new Tracker(ad);
-			tracker.start();
-		} catch (URISyntaxException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
-		}
+			this.readPorts = new Semaphore(availablePorts);			
 	}
 
-	@Override
-	public void anounceTorrent(Torrent torrent) {
-		
+	private Torrent anounceTorrent(File localFile) {
 		if(this.shutdown) {
-			return;
+			return null;
 		}
 		
 		try {
+			if(tracker == null) {
+				//this section inits the local tracker
+				//todo: use beanService
+				int port = this.networkService.getAvailablePortStartingFrom(6969);
+				this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
+				PieLogger.info(this.getClass(), this.trackerUri.toString());
+				InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
+				this.tracker = new Tracker(ad);
+				tracker.start();
+			}
+
+			Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
-		} catch (IOException ex) {
+			return torrent;
+		} catch (InterruptedException | URISyntaxException | IOException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
+		
+		return null;
 	}
 	
 	@Override
 	public void shareTorrent(PieFile file, File localFile, OutputStream out) {
 		try {
 			//File localFile = this.fileService.getAbsolutePath(file).toFile();
-			Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
-			
-			this.anounceTorrent(torrent);
-			
+			//Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
+			Torrent torrent = this.anounceTorrent(localFile);
+			if(torrent == null) {
+				//todo: fail handling has to be added
+				return;
+			}
 			SharedTorrent sharredTorrent = new SharedTorrent(torrent, localFile.getParentFile(), true);
+			
 			
 			this.writePorts.acquire();
 			this.handleSharedTorrent(file, sharredTorrent);
@@ -152,7 +147,11 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	
 	@Override
 	public void shutdown() {
-		this.tracker.stop();
+		
+		if(this.tracker != null) {
+			this.tracker.stop();
+		}
+		
 		this.shutdown = true;
 	}
 }

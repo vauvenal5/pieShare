@@ -10,25 +10,20 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
-public class LocalFileChangedTask extends LocalFileEventTask {
+public class LocalFileChangedTask extends ALocalFileEventTask {
 	
-	private IFileWatcherService fileWatcherService;
-
-	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
-		this.fileWatcherService = fileWatcherService;
-	}
+	
 
 	@Override
 	public void run() {
 		try {
 			PieFile file = this.prepareWork();
 			
-			if(this.fileWatcherService.removePieFileFromModifiedList(file)) {
-				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", file.getRelativeFilePath());
+			if(file == null) {
+				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", this.file.getAbsolutePath());
 				return;
 			}
 			

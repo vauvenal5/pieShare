@@ -194,7 +194,6 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setNetworkService(this.networkService());
 		service.setShutdownService(this.shutdownService());
-		service.setFileService(this.localFileService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		
 		service.initTorrentService();
@@ -213,6 +212,7 @@ public class PieShareAppService {
 		service.setMessageFactoryService(this.messageFactoryService());
 		service.setTmpFolderService(this.utilities.tempFolderService());
 		service.setBitTorrentService(this.bitTorrentService());
+		service.setFileWatcherService(this.apacheFileWatcherService());
 		
 		service.init();
 		return service;

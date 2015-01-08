@@ -8,8 +8,6 @@ package org.pieShare.pieShareApp.service.database;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

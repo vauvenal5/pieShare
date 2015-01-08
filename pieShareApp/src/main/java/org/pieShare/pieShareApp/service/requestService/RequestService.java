@@ -54,7 +54,7 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
-		if(this.requestedFiles.containsKey(pieFile)) {
+		if(this.isRequested(pieFile)) {
 			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
 			return;
 		}
@@ -101,7 +101,7 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public synchronized boolean deleteRequestedFile(PieFile pieFile) {
-		if (requestedFiles.containsKey(pieFile)) {
+		if (this.isRequested(pieFile)) {
 			requestedFiles.remove(pieFile);
 			return true;
 		}

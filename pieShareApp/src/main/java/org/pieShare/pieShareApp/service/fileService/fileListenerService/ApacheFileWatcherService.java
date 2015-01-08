@@ -84,4 +84,9 @@ public class ApacheFileWatcherService implements IFileWatcherService {
 			fm.stop();
 		}
 	}
+
+	@Override
+	public boolean isPieFileModifiedByUs(PieFile file) {
+		return this.modifiedFiles.contains(file);
+	}
 }

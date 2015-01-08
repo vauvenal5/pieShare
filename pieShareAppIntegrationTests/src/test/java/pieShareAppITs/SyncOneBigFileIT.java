@@ -32,12 +32,12 @@ import pieShareAppITs.helper.tasks.TestTask;
  *
  * @author Svetoslav
  */
-public class SyncOneFileIT {
+public class SyncOneBigFileIT {
 
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 
-	public SyncOneFileIT() {
+	public SyncOneBigFileIT() {
 	}
 
 	@BeforeClass
@@ -56,9 +56,9 @@ public class SyncOneFileIT {
 		process.destroy();
 		ITUtil.performTearDown(context);
 	}
-
-	@Test(timeOut = 120000)
-	public void syncOneFileTest() throws Exception {
+	
+	@Test(timeOut = 600000)
+	public void syncOneBigFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
 		PieShareConfiguration config = user.getPieShareConfiguration();
@@ -77,7 +77,13 @@ public class SyncOneFileIT {
 		ITUtil.waitForProcessToStartup(this.process);
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
-		ITFileUtils.createFile(filex, 2048);
+		
+		ProcessBuilder pb = new ProcessBuilder("fsutil", "file", "createnew", filex.getAbsolutePath(), "1073741824");
+		Process p = pb.start();
+		p.waitFor();
+		
+		
+		//ITFileUtils.createFile(filex, 4294967296L);
 		File fileMain = new File(config.getWorkingDir(), "test.txt");
 		
 		PieUser botUser = context.getBean("botPieUser", PieUser.class);
@@ -103,4 +109,9 @@ public class SyncOneFileIT {
 			fail("To much file transerfers?!");
 		}
 	}
+
+	/*@Test(timeOut = 120000)
+	 public void syncDeleteFile() {
+		
+	 }*/
 }

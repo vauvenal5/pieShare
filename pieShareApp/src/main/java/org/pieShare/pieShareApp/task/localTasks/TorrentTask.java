@@ -10,12 +10,19 @@ import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Timer;
+import java.util.TimerTask;
+import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieShareApp.task.AMessageSendingTask;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
@@ -24,7 +31,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  *
  * @author Svetoslav
  */
-public class TorrentTask implements IPieTask, IShutdownableService {
+public class TorrentTask extends AMessageSendingTask implements IShutdownableService {
 	
 	private IShareService shareService;
 	private INetworkService networkService;
@@ -34,11 +41,11 @@ public class TorrentTask implements IPieTask, IShutdownableService {
 	private PieFile file;
 	private SharedTorrent torrent;
 	private boolean shutdown;
+	private Timer timer = new Timer();
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
 		this.bitTorrentService = bitTorrentService;
 	}
-
 	
 	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
@@ -68,7 +75,18 @@ public class TorrentTask implements IPieTask, IShutdownableService {
 			//todo: won't work for server and client the same way: problem with this timeout the server
 			//shuts down after 30 seconds... implement other timeout strategy or rerequest messages
 			//reregquest is maybe the better way
-			client.share(30);
+			client.share();
+			
+			boolean seeder = this.torrent.isSeeder();
+			
+			this.timer.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					if(seeder && client.getPeers().isEmpty()) {
+						client.stop();
+					}
+				}
+			}, 60000, 30000);
 
 			//client.waitForCompletion();
 			while (!Client.ClientState.DONE.equals(client.getState())) {
@@ -101,13 +119,17 @@ public class TorrentTask implements IPieTask, IShutdownableService {
 			
 			this.client.stop(false);
 
-			boolean seeder = this.torrent.isSeeder();
 			this.bitTorrentService.torrentClientDone(seeder);
 			this.shareService.localFileTransferComplete(file, seeder);
-		} catch (IOException ex) {
-			Logger.getLogger(TorrentTask.class.getName()).log(Level.SEVERE, null, ex);
+			
+			if(!seeder) {
+				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
+				msgComplete.setPieFile(file);
+				this.setDefaultAdresse(msgComplete);
+				this.clusterManagementService.sendMessage(msgComplete);
+			}
 		} catch (Exception ex) {
-			Logger.getLogger(TorrentTask.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Exception in torrent task.", ex);
 		}
 	}
 

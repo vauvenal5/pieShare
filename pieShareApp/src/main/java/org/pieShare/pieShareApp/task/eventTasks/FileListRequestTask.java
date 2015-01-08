@@ -16,6 +16,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.task.AMessageSendingEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -26,11 +27,9 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileListRequestTask extends PieEventTaskBase<IFileListRequestMessage> {
+public class FileListRequestTask extends AMessageSendingEventTask<IFileListRequestMessage> {
 
 	private IFileService fileService;
-	private IClusterManagementService clusterManagementService;
-	private IBeanService beanService;
 	private IMessageFactoryService messageFactoryService;
 
 	public void setFileService(IFileService fileService) {
@@ -39,14 +38,6 @@ public class FileListRequestTask extends PieEventTaskBase<IFileListRequestMessag
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
-
-	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
-		this.clusterManagementService = clusterManagementService;
 	}
 
 	@Override
@@ -60,9 +51,7 @@ public class FileListRequestTask extends PieEventTaskBase<IFileListRequestMessag
             reply.setFileList(pieFiles);
 			reply.setAddress(this.msg.getAddress());
 			
-			PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
-			reply.getAddress().setChannelId(user.getUserName());
-			reply.getAddress().setClusterName(user.getCloudName());
+			this.setDefaultAdresse(reply);
 
 			try {
 				this.clusterManagementService.sendMessage(reply);
