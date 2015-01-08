@@ -4,13 +4,12 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.message;
-
-import org.pieShare.pieShareApp.model.message.base.FileHistoryMessageBase;
+package org.pieShare.pieShareApp.model.message.api;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileDeletedMessage extends FileHistoryMessageBase {
+public interface IFileRequestMessage extends IFileMessageBase {
+	
 }
