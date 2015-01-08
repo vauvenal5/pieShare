@@ -7,6 +7,8 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
