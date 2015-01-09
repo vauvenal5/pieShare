@@ -70,11 +70,14 @@ public class SyncOneFileIT {
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
 		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 
+		
+		System.out.println("Starting bot!");
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 
 		ITUtil.executeLoginToTestCloud(context);
 
 		ITUtil.waitForProcessToStartup(this.process);
+		System.out.println("Bot started!");
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
 		ITFileUtils.createFile(filex, 2048);
@@ -87,9 +90,11 @@ public class SyncOneFileIT {
 		FileUtils.moveFile(filex, fileMain);
 		//FileUtils.moveFile(filex, fileBot);
 		
+		System.out.println("Waiting for transfer complete!");
 		while (counter.getCount(FileTransferCompleteTask.class) < 1) {
 			Thread.sleep(5000);
 		}
+		System.out.println("Recived transfer complete!");
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
