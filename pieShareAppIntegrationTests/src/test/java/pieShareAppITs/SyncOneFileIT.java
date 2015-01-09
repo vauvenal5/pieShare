@@ -87,8 +87,8 @@ public class SyncOneFileIT {
 		PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
 		File fileBot = new File(botConfig.getWorkingDir(), "test.txt");
 		
-		FileUtils.moveFile(filex, fileMain);
-		//FileUtils.moveFile(filex, fileBot);
+		//FileUtils.moveFile(filex, fileMain);
+		FileUtils.moveFile(filex, fileBot);
 		
 		System.out.println("Waiting for transfer complete!");
 		while (counter.getCount(FileTransferCompleteTask.class) < 1) {
