@@ -14,6 +14,7 @@ import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferComple
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.assertTrue;
@@ -57,8 +58,9 @@ public class SyncOneFileIT {
 		ITUtil.performTearDown(context);
 	}
 
-	@Test(timeOut = 300000)
+	@Test(timeOut = 120000)
 	public void syncOneFileTest() throws Exception {
+		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
 		PieShareConfiguration config = user.getPieShareConfiguration();
