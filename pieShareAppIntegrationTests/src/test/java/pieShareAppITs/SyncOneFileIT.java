@@ -57,7 +57,7 @@ public class SyncOneFileIT {
 		ITUtil.performTearDown(context);
 	}
 
-	@Test(timeOut = 120000)
+	@Test(timeOut = 300000)
 	public void syncOneFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
