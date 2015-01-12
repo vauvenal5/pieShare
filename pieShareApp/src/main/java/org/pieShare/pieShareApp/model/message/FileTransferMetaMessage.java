@@ -19,7 +19,6 @@ import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 public class FileTransferMetaMessage extends FileMessageBase implements IFileTransferMetaMessage{
 
 	private byte[] metaInfo;
-	private PieFile tmpFile;
 
 	@Override
 	public byte[] getMetaInfo() {
@@ -29,15 +28,5 @@ public class FileTransferMetaMessage extends FileMessageBase implements IFileTra
 	@Override
 	public void setMetaInfo(byte[] metaInfo) {
 		this.metaInfo = metaInfo;
-	}
-
-	@Override
-	public PieFile getTmpFile() {
-		return this.tmpFile;
-	}
-
-	@Override
-	public void setTmpFile(PieFile file) {
-		this.tmpFile = file;
 	}
 }

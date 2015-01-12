@@ -3,18 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.model.message.api;
-
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
- * @author Svetoslav
+ * @author sveto_000
  */
-public interface IFileTransferMetaMessage extends IFileMessageBase {
-
-	byte[] getMetaInfo();
-
-	void setMetaInfo(byte[] metaInfo);
+public interface IMetaCommitMessage extends IFileTransferMetaMessage {
+	
 }
