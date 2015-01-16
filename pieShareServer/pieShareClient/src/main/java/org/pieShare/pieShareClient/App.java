@@ -25,14 +25,21 @@ public class App {
 		context = new AnnotationConfigApplicationContext();
 		context.register(PieShareClientServiceConfiguration.class);
 		context.refresh();
+
+		int port = -1;
 		
-                String from = args[0];
-                String to = null;
-                if(args.length == 2)
-                 to = args[1];
-		
-		Client client  = new Client();
-		client.connect(from, to);
-		
+		String from = args[0];
+		String to = null;
+		if (args.length > 1) {
+			to = args[1];
+		}
+
+		if (args.length > 2) {
+			port =  Integer.parseInt(args[2]);
+		}
+
+		Client client = new Client();
+		client.connect(from, to, port);
+
 	}
 }
