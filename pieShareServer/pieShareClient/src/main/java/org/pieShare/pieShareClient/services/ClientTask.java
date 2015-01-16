@@ -9,6 +9,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
@@ -24,64 +26,48 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClientTask implements Runnable {
 
-    private DatagramSocket socket;
-    private Callback callback;
-    private ClientSendTask sendTask;
-    private String ackMsg = "{\"type\":\"ACK\"}";
+	private DatagramSocket socket;
+	private Callback callback;
+	private ClientSendTask sendTask;
+	private final ExecutorService executor;
 
-    public void setSendTask(ClientSendTask sendTask) {
-        this.sendTask = sendTask;
-    }
+	public ClientTask() {
+		executor = Executors.newCachedThreadPool();
+	}
 
-    public DatagramSocket getSocket() {
-        return socket;
-    }
+	public void setSendTask(ClientSendTask sendTask) {
+		this.sendTask = sendTask;
+	}
 
-    public void setSocket(DatagramSocket socket) {
-        this.socket = socket;
-    }
+	public DatagramSocket getSocket() {
+		return socket;
+	}
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
-    }
+	public void setSocket(DatagramSocket socket) {
+		this.socket = socket;
+	}
 
-    public void run() {
-        while (true) {
-            byte[] bytes = new byte[1024];
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
+	public void setCallback(Callback callback) {
+		this.callback = callback;
+	}
 
-            try {
-                //Thread.sleep(500);
-                socket.receive(packet);
-                bytes = Arrays.copyOfRange(bytes, 0, packet.getLength());
-                PieLogger.info(this.getClass(), String.format("Input Message: %s", new String(bytes)));
-                JsonObject input = processInput(bytes);
+	public void run() {
+		while (true) {
+			byte[] bytes = new byte[1024];
+			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
-                if (input.getString("type").equals("connection")) {
-                    JsonObject newClient = input.getJsonObject("client");
-                    callback.Handle(newClient);
-                }
-                if (input.getString("type").equals("msg")) {
-                    System.out.println("Message Arrived: " + input.getString("msg"));
-                }
-                if (input.getString("type").equals("punch")) {
-                    sendTask.send(ackMsg.getBytes(), packet.getAddress().getHostAddress(), packet.getPort());
-                }
-                if (input.getString("type").equals("ACK")) {
-                    sendTask.setACK(true);
-                }
-            } catch (IOException ex) {
-                PieLogger.debug(this.getClass(), "Error receive:", ex);
-            }
-        }
-    }
-
-    public JsonObject processInput(byte[] input) {
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input);
-        JsonReader jsonReader = Json.createReader(byteInStream);
-        JsonObject ob = jsonReader.readObject();
-        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-        return ob;
-    }
+			try {
+				socket.receive(packet);
+				InputTask task = new InputTask();
+				task.setPacket(packet);
+				task.setSendTask(sendTask);
+				task.setCallback(callback);
+				executor.execute(task);
+			}
+			catch (IOException ex) {
+				PieLogger.debug(this.getClass(), "Error receive:", ex);
+			}
+		}
+	}
 
 }
