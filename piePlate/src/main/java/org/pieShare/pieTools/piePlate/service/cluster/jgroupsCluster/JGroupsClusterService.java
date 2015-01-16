@@ -1,5 +1,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.Validate;
@@ -34,6 +36,9 @@ public class JGroupsClusterService implements IClusterService {
 	private String id;
 
 	public JGroupsClusterService() {
+		//todo: bean service here?
+		this.incomingChannels = new ArrayList<>();
+		this.outgoingChannels = new HashMap<>();
 	}
 
 	@Override

@@ -18,4 +18,5 @@ public interface IFileWatcherService extends IShutdownableService {
 	void watchDir(File file) throws IOException;
 	void addPieFileToModifiedList(PieFile pieFile);
 	boolean removePieFileFromModifiedList(PieFile file);
+	boolean isPieFileModifiedByUs(PieFile file);
 }
