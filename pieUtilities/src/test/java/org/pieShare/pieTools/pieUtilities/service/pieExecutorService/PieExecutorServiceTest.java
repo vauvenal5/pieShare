@@ -32,13 +32,13 @@ public class PieExecutorServiceTest {
 	@Test
 	public void testExecute() throws Exception {
 		IPieTask task = Mockito.mock(IPieTask.class);
-		ExecutorService executor = Mockito.mock(ExecutorService.class);
+		//ExecutorService executor = Mockito.mock(ExecutorService.class);
 
-		PieExecutorService instance = new PieExecutorService();
-		instance.setExecutor(executor);
+		PieExecutorService instance = PieExecutorService.newCachedPieExecutorService();
+		//instance.setExecutor(executor);
 		instance.execute(task);
 
-		Mockito.verify(executor, Mockito.times(1)).execute(task);
+		Mockito.verify(task, Mockito.timeout(1000).times(1)).run();
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class PieExecutorServiceTest {
 	@Test(expected = NullPointerException.class)
 	public void testExecuteNullValue() throws Exception {
 		IPieTask task = null;
-		PieExecutorService instance = new PieExecutorService();
+		PieExecutorService instance = PieExecutorService.newCachedPieExecutorService();
 		instance.execute(task);
 	}
 
@@ -58,17 +58,17 @@ public class PieExecutorServiceTest {
 	public void testHandlePieEvent() throws Exception {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
 		IPieEventTask task = Mockito.mock(IPieEventTask.class);
-		ExecutorService executor = Mockito.mock(ExecutorService.class);
+		//ExecutorService executor = Mockito.mock(ExecutorService.class);
 		IPieExecutorTaskFactory factory = Mockito.mock(IPieExecutorTaskFactory.class);
 
 		Mockito.when(factory.getTask(event)).thenReturn(task);
 
-		PieExecutorService instance = new PieExecutorService();
+		PieExecutorService instance = PieExecutorService.newCachedPieExecutorService();
 		instance.setExecutorFactory(factory);
-		instance.setExecutor(executor);
+		//instance.setExecutor(executor);
 
 		instance.handlePieEvent(event);
 
-		Mockito.verify(executor, Mockito.times(1)).execute(task);
+		Mockito.verify(task, Mockito.timeout(1000).times(1)).run();
 	}
 }

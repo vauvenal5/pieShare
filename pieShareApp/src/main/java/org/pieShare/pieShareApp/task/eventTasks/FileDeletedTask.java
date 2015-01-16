@@ -6,7 +6,7 @@
 
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import org.pieShare.pieShareApp.model.message.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
@@ -14,7 +14,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileDeletedTask extends PieEventTaskBase<FileDeletedMessage>{
+public class FileDeletedTask extends PieEventTaskBase<IFileDeletedMessage>{
 	
 	private IFileService fileService;
 
@@ -24,7 +24,7 @@ public class FileDeletedTask extends PieEventTaskBase<FileDeletedMessage>{
 
 	@Override
 	public void run() {
-		this.fileService.deleteRecursive(this.msg.getFile());
+		this.fileService.deleteRecursive(this.msg.getPieFile());
 	}
 	
 }

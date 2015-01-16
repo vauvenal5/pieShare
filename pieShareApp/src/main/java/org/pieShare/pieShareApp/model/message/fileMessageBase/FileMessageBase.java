@@ -4,8 +4,9 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.message.base;
+package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
+import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
@@ -13,14 +14,16 @@ import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
  *
  * @author Svetoslav
  */
-public class FileMessageBase extends HeaderMessage {
+public class FileMessageBase extends HeaderMessage implements IFileMessageBase {
 	protected PieFile file;
 
-	public PieFile getFile() {
+	@Override
+	public PieFile getPieFile() {
 		return file;
 	}
 
-	public void setFile(PieFile file) {
+	@Override
+	public void setPieFile(PieFile file) {
 		this.file = file;
 	}
 }
