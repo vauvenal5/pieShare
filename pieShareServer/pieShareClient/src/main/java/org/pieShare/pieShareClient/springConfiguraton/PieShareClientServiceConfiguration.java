@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareClient.springConfiguraton;
 
+import org.pieShare.pieShareClient.services.ClientSendTask;
 import org.pieShare.pieShareClient.services.ClientTask;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,5 +17,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class PieShareClientServiceConfiguration {
 
+	public ClientSendTask clientSendTask()
+	{
+		ClientSendTask task = new ClientSendTask();
+		return task;
+	}
 
 }
