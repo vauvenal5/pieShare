@@ -8,6 +8,11 @@ package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareApp.task.AMessageSendingTask;
+import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
+import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
+import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
+import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
@@ -15,15 +20,12 @@ import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.base.LocalFileEventTask;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
-import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,12 +46,28 @@ public class PieShareAppTasks {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieUtilitiesConfiguration config;
+	
+	private void aMessageSendingTask(AMessageSendingTask task) {
+		task.setBeanService(this.config.beanService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
+	}
+			
+	private void aLocalFileEventTask(ALocalFileEventTask task) {
+		this.aMessageSendingTask(task);
+		
+		task.setFileFilterService(services.fileFilterService());
+		task.setHistoryService(services.historyService());
+		task.setFileEncrypterService(services.fileEncryptionService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
+	}
 
 	@Bean
 	@Scope(value = "prototype")
 	public FileMetaTask fileMetaTask() {
 		FileMetaTask task = new FileMetaTask();
 		task.setRequestService(this.services.requestService());
+		task.setShareService(this.services.shareService());
 		return task;
 	}
 
@@ -91,19 +109,11 @@ public class PieShareAppTasks {
             return task;
         }
 
-	private void fileEventTask(LocalFileEventTask task) {
-		task.setBeanService(this.config.beanService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileFilterService(services.fileFilterService());
-		task.setHistoryService(services.historyService());
-		task.setFileEncrypterService(services.fileEncryptionService());
-	}
-
 	@Bean
 	@Scope(value = "prototype")
 	public LocalFileCreatedTask localFileCreatedTask() {
 		LocalFileCreatedTask task = new LocalFileCreatedTask();
-		this.fileEventTask(task);
+		this.aLocalFileEventTask(task);
 		task.setFileService(this.services.localFileService());
 		return task;
 	}
@@ -112,9 +122,8 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LocalFileChangedTask localFileChangedTask() {
 		LocalFileChangedTask task = new LocalFileChangedTask();
-		this.fileEventTask(task);
+		this.aLocalFileEventTask(task);
 		task.setFileService(this.services.localFileService());
-		task.setFileWatcherService(this.services.apacheFileWatcherService());
 		return task;
 	}
 
@@ -122,7 +131,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
-		this.fileEventTask(task);
+		this.aLocalFileEventTask(task);
 		task.setFileService(this.services.historyFileService());
 		return task;
 	}
@@ -149,8 +158,10 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileListRequestTask fileListRequestTask() {
 		FileListRequestTask task = new FileListRequestTask();
-		task.setClusterManagementService(this.plate.clusterManagementService());
+		this.aMessageSendingTask(task);
 		task.setFileService(this.services.historyFileService());
+		task.setBeanService(this.config.beanService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -174,6 +185,8 @@ public class PieShareAppTasks {
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
 		service.setHistoryService(services.historyService());
+		service.setFileWatcherService(this.services.apacheFileWatcherService());
+		service.setMessageFactoryService(this.services.messageFactoryService());
 		return service;
 	}
 
@@ -194,6 +207,19 @@ public class PieShareAppTasks {
 		ResetPwdTask task = new ResetPwdTask();
 		task.setBeanService(config.beanService());
 		task.setDatabaseService(services.databaseService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public TorrentTask torrentTask() {
+		TorrentTask task = new TorrentTask();
+		this.aMessageSendingTask(task);
+		task.setNetworkService(this.services.networkService());
+		task.setShareService(this.services.shareService());
+		task.setShutdownService(this.services.shutdownService());
+		task.setBitTorrentService(this.services.bitTorrentService());
 		return task;
 	}
 }
