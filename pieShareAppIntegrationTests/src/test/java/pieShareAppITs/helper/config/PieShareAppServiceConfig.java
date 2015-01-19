@@ -10,8 +10,6 @@ import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.tasks.TestTask;
 import java.io.File;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.mockito.Mockito;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
