@@ -13,4 +13,8 @@ public interface IPieMessage extends IBasePieMessage {
 
 	void setAddress(IPieAddress address);
 
+	String getType();
+
+	void setType(String type);
+
 }
