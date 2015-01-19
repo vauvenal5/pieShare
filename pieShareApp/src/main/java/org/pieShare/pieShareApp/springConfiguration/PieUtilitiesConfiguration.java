@@ -8,6 +8,8 @@ package org.pieShare.pieShareApp.springConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService;
@@ -56,8 +58,8 @@ public class PieUtilitiesConfiguration {
 	@Bean
 	@Lazy
 	public PieExecutorService pieExecutorService() {
-		PieExecutorService service = new PieExecutorService();
-		service.setExecutor(this.javaExecutorService());
+		PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
+		//service.setExecutor(this.javaExecutorService());
 		service.setExecutorFactory(this.pieExecutorTaskFactory());
 		return service;
 	}

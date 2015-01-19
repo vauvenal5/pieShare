@@ -6,28 +6,30 @@
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.FileListener;
+import org.pieShare.pieShareApp.model.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ComparerService;
 import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.PieDatabaseManagerFactory;
+import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
+import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
+import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
+import org.pieShare.pieShareApp.service.fileService.LocalFileService;
+import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
-import org.pieShare.pieShareApp.service.fileService.LocalFileService;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
-import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
-import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
-import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
+import org.pieShare.pieShareApp.service.shareService.ShareService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -93,6 +95,13 @@ public class PieShareAppService {
 		service.init();
 		return service;
 	}
+	
+	@Bean
+	@Lazy
+	public MessageFactoryService messageFactoryService() {
+		MessageFactoryService service = new MessageFactoryService();
+		return service;
+	}
 
 	@Bean
 	@Lazy
@@ -101,6 +110,7 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setShareService(this.shareService());
+		service.setMessageFactoryService(this.messageFactoryService());
 		return service;
 	}
 	
@@ -138,7 +148,6 @@ public class PieShareAppService {
 	public ApacheFileWatcherService apacheFileWatcherService() {
 		ApacheFileWatcherService watcher = new ApacheFileWatcherService();
 		watcher.setBeanService(this.utilities.beanService());
-		watcher.setClusterManagementService(this.plate.clusterManagementService());
 		watcher.setShutdownService(this.shutdownService());
 		watcher.init();
 		return watcher;
@@ -180,18 +189,32 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	public BitTorrentService shareService() {
+	public BitTorrentService bitTorrentService() {
 		BitTorrentService service = new BitTorrentService();
+		service.setBeanService(this.utilities.beanService());
+		service.setNetworkService(this.networkService());
+		service.setShutdownService(this.shutdownService());
+		service.setExecutorService(this.utilities.pieExecutorService());
+		
+		service.initTorrentService();
+		return service;
+	}
+	
+	@Bean
+	@Lazy
+	public ShareService shareService() {
+		ShareService service = new ShareService();
 		service.setBase64Service(this.utilities.base64Service());
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setFileUtilsService(this.localFileService());
-		service.setNetworkService(this.networkService());
-		service.setTmpFolderService(this.utilities.tempFolderService());
-		service.setFileWatcherService(this.apacheFileWatcherService());
-		service.setShutdownService(this.shutdownService());
 		service.setFileEncryptionService(this.fileEncryptionService());
-		service.bitTorrentServicePost();
+		service.setFileUtilsService(this.localFileService());
+		service.setMessageFactoryService(this.messageFactoryService());
+		service.setTmpFolderService(this.utilities.tempFolderService());
+		service.setBitTorrentService(this.bitTorrentService());
+		service.setFileWatcherService(this.apacheFileWatcherService());
+		
+		service.init();
 		return service;
 	}
 
