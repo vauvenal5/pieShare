@@ -24,7 +24,6 @@ import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEn
 public class JGroupsClusterService implements IClusterService {
 
 	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
-	
 	private List<IIncomingChannel> incomingChannels;
 	private Map<String, IOutgoingChannel> outgoingChannels;
 
@@ -68,27 +67,37 @@ public class JGroupsClusterService implements IClusterService {
 		try {
 			Validate.notNull(this.receiver);
 			this.receiver.setClusterService(this);
-			
+
 			this.channel.setReceiver(this.receiver);
 			this.channel.setDiscardOwnMessages(true);
 			this.channel.connect(clusterName);
 
-		} catch (NullPointerException e) {
+		}
+		catch (NullPointerException e) {
 			throw new ClusterServiceException("Receiver not set!");
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
+	}
+
+	@Override
+	public boolean isMaster() {
+		if (this.channel.getView().getMembers().get(0).equals(this.channel.getAddress())) {
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void sendMessage(IPieMessage msg) throws ClusterServiceException {
 		Address ad = null;
 		IPieAddress address = msg.getAddress();
-		
-		if(!this.outgoingChannels.containsKey(address.getChannelId())) {
+
+		if (!this.outgoingChannels.containsKey(address.getChannelId())) {
 			throw new ClusterServiceException(String.format("This outgoing channel doesn't exists: %s", address.getChannelId()));
 		}
-		
+
 		if (msg.getAddress() instanceof JGroupsPieAddress) {
 			ad = ((JGroupsPieAddress) msg.getAddress()).getAddress();
 		}
@@ -97,7 +106,8 @@ public class JGroupsClusterService implements IClusterService {
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
 			this.channel.send(ad, message);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
 	}
@@ -132,7 +142,7 @@ public class JGroupsClusterService implements IClusterService {
 	@Override
 	public void registerOutgoingChannel(IOutgoingChannel channel) {
 		//todo-piePlate: throw exceptions if adding to map is not possible
-		
+
 		this.outgoingChannels.put(channel.getChannelId(), channel);
 	}
 }
