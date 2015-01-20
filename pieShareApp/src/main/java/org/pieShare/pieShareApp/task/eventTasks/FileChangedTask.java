@@ -8,7 +8,8 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
-import org.pieShare.pieShareApp.service.comparerService.api.IComparerService;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
+import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -20,24 +21,23 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  */
 public class FileChangedTask extends PieEventTaskBase<IFileChangedMessage> {
 
-	private IComparerService comparerService;
-        private IRequestService requestService;
+	private ILocalFileCompareService comparerService;
+    private IRequestService requestService;
 
     public void setRequestService(IRequestService requestService) {
         this.requestService = requestService;
     }
 
-	public void setComparerService(IComparerService comparerService) {
+	public void setComparerService(ILocalFileCompareService comparerService) {
 		this.comparerService = comparerService;
 	}
 	
 	@Override
 	public void run() {
 		try {
-                    if(comparerService.compareWithLocalPieFile(msg.getPieFile())==1) {
-                        PieLogger.info(this.getClass(), "Are in!");
-                        this.requestService.requestFile(msg.getPieFile());
-                    }
+			if(comparerService.compareWithLocalPieFile(msg.getPieFile())==1) {
+				this.requestService.requestFile(msg.getPieFile());
+			}
 		} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "New File Task error.", ex);
 		} catch (FileConflictException ex) {

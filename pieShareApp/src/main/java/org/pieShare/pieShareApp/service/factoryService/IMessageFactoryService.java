@@ -13,6 +13,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 
 /**
@@ -35,4 +36,6 @@ public interface IMessageFactoryService {
 	IFileTransferMetaMessage getFileTransferMetaMessage();
 	
 	INewFileMessage getNewFileMessage();
+	
+	IMetaCommitMessage getMetaCommitMessage();
 }

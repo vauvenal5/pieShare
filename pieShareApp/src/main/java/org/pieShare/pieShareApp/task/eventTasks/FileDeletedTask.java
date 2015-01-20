@@ -24,6 +24,7 @@ public class FileDeletedTask extends PieEventTaskBase<IFileDeletedMessage>{
 
 	@Override
 	public void run() {
+		//todo: compare?
 		this.fileService.deleteRecursive(this.msg.getPieFile());
 	}
 	

@@ -9,6 +9,7 @@ import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
 import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -16,10 +17,13 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
+import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -34,6 +38,8 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private INetworkService networkService;
 	private IBeanService beanService;
 	private IExecutorService executorService;
+	private IBase64Service base64Service;
+	private IShareService shareService;
 	
 	private Tracker tracker;
 	private URI trackerUri;
@@ -66,7 +72,8 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 			this.readPorts = new Semaphore(availablePorts);			
 	}
 
-	private Torrent anounceTorrent(File localFile) {
+	@Override
+	public byte[] anounceTorrent(File localFile) {
 		if(this.shutdown) {
 			return null;
 		}
@@ -90,7 +97,10 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
-			return torrent;
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			torrent.save(baos);
+			return this.base64Service.encode(baos.toByteArray());
 		} catch (InterruptedException | URISyntaxException | IOException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
@@ -124,7 +134,16 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	}
 	
 	@Override
-	public void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
+	public void handleShareTorrent(PieFile pieFile, byte[] meta, File destDir) {
+		try {
+			SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta), destDir);
+			this.handleSharedTorrent(pieFile, torrent);
+		} catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Couldn't convert torrent file.", ex);
+		}
+	}
+	
+	private void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
 		try {
 			this.readPorts.acquire();
 			TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
