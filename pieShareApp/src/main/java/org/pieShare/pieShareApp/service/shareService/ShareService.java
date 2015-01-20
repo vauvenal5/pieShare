@@ -20,6 +20,8 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
+import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -39,6 +41,7 @@ import org.pieShare.pieTools.pieUtilities.service.tempFolderService.api.ITempFol
 public class ShareService implements IShareService{
 	
 	private IBitTorrentService bitTorrentService;
+	private ILocalFileCompareService comparerService;
 	
 	private ITempFolderService tmpFolderService;
 	private IClusterManagementService clusterManagementService;
@@ -100,9 +103,36 @@ public class ShareService implements IShareService{
 	public void setTmpFolderService(ITempFolderService tmpFolderService) {
 		this.tmpFolderService = tmpFolderService;
 	}
-
+	
 	@Override
-	public void shareFile(PieFile file) {
+	public File prepareFile(PieFile file) throws NoLocalFileException
+	{		
+		//PieFile tmpFile = this.fileService.getTmpPieFile(file);
+		File localFile = this.fileService.getAbsolutePath(file).toFile();
+		//File localTmpFile = this.fileService.getAbsoluteTmpPath(tmpFile).toFile();
+		File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
+		File localTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
+		
+		this.comparerService.compareWithLocalPieFile(file)
+		
+		if(!localFile.exists()) {
+			throw new NoLocalFileException("Local file doesn't exist!");
+		}
+		
+		if(this.isPrepared(file) && localTmpFile.exists()) {			
+			return localTmpFile;
+		}
+		
+		//TODO: create dirs???!!!
+		this.fileEncryptionService.encryptFile(localFile, localTmpFile);
+		this.initCheckPieFileState(file, 0);
+		
+		return localTmpFile;
+	}
+
+	/*@Override
+	public void shareFile(PieFile file) 
+	{
 		try {
 			//PieFile tmpFile = this.fileService.getTmpPieFile(file);
 			File localFile = this.fileService.getAbsolutePath(file).toFile();
@@ -117,7 +147,7 @@ public class ShareService implements IShareService{
 			//this.bitTorrentService.shareTorrent(tmpFile, baos);
 			this.bitTorrentService.shareTorrent(file, localTmpFile, baos);
 			
-			this.initPieFileState(file, 0);
+			this.initCheckPieFileState(file, 0);
 			this.manipulatePieFileState(file, 1);
 
 			IFileTransferMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
@@ -131,10 +161,25 @@ public class ShareService implements IShareService{
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
+	}*/
+	
+	@Override
+	public File handleFile(PieFile file) throws AllreadyInitializedException {
+		if(this.initCheckPieFileState(file, 1)) {
+			File localTmpFile = this.fileService.getAbsoluteTmpPath(file).toFile();
+			//todo: does this belong into the fileService?
+			if (!localTmpFile.getParentFile().exists()) {
+				localTmpFile.getParentFile().mkdirs();
+			}
+			
+			return localTmpFile.getParentFile();
+		}
+		
+		throw new AllreadyInitializedException();
 	}
 
 	//todo: maybe merge this with handle activeshare
-	@Override
+	/*@Override
 	public void handleFile(PieFile file, byte[] metaInfo) {
 		
 		if(this.sharedFiles.containsKey(file)) {
@@ -143,7 +188,7 @@ public class ShareService implements IShareService{
 		}
 
 		try {
-			this.initPieFileState(file, 0);
+			this.initCheckPieFileState(file, 0);
 
 			//File tmpDir = tmpFolderService.createTempFolder(file.getFileName(), configuration.getTmpDir());
 			File localTmpFile = this.fileService.getAbsoluteTmpPath(file).toFile();
@@ -162,13 +207,9 @@ public class ShareService implements IShareService{
 		catch (Exception ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
-	}
-
-	private synchronized void initPieFileState(PieFile file, Integer count) {
-		if (!this.sharedFiles.containsKey(file)) {
-			this.sharedFiles.put(file, count);
-		}
-	}
+	}*/
+	
+	
 
 	private synchronized void removePieFileState(PieFile file) {
 		this.sharedFiles.remove(file);
@@ -242,6 +283,15 @@ public class ShareService implements IShareService{
 		}
 	}
 	
+	private synchronized boolean initCheckPieFileState(PieFile file, int count) {		
+		if(!this.isShareActive(file)) {
+			this.sharedFiles.put(file, count);
+			return true;
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public boolean isShareActive(PieFile file) {
 		if(!this.sharedFiles.containsKey(file)) {
@@ -249,5 +299,10 @@ public class ShareService implements IShareService{
 		}
 		
 		return (this.sharedFiles.get(file) > 0);
+	}
+	
+	@Override
+	public synchronized boolean isPrepared(PieFile file) {
+		return this.sharedFiles.containsKey(file);
 	}
 }

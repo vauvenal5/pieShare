@@ -7,17 +7,20 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
+import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
@@ -34,7 +37,13 @@ public class FileRequestTask extends PieEventTaskBase<IFileRequestMessage> {
 	private IHashService hashService;
 	private IRequestService requestService;
 	private IBeanService beanService;
-	private IFileEncryptionService fileEncryptionService;
+	private IClusterManagementService clusterManagementService;
+	private IMessageFactoryService messageFactoryService;
+	private IBitTorrentService bitTorrentService;
+
+	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
+		this.bitTorrentService = bitTorrentService;
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -86,8 +95,22 @@ public class FileRequestTask extends PieEventTaskBase<IFileRequestMessage> {
 		}
 
 		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
-			this.shareService.shareFile(pieFile);
-			//todo: what happens when it is the "same file" with different MD5?!
+			try {
+				//todo: what happens when it is the "same file" with different MD5?!
+				
+				File localTmpFile = this.shareService.prepareFile(pieFile);
+				byte[] meta = this.bitTorrentService.anounceTorrent(localTmpFile);
+				
+				IFileTransferMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
+				metaMsg.setMetaInfo(meta);
+				metaMsg.setPieFile(pieFile);
+				//todo: think about some kind o PieAdress factory
+				metaMsg.getAddress().setChannelId(user.getUserName());
+				metaMsg.getAddress().setClusterName(user.getCloudName());
+				this.clusterManagementService.sendMessage(metaMsg);
+			} catch (ClusterManagmentServiceException ex) {
+				PieLogger.error(this.getClass(), "Could not send MetaMessage!", ex);
+			}
 		}
 	}
 
