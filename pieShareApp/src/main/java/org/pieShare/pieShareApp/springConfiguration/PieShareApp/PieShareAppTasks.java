@@ -12,15 +12,15 @@ import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
-import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.localTasks.RequestTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -147,8 +147,8 @@ public class PieShareAppTasks {
 	
 	@Bean
 	@Scope(value = "prototype")
-	public ComparePieFileTask comparePieFileTask() {
-		ComparePieFileTask task = new ComparePieFileTask();
+	public RequestTask comparePieFileTask() {
+		RequestTask task = new RequestTask();
 		task.setComparerService(this.services.comparerService());
 		task.setRequestService(this.services.requestService());
 		return task;

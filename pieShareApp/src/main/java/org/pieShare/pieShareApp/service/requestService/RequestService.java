@@ -5,13 +5,19 @@
  */
 package org.pieShare.pieShareApp.service.requestService;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
+import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
@@ -29,8 +35,8 @@ public class RequestService implements IRequestService {
 	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
-	private IShareService shareService;
 	private IMessageFactoryService messageFactoryService;
+	private ILocalFileCompareService comparerService;
 
 	public RequestService() {
 		requestedFiles = new ConcurrentHashMap<>();
@@ -38,10 +44,6 @@ public class RequestService implements IRequestService {
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
-	}
-
-	public void setShareService(IShareService shareService) {
-		this.shareService = shareService;
 	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
@@ -59,13 +61,15 @@ public class RequestService implements IRequestService {
 			return;
 		}
 		
+		//todo: who is responsible for sending the messages? the service or the task?
+		//i belive the task
 		IFileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
 		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
 		msg.setPieFile(pieFile);
 		try {
-            PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
+			PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
 			clusterManagementService.sendMessage(msg);
 			requestedFiles.put(pieFile, false);
 		} catch (ClusterManagmentServiceException ex) {
