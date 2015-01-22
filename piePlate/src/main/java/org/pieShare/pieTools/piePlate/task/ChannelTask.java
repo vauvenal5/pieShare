@@ -5,8 +5,6 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;

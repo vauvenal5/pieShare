@@ -38,4 +38,6 @@ public interface IClusterService {
 	void registerOutgoingChannel(IOutgoingChannel channel);
 	
 	List<IIncomingChannel> getIncomingChannels();
+	
+	boolean isMaster();
 }
