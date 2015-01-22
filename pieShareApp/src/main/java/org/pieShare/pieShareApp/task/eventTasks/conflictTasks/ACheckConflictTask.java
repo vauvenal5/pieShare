@@ -30,12 +30,10 @@ public abstract class ACheckConflictTask<T extends IPieMessage> extends PieEvent
 	
 	protected boolean isConflicted(PieFile file) {
 		try {
-			if(this.comparerService.compareWithLocalPieFile(file) == 1) {
+			if(this.comparerService.compareToLocalPieFile(file) == 1) {
 				return false;
 			}
 		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Compare failed!", ex);
-		} catch (FileConflictException ex) {
 			PieLogger.error(this.getClass(), "Compare failed!", ex);
 		}
 		

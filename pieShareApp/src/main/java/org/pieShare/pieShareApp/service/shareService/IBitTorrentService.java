@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareApp.service.shareService;
 
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
 import java.io.File;
@@ -20,7 +21,9 @@ public interface IBitTorrentService {
 	void initTorrentService();
 	
 	byte[] anounceTorrent(File localFile);
+	void remoteClientDone(FileMeta meta);
 	void torrentClientDone(boolean seeder);
-	void shareTorrent(PieFile file, File localFile, OutputStream out);
-	void handleShareTorrent(PieFile pieFile, byte[] meta, File destDir);
+	void shareFile(FileMeta file, File destDir);
+	void handleFile(FileMeta file, File destDir);
+	boolean isShareActive(FileMeta file);
 }

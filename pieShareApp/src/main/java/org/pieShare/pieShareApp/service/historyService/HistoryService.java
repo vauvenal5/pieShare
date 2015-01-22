@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
-import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
+import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 
@@ -23,7 +22,6 @@ public class HistoryService implements IHistoryService {
 	
 	private IDatabaseService databaseService;
 	private IFileService fileService;
-	private ICompareService comparerService;
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -31,10 +29,6 @@ public class HistoryService implements IHistoryService {
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
-	}
-
-	public void setComparerService(ICompareService comparerService) {
-		this.comparerService = comparerService;
 	}
 
 	@Override
@@ -67,14 +61,11 @@ public class HistoryService implements IHistoryService {
 				if(historyFile == null) {
 					filesToSend.add(file);
 				} 
-				else {
+				else 
+				{
 					//in this case a file has changed
-					try {
-						if(this.comparerService.comparePieFiles(file, historyFile) != 0){
-							filesToSend.add(file);
-						}
-					} catch (FileConflictException ex) {
-						//todo-history: what has to be done here?
+					if(!file.equals(historyFile)){
+						filesToSend.add(file);
 					}
 				}
 			}

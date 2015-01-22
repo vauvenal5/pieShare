@@ -11,5 +11,5 @@ import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
  *
  * @author sveto_000
  */
-public class MetaCommitMessage extends FileTransferMetaMessage implements IMetaCommitMessage {
+public class MetaCommitMessage extends MetaMessage implements IMetaCommitMessage {
 }

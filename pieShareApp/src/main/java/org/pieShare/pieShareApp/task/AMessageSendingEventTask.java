@@ -21,5 +21,4 @@ public abstract class AMessageSendingEventTask<T extends IPieEvent> extends AMes
 	public void setEvent(T msg) {
 		this.msg = msg;
 	}
-	
 }

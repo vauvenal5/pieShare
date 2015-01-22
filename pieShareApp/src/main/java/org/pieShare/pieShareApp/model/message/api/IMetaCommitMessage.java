@@ -9,6 +9,6 @@ package org.pieShare.pieShareApp.model.message.api;
  *
  * @author sveto_000
  */
-public interface IMetaCommitMessage extends IFileTransferMetaMessage {
+public interface IMetaCommitMessage extends IMetaMessage {
 	
 }

@@ -17,30 +17,15 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav
  */
-public class FileCompareService extends FileHistoryCompareService implements ILocalFileCompareService {
+public class FileCompareService extends ALocalFileCompareService implements ILocalFileCompareService {
 	private IFileService fileService;
 	
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
 	}
-	
-	@Override
-	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
-		try {
-			return super.compareWithLocalPieFile(pieFile);
-		}
-		catch(IOException | FileConflictException ex)
-		{
-			//ignore this and check the real file!
-		}
-		
-		PieFile localPieFile = this.fileService.getPieFile(pieFile.getRelativeFilePath());
-		
-		if(localPieFile == null) {
-			PieLogger.debug(this.getClass(), "{} does not exist. Request this file.", pieFile.getRelativeFilePath());
-			return 1;
-		}
 
-		return this.comparePieFiles(pieFile, localPieFile);
+	@Override
+	protected PieFile getLocalPieFile(PieFile remoteFile) throws IOException {
+		return this.fileService.getPieFile(remoteFile.getRelativeFilePath());
 	}
 }

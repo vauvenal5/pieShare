@@ -5,22 +5,14 @@
  */
 package org.pieShare.pieShareApp.service.requestService;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
-import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
