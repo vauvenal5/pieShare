@@ -43,21 +43,13 @@ public class FileMetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		//every meta message we receive needs to be handled!!!
 		//this is due to the fact that it could happen that two parallel trackers run!!!
 		
-		//todo: first check if file is prepared
-		this.shareService.
-		
-		//todo: then check if local file exists
-		
-		//todo: then check if local file equals the file in the metaInfo
-		
-		File localTmpFile;
-		try {
-			localTmpFile = this.shareService.prepareFile(msg.getPieFile());
-		} catch (NoLocalFileException ex) {
-			PieLogger.info(this.getClass(), "Local file doesn't exist.", ex);
-			localTmpFile = this.shareService.handleFile(msg.getPieFile());
+		//todo: if not prepared don't do anything for the time being
+		//think of this later
+		if(!this.shareService.isPrepared(this.msg.getPieFile())) {
+			return;
 		}
 		
+		this.shareService.handleFile(null)
 		this.bitTorrentService.handleShareTorrent(msg.getPieFile(), msg.getMetaInfo(), localTmpFile.getParentFile());
 	}
 	
