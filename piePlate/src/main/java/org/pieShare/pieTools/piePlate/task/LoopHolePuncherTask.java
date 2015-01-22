@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
-import org.pieShare.pieTools.piePlate.model.message.LoopHoleAckMessage;
-import org.pieShare.pieTools.piePlate.model.message.LoopHolePunchMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
@@ -41,8 +41,7 @@ public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> 
 		}
 
 		LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
-		ackMsg.setFrom(loopHoleService.getClientID());
-		loopHoleService.send(msg, null, port);
+		ackMsg.setSenderID(loopHoleService.getClientID());
+		loopHoleService.send(ackMsg, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
 	}
-
 }

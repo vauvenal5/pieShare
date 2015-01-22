@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.piePlate.model.message;
+package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
 import java.util.UUID;
 import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;

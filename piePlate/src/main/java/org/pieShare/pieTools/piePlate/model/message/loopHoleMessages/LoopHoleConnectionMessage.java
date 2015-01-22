@@ -3,15 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.piePlate.model.message;
+package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
+import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 
 /**
  *
  * @author Richard
  */
-public class LoopHoleConnectionMessage implements IBasePieMessage{
+public class LoopHoleConnectionMessage extends BaseUdpMessage {
+
 	private String clientPublicIP;
 	private String clientPrivateIP;
 	private int clientPublicPort;
