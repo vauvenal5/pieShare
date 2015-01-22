@@ -12,16 +12,13 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.pieShare.pieTools.piePlate.model.message.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.LoopHolePunchMessage;
-import org.pieShare.pieTools.piePlate.model.message.RegisterMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
-import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -45,12 +42,12 @@ public class LoopHoleService implements ILoopHoleService {
 	private PieExecutorTaskFactory executorFactory;
 	private ISerializerService serializerService;
 	private HashMap<String, LoopHoleConnectionTask> waitForAckQueue;
-	private String clientID; 
+	private String clientID;
 	private String name;
-	
+
 	public LoopHoleService() {
 		clientID = idService.getNewID();
-		
+
 		serverPort = 6312;
 		serverIP = "server.piesystems.org";
 
@@ -115,11 +112,11 @@ public class LoopHoleService implements ILoopHoleService {
 	}
 
 	@Override
-	public void AckArrived(String fromid) {
+	public void ackArrived(String fromid) {
 		if (waitForAckQueue.containsKey(fromid)) {
 			waitForAckQueue.get(fromid).ackArrived();
+			removeTaskFromAckWaitQueue(fromid);
 		}
-		removeTaskFromAckWaitQueue(fromid);
 	}
 
 	@Override

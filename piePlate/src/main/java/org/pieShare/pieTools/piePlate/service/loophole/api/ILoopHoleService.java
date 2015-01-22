@@ -16,7 +16,7 @@ public interface ILoopHoleService {
 
 	void register();
 
-	void AckArrived(String fromid);
+	void ackArrived(String fromid);
 
 	void removeTaskFromAckWaitQueue(String id);
 

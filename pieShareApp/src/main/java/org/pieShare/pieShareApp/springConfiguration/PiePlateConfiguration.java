@@ -7,10 +7,10 @@ package org.pieShare.pieShareApp.springConfiguration;
 
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
-import org.pieShare.pieTools.piePlate.model.message.LoopHoleAckMessage;
-import org.pieShare.pieTools.piePlate.model.message.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.LoopHolePunchMessage;
-import org.pieShare.pieTools.piePlate.model.message.RegisterMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
