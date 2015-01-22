@@ -294,7 +294,7 @@ public class ShareService implements IShareService{
 	
 	@Override
 	public boolean isShareActive(PieFile file) {
-		if(!this.sharedFiles.containsKey(file)) {
+		if(!this.isPrepared(file)) {
 			return false;
 		}
 		

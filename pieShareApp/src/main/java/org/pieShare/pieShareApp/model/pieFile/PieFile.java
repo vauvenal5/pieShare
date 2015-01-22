@@ -14,7 +14,7 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  *
  * @author richy
  */
-public class PieFile implements IBaseModel {
+public class PieFile implements IBaseModel, Comparable<Object> {
 
 	private byte[] md5;
 	private String relativeFilePath;
@@ -67,20 +67,58 @@ public class PieFile implements IBaseModel {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof PieFile)) {
-			return false;
-		}
-
-		return Arrays.equals(((PieFile) obj).getMd5(), this.md5);
-	}
-
-	@Override
 	public int hashCode() {
 		//TODO: Test this
+		//TODO: what is this? has something to do with hashMaps?
 		ByteBuffer bb = ByteBuffer.wrap(md5);
 		bb.order(ByteOrder.LITTLE_ENDIAN);
 		return bb.getInt();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof PieFile)) {
+			return false;
+		}
+		
+		PieFile f = (PieFile)o;
+		
+		if(!this.fileName.equals(f.fileName)) {
+			return false;
+		}
+		
+		if(this.lastModified != f.lastModified) {
+			return false;
+		}
+		
+		if(!Arrays.equals(this.md5, f.md5)) {
+			return false;
+		}
+		
+		if(!this.relativeFilePath.equals(f.relativeFilePath)) {
+			return false;
+		}
+		
+		if(this.deleted != f.deleted) {
+			return false;
+		} 
+		
+		return true;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		PieFile f = (PieFile)o;
+		
+		if(this.equals(f)) {
+			return 0;
+		}
+		
+		if(this.lastModified > f.lastModified) {
+			return 1;
+		}
+		
+		return -1;
 	}
 
 }
