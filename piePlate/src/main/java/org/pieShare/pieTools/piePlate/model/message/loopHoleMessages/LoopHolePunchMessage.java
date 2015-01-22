@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.piePlate.model.message;
-
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
 /**
  *
  * @author Richard
  */
-public class LoopHolePunchMessage implements IBasePieMessage{
+public class LoopHolePunchMessage extends BaseUdpMessage {
+
 	private String name;
-	private String from; 
+	private String from;
 	private String to;
 
 	public String getName() {

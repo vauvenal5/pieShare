@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
-import org.pieShare.pieTools.piePlate.model.message.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.LoopHolePunchMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
