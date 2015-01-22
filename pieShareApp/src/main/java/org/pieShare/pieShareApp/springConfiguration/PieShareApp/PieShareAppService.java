@@ -9,7 +9,7 @@ import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.comparerService.ComparerService;
+import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
 import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
@@ -126,8 +126,8 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	public ComparerService comparerService() {
-		ComparerService service = new ComparerService();
+	public ALocalFileCompareService comparerService() {
+		ALocalFileCompareService service = new ALocalFileCompareService();
 		service.setFileService(this.historyFileService());
 		service.setBeanService(utilities.beanService());
 		return service;

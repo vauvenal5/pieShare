@@ -18,6 +18,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
@@ -38,7 +39,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	private IBitTorrentService bitTorrentService;
 	
 	private Client client;
-	private PieFile file;
+	private FileMeta file;
 	private SharedTorrent torrent;
 	private boolean shutdown;
 	private Timer timer = new Timer();
@@ -55,7 +56,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 		this.networkService = networkService;
 	}
 
-	public void setFile(PieFile file) {
+	public void setFile(FileMeta file) {
 		this.file = file;
 	}
 
@@ -75,9 +76,8 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			//todo: won't work for server and client the same way: problem with this timeout the server
 			//shuts down after 30 seconds... implement other timeout strategy or rerequest messages
 			//reregquest is maybe the better way
-			client.share();
-			
 			boolean seeder = this.torrent.isSeeder();
+			client.share();
 			
 			this.timer.schedule(new TimerTask() {
 				@Override
@@ -104,14 +104,14 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				}
 				
 				if (Client.ClientState.SEEDING.equals(client.getState()) 
-						&& !this.shareService.isShareActive(this.file)) {
+						&& !this.bitTorrentService.isShareActive(this.file)) {
 					client.stop();
 				}
 
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
 						torrent.getCompletion(), client.getState(), torrent.getDownloaded(), 
-						torrent.getUploaded(), file.getFileName());
+						torrent.getUploaded(), file.getFile().getFileName());
 
 				// Wait one second
 				Thread.sleep(1000);
@@ -120,11 +120,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			this.client.stop(false);
 
 			this.bitTorrentService.torrentClientDone(seeder);
-			this.shareService.localFileTransferComplete(file, seeder);
+			this.shareService.localFileTransferComplete(file.getFile(), seeder);
 			
 			if(!seeder) {
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
-				msgComplete.setPieFile(file);
+				msgComplete.setPieFile(file.getFile());
 				this.setDefaultAdresse(msgComplete);
 				this.clusterManagementService.sendMessage(msgComplete);
 			}

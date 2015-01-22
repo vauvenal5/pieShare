@@ -6,39 +6,35 @@
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.MetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
-import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
-import org.pieShare.pieShareApp.service.shareService.AllreadyInitializedException;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
+import org.pieShare.pieShareApp.task.AMessageSendingEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileMetaTask extends PieEventTaskBase<FileTransferMetaMessage> {
+public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 
 	private IRequestService requestService;
-	private IShareService shareService;
 	private IBitTorrentService bitTorrentService;
-	private IMessageFactoryService messageFactoryService;
-	private IClusterManagementService clusterManagementService;
-
-	public void setShareService(IShareService shareService) {
-		this.shareService = shareService;
-	}
+	private IFileService fileService;
 
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
+	}
+
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
+
+	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
+		this.bitTorrentService = bitTorrentService;
 	}
 
 	@Override
@@ -48,18 +44,14 @@ public class FileMetaTask extends PieEventTaskBase<FileTransferMetaMessage> {
 		}
 		
 		try {
-			File destDir = this.shareService.handleFile(msg.getPieFile());
-			
-			this.bitTorrentService.handleShareTorrent(msg.getPieFile(), msg.getMetaInfo(), destDir);
+			File destDir = this.fileService.getAbsoluteTmpPath(msg.getPieFile()).toFile().getParentFile();
+			this.bitTorrentService.handleFile(msg.getFileMeta(), destDir);
 			
 			IMetaCommitMessage metaCommit = this.messageFactoryService.getMetaCommitMessage();
 			metaCommit.setMetaInfo(msg.getMetaInfo());
 			metaCommit.setPieFile(msg.getPieFile());
-			metaCommit.getAddress().setChannelId(msg.getAddress().getChannelId());
-			metaCommit.getAddress().setClusterName(msg.getAddress().getClusterName());
+			this.setDefaultAdresse(metaCommit);
 			this.clusterManagementService.sendMessage(metaCommit);
-		} catch (AllreadyInitializedException ex) {
-			PieLogger.info(this.getClass(), "File is allready being handled!", ex);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Could not send MetaMessage!", ex);
 		}

@@ -13,40 +13,12 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  * @author Svetoslav
  */
 public interface IShareService {
-
-	//void shareFile(PieFile file);
-
-	//void handleFile(PieFile file, byte[] metaInfo);
 	
 	File prepareFile(PieFile file) throws NoLocalFileException;
 	
-	File handleFile(PieFile file)  throws AllreadyInitializedException;
-	
 	void localFileTransferComplete(PieFile file, boolean source);
 	
-	void remoteFileTransferComplete(PieFile file);
-	
-	void handleRemoteRequestForActiveShare(PieFile pieFile);
-	
-	boolean isShareActive(PieFile pieFile);
+	void revokePrepared(PieFile file);
 	
 	boolean isPrepared(PieFile file);
-	
-	/**
-	 * Returns false if file already initialized
-	 * Returns true if file was successfully initialized
-	 * @param file
-	 * @param count
-	 * @return 
-	 */
-	//boolean initCheckPieFileState(PieFile file);
-	
-	/**
-	 * Returns false if file already initialized
-	 * Returns true if file was successfully initialized
-	 * @param file
-	 * @param count
-	 * @return 
-	 */
-	//boolean initCheckPieFileState(PieFile file, Integer count);
 }

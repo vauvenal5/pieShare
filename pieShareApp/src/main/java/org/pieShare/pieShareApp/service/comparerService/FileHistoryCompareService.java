@@ -16,18 +16,15 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
  *
  * @author Svetoslav
  */
-public class FileHistoryCompareService extends ComparerService implements ILocalFileCompareService {
+public class FileHistoryCompareService extends ALocalFileCompareService implements ILocalFileCompareService {
 	private IFileService historyService;
-	
+
+	public void setHistoryService(IFileService historyService) {
+		this.historyService = historyService;
+	}
+
 	@Override
-	public int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException {
-		try {
-			PieFile file = this.historyService.getWorkingPieFile(pieFile);
-			return this.comparePieFiles(pieFile, file);
-		} catch (IOException ex) {
-			//ignore if no history exists maybe it is still not writen
-		}
-		
-		return this.compareWithLocalPieFile(pieFile);
+	protected PieFile getLocalPieFile(PieFile remoteFile) throws IOException {
+		return this.historyService.getWorkingPieFile(remoteFile);
 	}
 }

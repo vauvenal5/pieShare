@@ -14,14 +14,16 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
  *
  * @author Svetoslav
  */
-public interface ILocalFileCompareService extends ICompareService {
+public interface ILocalFileCompareService {
 	/**
 	 * Compares a given pieFile with the corresponding local pieFile.
 	 * Returns 0 if equal, 1 if the given file is newer, -1 if the given file is older.
-	 * @param pieFile
+	 * @param remoteFile
 	 * @return
 	 * @throws IOException
 	 * @throws FileConflictException 
 	 */
-	int compareWithLocalPieFile(PieFile pieFile) throws IOException, FileConflictException;
+	int compareToLocalPieFile(PieFile remoteFile) throws IOException;
+	
+	boolean equalsWithLocalPieFile(PieFile remoteFile);
 }

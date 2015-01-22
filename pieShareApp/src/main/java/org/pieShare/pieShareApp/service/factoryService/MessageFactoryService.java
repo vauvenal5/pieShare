@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.service.factoryService;
 
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.MetaMessage;
 import org.pieShare.pieShareApp.model.message.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
@@ -16,7 +16,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
@@ -71,8 +71,8 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public IFileTransferMetaMessage getFileTransferMetaMessage() {
-		return this.prepareMessage(new FileTransferMetaMessage());
+	public IMetaMessage getFileTransferMetaMessage() {
+		return this.prepareMessage(new MetaMessage());
 	}
 
 	@Override
