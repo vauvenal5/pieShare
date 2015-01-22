@@ -5,24 +5,15 @@
  */
 package org.pieShare.pieShareClient.services;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.json.Json;
@@ -37,86 +28,95 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class Client {
 
-    private DatagramSocket socket;
-    private final ExecutorService executor;
-    private String name = null;
-    private ClientSendTask sendTask;
-    private ClientTask task;
-    private int localPort = 4321;
+	private DatagramSocket socket;
+	private final ExecutorService executor;
+	private String name = null;
+	private ClientSendTask sendTask;
+	private ClientTask task;
+	private int localPort = 4321;
 
-    public Client() {
-        task = new ClientTask();
-        sendTask = new ClientSendTask();
-        task.setSendTask(sendTask);
-        try {
-            socket = new DatagramSocket(localPort);
-        } catch (SocketException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        executor = Executors.newCachedThreadPool();
-    }
+	public Client() {
+		task = new ClientTask();
+		sendTask = new ClientSendTask();
+		task.setSendTask(sendTask);
 
-    public void connect(String from, String to) {
+		executor = Executors.newCachedThreadPool();
+	}
 
-        this.name = from;
-        String serverAddress = "128.130.172.205";//"richy.ddns.net";//"192.168.0.22";
-        int serverPort = 6312;
-        String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
-        String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
-        String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
+	public void connect(String from, String to, int port) {
 
-        task.setSocket(socket);
-        
-        sendTask.setSocket(socket);
-        sendTask.setName(name);
-                
-        
-        task.setCallback(new Callback() {
+		if (port != -1) {
+			this.localPort = port;
+		}
 
-            public void Handle(JsonObject client) {
-                sendTask.setConnectionData(client);
-                sendTask.setHost(client.getString("privateAddress"));
-                sendTask.setPort(client.getInt("privatePort"));
-                executor.execute(sendTask);
-            }
-        });
-        
-        executor.execute(task);
+		try {
+			socket = new DatagramSocket(localPort);
+		}
+		catch (SocketException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-        try { 
-            InetAddress IP = InetAddress.getLocalHost();
-            String localIP = IP.getHostAddress();
-            
-            String text = String.format(registerMsg, from, localIP, localPort, localIP, localPort);
-            DatagramPacket packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+		this.name = from;
+		String serverAddress = "server.piesystems.org";//"128.130.172.205";//"richy.ddns.net";//"192.168.0.22";
+		int serverPort = 6312;
+		String registerMsg = "{\"type\":\"register\", \"name\":\"%s\", \"localAddress\":\"%s\", \"localPort\":%s, \"privateAddress\":\"%s\", \"privatePort\":%s}";
+		String connectMsg = "{\"type\":\"connect\", \"from\":\"%s\", \"to\":\"%s\"}";
+		String ackMsg = "{\"type\":\"ACK\", \"from\":\"%s\"}";
+		String registerAndConnectMag = "{\"type\":\"registerAndConnect\", \"regMsg\":%s, \"connectMsg\":%s}";
+		task.setSocket(socket);
 
-            socket.send(packet);
+		sendTask.setSocket(socket);
+		sendTask.setName(name);
 
-            //Remove this by insert new message for registering and ocnnecting at same time
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
+		task.setCallback(new Callback() {
 
-            if (to != null) {
-                text = String.format(connectMsg, from, to);
-                packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
-                socket.send(packet);
-            }
+			public void Handle(JsonObject client) {
+				sendTask.setConnectionData(client);
+				sendTask.setHost(client.getString("privateAddress"));
+				sendTask.setPort(client.getInt("privatePort"));
+				executor.execute(sendTask);
+			}
+		});
 
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+		executor.execute(task);
 
-    public JsonObject processInput(String input) {
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
-        JsonReader jsonReader = Json.createReader(byteInStream);
-        JsonObject ob = jsonReader.readObject();
-        PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
-        return ob;
-    }
+		try {
+			InetAddress IP = InetAddress.getLocalHost();
+			String localIP = IP.getHostAddress();
+
+			String text = String.format(registerMsg, from, localIP, localPort, localIP, localPort);
+			DatagramPacket packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+
+			socket.send(packet);
+
+			//Remove this by insert new message for registering and ocnnecting at same time
+			try {
+				Thread.sleep(1000);
+			}
+			catch (InterruptedException ex) {
+				Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+			}
+
+			if (to != null) {
+				text = String.format(connectMsg, from, to);
+				packet = new DatagramPacket(text.getBytes(), text.length(), InetAddress.getByName(serverAddress), serverPort);
+				socket.send(packet);
+			}
+
+		}
+		catch (UnknownHostException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		catch (IOException ex) {
+			Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	public JsonObject processInput(String input) {
+		ByteArrayInputStream byteInStream = new ByteArrayInputStream(input.getBytes());
+		JsonReader jsonReader = Json.createReader(byteInStream);
+		JsonObject ob = jsonReader.readObject();
+		PieLogger.info(this.getClass(), String.format("ConnectionText: %s", ob.toString()));
+		return ob;
+	}
 }

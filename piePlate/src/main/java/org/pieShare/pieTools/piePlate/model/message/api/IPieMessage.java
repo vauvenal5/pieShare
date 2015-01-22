@@ -7,7 +7,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.I
 /**
  * Created by Svetoslav on 17.01.14.
  */
-public interface IPieMessage extends IPieEvent {
+public interface IPieMessage extends IBasePieMessage {
 
 	IPieAddress getAddress();
 
@@ -16,4 +16,5 @@ public interface IPieMessage extends IPieEvent {
 	String getType();
 
 	void setType(String type);
+
 }
