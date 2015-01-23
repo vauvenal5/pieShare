@@ -35,10 +35,10 @@ public class JacksonSerializerService implements ISerializerService {
 			throw new SerializerServiceException("Could not deserialize header!", e);
 		}
 
-		IClusterMessage msg;
+		IPieMessage msg;
 
 		try {
-			msg = (IClusterMessage) objectMapper.readValue(buffer, Class.forName(header.getType()));
+			msg = (IPieMessage) objectMapper.readValue(buffer, Class.forName(header.getType()));
 		} catch (IOException e) {
 			throw new SerializerServiceException("Could not deserialize msg!", e);
 		} catch (ClassNotFoundException e) {
