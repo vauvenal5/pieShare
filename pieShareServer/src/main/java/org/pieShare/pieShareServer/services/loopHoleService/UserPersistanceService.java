@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.services.loopHoleService;
+package org.pieShare.pieShareServer.services.loopHoleService;
 
 import java.util.HashMap;
 import java.util.function.BiConsumer;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
-import org.pieshare.pieshareserver.services.loopHoleService.api.IUserPersistanceService;
-import org.pieshare.pieshareserver.services.model.User;
+import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
+import org.pieShare.pieShareServer.services.model.User;
 
 /**
  *

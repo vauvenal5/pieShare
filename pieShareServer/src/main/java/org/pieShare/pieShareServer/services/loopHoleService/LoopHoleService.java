@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.services.loopHoleService;
+package org.pieShare.pieShareServer.services.loopHoleService;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -13,15 +13,16 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieshare.pieshareserver.services.loopHoleService.api.ILoopHoleService;
-import org.pieshare.pieshareserver.services.loopHoleService.api.IUserPersistanceService;
-import org.pieshare.pieshareserver.tasks.LoopHoleListenerTask;
+import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
+import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
+import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.pieshare.pieshareserver.tasks.LoopHoleListenerTask;
  */
 public class LoopHoleService implements ILoopHoleService {
 
-	private final int serverPort;
+	private int serverPort;
 	private IBeanService beanService;
 	private DatagramSocket socket;
 	private PieExecutorService executorService;
@@ -52,7 +53,9 @@ public class LoopHoleService implements ILoopHoleService {
 		this.executorService = executorService;
 	}
 
-	public LoopHoleService() {
+	@PostConstruct
+	public void init() {
+		PieLogger.info(this.getClass(), "Set up Loop Hole Service!");
 		serverPort = 6312;
 		try {
 			socket = new DatagramSocket(serverPort);
@@ -70,6 +73,8 @@ public class LoopHoleService implements ILoopHoleService {
 	public synchronized void send(IBasePieMessage msg, String host, int port) {
 		try {
 			byte[] bytes = serializerService.serialize(msg);
+			PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", host, port, new String(bytes)));
+			
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
 			socket.send(packet);
 		}
