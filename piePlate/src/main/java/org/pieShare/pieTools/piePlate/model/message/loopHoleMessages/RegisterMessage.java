@@ -5,14 +5,13 @@
  */
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
-import java.util.UUID;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+import org.pieShare.pieTools.piePlate.model.message.UdpMessage;
 
 /**
  *
  * @author Richard
  */
-public class RegisterMessage extends BaseUdpMessage {
+public class RegisterMessage extends UdpMessage {
 
 	private String privateHost;
 	private int privatePort;

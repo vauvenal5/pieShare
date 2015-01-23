@@ -8,7 +8,7 @@ import org.apache.commons.lang3.Validate;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
@@ -95,7 +95,7 @@ public class JGroupsClusterService implements IClusterService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage msg) throws ClusterServiceException {
+	public void sendMessage(IClusterMessage msg) throws ClusterServiceException {
 		Address ad = null;
 		IPieAddress address = msg.getAddress();
 
