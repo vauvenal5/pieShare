@@ -165,6 +165,7 @@ public class PieShareAppTasks {
 	public FileDeletedTask fileDeletedTask() {
 		FileDeletedTask task = new FileDeletedTask();
 		task.setFileService(this.services.historyFileService());
+		task.setComparerService(this.services.fileCompareService());
 		return task;
 	}
 
