@@ -12,11 +12,11 @@ import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
  *
  * @author Richard
  */
-public class RegisterMessage implements IBasePieMessage{
+public class RegisterMessage extends BaseUdpMessage {
 
-	private String privateHost; 
+	private String privateHost;
 	private int privatePort;
-	private String id; 
+	private String id;
 	private String name;
 
 	public String getPrivateHost() {
