@@ -20,6 +20,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -64,6 +66,10 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	private IClusterService connect(String id) throws ClusterManagmentServiceException {
+		ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
+		loopHoleService.setName(id);
+		loopHoleService.register();
+		
 		if (this.clusters.containsKey(id)) {
 			return this.clusters.get(id);
 		}
