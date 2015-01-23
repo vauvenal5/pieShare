@@ -9,7 +9,6 @@ import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
 import java.io.IOException;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.IPieMessageMixIn;
 
 /**
@@ -26,7 +25,7 @@ public class JacksonSerializerService implements ISerializerService {
 	}
 
 	@Override
-	public IBasePieMessage deserialize(byte[] buffer) throws SerializerServiceException {
+	public IPieMessage deserialize(byte[] buffer) throws SerializerServiceException {
 		HeaderMessage header;
 
 		try {
@@ -49,7 +48,7 @@ public class JacksonSerializerService implements ISerializerService {
 	}
 
 	@Override
-	public byte[] serialize(IBasePieMessage msg) throws SerializerServiceException {
+	public byte[] serialize(IPieMessage msg) throws SerializerServiceException {
 		try {
 			return objectMapper.writeValueAsBytes(msg);
 		} catch (JsonProcessingException e) {

@@ -6,13 +6,13 @@
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api;
 
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
  * @author Richard
  */
-public interface IUdpMessage extends IBasePieMessage {
+public interface IUdpMessage extends IPieMessage {
 
 	void setSenderAddress(UdpAddress senderAddress);
 

@@ -14,7 +14,6 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -23,6 +22,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
 import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
@@ -70,7 +70,7 @@ public class LoopHoleService implements ILoopHoleService {
 	}
 
 	@Override
-	public synchronized void send(IBasePieMessage msg, String host, int port) {
+	public synchronized void send(IPieMessage msg, String host, int port) {
 		try {
 			byte[] bytes = serializerService.serialize(msg);
 			PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", host, port, new String(bytes)));
