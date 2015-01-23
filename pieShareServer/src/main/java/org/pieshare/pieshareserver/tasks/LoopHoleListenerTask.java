@@ -49,8 +49,9 @@ public class LoopHoleListenerTask implements IPieTask {
 
 	@Override
 	public void run() {
+		PieLogger.info(this.getClass(), "Listener Started!");
 		while (run) {
-
+			
 			byte[] bytes = new byte[1024];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
