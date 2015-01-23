@@ -4,17 +4,18 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.task.eventTasks;
+package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.ACheckConflictTask;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileDeletedTask extends PieEventTaskBase<IFileDeletedMessage>{
+public class FileDeletedTask extends ACheckConflictTask<IFileDeletedMessage>{
 	
 	private IFileService fileService;
 
@@ -24,7 +25,9 @@ public class FileDeletedTask extends PieEventTaskBase<IFileDeletedMessage>{
 
 	@Override
 	public void run() {
-		this.fileService.deleteRecursive(this.msg.getPieFile());
+		if(!this.isConflictedOrNotNeeded(this.msg.getPieFile())) {
+			this.fileService.deleteRecursive(this.msg.getPieFile());
+		}
 	}
 	
 }
