@@ -98,6 +98,7 @@ public class ServiceConfiguration {
 		service.setExecutorService(pieExecutorService());
 		service.setUserPersistanceService(userPersistanceService());
 		service.setSerializerService(jacksonSerializerService());
+                service.setExecutorFactory(pieExecutorTaskFactory());
 		return service;
 	}
 
