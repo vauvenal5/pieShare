@@ -13,6 +13,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
 import org.pieShare.pieShareServer.services.model.User;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -51,7 +52,9 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
 		newUser.setPrivateAddress(privateAddress);
 		newUser.setPublicAddress(msg.getSenderAddress());
 		userPersistanceService.addUser(newUser);
-
+                PieLogger.info(this.getClass(), String.format("User: %s registered sucessfully.", newUser.getName()));
+                
+                
 		LoopHoleConnectionMessage connectionMessageToReceiver = new LoopHoleConnectionMessage();
 		connectionMessageToReceiver.setClientPrivateIP(newUser.getPrivateAddress().getHost());
 		connectionMessageToReceiver.setClientPrivatePort(newUser.getPrivateAddress().getPort());
