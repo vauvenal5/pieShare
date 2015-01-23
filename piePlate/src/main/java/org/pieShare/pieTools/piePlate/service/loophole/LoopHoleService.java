@@ -53,6 +53,9 @@ public class LoopHoleService implements ILoopHoleService {
 
     @PostConstruct
     public void init() {
+        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
+        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
+
         clientID = idService.getNewID();
 
         serverPort = 6312;
@@ -78,9 +81,6 @@ public class LoopHoleService implements ILoopHoleService {
         }
 
         waitForAckQueue = new HashMap<>();
-
-        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
-        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
     }
 
     @Override

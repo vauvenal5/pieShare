@@ -13,6 +13,7 @@ import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
@@ -24,59 +25,56 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class LoopHoleListenerTask implements IPieTask {
 
-	private DatagramSocket socket;
-	private boolean run;
-	private ISerializerService serializerService;
-	private IExecutorService excuterService;
+    private DatagramSocket socket;
+    private boolean run;
+    private ISerializerService serializerService;
+    private IExecutorService excuterService;
 
-	public LoopHoleListenerTask() {
-		this.run = true;
-	}
+    public LoopHoleListenerTask() {
+        this.run = true;
+    }
 
-	public void setSerializerService(ISerializerService serializerService) {
-		this.serializerService = serializerService;
-	}
+    public void setSerializerService(ISerializerService serializerService) {
+        this.serializerService = serializerService;
+    }
 
-	public void setExcuterService(IExecutorService excuterService) {
-		this.excuterService = excuterService;
-	}
+    public void setExcuterService(IExecutorService excuterService) {
+        this.excuterService = excuterService;
+    }
 
-	public void setSocket(DatagramSocket socket) {
-		this.socket = socket;
-	}
+    public void setSocket(DatagramSocket socket) {
+        this.socket = socket;
+    }
 
-	@Override
-	public void run() {
-		PieLogger.info(this.getClass(), "Listener Started!");
-		while (run) {
-			
-			byte[] bytes = new byte[1024];
-			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
+    @Override
+    public void run() {
+        PieLogger.info(this.getClass(), "Listener Started!");
+        while (run) {
 
-			try {
-				socket.receive(packet);
-				bytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
-				IUdpMessage msg = (IUdpMessage) serializerService.deserialize(bytes);
-				UdpAddress address = new UdpAddress();
-				address.setHost(packet.getAddress().getHostAddress());
-				address.setPort(packet.getPort());
-				msg.setSenderAddress(address);
-				excuterService.handlePieEvent(msg);
-			}
-			catch (IOException ex) {
-				PieLogger.error(this.getClass(), "Error receiving message.", ex);
-			}
-			catch (PieExecutorTaskFactoryException ex) {
-				PieLogger.error(this.getClass(), "Error receiving message.", ex);
-			}
-			catch (SerializerServiceException ex) {
-				PieLogger.error(this.getClass(), "Error receiving message.", ex);
-			}
-		}
-	}
+            byte[] bytes = new byte[1024];
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 
-	public void stop() {
-		run = false;
-	}
+            try {
+                socket.receive(packet);
+                bytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
+                IUdpMessage msg = (IUdpMessage) serializerService.deserialize(bytes);
+                UdpAddress address = new UdpAddress();
+                address.setHost(packet.getAddress().getHostAddress());
+                address.setPort(packet.getPort());
+                msg.setSenderAddress(address);
+                excuterService.handlePieEvent(msg);
+            } catch (IOException ex) {
+                PieLogger.error(this.getClass(), "Error receiving message.", ex);
+            } catch (PieExecutorTaskFactoryException ex) {
+                PieLogger.error(this.getClass(), "Error receiving message.", ex);
+            } catch (SerializerServiceException ex) {
+                PieLogger.error(this.getClass(), "Error receiving message.", ex);
+            }
+        }
+    }
+
+    public void stop() {
+        run = false;
+    }
 
 }
