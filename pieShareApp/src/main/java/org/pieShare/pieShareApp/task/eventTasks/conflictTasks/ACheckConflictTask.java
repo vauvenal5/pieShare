@@ -28,14 +28,17 @@ public abstract class ACheckConflictTask<T extends IPieMessage> extends PieEvent
 		this.comparerService = comparerService;
 	}
 	
-	protected boolean isConflicted(PieFile file) {
+	protected boolean isConflictedOrNotNeeded(PieFile file) {
 		try {
-			if(this.comparerService.compareToLocalPieFile(file) == 1) {
+			if(this.comparerService.compareToLocalPieFile(file) == -1) {
+				PieLogger.info(this.getClass(), "Compared!");
 				return false;
 			}
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Compare failed!", ex);
 		}
+		
+		PieLogger.info(this.getClass(), "Compared2!");
 		
 		return true;
 	}

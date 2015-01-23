@@ -22,7 +22,7 @@ public abstract class ARequestTask<T extends IPieMessage> extends ACheckConflict
     }
 	
 	protected void doWork(PieFile file) {
-		if(!this.isConflicted(file)) {
+		if(!this.isConflictedOrNotNeeded(file)) {
 			this.requestService.requestFile(file);
 		}
 	}

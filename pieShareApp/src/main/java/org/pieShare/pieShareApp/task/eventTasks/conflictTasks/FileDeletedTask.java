@@ -25,7 +25,7 @@ public class FileDeletedTask extends ACheckConflictTask<IFileDeletedMessage>{
 
 	@Override
 	public void run() {
-		if(!this.isConflicted(this.msg.getPieFile())) {
+		if(!this.isConflictedOrNotNeeded(this.msg.getPieFile())) {
 			this.fileService.deleteRecursive(this.msg.getPieFile());
 		}
 	}
