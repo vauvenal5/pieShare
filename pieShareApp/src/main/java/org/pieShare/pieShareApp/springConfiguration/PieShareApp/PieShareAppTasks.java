@@ -19,6 +19,7 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
@@ -214,6 +215,17 @@ public class PieShareAppTasks {
 		task.setShareService(this.services.shareService());
 		task.setShutdownService(this.services.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public MetaCommitTask metaCommitTask() {
+		MetaCommitTask task = new MetaCommitTask();
+		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setShareService(this.services.shareService());
+		task.setFileService(this.services.localFileService());
 		return task;
 	}
 }

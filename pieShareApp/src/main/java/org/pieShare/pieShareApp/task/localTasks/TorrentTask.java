@@ -39,7 +39,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	private IBitTorrentService bitTorrentService;
 	
 	private Client client;
-	private FileMeta file;
+	private FileMeta fileMeta;
 	private SharedTorrent torrent;
 	private boolean shutdown;
 	private Timer timer = new Timer();
@@ -57,7 +57,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	}
 
 	public void setFile(FileMeta file) {
-		this.file = file;
+		this.fileMeta = file;
 	}
 
 	public void setTorrent(SharedTorrent torrent) {
@@ -104,14 +104,14 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				}
 				
 				if (Client.ClientState.SEEDING.equals(client.getState()) 
-						&& !this.bitTorrentService.isShareActive(this.file)) {
+						&& !this.bitTorrentService.isShareActive(this.fileMeta)) {
 					client.stop();
 				}
 
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
 						torrent.getCompletion(), client.getState(), torrent.getDownloaded(), 
-						torrent.getUploaded(), file.getFile().getFileName());
+						torrent.getUploaded(), fileMeta.getFile().getFileName());
 
 				// Wait one second
 				Thread.sleep(1000);
@@ -120,11 +120,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			this.client.stop(false);
 
 			this.bitTorrentService.torrentClientDone(seeder);
-			this.shareService.localFileTransferComplete(file.getFile(), seeder);
+			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 			
 			if(!seeder) {
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
-				msgComplete.setPieFile(file.getFile());
+				msgComplete.setPieFile(fileMeta.getFile());
 				this.setDefaultAdresse(msgComplete);
 				this.clusterManagementService.sendMessage(msgComplete);
 			}
