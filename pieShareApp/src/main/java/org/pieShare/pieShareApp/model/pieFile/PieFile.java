@@ -83,15 +83,19 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 		
 		PieFile f = (PieFile)o;
 		
-		if(!this.fileName.equals(f.fileName)) {
-			return false;
-		}
-		
 		if(this.lastModified != f.lastModified) {
 			return false;
 		}
 		
 		if(!Arrays.equals(this.md5, f.md5)) {
+			return false;
+		}
+		
+		return this.equalFilePara(f);
+	}
+	
+	protected boolean equalFilePara(PieFile f) {
+		if(!this.fileName.equals(f.fileName)) {
 			return false;
 		}
 		
@@ -114,7 +118,7 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 			return 0;
 		}
 		
-		if(this.lastModified > f.lastModified) {
+		if(this.equalFilePara(f) && (this.lastModified > f.lastModified)) {
 			return 1;
 		}
 		

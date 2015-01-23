@@ -24,7 +24,7 @@ public class FileHistoryCompareService extends ALocalFileCompareService implemen
 	}
 
 	@Override
-	protected PieFile getLocalPieFile(PieFile remoteFile) throws IOException {
+	protected PieFile getLocalPieFile(PieFile remoteFile) throws NullPointerException, IOException {
 		return this.historyService.getWorkingPieFile(remoteFile);
 	}
 }

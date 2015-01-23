@@ -24,6 +24,7 @@ import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMess
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
@@ -72,7 +73,9 @@ public class MessageFactoryService implements IMessageFactoryService {
 
 	@Override
 	public IMetaMessage getFileTransferMetaMessage() {
-		return this.prepareMessage(new MetaMessage());
+		IMetaMessage msg = this.prepareMessage(new MetaMessage());
+		msg.setFileMeta(new FileMeta());
+		return msg;
 	}
 
 	@Override

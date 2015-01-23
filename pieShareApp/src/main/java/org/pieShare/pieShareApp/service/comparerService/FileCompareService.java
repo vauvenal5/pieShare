@@ -25,7 +25,7 @@ public class FileCompareService extends ALocalFileCompareService implements ILoc
 	}
 
 	@Override
-	protected PieFile getLocalPieFile(PieFile remoteFile) throws IOException {
+	protected PieFile getLocalPieFile(PieFile remoteFile) throws NullPointerException, IOException {
 		return this.fileService.getPieFile(remoteFile.getRelativeFilePath());
 	}
 }
