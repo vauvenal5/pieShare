@@ -6,20 +6,19 @@
 
 package org.pieShare.pieShareApp.model.message.api;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IFileTransferMetaMessage extends IFileMessageBase {
+public interface IMetaMessage extends IFileMessageBase {
+	
+	FileMeta getFileMeta();
+	
+	void setFileMeta(FileMeta fileMeta);
 
 	byte[] getMetaInfo();
 
 	void setMetaInfo(byte[] metaInfo);
-	
-	PieFile getTmpFile();
-	
-	void setTmpFile(PieFile file);
-	
 }

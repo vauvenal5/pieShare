@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.MetaMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
@@ -24,14 +24,14 @@ import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -105,7 +105,7 @@ public class PieShareService {
 		
 		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), false));
 
-		this.executorFactory.registerTask(FileTransferMetaMessage.class, FileMetaTask.class);
+		this.executorFactory.registerTask(MetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
 		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
 		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
