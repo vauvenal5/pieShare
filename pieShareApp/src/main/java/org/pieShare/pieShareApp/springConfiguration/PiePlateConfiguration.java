@@ -115,6 +115,7 @@ public class PiePlateConfiguration {
 		service.setIdService(utilitiesConfiguration.idService());
 		service.setSerializerService(jacksonSerializerService());
 		service.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
+                service.setExecutorService(utilitiesConfiguration.pieExecutorService());
 		return service;
 	}
 
