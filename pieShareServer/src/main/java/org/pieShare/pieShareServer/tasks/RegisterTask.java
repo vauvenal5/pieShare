@@ -53,8 +53,10 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
         newUser.setPrivateAddress(privateAddress);
         newUser.setPublicAddress(msg.getSenderAddress());
         userPersistanceService.addUser(newUser);
-        PieLogger.info(this.getClass(), String.format("User: %s registered sucessfully.", newUser.getName()));
-
+        PieLogger.info(this.getClass(), String.format("User:        %s registered sucessfully.", newUser.getName()));
+        PieLogger.info(this.getClass(), String.format("PublicHost:  %s, PublicPort:  %s", newUser.getPublicAddress().getHost(), newUser.getPublicAddress().getPort()));
+        PieLogger.info(this.getClass(), String.format("PrivateHost: %s, PrivatePort: %s", newUser.getPrivateAddress().getHost(), newUser.getPrivateAddress().getPort()));
+        
         LoopHoleConnectionMessage connectionMessageToReceiver = new LoopHoleConnectionMessage();
         connectionMessageToReceiver.setClientPrivateIP(newUser.getPrivateAddress().getHost());
         connectionMessageToReceiver.setClientPrivatePort(newUser.getPrivateAddress().getPort());
@@ -73,7 +75,6 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
 
                 loopHoleService.send(connectionMessageToSender, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
             }
-
             loopHoleService.send(connectionMessageToReceiver, user.getPublicAddress().getHost(), user.getPublicAddress().getPort());
         }
     }
