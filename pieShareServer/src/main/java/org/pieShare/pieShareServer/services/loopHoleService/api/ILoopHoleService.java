@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.services.loopHoleService.api;
+package org.pieShare.pieShareServer.services.loopHoleService.api;
 
 import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 
