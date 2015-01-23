@@ -9,6 +9,6 @@ package org.pieShare.pieTools.piePlate.model.message.api;
  *
  * @author sveto_000
  */
-public interface IEncryptedMessage extends IPieMessage{
+public interface IEncryptedMessage extends IClusterMessage{
 	
 }

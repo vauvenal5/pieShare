@@ -6,7 +6,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
 import java.util.Map;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
@@ -29,7 +29,7 @@ public interface IClusterManagementService {
 
 	IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase();
 
-	void sendMessage(IPieMessage message) throws ClusterManagmentServiceException;
+	void sendMessage(IClusterMessage message) throws ClusterManagmentServiceException;
 
 	void disconnect(String id) throws ClusterServiceException;
 

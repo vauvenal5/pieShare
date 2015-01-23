@@ -6,8 +6,6 @@
 package org.pieShare.pieShareApp.service.shareService;
 
 import java.io.File;
-import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
@@ -15,12 +13,12 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  * @author Svetoslav
  */
 public interface IShareService {
-
-	void shareFile(File file);
-
-	void handleFile(FileTransferMetaMessage msg);
 	
-	void fileTransferComplete(FileTransferCompleteMessage msg);
+	File prepareFile(PieFile file) throws NoLocalFileException;
 	
-	void handleActiveShare(PieFile pieFile);
+	void localFileTransferComplete(PieFile file, boolean source);
+	
+	void revokePrepared(PieFile file);
+	
+	boolean isPrepared(PieFile file);
 }
