@@ -7,21 +7,27 @@ package pieShareAppITs;
 
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.PieUser;
-import pieShareAppITs.helper.runner.FileSyncMain;
-import pieShareAppITs.helper.ITUtil;
-import pieShareAppITs.helper.ITTasksCounter;
-import pieShareAppITs.helper.tasks.TestTask;
-import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
+import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import org.testng.annotations.*;
 import pieShareAppITs.helper.ITFileUtils;
+import pieShareAppITs.helper.ITTasksCounter;
+import pieShareAppITs.helper.ITUtil;
+import pieShareAppITs.helper.runner.FileSyncMain;
+import pieShareAppITs.helper.tasks.TestTask;
 
 /**
  *
@@ -54,6 +60,7 @@ public class SyncOneFileIT {
 
 	@Test(timeOut = 120000)
 	public void syncOneFileTest() throws Exception {
+		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
 		PieShareConfiguration config = user.getPieShareConfiguration();
@@ -65,11 +72,14 @@ public class SyncOneFileIT {
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
 		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 
+		
+		System.out.println("Starting bot!");
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 
 		ITUtil.executeLoginToTestCloud(context);
 
 		ITUtil.waitForProcessToStartup(this.process);
+		System.out.println("Bot started!");
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
 		ITFileUtils.createFile(filex, 2048);
@@ -80,10 +90,13 @@ public class SyncOneFileIT {
 		File fileBot = new File(botConfig.getWorkingDir(), "test.txt");
 		
 		FileUtils.moveFile(filex, fileMain);
+		//FileUtils.moveFile(filex, fileBot);
 		
+		System.out.println("Waiting for transfer complete!");
 		while (counter.getCount(FileTransferCompleteTask.class) < 1) {
 			Thread.sleep(5000);
 		}
+		System.out.println("Recived transfer complete!");
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
@@ -97,9 +110,4 @@ public class SyncOneFileIT {
 			fail("To much file transerfers?!");
 		}
 	}
-
-	/*@Test(timeOut = 120000)
-	 public void syncDeleteFile() {
-		
-	 }*/
 }

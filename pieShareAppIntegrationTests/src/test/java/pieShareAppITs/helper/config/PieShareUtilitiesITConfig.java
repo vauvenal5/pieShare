@@ -8,8 +8,6 @@ package pieShareAppITs.helper.config;
 
 import java.io.File;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.mockito.Mockito;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;

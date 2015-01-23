@@ -49,7 +49,7 @@ public class LocalFileService extends FileServiceBase {
 	}
 
 	@Override
-	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
+	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
 		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());

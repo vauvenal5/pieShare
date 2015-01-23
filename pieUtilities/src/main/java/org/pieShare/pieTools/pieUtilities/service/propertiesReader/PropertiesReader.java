@@ -10,8 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 
@@ -33,7 +32,7 @@ public class PropertiesReader implements IPropertiesReader {
 		}
 		catch (IOException ex) {
 			//ToDo: handle
-			Logger.getLogger(PropertiesReader.class.getName()).log(Level.SEVERE, null, ex);
+			PieLogger.error(this.getClass(), "Error!", ex);
 		}
 	}
 
