@@ -5,8 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.requestService.api;
 
-import java.util.concurrent.ConcurrentHashMap;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
@@ -17,9 +16,11 @@ public interface IRequestService {
 
 	public void requestFile(PieFile pieFile);
 
-	public void anncounceRecived(FileTransferMetaMessage message);
+	public boolean isRequested(PieFile file);
+	
+	//public void requestIsBeingHandled(PieFile file);
 
 	public boolean deleteRequestedFile(PieFile pieFile);
 
-	public void checkForActiveFileHandle(PieFile pieFile);
+	//public void checkForActiveFileHandle(PieFile pieFile);
 }
