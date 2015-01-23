@@ -3,24 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.springConfiguration;
+package org.pieShare.pieShareServer.springConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
-import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
-import org.pieshare.pieshareserver.services.ServerService;
-import org.pieshare.pieshareserver.services.loopHoleService.LoopHoleService;
-import org.pieshare.pieshareserver.services.loopHoleService.UserPersistanceService;
-import org.pieshare.pieshareserver.tasks.RegisterTask;
+import org.pieShare.pieShareServer.services.ServerService;
+import org.pieShare.pieShareServer.services.loopHoleService.LoopHoleService;
+import org.pieShare.pieShareServer.services.loopHoleService.UserPersistanceService;
+import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
+import org.pieShare.pieShareServer.tasks.RegisterTask;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 
@@ -28,6 +28,7 @@ import org.springframework.context.annotation.Scope;
  *
  * @author Richard
  */
+@Configuration
 public class ServiceConfiguration {
 
 	@Bean

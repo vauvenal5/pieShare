@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.services.model;
+package org.pieShare.pieShareServer.services.model;
 
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 
