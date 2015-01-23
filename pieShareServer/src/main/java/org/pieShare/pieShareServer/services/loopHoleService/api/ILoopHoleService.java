@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareServer.services.loopHoleService.api;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
@@ -13,5 +13,5 @@ import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
  */
 public interface ILoopHoleService {
 
-	void send(IBasePieMessage msg, String host, int port);
+	void send(IPieMessage msg, String host, int port);
 }
