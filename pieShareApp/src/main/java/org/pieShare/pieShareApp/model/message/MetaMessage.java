@@ -8,13 +8,14 @@ package org.pieShare.pieShareApp.model.message;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class MetaMessage extends HeaderMessage implements IMetaMessage{
+public class MetaMessage extends AClusterMessage implements IMetaMessage{
 
 	private FileMeta fileMeta;
 	

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
@@ -20,7 +20,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav Videnov
  */
-public abstract class ACheckConflictTask<T extends IPieMessage> extends PieEventTaskBase<T> {
+public abstract class ACheckConflictTask<T extends IClusterMessage> extends PieEventTaskBase<T> {
 	
 	protected ILocalFileCompareService comparerService;
 	
