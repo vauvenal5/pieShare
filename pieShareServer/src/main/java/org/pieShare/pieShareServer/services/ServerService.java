@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.services;
+package org.pieShare.pieShareServer.services;
 
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieshare.pieshareserver.services.api.IServerService;
-import org.pieshare.pieshareserver.services.loopHoleService.LoopHoleService;
-import org.pieshare.pieshareserver.services.loopHoleService.api.ILoopHoleService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareServer.services.api.IServerService;
+import org.pieShare.pieShareServer.services.loopHoleService.LoopHoleService;
+import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 
 /**
  *
@@ -25,6 +26,7 @@ public class ServerService implements IServerService{
 	
 	@Override
 	public void startServer() {
+		PieLogger.info(this.getClass(), "Starting Server!");
 		ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
 	}
 }

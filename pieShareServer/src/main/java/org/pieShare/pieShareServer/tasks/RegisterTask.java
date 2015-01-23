@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.pieshareserver.tasks;
+package org.pieShare.pieShareServer.tasks;
 
 import java.util.HashMap;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
-import org.pieshare.pieshareserver.services.loopHoleService.api.ILoopHoleService;
-import org.pieshare.pieshareserver.services.loopHoleService.api.IUserPersistanceService;
-import org.pieshare.pieshareserver.services.model.User;
+import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
+import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
+import org.pieShare.pieShareServer.services.model.User;
 
 /**
  *
