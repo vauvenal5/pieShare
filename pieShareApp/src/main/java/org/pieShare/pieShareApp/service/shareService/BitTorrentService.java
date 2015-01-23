@@ -48,6 +48,10 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private Semaphore writePorts;
 	private boolean shutdown;
 	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
+	
+	public BitTorrentService() {
+		this.sharedFiles = new ConcurrentHashMap<>();
+	}
 
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
@@ -152,7 +156,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		
 		try {
 			this.writePorts.acquire();
-			this.handleSharedTorrent(meta, destDir);
+			this.handleSharedTorrent(meta, destDir, true);
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Acquire write failed!", ex);
 		} catch (IOException ex) {
@@ -171,7 +175,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		try {
 			this.readPorts.acquire();
 			this.writePorts.acquire();
-			this.handleSharedTorrent(meta, destDir);
+			this.handleSharedTorrent(meta, destDir, false);
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Acquire read failed!", ex);
 		} catch (IOException ex) {
@@ -180,8 +184,8 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		}
 	}
 	
-	private void handleSharedTorrent(FileMeta meta, File destDir) throws IOException {
-		SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta.getData()), destDir);
+	private void handleSharedTorrent(FileMeta meta, File destDir, boolean seeder) throws IOException {
+		SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta.getData()), destDir, seeder);
 		TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
 		task.setFile(meta);
 		task.setTorrent(torrent);

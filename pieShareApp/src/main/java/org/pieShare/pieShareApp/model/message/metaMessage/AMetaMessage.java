@@ -3,23 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.message;
+
+package org.pieShare.pieShareApp.model.message.metaMessage;
 
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class MetaMessage extends AClusterMessage implements IMetaMessage{
-
+public abstract class AMetaMessage extends AClusterMessage implements IMetaMessage {
 	private FileMeta fileMeta;
 	
-	@Override
+
 	public byte[] getMetaInfo() {
 		return this.fileMeta.getData();
 	}
