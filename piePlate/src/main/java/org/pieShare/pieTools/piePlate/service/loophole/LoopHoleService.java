@@ -22,9 +22,11 @@ import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -46,6 +48,7 @@ public class LoopHoleService implements ILoopHoleService {
     private HashMap<String, LoopHoleConnectionTask> waitForAckQueue;
     private String clientID;
     private String name;
+    private PieExecutorService executorService;
 
     public LoopHoleService() {
 
@@ -81,6 +84,15 @@ public class LoopHoleService implements ILoopHoleService {
         }
 
         waitForAckQueue = new HashMap<>();
+
+        LoopHoleListenerTask listenerTask = beanService.getBean(LoopHoleListenerTask.class);
+        listenerTask.setSocket(socket);
+        executorService.execute(listenerTask);
+
+    }
+
+    public void setExecutorService(PieExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     @Override
