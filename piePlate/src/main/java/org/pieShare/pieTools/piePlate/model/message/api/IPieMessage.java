@@ -7,7 +7,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.I
 /**
  * Created by Svetoslav on 17.01.14.
  */
-public interface IPieMessage extends IBasePieMessage {
+public interface IPieMessage extends IPieEvent {
 
 	IPieAddress getAddress();
 

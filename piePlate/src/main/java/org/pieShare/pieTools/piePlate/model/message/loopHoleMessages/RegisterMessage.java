@@ -5,9 +5,6 @@
  */
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
-import java.util.UUID;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
-
 /**
  *
  * @author Richard
