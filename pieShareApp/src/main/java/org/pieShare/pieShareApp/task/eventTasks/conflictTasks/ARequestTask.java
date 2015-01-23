@@ -7,13 +7,13 @@ package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 
 /**
  *
  * @author Svetoslav Videnov
  */
-public abstract class ARequestTask<T extends IPieMessage> extends ACheckConflictTask<T> {
+public abstract class ARequestTask<T extends IClusterMessage> extends ACheckConflictTask<T> {
 	
 	private IRequestService requestService;
 

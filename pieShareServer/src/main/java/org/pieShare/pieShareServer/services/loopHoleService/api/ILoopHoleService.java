@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareServer.services.loopHoleService.api;
 
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**

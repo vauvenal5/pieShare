@@ -22,6 +22,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
 import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**

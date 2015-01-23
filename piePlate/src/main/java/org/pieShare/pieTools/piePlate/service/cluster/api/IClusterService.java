@@ -1,7 +1,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.api;
 
 import java.util.List;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
@@ -25,7 +25,7 @@ public interface IClusterService {
 	
 	void disconnect() throws ClusterServiceException;
 
-	void sendMessage(IPieMessage msg) throws ClusterServiceException;
+	void sendMessage(IClusterMessage msg) throws ClusterServiceException;
 
 	int getMembersCount();
 
