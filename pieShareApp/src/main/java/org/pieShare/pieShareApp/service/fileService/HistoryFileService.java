@@ -31,7 +31,7 @@ public class HistoryFileService extends FileServiceBase {
 	}
 
 	@Override
-	public PieFile getPieFile(File file) throws FileNotFoundException, IOException {
+	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = new PieFile();
 		pieFile.setFileName(file.getName());
 		pieFile.setRelativeFilePath(this.relitivizeFilePath(file).toString());

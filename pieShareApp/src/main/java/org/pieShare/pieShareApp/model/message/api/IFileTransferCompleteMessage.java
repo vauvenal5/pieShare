@@ -10,6 +10,6 @@ package org.pieShare.pieShareApp.model.message.api;
  *
  * @author Svetoslav
  */
-public interface IFileTransferCompleteMessage extends IFileMessageBase {
+public interface IFileTransferCompleteMessage extends IMetaMessage {
 	
 }

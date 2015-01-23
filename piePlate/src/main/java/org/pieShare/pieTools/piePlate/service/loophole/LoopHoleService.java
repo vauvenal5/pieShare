@@ -12,10 +12,11 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
@@ -145,7 +146,7 @@ public class LoopHoleService implements ILoopHoleService {
 	}
 
 	@Override
-	public synchronized void send(IBasePieMessage msg, String host, int port) {
+	public synchronized void send(IPieMessage msg, String host, int port) {
 		try {
 			byte[] bytes = serializerService.serialize(msg);
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);

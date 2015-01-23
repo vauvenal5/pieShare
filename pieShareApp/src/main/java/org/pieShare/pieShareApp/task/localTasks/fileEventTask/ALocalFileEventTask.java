@@ -74,6 +74,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		PieFile pieFile = this.fileService.getPieFile(file);
 		
 		if(this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
+			this.fileWatcherService.removePieFileFromModifiedList(pieFile);
 			return null;
 		}
 		

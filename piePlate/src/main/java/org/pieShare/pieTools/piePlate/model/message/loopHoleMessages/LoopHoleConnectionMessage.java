@@ -5,15 +5,13 @@
  */
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
+import org.pieShare.pieTools.piePlate.model.message.UdpMessage;
 
 /**
  *
  * @author Richard
  */
-public class LoopHoleConnectionMessage extends BaseUdpMessage {
+public class LoopHoleConnectionMessage extends UdpMessage {
 
 	private String clientPublicIP;
 	private String clientPrivateIP;
