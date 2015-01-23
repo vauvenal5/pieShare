@@ -8,13 +8,14 @@ package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
 import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileMessageBase extends HeaderMessage implements IFileMessageBase {
+public class FileMessageBase extends AClusterMessage implements IFileMessageBase {
 	protected PieFile file;
 
 	@Override

@@ -6,7 +6,7 @@
 package org.pieShare.pieTools.piePlate.task;
 
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.channel.exception.PieChannelException;
@@ -45,7 +45,7 @@ public class ChannelTask implements IPieTask {
 
 	@Override
 	public void run() {
-		IPieMessage msg = null;
+		IClusterMessage msg = null;
 		try {
 			msg = this.channel.handleMessage(message);
 			PieLogger.debug(this.getClass(), "Recived: {}", msg.getClass());

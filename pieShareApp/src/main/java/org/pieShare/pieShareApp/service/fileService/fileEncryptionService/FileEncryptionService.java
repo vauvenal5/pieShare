@@ -64,12 +64,12 @@ public class FileEncryptionService implements IFileEncryptionService {
 	}
 	
 	private void rewriteFile(InputStream inStream, OutputStream outStream) throws IOException {
-		byte bytes[] = new byte[1024];
+		byte bytes[] = new byte[1024*4];
 		int length = 0;		
 		while((length = inStream.read(bytes)) != -1) {
 			outStream.write(bytes, 0, length);
+			outStream.flush();
 		}
-		outStream.flush();
 		outStream.close();
 		inStream.close();
 	}

@@ -4,11 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 
 import java.io.IOException;
+import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.IPieMessageMixIn;
 
 /**
@@ -21,7 +22,7 @@ public class JacksonSerializerService implements ISerializerService {
 	public JacksonSerializerService() {
 		this.objectMapper = new ObjectMapper();
 		this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-		this.objectMapper.addMixInAnnotations(IPieMessage.class, IPieMessageMixIn.class);
+		this.objectMapper.addMixInAnnotations(IClusterMessage.class, IPieMessageMixIn.class);
 	}
 
 	@Override
@@ -34,10 +35,10 @@ public class JacksonSerializerService implements ISerializerService {
 			throw new SerializerServiceException("Could not deserialize header!", e);
 		}
 
-		IPieMessage msg;
+		IClusterMessage msg;
 
 		try {
-			msg = (IPieMessage) objectMapper.readValue(buffer, Class.forName(header.getType()));
+			msg = (IClusterMessage) objectMapper.readValue(buffer, Class.forName(header.getType()));
 		} catch (IOException e) {
 			throw new SerializerServiceException("Could not deserialize msg!", e);
 		} catch (ClassNotFoundException e) {
