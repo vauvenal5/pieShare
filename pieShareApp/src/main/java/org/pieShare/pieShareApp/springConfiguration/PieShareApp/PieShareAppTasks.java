@@ -12,15 +12,14 @@ import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileDeletedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileListTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.eventTasks.NewFileTask;
-import org.pieShare.pieShareApp.task.localTasks.ComparePieFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -67,7 +66,11 @@ public class PieShareAppTasks {
 	public FileMetaTask fileMetaTask() {
 		FileMetaTask task = new FileMetaTask();
 		task.setRequestService(this.services.requestService());
-		task.setShareService(this.services.shareService());
+		task.setBeanService(this.config.beanService());
+		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setFileService(this.services.localFileService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -75,11 +78,11 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileRequestTask fileRequestTask() {
 		FileRequestTask task = new FileRequestTask();
-		task.setFileService(this.services.historyFileService());
-		task.setHashService(this.config.md5Service());
 		task.setBeanService(config.beanService());
-		task.setRequestService(this.services.requestService());
+		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -87,7 +90,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileTransferCompleteTask fileTransferCompleteTask() {
 		FileTransferCompleteTask task = new FileTransferCompleteTask();
-		task.setShareService(this.services.shareService());
+		task.setBitTorentService(this.services.bitTorrentService());
 		return task;
 	}
 
@@ -95,8 +98,8 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public NewFileTask newFileTask() {
 		NewFileTask task = new NewFileTask();
-		task.setComparerService(this.services.comparerService());
 		task.setRequestService(services.requestService());
+		task.setComparerService(services.fileCompareService());
 		return task;
 	}
         
@@ -104,8 +107,8 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
         public FileChangedTask fileChangedTask() {
             FileChangedTask task = new FileChangedTask();
-            task.setComparerService(this.services.comparerService());
             task.setRequestService(this.services.requestService());
+			task.setComparerService(this.services.fileCompareService());
             return task;
         }
 
@@ -140,16 +143,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileListTask fileListTask() {
 		FileListTask task = new FileListTask();
-		task.setBeanService(this.config.beanService());
-		task.setExecutorService(this.config.pieExecutorService());
-		return task;
-	}
-	
-	@Bean
-	@Scope(value = "prototype")
-	public ComparePieFileTask comparePieFileTask() {
-		ComparePieFileTask task = new ComparePieFileTask();
-		task.setComparerService(this.services.comparerService());
+		task.setComparerService(this.services.fileCompareService());
 		task.setRequestService(this.services.requestService());
 		return task;
 	}

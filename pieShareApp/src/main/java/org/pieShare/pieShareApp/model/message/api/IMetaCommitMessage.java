@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.model.message.api;
 
 /**
  *
- * @author Svetoslav
+ * @author sveto_000
  */
-public interface IFileTransferCompleteMessage extends IMetaMessage {
+public interface IMetaCommitMessage extends IMetaMessage {
 	
 }

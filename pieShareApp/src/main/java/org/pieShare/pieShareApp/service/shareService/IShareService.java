@@ -13,16 +13,12 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  * @author Svetoslav
  */
 public interface IShareService {
-
-	void shareFile(PieFile file);
-
-	void handleFile(PieFile file, byte[] metaInfo);
+	
+	File prepareFile(PieFile file) throws NoLocalFileException;
 	
 	void localFileTransferComplete(PieFile file, boolean source);
 	
-	void remoteFileTransferComplete(PieFile file);
+	void revokePrepared(PieFile file);
 	
-	void handleRemoteRequestForActiveShare(PieFile pieFile);
-	
-	boolean isShareActive(PieFile pieFile);
+	boolean isPrepared(PieFile file);
 }
