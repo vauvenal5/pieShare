@@ -1,5 +1,6 @@
 package org.pieShare.pieTools.piePlate.service.serializer.api;
 
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 

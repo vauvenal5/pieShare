@@ -26,7 +26,7 @@ import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferComple
 import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 
 /**
@@ -35,7 +35,7 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroups
  */
 public class MessageFactoryService implements IMessageFactoryService {
 	
-	protected <P extends IPieMessage> P prepareMessage(P message) {
+	protected <P extends IClusterMessage> P prepareMessage(P message) {
 		IPieAddress ad = new JGroupsPieAddress();
 		message.setAddress(ad);
 		return message;
