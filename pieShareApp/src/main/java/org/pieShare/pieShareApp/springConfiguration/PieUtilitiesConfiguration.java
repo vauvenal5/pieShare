@@ -16,6 +16,7 @@ import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jServic
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
+import org.pieShare.pieTools.pieUtilities.service.idService.IDService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.regexService.RegexService;
@@ -63,7 +64,7 @@ public class PieUtilitiesConfiguration {
 		service.setExecutorFactory(this.pieExecutorTaskFactory());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public PieExecutorTaskFactory pieExecutorTaskFactory() {
@@ -148,6 +149,13 @@ public class PieUtilitiesConfiguration {
 		EncodeService service = new EncodeService();
 		service.setPasswordEncryptionService(passwordEncryptionService());
 		service.setProviderService(providerService());
+		return service;
+	}
+
+	@Bean
+	@Lazy
+	public IDService idService() {
+		IDService service = new IDService();
 		return service;
 	}
 }

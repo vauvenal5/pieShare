@@ -2,12 +2,12 @@ package org.pieShare.pieTools.piePlate.service.unitTests.helper;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 
 /**
  * Created by Svetoslav on 19.01.14.
  */
-public class TestMessage implements IPieMessage {
+public class TestMessage implements IClusterMessage {
 
 	String msg;
 	String type;
