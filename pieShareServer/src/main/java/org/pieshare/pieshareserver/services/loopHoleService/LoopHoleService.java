@@ -53,6 +53,7 @@ public class LoopHoleService implements ILoopHoleService {
 	}
 
 	public LoopHoleService() {
+		PieLogger.info(this.getClass(), "Set up Loop Hole Service!");
 		serverPort = 6312;
 		try {
 			socket = new DatagramSocket(serverPort);
@@ -70,6 +71,8 @@ public class LoopHoleService implements ILoopHoleService {
 	public synchronized void send(IBasePieMessage msg, String host, int port) {
 		try {
 			byte[] bytes = serializerService.serialize(msg);
+			PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", host, port, new String(bytes)));
+			
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
 			socket.send(packet);
 		}

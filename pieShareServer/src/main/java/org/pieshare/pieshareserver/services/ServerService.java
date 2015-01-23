@@ -6,6 +6,7 @@
 package org.pieshare.pieshareserver.services;
 
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieshare.pieshareserver.services.api.IServerService;
 import org.pieshare.pieshareserver.services.loopHoleService.LoopHoleService;
 import org.pieshare.pieshareserver.services.loopHoleService.api.ILoopHoleService;
@@ -25,6 +26,7 @@ public class ServerService implements IServerService{
 	
 	@Override
 	public void startServer() {
+		PieLogger.info(this.getClass(), "Starting Server!");
 		ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
 	}
 }
