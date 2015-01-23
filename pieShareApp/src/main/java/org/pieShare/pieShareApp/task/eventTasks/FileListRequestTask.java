@@ -30,14 +30,9 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 public class FileListRequestTask extends AMessageSendingEventTask<IFileListRequestMessage> {
 
 	private IFileService fileService;
-	private IMessageFactoryService messageFactoryService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
-	}
-
-	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
-		this.messageFactoryService = messageFactoryService;
 	}
 
 	@Override

@@ -5,11 +5,13 @@
  */
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages;
 
+import org.pieShare.pieTools.piePlate.model.message.UdpMessage;
+
 /**
  *
  * @author Richard
  */
-public class LoopHolePunchMessage extends BaseUdpMessage {
+public class LoopHolePunchMessage extends UdpMessage {
 
 	private String name;
 	private String from;

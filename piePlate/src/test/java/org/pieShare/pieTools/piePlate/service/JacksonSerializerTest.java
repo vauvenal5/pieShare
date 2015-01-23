@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.pieShare.pieTools.piePlate.model.message.api.IBasePieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.service.unitTests.helper.TestMessage;
@@ -38,7 +38,7 @@ public class JacksonSerializerTest {
 
 	@Test
 	public void testDeserialize() throws Exception {
-		IBasePieMessage res = this.service.deserialize(this.testBuffer);
+		IPieMessage res = this.service.deserialize(this.testBuffer);
 
 		Assert.assertEquals(TestMessage.class, res.getClass());
 		Assert.assertEquals(this.msg.getMsg(), ((TestMessage) res).getMsg());

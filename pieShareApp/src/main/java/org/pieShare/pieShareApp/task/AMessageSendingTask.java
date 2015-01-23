@@ -9,7 +9,7 @@ package org.pieShare.pieShareApp.task;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
@@ -35,7 +35,7 @@ public abstract class AMessageSendingTask implements IPieTask {
 		this.beanService = beanService;
 	}
 	
-	protected void setDefaultAdresse(IPieMessage msg) {
+	protected void setDefaultAdresse(IClusterMessage msg) {
 		//todo: need somewhere a match between working dir and belonging cloud
 		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
 		msg.getAddress().setChannelId(user.getUserName());

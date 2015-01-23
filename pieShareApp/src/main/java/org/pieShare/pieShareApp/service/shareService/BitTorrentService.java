@@ -5,21 +5,27 @@
  */
 package org.pieShare.pieShareApp.service.shareService;
 
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
 import com.turn.ttorrent.tracker.TrackedTorrent;
 import com.turn.ttorrent.tracker.Tracker;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
+import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -34,12 +40,14 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private INetworkService networkService;
 	private IBeanService beanService;
 	private IExecutorService executorService;
+	private IBase64Service base64Service;
 	
 	private Tracker tracker;
 	private URI trackerUri;
 	private Semaphore readPorts;
 	private Semaphore writePorts;
 	private boolean shutdown;
+	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
 
 	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
@@ -53,6 +61,39 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		this.executorService = executorService;
 	}
 
+	public void setBase64Service(IBase64Service base64Service) {
+		this.base64Service = base64Service;
+	}
+	
+	/**
+	 * If this FileMeta allready exists the value will be changed by the given value.
+	 * If not it will be created with the given value.
+	 * It returns true if the FileMeta was new and false otherwise.
+	 * @param file
+	 * @param value
+	 * @return 
+	 */
+	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
+		boolean isNew = true;
+		
+		if (this.sharedFiles.containsKey(file)) {
+			value = this.sharedFiles.get(file) + value;
+			
+			if(value <= 0) {
+				this.sharedFiles.remove(file);
+				return false;
+			}
+			
+			isNew = false;
+		}
+		
+		if(value >= 0) {
+			this.sharedFiles.put(file, value);
+		}
+		
+		return isNew;
+	}
+
 	@Override
 	public void initTorrentService() {
 			this.shutdown = false;
@@ -62,11 +103,12 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 				//todo: handle this
 				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
 			}
-			this.writePorts = new Semaphore((availablePorts / 2) - 1);
-			this.readPorts = new Semaphore(availablePorts);			
+			this.writePorts = new Semaphore(availablePorts);
+			this.readPorts = new Semaphore((availablePorts / 2) - 1);			
 	}
 
-	private Torrent anounceTorrent(File localFile) {
+	@Override
+	public byte[] anounceTorrent(File localFile) {
 		if(this.shutdown) {
 			return null;
 		}
@@ -90,7 +132,10 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
-			return torrent;
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			torrent.save(baos);
+			return this.base64Service.encode(baos.toByteArray());
 		} catch (InterruptedException | URISyntaxException | IOException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
@@ -99,52 +144,55 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	}
 	
 	@Override
-	public void shareTorrent(PieFile file, File localFile, OutputStream out) {
-		try {
-			//File localFile = this.fileService.getAbsolutePath(file).toFile();
-			//Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
-			Torrent torrent = this.anounceTorrent(localFile);
-			if(torrent == null) {
-				//todo: fail handling has to be added
-				return;
-			}
-			SharedTorrent sharredTorrent = new SharedTorrent(torrent, localFile.getParentFile(), true);
-			
-			
-			this.writePorts.acquire();
-			this.handleSharedTorrent(file, sharredTorrent);
-			
-			torrent.save(out);
+	public void shareFile(FileMeta meta, File destDir) {
+		
+		if(!this.manipulateShareState(meta, 1)) {
+			return;
 		}
-		catch (InterruptedException ex) {
-			PieLogger.error(this.getClass(), "Sending Meta failed!", ex);
+		
+		try {
+			this.writePorts.acquire();
+			this.handleSharedTorrent(meta, destDir);
+		} catch (InterruptedException ex) {
+			PieLogger.error(this.getClass(), "Acquire write failed!", ex);
 		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Sending Meta failed!", ex);
+			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
+			this.torrentClientDone(true);
 		}
 	}
 	
 	@Override
-	public void handleSharedTorrent(PieFile pieFile, SharedTorrent torrent) {
+	public void remoteClientDone(FileMeta meta) {
+		this.manipulateShareState(meta, -1);
+	}
+	
+	@Override
+	public void handleFile(FileMeta meta, File destDir) {
 		try {
 			this.readPorts.acquire();
-			TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
-			task.setFile(pieFile);
-			task.setTorrent(torrent);
-			if(this.shutdown) {
-				return;
-			}
-			
-			this.executorService.execute(task);
+			this.writePorts.acquire();
+			this.handleSharedTorrent(meta, destDir);
 		} catch (InterruptedException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
+			PieLogger.error(this.getClass(), "Acquire read failed!", ex);
+		} catch (IOException ex) {
+			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
+			this.torrentClientDone(false);
 		}
+	}
+	
+	private void handleSharedTorrent(FileMeta meta, File destDir) throws IOException {
+		SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta.getData()), destDir);
+		TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
+		task.setFile(meta);
+		task.setTorrent(torrent);
+		this.executorService.execute(task);
 	}
 
 	@Override
 	public void torrentClientDone(boolean seeder) {
-		this.readPorts.release();
-		if(seeder) {
-			this.writePorts.release();
+		this.writePorts.release();
+		if(!seeder) {
+			this.readPorts.release();
 		}
 	}
 	
@@ -156,5 +204,10 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		}
 		
 		this.shutdown = true;
+	}
+	
+	@Override
+	public boolean isShareActive(FileMeta file) {
+		return (this.sharedFiles.getOrDefault(file, 0) > 0);
 	}
 }

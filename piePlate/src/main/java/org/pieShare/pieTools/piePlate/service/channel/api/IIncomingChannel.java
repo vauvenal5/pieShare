@@ -5,13 +5,13 @@
  */
 package org.pieShare.pieTools.piePlate.service.channel.api;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.exception.PieChannelException;
 
 /**
  *
  * @author sveto_000
  */
-public interface IIncomingChannel<M extends IPieMessage> {
+public interface IIncomingChannel<M extends IClusterMessage> {
 	M handleMessage(byte[] message) throws PieChannelException;
 }

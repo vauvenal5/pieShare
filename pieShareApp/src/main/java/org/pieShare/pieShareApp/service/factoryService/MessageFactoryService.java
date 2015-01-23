@@ -8,22 +8,25 @@ package org.pieShare.pieShareApp.service.factoryService;
 
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.MetaMessage;
+import org.pieShare.pieShareApp.model.message.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
+import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 
 /**
@@ -32,7 +35,7 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroups
  */
 public class MessageFactoryService implements IMessageFactoryService {
 	
-	protected <P extends IPieMessage> P prepareMessage(P message) {
+	protected <P extends IClusterMessage> P prepareMessage(P message) {
 		IPieAddress ad = new JGroupsPieAddress();
 		message.setAddress(ad);
 		return message;
@@ -69,13 +72,20 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public IFileTransferMetaMessage getFileTransferMetaMessage() {
-		return this.prepareMessage(new FileTransferMetaMessage());
+	public IMetaMessage getFileTransferMetaMessage() {
+		IMetaMessage msg = this.prepareMessage(new MetaMessage());
+		msg.setFileMeta(new FileMeta());
+		return msg;
 	}
 
 	@Override
 	public INewFileMessage getNewFileMessage() {
 		return this.prepareMessage(new NewFileMessage());
+	}
+
+	@Override
+	public IMetaCommitMessage getMetaCommitMessage() {
+		return this.prepareMessage(new MetaCommitMessage());
 	}
 	
 }
