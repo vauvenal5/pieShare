@@ -146,7 +146,7 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public void ackArrived(String fromid) {
+    public synchronized void ackArrived(String fromid) {
         if (waitForAckQueue.containsKey(fromid)) {
             waitForAckQueue.get(fromid).ackArrived();
             removeTaskFromAckWaitQueue(fromid);

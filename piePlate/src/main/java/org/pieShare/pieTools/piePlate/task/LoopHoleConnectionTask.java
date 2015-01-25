@@ -77,7 +77,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 			
 			isWaitingForAck = true;
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(5000);
 			}
 			catch (InterruptedException ex) {
 				PieLogger.error(this.getClass(), "Error while waiting for ACK", ex);
