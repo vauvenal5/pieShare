@@ -7,6 +7,7 @@ package org.pieShare.pieTools.piePlate.service.loophole.api;
 
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 
 /**
@@ -31,5 +32,7 @@ public interface ILoopHoleService {
 
 	void setName(String name);
 
-	void send (IPieMessage msg, String host, int port);
+	void send (IUdpMessage msg, String host, int port);
+        
+        void sendToServer (IUdpMessage msg);
 }

@@ -13,13 +13,4 @@ import org.pieShare.pieTools.piePlate.model.message.UdpMessage;
  */
 public class LoopHoleAckMessage extends UdpMessage{
 
-	private String senderID;
-
-	public String getSenderID() {
-		return senderID;
-	}
-
-	public void setSenderID(String from) {
-		this.senderID = from;
-	}
 }
