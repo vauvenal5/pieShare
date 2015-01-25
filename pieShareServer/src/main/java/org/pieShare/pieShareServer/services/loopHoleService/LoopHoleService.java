@@ -11,6 +11,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
@@ -85,12 +87,15 @@ public class LoopHoleService implements ILoopHoleService {
 
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
             socket.send(packet);
+            Thread.sleep(500);
         } catch (SerializerServiceException ex) {
             PieLogger.error(this.getClass(), "Error serializing message", ex);
         } catch (UnknownHostException ex) {
             PieLogger.error(this.getClass(), "UnknownHostException", ex);
         } catch (IOException ex) {
             PieLogger.error(this.getClass(), "IOException", ex);
+        } catch (InterruptedException ex) {
+             PieLogger.error(this.getClass(), "InterruptedException", ex);
         }
     }
 }
