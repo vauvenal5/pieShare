@@ -15,12 +15,14 @@ import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
+import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
@@ -58,7 +60,8 @@ public class LoopHoleService implements ILoopHoleService {
     public void init() {
         this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
         this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
-
+        this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
+        
         clientID = idService.getNewID();
 
         serverPort = 6312;
