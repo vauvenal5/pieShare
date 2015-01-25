@@ -51,7 +51,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 	@Override
 	public void run() {
                 LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
-                loopHoleService.sendToServer(msg);
+                loopHoleService.sendToServer(ackMsg);
 		int endpoint = 0;
 
 		while (!stop) {
