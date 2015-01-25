@@ -88,7 +88,7 @@ public class LoopHoleService implements ILoopHoleService {
 
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
             socket.send(packet);
-            Thread.sleep(500);
+            Thread.sleep(1000);
         } catch (SerializerServiceException ex) {
             PieLogger.error(this.getClass(), "Error serializing message", ex);
         } catch (UnknownHostException ex) {
