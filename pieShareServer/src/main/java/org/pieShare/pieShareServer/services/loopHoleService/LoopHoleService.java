@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -23,9 +24,14 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistanceService;
 import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
+import org.pieShare.pieShareServer.tasks.LoopHoleServerAckTask;
 import org.pieShare.pieShareServer.tasks.RegisterTask;
+import org.pieShare.pieShareServer.tasks.WaitForAckFromClientTask;
+import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 
 /**
@@ -41,6 +47,7 @@ public class LoopHoleService implements ILoopHoleService {
     private IUserPersistanceService userPersistanceService;
     private ISerializerService serializerService;
     private PieExecutorTaskFactory executorFactory;
+    private HashMap<String, WaitForAckFromClientTask> waitForAckQueue;
 
     public void setExecutorFactory(PieExecutorTaskFactory executorFactory) {
         this.executorFactory = executorFactory;
@@ -62,8 +69,21 @@ public class LoopHoleService implements ILoopHoleService {
         this.executorService = executorService;
     }
 
+    @Override
+    public void ackArrived(String ID) {
+        if (waitForAckQueue.containsKey(ID)) {
+            waitForAckQueue.get(ID).ackArrived();
+        }
+        waitForAckQueue.remove(ID);
+    }
+
     @PostConstruct
     public void init() {
+        executorFactory.registerTask(RegisterMessage.class, RegisterTask.class);
+        executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleServerAckTask.class);
+
+        waitForAckQueue = new HashMap<>();
+
         PieLogger.info(this.getClass(), "Set up Loop Hole Service!");
         serverPort = 6312;
         try {
@@ -72,21 +92,25 @@ public class LoopHoleService implements ILoopHoleService {
             PieLogger.error(this.getClass(), "Error starting loop hole punch service!", ex);
         }
 
-        executorFactory.registerTask(RegisterMessage.class, RegisterTask.class);
-        
         LoopHoleListenerTask listenerTask = beanService.getBean(LoopHoleListenerTask.class);
         listenerTask.setSocket(socket);
         executorService.execute(listenerTask);
-        
     }
 
     @Override
-    public synchronized void send(IPieMessage msg, String host, int port) {
+    public synchronized void send(IUdpMessage msg, UdpAddress address) {
         try {
             byte[] bytes = serializerService.serialize(msg);
-            PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", host, port, new String(bytes)));
 
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
+            WaitForAckFromClientTask waitTask = beanService.getBean(WaitForAckFromClientTask.class);
+            waitTask.setMmsgToSend(msg);
+            waitTask.setUdpAddress(address);
+            executorService.execute(waitTask);
+            waitForAckQueue.put(msg.getSenderID(), waitTask);
+
+            PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", address.getHost(), address.getPort(), new String(bytes)));
+
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address.getHost()), address.getPort());
             socket.send(packet);
             Thread.sleep(1000);
         } catch (SerializerServiceException ex) {
@@ -96,7 +120,8 @@ public class LoopHoleService implements ILoopHoleService {
         } catch (IOException ex) {
             PieLogger.error(this.getClass(), "IOException", ex);
         } catch (InterruptedException ex) {
-             PieLogger.error(this.getClass(), "InterruptedException", ex);
+            PieLogger.error(this.getClass(), "InterruptedException", ex);
         }
     }
+
 }

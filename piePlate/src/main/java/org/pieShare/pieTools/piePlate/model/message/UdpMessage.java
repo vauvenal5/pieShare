@@ -5,9 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.model.message;
 
-import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 
 /**
@@ -17,6 +15,7 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMes
 public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
 
     private UdpAddress senderAddress;
+    private String ID;
 
     @Override
     public void setSenderAddress(UdpAddress senderAddress) {
@@ -28,4 +27,13 @@ public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
         return senderAddress;
     }
 
+    @Override
+    public String getSenderID() {
+        return this.ID;
+    }
+
+    @Override
+    public void setSenderID(String ID) {
+        this.ID = ID;
+    }
 }
