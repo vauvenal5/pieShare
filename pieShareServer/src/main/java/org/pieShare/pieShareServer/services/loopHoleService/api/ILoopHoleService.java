@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieShareServer.services.loopHoleService.api;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 
 /**
  *
@@ -14,5 +14,7 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
  */
 public interface ILoopHoleService {
 
-	void send(IPieMessage msg, String host, int port);
+	void send(IUdpMessage msg, UdpAddress address);
+        
+        void ackArrived(String ID);
 }

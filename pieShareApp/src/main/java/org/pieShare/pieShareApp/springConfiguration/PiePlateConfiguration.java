@@ -117,6 +117,7 @@ public class PiePlateConfiguration {
         service.setSerializerService(jacksonSerializerService());
         service.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
         service.setExecutorService(utilitiesConfiguration.pieExecutorService());
+        service.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
         return service;
     }
 

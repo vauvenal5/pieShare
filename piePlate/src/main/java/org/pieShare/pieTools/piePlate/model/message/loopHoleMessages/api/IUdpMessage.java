@@ -19,4 +19,8 @@ public interface IUdpMessage extends IPieMessage {
 	void setSenderAddress(UdpAddress senderAddress);
 
 	UdpAddress getSenderAddress();
+        
+        String getSenderID();
+        
+        void setSenderID(String ID);
 }

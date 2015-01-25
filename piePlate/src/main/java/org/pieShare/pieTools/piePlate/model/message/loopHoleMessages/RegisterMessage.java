@@ -15,7 +15,6 @@ public class RegisterMessage extends UdpMessage {
 
 	private String privateHost;
 	private int privatePort;
-	private String id;
 	private String name;
 
 	public String getPrivateHost() {
@@ -32,14 +31,6 @@ public class RegisterMessage extends UdpMessage {
 
 	public void setPrivatePort(int privatePort) {
 		this.privatePort = privatePort;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {

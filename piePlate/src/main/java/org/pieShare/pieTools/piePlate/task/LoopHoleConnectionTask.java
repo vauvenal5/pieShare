@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
@@ -49,6 +50,8 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 
 	@Override
 	public void run() {
+                LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+                loopHoleService.sendToServer(msg);
 		int endpoint = 0;
 
 		while (!stop) {
