@@ -70,7 +70,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 			punchMsg.setName(loopHoleService.getName());
 			
 			loopHoleService.addInWaitFromAckQueu(msg.getFromId(), this);
-			loopHoleService.send(msg, host, port);
+			loopHoleService.send(punchMsg, host, port);
 			
 			isWaitingForAck = true;
 			try {
