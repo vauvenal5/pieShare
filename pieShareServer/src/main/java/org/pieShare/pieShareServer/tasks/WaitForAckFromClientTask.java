@@ -7,7 +7,6 @@ package org.pieShare.pieShareServer.tasks;
 
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.UdpMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -43,6 +42,7 @@ public class WaitForAckFromClientTask implements IPieTask {
     public void run() {
 
         try {
+            PieLogger.info(this.getClass(), String.format("WaitForAck. ID: %s", msgToSend.getSenderID()));
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
             PieLogger.debug(this.getClass(), "Error while thread sleep.", ex);

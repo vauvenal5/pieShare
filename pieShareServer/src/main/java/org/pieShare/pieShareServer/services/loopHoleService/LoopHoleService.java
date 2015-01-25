@@ -102,6 +102,7 @@ public class LoopHoleService implements ILoopHoleService {
         try {
             byte[] bytes = serializerService.serialize(msg);
 
+            PieLogger.info(this.getClass(), "Add new AckWaitTask.");
             WaitForAckFromClientTask waitTask = beanService.getBean(WaitForAckFromClientTask.class);
             waitTask.setMmsgToSend(msg);
             waitTask.setUdpAddress(address);
