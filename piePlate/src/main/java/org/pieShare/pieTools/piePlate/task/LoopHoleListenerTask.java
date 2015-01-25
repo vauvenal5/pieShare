@@ -58,9 +58,7 @@ public class LoopHoleListenerTask implements IPieTask {
 				socket.receive(packet);
 				bytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
 				PieLogger.info(this.getClass(), String.format("Message Arrived: %s", new String(bytes)));
-				
-                               System.out.println(String.format("Message Arrived: %s", new String(bytes)));
-                                
+				 
 				IUdpMessage msg = (IUdpMessage)serializerService.deserialize(bytes);
 				UdpAddress address = new UdpAddress();
 				address.setHost(packet.getAddress().getHostAddress());
@@ -83,5 +81,4 @@ public class LoopHoleListenerTask implements IPieTask {
 	public void stop() {
 		run = false;
 	}
-
 }
