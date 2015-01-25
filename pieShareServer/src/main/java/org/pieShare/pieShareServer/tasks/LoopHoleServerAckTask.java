@@ -8,6 +8,7 @@ package org.pieShare.pieShareServer.tasks;
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -29,7 +30,7 @@ public class LoopHoleServerAckTask implements IPieEventTask<LoopHoleAckMessage>{
 
     @Override
     public void run() {
+        PieLogger.info(this.getClass(), String.format("ACK Arrived. ID: %s", msg.getSenderID()));
        loopHoleService.ackArrived(msg.getSenderID());
-    }
-    
+    }  
 }
