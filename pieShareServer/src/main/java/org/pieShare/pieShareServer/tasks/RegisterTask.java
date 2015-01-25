@@ -62,6 +62,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
         connectionMessageToReceiver.setClientPrivatePort(newUser.getPrivateAddress().getPort());
         connectionMessageToReceiver.setClientPublicIP(newUser.getPublicAddress().getHost());
         connectionMessageToReceiver.setClientPublicPort(newUser.getPublicAddress().getPort());
+        connectionMessageToReceiver.setFromId(newUser.getId());
 
         for (User user : sameUsers.values()) {
 
@@ -72,6 +73,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                 connectionMessageToSender.setClientPrivatePort(user.getPrivateAddress().getPort());
                 connectionMessageToSender.setClientPublicIP(user.getPublicAddress().getHost());
                 connectionMessageToSender.setClientPublicPort(user.getPublicAddress().getPort());
+                connectionMessageToSender.setFromId(user.getId());
 
                 loopHoleService.send(connectionMessageToSender, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
             }
