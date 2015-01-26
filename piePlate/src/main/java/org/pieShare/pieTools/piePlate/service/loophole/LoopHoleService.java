@@ -59,6 +59,7 @@ public class LoopHoleService implements ILoopHoleService {
     private String name;
     private PieExecutorService executorService;
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
+    private LoopHoleListenerTask listenerTask;
 
     public LoopHoleService() {
 
@@ -96,10 +97,14 @@ public class LoopHoleService implements ILoopHoleService {
 
         waitForAckQueue = new HashMap<>();
 
-        LoopHoleListenerTask listenerTask = beanService.getBean(LoopHoleListenerTask.class);
+        listenerTask = beanService.getBean(LoopHoleListenerTask.class);
         listenerTask.setSocket(socket);
         executorService.execute(listenerTask);
 
+    }
+
+    public void setListenerTask(LoopHoleListenerTask listenerTask) {
+        this.listenerTask = listenerTask;
     }
 
     public void setExecutorService(PieExecutorService executorService) {
