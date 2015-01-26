@@ -16,6 +16,7 @@ import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
+import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
@@ -123,6 +124,17 @@ public class PiePlateConfiguration {
 
     @Bean
     @Lazy
+    public LoopHoleFactory loopHoleFactory() {
+        LoopHoleFactory fac = new LoopHoleFactory();
+        fac.setBeanService(utilitiesConfiguration.beanService());
+        fac.setIdService(utilitiesConfiguration.idService());
+        fac.setSerializerService(jacksonSerializerService());
+        return fac;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
     public LoopHoleListenerTask loopHoleListenerTask() {
         LoopHoleListenerTask task = new LoopHoleListenerTask();
         task.setExcuterService(utilitiesConfiguration.pieExecutorService());
