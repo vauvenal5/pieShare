@@ -66,9 +66,9 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	private IClusterService connect(String id) throws ClusterManagmentServiceException {
-		ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
-		loopHoleService.setName(id);
-		loopHoleService.register();
+		//ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
+		//loopHoleService.setName(id);
+		//loopHoleService.register();
 		
 		if (this.clusters.containsKey(id)) {
 			return this.clusters.get(id);

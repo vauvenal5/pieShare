@@ -111,6 +111,7 @@ public class PiePlateConfiguration {
 
     @Bean
     @Lazy
+    @Scope(value = "prototype")
     public LoopHoleService loopHoleService() {
         LoopHoleService service = new LoopHoleService();
         service.setBeanService(utilitiesConfiguration.beanService());
@@ -119,6 +120,7 @@ public class PiePlateConfiguration {
         service.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
         service.setExecutorService(utilitiesConfiguration.pieExecutorService());
         service.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
+        service.setLoopHoleFactory(loopHoleFactory());
         return service;
     }
 
@@ -167,7 +169,7 @@ public class PiePlateConfiguration {
     public LoopHoleConnectionTask loopHoleConnectionTask() {
         LoopHoleConnectionTask task = new LoopHoleConnectionTask();
         task.setBeanService(utilitiesConfiguration.beanService());
-        task.setLoopHoleService(loopHoleService());
+        task.setLoopHoleFactory(loopHoleFactory());
         return task;
     }
 

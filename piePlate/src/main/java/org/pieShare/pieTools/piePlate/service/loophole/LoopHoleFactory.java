@@ -9,19 +9,25 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnectionEvent;
+import org.pieShare.pieTools.piePlate.service.loophole.event.api.INewLoopHoleConnectionEventListener;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
-import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
+import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.api.IUdpPortService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
@@ -34,43 +40,57 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class LoopHoleFactory implements ILoopHoleFactory {
 
-    private final HashMap<String, LoopHoleService> loopQueue;
-    private final HashMap<Integer, DatagramSocket> newConnections;
+    private final HashMap<String, ILoopHoleService> loopQueue;
     private IUdpPortService udpPortService;
     private int nextUdpPort;
     private IBeanService beanService;
     private String clientID;
     private IIDService idService;
     private ISerializerService serializerService;
-    private final String serverIP;
-    private final int serverPort;
+    private final UdpAddress serverAddress;
     private String name;
-    private String localIP;
     private PieExecutorTaskFactory executorFactory;
     private PieExecutorService executorService;
 
+    private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
+    
     public LoopHoleFactory() {
+        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
+        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
+        this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
+
         loopQueue = new HashMap<>();
-        newConnections = new HashMap<>();
 
         nextUdpPort = 1234;
-        serverPort = 6312;
 
-        serverIP = "server.piesystems.org";
-
-        InetAddress IP = null;
-        try {
-            IP = InetAddress.getLocalHost();
-        } catch (UnknownHostException ex) {
-            PieLogger.error(this.getClass(), "Error getting IP Address of client", ex);
-        }
-
-        localIP = IP.getHostAddress();
+        serverAddress = new UdpAddress();
+        serverAddress.setPort(6312);
+        serverAddress.setHost("server.piesystems.org");
     }
 
     @PostConstruct
     public void init() {
         clientID = idService.getNewID();
+    }
+
+    @Override
+     public IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> getNewLoopHoleConnectionEvent() {
+        return newLoopHoleConnectionEvent;
+    }
+
+    public void setNewLoopHoleConnectionEvent(IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent) {
+        this.newLoopHoleConnectionEvent = newLoopHoleConnectionEvent;
+    }
+
+     @Override
+    public synchronized void newClientAvailable(UdpAddress address, DatagramSocket socket) {
+        PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHost(), address.getPort()));
+        newLoopHoleConnectionEvent.fireEvent(new NewLoopHoleConnectionEvent(this, address, socket));
+    }
+    
+    @Override
+    public String getClientID() {
+        return clientID;
     }
 
     public void setExecutorFactory(PieExecutorTaskFactory executorFactory) {
@@ -106,36 +126,12 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     }
 
     public void initializeNewLoopHole() {
-        
         ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
         nextUdpPort = udpPortService.getNewPortFrom(nextUdpPort);
+        loopHoleService.setLocalPort(nextUdpPort);
+        loopHoleService.setName(name);
 
-        DatagramSocket socket;
-        try {
-            socket = new DatagramSocket(nextUdpPort);
-        } catch (SocketException ex) {
-            PieLogger.error(this.getClass(), String.format("Error ceating DatagramSocket at port: %s,", nextUdpPort), ex);
-            return;
-        }
-
-        newConnections.put(nextUdpPort, socket);
-
-        LoopHoleListenerTask task = beanService.getBean(LoopHoleListenerTask.class);
-        task.setSocket(socket);
-        executorService.execute(task);
-        
-        register(socket, nextUdpPort);
-    }
-
-    private void register(DatagramSocket socket, int newPort) {
-        RegisterMessage message = beanService.getBean(RegisterMessage.class);
-        message.setPrivateHost(localIP);
-        message.setPrivatePort(newPort);
-        message.setName(name);
-        UdpAddress address = new UdpAddress();
-        address.setHost(localIP);
-        address.setPort(newPort);
-        send(socket, message, address);
+        loopHoleService.init();
     }
 
     @Override
@@ -158,12 +154,18 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         }
     }
 
-//    @Override
-//    public void sendToServer(DatagramSocket socket,IUdpMessage msg) {
-//        send(msg, serverIP, serverPort);
-//    }
     @Override
-    public void sendToServer(IUdpMessage msg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void sendToServer(DatagramSocket socket, IUdpMessage msg) {
+        send(socket, msg, serverAddress);
+    }
+
+    @Override
+    public ILoopHoleService getLoopHoleService(String clientID) {
+        return loopQueue.get(clientID);
+    }
+
+    @Override
+    public void insertLoopHoleService(String ID, ILoopHoleService service) {
+        loopQueue.put(ID, service);
     }
 }
