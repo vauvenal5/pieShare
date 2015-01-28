@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.service.loophole.event;
 
+import java.net.DatagramSocket;
 import java.util.EventObject;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 
@@ -15,18 +16,20 @@ import org.pieShare.pieTools.piePlate.model.UdpAddress;
 public class NewLoopHoleConnectionEvent extends EventObject {
 
     private UdpAddress address;
+    private DatagramSocket socket;
+
+    public NewLoopHoleConnectionEvent(Object source, UdpAddress address, DatagramSocket socket) {
+        super(source);
+        this.address = address;
+        this.socket = socket;
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
 
     public UdpAddress getAddress() {
         return address;
-    }
-
-    public void setAddress(UdpAddress address) {
-        this.address = address;
-    }
-    
-    public NewLoopHoleConnectionEvent(Object source, UdpAddress address) {
-        super(source);
-        this.address = address;
     }
 
 }

@@ -6,6 +6,7 @@
 package org.pieShare.pieTools.piePlate.task;
 
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -17,10 +18,10 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class LoopHoleAckTask implements IPieEventTask<LoopHoleAckMessage> {
 
     private LoopHoleAckMessage msg;
-    private LoopHoleService loopHoleService;
+    private LoopHoleFactory loopHoleFactory;
 
-    public void setLoopHoleService(LoopHoleService loopHoleService) {
-        this.loopHoleService = loopHoleService;
+    public void setLoopHoleFactory(LoopHoleFactory loopHoleFactory) {
+        this.loopHoleFactory = loopHoleFactory;
     }
 
     @Override
@@ -31,7 +32,6 @@ public class LoopHoleAckTask implements IPieEventTask<LoopHoleAckMessage> {
     @Override
     public void run() {
         PieLogger.info(this.getClass(), String.format("ACK Arrived from: %s", msg.getSenderID()));
-        this.loopHoleService.ackArrived(msg.getSenderID());
+        loopHoleFactory.getLoopHoleService(msg.getLocalLoopID()).ackArrived(msg.getSenderID());
     }
-
 }
