@@ -66,7 +66,6 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
 
         HashMap<String, User> notConnectedUsers = userPersistanceService.getNonConnectedUsersByName(msg.getName());
         for (User user : notConnectedUsers.values()) {
-
             PieLogger.info(this.getClass(), String.format("Found non connected users. Count: %s", notConnectedUsers.size()));
             if (!msg.getSenderID().equals(user.getId())) {
 
@@ -89,6 +88,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                 loopHoleService.send(connectionMessageToReceiver, user.getPublicAddress());
 
                 user.setConnectedTo(msg.getLocalLoopID());
+                userPersistanceService.mergeUser(user);
                 newUser.setConnectedTo(user.getLoopHoleID());
                 break;
             }

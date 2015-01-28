@@ -43,7 +43,7 @@ public class WaitForAckFromClientTask implements IPieTask {
 
         try {
             PieLogger.info(this.getClass(), String.format("WaitForAck. ID: %s", msgToSend.getSenderID()));
-            Thread.sleep(10000);
+            Thread.sleep(20000);
         } catch (InterruptedException ex) {
             PieLogger.debug(this.getClass(), "Error while thread sleep.", ex);
         }
