@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.piePlate.task;
+package org.pieShare.pieTools.pieUtilities.service.networkService.api;
 
 /**
  *
- * @author Richard
+ * @author RicLeo00
  */
-public class RegisterClientTask {
-	
+public interface IUdpPortService {
+    int getNewPortFrom(int port);
 }

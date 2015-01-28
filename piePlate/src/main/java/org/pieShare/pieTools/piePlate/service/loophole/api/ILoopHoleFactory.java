@@ -3,18 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareServer.services.loopHoleService.api;
+package org.pieShare.pieTools.piePlate.service.loophole.api;
 
+import java.net.DatagramSocket;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 
 /**
  *
- * @author Richard
+ * @author RicLeo00
  */
-public interface ILoopHoleService {
+public interface ILoopHoleFactory {
 
-	void send(IUdpMessage msg, UdpAddress address);
-        
-        void ackArrived(String ID);
+    void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address);
+
+    void sendToServer(IUdpMessage msg);
 }

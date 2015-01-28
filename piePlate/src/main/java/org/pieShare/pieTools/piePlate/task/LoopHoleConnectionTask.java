@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
@@ -49,6 +50,8 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 
 	@Override
 	public void run() {
+                LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+                loopHoleService.sendToServer(ackMsg);
 		int endpoint = 0;
 
 		while (!stop) {
@@ -70,11 +73,11 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
 			punchMsg.setName(loopHoleService.getName());
 			
 			loopHoleService.addInWaitFromAckQueu(msg.getFromId(), this);
-			loopHoleService.send(msg, host, port);
+			loopHoleService.send(punchMsg, host, port);
 			
 			isWaitingForAck = true;
 			try {
-				Thread.sleep(500);
+				Thread.sleep(5000);
 			}
 			catch (InterruptedException ex) {
 				PieLogger.error(this.getClass(), "Error while waiting for ACK", ex);
