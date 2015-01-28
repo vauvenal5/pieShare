@@ -70,7 +70,7 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public void ackArrived(String ID) {
+    public synchronized void ackArrived(String ID) {
         if (waitForAckQueue.containsKey(ID)) {
             waitForAckQueue.get(ID).ackArrived();
         }
