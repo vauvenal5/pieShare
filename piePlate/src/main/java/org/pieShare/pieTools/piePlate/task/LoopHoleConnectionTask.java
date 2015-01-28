@@ -54,11 +54,10 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
     @Override
     public void run() {
         LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+        loopHoleService = loopHoleFactory.getLoopHoleService(msg.getLocalLoopID());
         loopHoleService.sendToServer(ackMsg);
         int endpoint = 0;
 
-        loopHoleService = loopHoleFactory.getLoopHoleService(msg.getLocalLoopID());
-        
         while (!stop) {
 
             if (endpoint == 0) {
