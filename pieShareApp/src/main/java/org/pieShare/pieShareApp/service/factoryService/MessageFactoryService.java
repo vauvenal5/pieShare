@@ -8,8 +8,8 @@ package org.pieShare.pieShareApp.service.factoryService;
 
 import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.MetaMessage;
-import org.pieShare.pieShareApp.model.message.MetaCommitMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
@@ -22,7 +22,7 @@ import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
-import org.pieShare.pieShareApp.model.message.fileMessageBase.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
@@ -39,6 +39,11 @@ public class MessageFactoryService implements IMessageFactoryService {
 		IPieAddress ad = new JGroupsPieAddress();
 		message.setAddress(ad);
 		return message;
+	}
+	
+	protected <P extends IMetaMessage> P prepareMetaMessage(P message) {
+		message.setFileMeta(new FileMeta());
+		return this.prepareMessage(message);
 	}
 
 	@Override
@@ -68,14 +73,12 @@ public class MessageFactoryService implements IMessageFactoryService {
 
 	@Override
 	public IFileTransferCompleteMessage getFileTransferCompleteMessage() {
-		return this.prepareMessage(new FileTransferCompleteMessage());
+		return this.prepareMetaMessage(new FileTransferCompleteMessage());
 	}
 
 	@Override
 	public IMetaMessage getFileTransferMetaMessage() {
-		IMetaMessage msg = this.prepareMessage(new MetaMessage());
-		msg.setFileMeta(new FileMeta());
-		return msg;
+		return this.prepareMetaMessage(new MetaMessage());
 	}
 
 	@Override
@@ -85,7 +88,7 @@ public class MessageFactoryService implements IMessageFactoryService {
 
 	@Override
 	public IMetaCommitMessage getMetaCommitMessage() {
-		return this.prepareMessage(new MetaCommitMessage());
+		return this.prepareMetaMessage(new MetaCommitMessage());
 	}
 	
 }

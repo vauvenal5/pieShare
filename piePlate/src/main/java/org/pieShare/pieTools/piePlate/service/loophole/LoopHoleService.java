@@ -175,7 +175,6 @@ public class LoopHoleService implements ILoopHoleService {
     public synchronized void send(IUdpMessage msg, String host, int port) {
         try {
             msg.setSenderID(loopHoleFactory.getClientID());
-            msg.setLocalLoopID(localLoopHoleID);
             byte[] bytes = serializerService.serialize(msg);
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
             socket.send(packet);
