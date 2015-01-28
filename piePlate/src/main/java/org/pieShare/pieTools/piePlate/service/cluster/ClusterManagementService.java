@@ -20,7 +20,9 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
@@ -34,118 +36,115 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClusterManagementService implements IClusterManagementService {
 
-	private Map<String, IClusterService> clusters;
-	private IBeanService beanService;
-	private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
-	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+    private Map<String, IClusterService> clusters;
+    private IBeanService beanService;
+    private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
+    private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 
-	@Override
-	public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
-		return this.clusterAddedEventBase;
-	}
+    @Override
+    public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
+        return this.clusterAddedEventBase;
+    }
 
-	public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
-		this.clusterAddedEventBase = clusterAddedEventBase;
-	}
+    public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
+        this.clusterAddedEventBase = clusterAddedEventBase;
+    }
 
-	@Override
-	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
-		return this.clusterRemovedEventBase;
-	}
+    @Override
+    public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
+        return this.clusterRemovedEventBase;
+    }
 
-	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
-		this.clusterRemovedEventBase = clusterRemovedEventBase;
-	}
+    public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+        this.clusterRemovedEventBase = clusterRemovedEventBase;
+    }
 
-	public void setBeanService(IBeanService service) {
-		this.beanService = service;
-	}
+    public void setBeanService(IBeanService service) {
+        this.beanService = service;
+    }
 
-	public void setMap(Map<String, IClusterService> map) {
-		this.clusters = map;
-	}
+    public void setMap(Map<String, IClusterService> map) {
+        this.clusters = map;
+    }
 
-	private IClusterService connect(String id) throws ClusterManagmentServiceException {
-		//ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
-		//loopHoleService.setName(id);
-		//loopHoleService.register();
-		
-		if (this.clusters.containsKey(id)) {
-			return this.clusters.get(id);
-		}
+    private IClusterService connect(String id) throws ClusterManagmentServiceException {
+        ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
+	loopHoleFactory.setName(id);
+        loopHoleFactory.initializeNewLoopHole();
 
-		try {
-			IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
-			cluster.setId(id);
-			cluster.connect(id);
-			this.clusters.put(id, cluster);
-			this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
-			cluster.getClusterRemovedEventBase().addEventListener((IClusterRemovedListener) (ClusterRemovedEvent event) -> {
-				clusters.remove(((IClusterService) event.getSource()).getId());
-				clusterRemovedEventBase.fireEvent(event);
-			});
+        if (this.clusters.containsKey(id)) {
+            return this.clusters.get(id);
+        }
 
-			return cluster;
-		}
-		catch (BeanServiceError | ClusterServiceException ex) {
-			//should never happen
-			throw new ClusterManagmentServiceException(ex);
-		}
-	}
+        try {
+            IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
+            cluster.setId(id);
+            cluster.connect(id);
+            this.clusters.put(id, cluster);
+            this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
+            cluster.getClusterRemovedEventBase().addEventListener((IClusterRemovedListener) (ClusterRemovedEvent event) -> {
+                clusters.remove(((IClusterService) event.getSource()).getId());
+                clusterRemovedEventBase.fireEvent(event);
+            });
 
-	@Override
-	public void sendMessage(IClusterMessage message) throws ClusterManagmentServiceException {
-		if (!this.clusters.containsKey(message.getAddress().getClusterName())) {
-			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", message.getAddress().getClusterName()));
-		}
+            return cluster;
+        } catch (BeanServiceError | ClusterServiceException ex) {
+            //should never happen
+            throw new ClusterManagmentServiceException(ex);
+        }
+    }
 
-		try {
-			this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
-		}
-		catch (ClusterServiceException ex) {
-			throw new ClusterManagmentServiceException(ex);
-		}
-	}
-	
-	@Override
-	public void registerChannel(String clusterId, IIncomingChannel channel) throws ClusterManagmentServiceException {
-		IClusterService cluster = this.connect(clusterId);
-		cluster.registerIncomingChannel(channel);
-	}
-	
-	@Override
-	public void registerChannel(String clusterId, IOutgoingChannel channel) throws ClusterManagmentServiceException {
-		IClusterService cluster = this.connect(clusterId);
-		cluster.registerOutgoingChannel(channel);
-	}
-	
-	@Override
-	public void registerChannel(String clusterId, ITwoWayChannel channel) throws ClusterManagmentServiceException {
-		IClusterService cluster = this.connect(clusterId);
-		cluster.registerIncomingChannel(channel);
-		cluster.registerOutgoingChannel(channel);
-	}
-	
-	@Override
-	public void disconnect(String id) throws ClusterServiceException {
-		this.clusters.get(id).disconnect();
-	}
+    @Override
+    public void sendMessage(IClusterMessage message) throws ClusterManagmentServiceException {
+        if (!this.clusters.containsKey(message.getAddress().getClusterName())) {
+            throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", message.getAddress().getClusterName()));
+        }
 
-	@Override
-	public void diconnectAll() throws ClusterManagmentServiceException {
-		for (Entry<String, IClusterService> entry : this.clusters.entrySet()) {
-			try {
-				entry.getValue().disconnect();
-			}
-			catch (ClusterServiceException ex) {
-				//todo: error handling
-				PieLogger.error(this.getClass(), "Disconnect all failed!", ex);
-			}
-		}
-	}
+        try {
+            this.clusters.get(message.getAddress().getClusterName()).sendMessage(message);
+        } catch (ClusterServiceException ex) {
+            throw new ClusterManagmentServiceException(ex);
+        }
+    }
 
-	@Override
-	public Map<String, IClusterService> getClusters() {
-		return this.clusters;
-	}
+    @Override
+    public void registerChannel(String clusterId, IIncomingChannel channel) throws ClusterManagmentServiceException {
+        IClusterService cluster = this.connect(clusterId);
+        cluster.registerIncomingChannel(channel);
+    }
+
+    @Override
+    public void registerChannel(String clusterId, IOutgoingChannel channel) throws ClusterManagmentServiceException {
+        IClusterService cluster = this.connect(clusterId);
+        cluster.registerOutgoingChannel(channel);
+    }
+
+    @Override
+    public void registerChannel(String clusterId, ITwoWayChannel channel) throws ClusterManagmentServiceException {
+        IClusterService cluster = this.connect(clusterId);
+        cluster.registerIncomingChannel(channel);
+        cluster.registerOutgoingChannel(channel);
+    }
+
+    @Override
+    public void disconnect(String id) throws ClusterServiceException {
+        this.clusters.get(id).disconnect();
+    }
+
+    @Override
+    public void diconnectAll() throws ClusterManagmentServiceException {
+        for (Entry<String, IClusterService> entry : this.clusters.entrySet()) {
+            try {
+                entry.getValue().disconnect();
+            } catch (ClusterServiceException ex) {
+                //todo: error handling
+                PieLogger.error(this.getClass(), "Disconnect all failed!", ex);
+            }
+        }
+    }
+
+    @Override
+    public Map<String, IClusterService> getClusters() {
+        return this.clusters;
+    }
 }

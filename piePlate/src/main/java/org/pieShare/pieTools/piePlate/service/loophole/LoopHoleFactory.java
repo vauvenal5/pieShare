@@ -106,6 +106,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         return name;
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -126,6 +127,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         this.udpPortService = udpPortService;
     }
 
+    @Override
     public void initializeNewLoopHole() {
         ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
         nextUdpPort = udpPortService.getNewPortFrom(nextUdpPort);
