@@ -31,6 +31,6 @@ public class LoopHoleServerAckTask implements IPieEventTask<LoopHoleAckMessage>{
     @Override
     public void run() {
         PieLogger.info(this.getClass(), String.format("ACK Arrived. ID: %s", msg.getSenderID()));
-       loopHoleService.ackArrived(msg.getSenderID());
+       loopHoleService.ackArrived(msg.getLocalLoopID());
     }  
 }
