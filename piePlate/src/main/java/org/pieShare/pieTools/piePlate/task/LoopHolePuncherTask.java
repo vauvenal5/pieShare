@@ -7,7 +7,7 @@ package org.pieShare.pieTools.piePlate.task;
 
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
-import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 
@@ -17,31 +17,30 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  */
 public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> {
 
-	private LoopHolePunchMessage msg;
-	private LoopHoleService loopHoleService;
-	private IBeanService beanService;
+    private LoopHolePunchMessage msg;
+    private LoopHoleFactory factory;
+    private IBeanService beanService;
 
-	@Override
-	public void setEvent(LoopHolePunchMessage msg) {
-		this.msg = msg;
-	}
+    @Override
+    public void setEvent(LoopHolePunchMessage msg) {
+        this.msg = msg;
+    }
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
+    public void setBeanService(IBeanService beanService) {
+        this.beanService = beanService;
+    }
 
-	public void setLoopHoleService(LoopHoleService loopHoleService) {
-		this.loopHoleService = loopHoleService;
-	}
+    public void setFactory(LoopHoleFactory factory) {
+        this.factory = factory;
+    }
 
-	@Override
-	public void run() {
-		if (!msg.getTo().equals(loopHoleService.getClientID())) {
-			return;
-		}
-
-		LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
-		ackMsg.setSenderID(loopHoleService.getClientID());
-		loopHoleService.send(ackMsg, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
-	}
+    @Override
+    public void run() {
+        if (!msg.getTo().equals(factory.getClientID())) {
+            return;
+        }
+        
+        LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+        factory.getLoopHoleService(msg.getLocalLoopID()).send(ackMsg, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
+    }
 }

@@ -5,10 +5,13 @@
  */
 package org.pieShare.pieTools.piePlate.service.loophole.api;
 
+import java.net.DatagramSocket;
+import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 
 /**
  *
@@ -16,23 +19,27 @@ import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
  */
 public interface ILoopHoleService {
 
-	void register();
+    void init();
 
-	void ackArrived(String fromid);
+    void setLocalPort(int port);
 
-	void removeTaskFromAckWaitQueue(String id);
+    void register();
 
-	void addInWaitFromAckQueu(String id, LoopHoleConnectionTask task);
+    void ackArrived(String fromid);
 
-	void newClientAvailable(String host, int port);
+    void removeTaskFromAckWaitQueue(String id);
 
-	String getClientID();
+    void addInWaitFromAckQueu(String id, LoopHoleConnectionTask task);
 
-	String getName();
+    void newClientAvailable(UdpAddress address);
 
-	void setName(String name);
+    String getLocalLoopID();
 
-	void send (IUdpMessage msg, String host, int port);
-        
-        void sendToServer (IUdpMessage msg);
+    String getName();
+
+    void setName(String name);
+
+    void send(IUdpMessage msg, String host, int port);
+
+    void sendToServer(IUdpMessage msg);
 }
