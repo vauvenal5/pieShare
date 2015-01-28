@@ -20,7 +20,7 @@ public class LoopHoleAckTask implements IPieEventTask<LoopHoleAckMessage> {
     private LoopHoleAckMessage msg;
     private LoopHoleFactory loopHoleFactory;
 
-    public void setLoopHoleService(LoopHoleFactory loopHoleFactory) {
+    public void setLoopHoleFactory(LoopHoleFactory loopHoleFactory) {
         this.loopHoleFactory = loopHoleFactory;
     }
 
