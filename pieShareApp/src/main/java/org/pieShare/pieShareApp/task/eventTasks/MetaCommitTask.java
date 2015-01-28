@@ -17,7 +17,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileMetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
+public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 	
 	private IShareService shareService;
 	private IBitTorrentService bitTorrentService;
@@ -29,6 +29,10 @@ public class FileMetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 	
 	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
+	}
+
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
 	}
 
 	@Override
@@ -43,7 +47,7 @@ public class FileMetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		}
 		File destDir = this.fileService.getAbsoluteTmpPath(msg.getPieFile()).toFile().getParentFile();
 		
-		this.bitTorrentService.handleFile(this.msg.getFileMeta(), destDir);
+		this.bitTorrentService.shareFile(this.msg.getFileMeta(), destDir);
 	}
 	
 }

@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
-import org.pieShare.pieShareApp.model.message.MetaMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
