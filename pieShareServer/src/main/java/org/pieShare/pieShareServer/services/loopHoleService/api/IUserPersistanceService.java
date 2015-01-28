@@ -25,4 +25,5 @@ public interface IUserPersistanceService {
 
     void deleteUser(String id);
 
+    void mergeUser(User user);
 }

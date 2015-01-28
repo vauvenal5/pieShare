@@ -59,5 +59,16 @@ public class UserPersistanceService implements IUserPersistanceService {
     public synchronized void deleteUser(String id) {
         newUsers.remove(id);
     }
+    
+    @Override
+    public void mergeUser(User user)
+    {
+        User dbUser = newUsers.get(user.getLoopHoleID());
+        dbUser.setConnectedTo(user.getConnectedTo());
+        dbUser.setId(user.getId());
+        dbUser.setName(user.getName());
+        dbUser.setPrivateAddress(user.getPrivateAddress());
+        dbUser.setPublicAddress(user.getPublicAddress());
+    }
 
 }
