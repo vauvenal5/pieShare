@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.message;
+package org.pieShare.pieShareApp.model.message.metaMessage;
 
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 
@@ -11,5 +11,5 @@ import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
  *
  * @author sveto_000
  */
-public class MetaCommitMessage extends MetaMessage implements IMetaCommitMessage {
+public class MetaCommitMessage extends AMetaMessage implements IMetaCommitMessage {
 }
