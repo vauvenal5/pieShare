@@ -32,7 +32,7 @@ public class UserPersistanceService implements IUserPersistanceService {
     public synchronized HashMap<String, User> getConnectedUsersByName(String name) {
         HashMap<String, User> returnUsers = new HashMap<>();
         newUsers.forEach((k, v) -> {
-            if (v.getName().equals(name) && v.getConnectedTo() == null) {
+            if (v.getName().equals(name) && v.getConnectedTo() != null) {
                 returnUsers.put(k, v);
             }
         });
@@ -43,7 +43,7 @@ public class UserPersistanceService implements IUserPersistanceService {
     public synchronized HashMap<String, User> getNonConnectedUsersByName(String name) {
         HashMap<String, User> returnUsers = new HashMap<>();
         newUsers.forEach((k, v) -> {
-            if (v.getName().equals(name) && v.getConnectedTo() != null) {
+            if (v.getName().equals(name) && v.getConnectedTo() == null) {
                 returnUsers.put(k, v);
             }
         });
