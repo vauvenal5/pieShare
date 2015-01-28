@@ -17,36 +17,47 @@ import org.pieShare.pieShareServer.services.model.User;
  */
 public class UserPersistanceService implements IUserPersistanceService {
 
-	private HashMap<String, User> newUsers;
+    private HashMap<String, User> newUsers;
 
-	public UserPersistanceService() {
-		this.newUsers = new HashMap<>();
-	}
+    public UserPersistanceService() {
+        this.newUsers = new HashMap<>();
+    }
 
-	@Override
-	public synchronized void addUser(User msg) {
-		newUsers.put(msg.getId(), msg);
-	}
+    @Override
+    public synchronized void addUser(User msg) {
+        newUsers.put(msg.getLoopHoleID(), msg);
+    }
 
-	@Override
-	public synchronized HashMap<String, User> getUsersByName(String name) {
-		HashMap<String, User> returnUsers = new HashMap<>();
-		newUsers.forEach((k, v) -> {
-			if (v.getName().equals(name)) {
-				returnUsers.put(k, v);
-			}
-		});
-		return returnUsers;
-	}
+    @Override
+    public synchronized HashMap<String, User> getConnectedUsersByName(String name) {
+        HashMap<String, User> returnUsers = new HashMap<>();
+        newUsers.forEach((k, v) -> {
+            if (v.getName().equals(name) && v.getConnectedTo() == null) {
+                returnUsers.put(k, v);
+            }
+        });
+        return returnUsers;
+    }
 
-	@Override
-	public synchronized User getUserById(String id) {
-		return newUsers.get(id);
-	}
+    @Override
+    public synchronized HashMap<String, User> getNonConnectedUsersByName(String name) {
+        HashMap<String, User> returnUsers = new HashMap<>();
+        newUsers.forEach((k, v) -> {
+            if (v.getName().equals(name) && v.getConnectedTo() != null) {
+                returnUsers.put(k, v);
+            }
+        });
+        return returnUsers;
+    }
 
-	@Override
-	public synchronized void deleteUser(String id) {
-		newUsers.remove(id);
-	}
+    @Override
+    public synchronized User getUserById(String id) {
+        return newUsers.get(id);
+    }
+
+    @Override
+    public synchronized void deleteUser(String id) {
+        newUsers.remove(id);
+    }
 
 }

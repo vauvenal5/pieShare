@@ -15,12 +15,14 @@ import org.pieShare.pieShareServer.services.model.User;
  */
 public interface IUserPersistanceService {
 
-	void addUser(User user);
+    void addUser(User user);
 
-	HashMap<String, User> getUsersByName(String name);
+    HashMap<String, User> getConnectedUsersByName(String name);
 
-	User getUserById(String id);
+    HashMap<String, User> getNonConnectedUsersByName(String name);
 
-	void deleteUser(String id);
+    User getUserById(String id);
+
+    void deleteUser(String id);
 
 }
