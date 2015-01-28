@@ -131,6 +131,9 @@ public class PiePlateConfiguration {
         fac.setIdService(utilitiesConfiguration.idService());
         fac.setSerializerService(jacksonSerializerService());
         fac.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
+        fac.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
+        fac.setExecutorService(utilitiesConfiguration.pieExecutorService());
+        fac.setUdpPortService(utilitiesConfiguration.udpPortService());
         return fac;
     }
 
