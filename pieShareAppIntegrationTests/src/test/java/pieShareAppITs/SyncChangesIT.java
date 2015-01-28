@@ -6,18 +6,15 @@
 
 package pieShareAppITs;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.message.FileChangedMessage;
-import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.task.eventTasks.FileChangedTask;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.*;
-import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -36,6 +33,7 @@ public class SyncChangesIT {
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private File file;
+	private File fileBot;
 	
 	public SyncChangesIT() {
 	}
@@ -50,7 +48,8 @@ public class SyncChangesIT {
 		ITUtil.performTearDownDelete();
 		
 		file = ITFileUtils.createFile(new File(ITUtil.getMainWorkingDir(), "test"), 2048);
-		FileUtils.copyFile(file, new File(ITUtil.getBotWorkingDir(), "test"), true);
+		fileBot = new File(ITUtil.getBotWorkingDir(), "test");
+		FileUtils.copyFile(file, fileBot, true);
 		
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 		
@@ -79,6 +78,7 @@ public class SyncChangesIT {
 		ITUtil.executeLoginToTestCloud(context);
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
+		//FileUtils.writeByteArrayToFile(fileBot, "hello world".getBytes(), true);
 		
 		while(counter.getCount(FileTransferCompleteTask.class) <= 0) {
 			Thread.sleep(1000);

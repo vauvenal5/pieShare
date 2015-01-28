@@ -8,12 +8,15 @@ package org.pieShare.pieShareApp.springConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
+import org.pieShare.pieTools.pieUtilities.service.idService.IDService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.regexService.RegexService;
@@ -56,12 +59,12 @@ public class PieUtilitiesConfiguration {
 	@Bean
 	@Lazy
 	public PieExecutorService pieExecutorService() {
-		PieExecutorService service = new PieExecutorService();
-		service.setExecutor(this.javaExecutorService());
+		PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
+		//service.setExecutor(this.javaExecutorService());
 		service.setExecutorFactory(this.pieExecutorTaskFactory());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public PieExecutorTaskFactory pieExecutorTaskFactory() {
@@ -146,6 +149,13 @@ public class PieUtilitiesConfiguration {
 		EncodeService service = new EncodeService();
 		service.setPasswordEncryptionService(passwordEncryptionService());
 		service.setProviderService(providerService());
+		return service;
+	}
+
+	@Bean
+	@Lazy
+	public IDService idService() {
+		IDService service = new IDService();
 		return service;
 	}
 }

@@ -5,26 +5,26 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import org.pieShare.pieShareApp.model.message.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileTransferCompleteTask extends PieEventTaskBase<FileTransferCompleteMessage> {
+public class FileTransferCompleteTask extends PieEventTaskBase<IFileTransferCompleteMessage> {
 
-	private IShareService shareService;
+	private IBitTorrentService bitTorentService;
 
-	public void setShareService(IShareService shareService) {
-		this.shareService = shareService;
+	public void setBitTorentService(IBitTorrentService bitTorentService) {
+		this.bitTorentService = bitTorentService;
 	}
 
 	@Override
 	public void run() {
-		this.shareService.fileTransferComplete(msg);
+		this.bitTorentService.remoteClientDone(this.msg.getFileMeta());
 	}
 
 }

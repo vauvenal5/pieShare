@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.service.channel;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.channel.exception.PieChannelException;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
@@ -15,7 +15,7 @@ import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerSer
  *
  * @author sveto_000
  */
-public abstract class PieChannel<M extends IPieMessage> implements ITwoWayChannel<M> {
+public abstract class PieChannel<M extends IClusterMessage> implements ITwoWayChannel<M> {
 	
 	private ISerializerService serializerService;
 	private String channelId;

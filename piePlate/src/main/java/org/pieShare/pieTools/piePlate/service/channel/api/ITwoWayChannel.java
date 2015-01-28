@@ -5,14 +5,14 @@
  */
 package org.pieShare.pieTools.piePlate.service.channel.api;
 
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.exception.PieChannelException;
 
 /**
  *
  * @author sveto_000
  */
-public interface ITwoWayChannel<M extends IPieMessage> extends IIncomingChannel<M>, IOutgoingChannel<M> {
+public interface ITwoWayChannel<M extends IClusterMessage> extends IIncomingChannel<M>, IOutgoingChannel<M> {
 	
 	
 }
