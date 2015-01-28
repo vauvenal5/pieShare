@@ -12,41 +12,60 @@ import org.pieShare.pieTools.piePlate.model.UdpAddress;
  * @author Richard
  */
 public class User {
-	private String name;
-	private String id;
-	private UdpAddress privateAddress;
-	private UdpAddress publicAddress;
 
-	public String getName() {
-		return name;
-	}
+    private String name;
+    private String clientID;
+    private UdpAddress privateAddress;
+    private UdpAddress publicAddress;
+    private String loopHoleID;
+    private String connectedTo = null;
+    
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getConnectedTo() {
+        return connectedTo;
+    }
 
-	public String getId() {
-		return id;
-	}
+    public void setConnectedTo(String connectedTo) {
+        this.connectedTo = connectedTo;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public String getLoopHoleID() {
+        return loopHoleID;
+    }
 
-	public UdpAddress getPrivateAddress() {
-		return privateAddress;
-	}
+    public void setLoopHoleID(String loopHoleID) {
+        this.loopHoleID = loopHoleID;
+    }
 
-	public void setPrivateAddress(UdpAddress privateAddress) {
-		this.privateAddress = privateAddress;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public UdpAddress getPublicAddress() {
-		return publicAddress;
-	}
+    public String getId() {
+        return clientID;
+    }
 
-	public void setPublicAddress(UdpAddress publicAddress) {
-		this.publicAddress = publicAddress;
-	}
-	
+    public void setId(String id) {
+        this.clientID = id;
+    }
+
+    public UdpAddress getPrivateAddress() {
+        return privateAddress;
+    }
+
+    public void setPrivateAddress(UdpAddress privateAddress) {
+        this.privateAddress = privateAddress;
+    }
+
+    public UdpAddress getPublicAddress() {
+        return publicAddress;
+    }
+
+    public void setPublicAddress(UdpAddress publicAddress) {
+        this.publicAddress = publicAddress;
+    }
+
 }

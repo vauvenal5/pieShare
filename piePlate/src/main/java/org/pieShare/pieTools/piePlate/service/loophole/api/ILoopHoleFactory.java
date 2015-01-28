@@ -18,7 +18,7 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  */
 public interface ILoopHoleFactory {
 
-    void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address);
+    //void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address);
 
     void sendToServer(DatagramSocket socket, IUdpMessage msg);
 
