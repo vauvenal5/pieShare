@@ -86,6 +86,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     public synchronized void newClientAvailable(UdpAddress address, DatagramSocket socket) {
         PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHost(), address.getPort()));
         newLoopHoleConnectionEvent.fireEvent(new NewLoopHoleConnectionEvent(this, address, socket));
+        initializeNewLoopHole();
     }
 
     @Override
