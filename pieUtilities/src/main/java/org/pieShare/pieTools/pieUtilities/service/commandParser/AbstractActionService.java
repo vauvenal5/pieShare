@@ -6,8 +6,6 @@
 package org.pieShare.pieTools.pieUtilities.service.commandParser;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.pieUtilities.model.command.ICommand;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceUser;

@@ -8,7 +8,7 @@ package org.pieShare.pieTools.piePlate.service.cluster;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
@@ -88,7 +88,7 @@ public class ClusterManagementService implements IClusterManagementService {
 	}
 
 	@Override
-	public void sendMessage(IPieMessage message) throws ClusterManagmentServiceException {
+	public void sendMessage(IClusterMessage message) throws ClusterManagmentServiceException {
 		if (!this.clusters.containsKey(message.getAddress().getClusterName())) {
 			throw new ClusterManagmentServiceException(String.format("Cloud name not found: %s", message.getAddress().getClusterName()));
 		}

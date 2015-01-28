@@ -12,9 +12,14 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
+import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -44,11 +49,21 @@ public class LoginTask implements ILoginTask {
 	private IClusterManagementService clusterManagementService;
 	private IConfigurationFactory configurationFactory;
 	private IHistoryService historyService;
+	private IFileWatcherService fileWatcherService;
+	private IMessageFactoryService messageFactoryService;
 	
 	private File pwdFile;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
+	}
+
+	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
+		this.messageFactoryService = messageFactoryService;
+	}
+
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
 
 	public void setHistoryService(IHistoryService historyService) {
@@ -91,7 +106,7 @@ public class LoginTask implements ILoginTask {
 		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
 
 		//PieShaeService does this now
-		//user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration()));
+		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), true));
 		pwdFile = user.getPieShareConfiguration().getPwdFile();
 
 		if (pwdFile.exists()) {
@@ -124,11 +139,20 @@ public class LoginTask implements ILoginTask {
 
 		//Check and create folders
 		try {
-			//todo: beanService
+			//create symetric channel for this user
 			SymmetricEncryptedChannel channel = this.beanService.getBean(SymmetricEncryptedChannel.class);
 			channel.setChannelId(user.getUserName());
 			channel.setEncPwd(user.getPassword());
 			this.clusterManagementService.registerChannel(user.getCloudName(), channel);
+			
+			//listen to working dir
+			this.fileWatcherService.watchDir(user.getPieShareConfiguration().getWorkingDir());
+			
+			//send file list request message to cluster
+			IFileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
+			msg.getAddress().setClusterName(user.getCloudName());
+			msg.getAddress().setChannelId(user.getUserName());
+			this.clusterManagementService.sendMessage(msg);
 		}
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
