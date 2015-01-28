@@ -19,14 +19,14 @@ import org.apache.commons.io.FileUtils;
  */
 public class ITFileUtils {
 	
-	public static File createFile(File file, int size) throws FileNotFoundException, IOException {
+	public static File createFile(File file, long size) throws FileNotFoundException, IOException {
 		int defaultSize = 1024;
 		if(size < defaultSize) {
-			defaultSize = size;
+			defaultSize = (int)size;
 		}
 		
-		int max = size / defaultSize;
-		int delta = size - (max * defaultSize);
+		long max = size / defaultSize;
+		long delta = size - (max * defaultSize);
 		Random random = new Random();
 		byte[] data = new byte[defaultSize];
 		
@@ -35,7 +35,7 @@ public class ITFileUtils {
 			FileUtils.writeByteArrayToFile(file, data, true);
 		}
 		
-		data = new byte[delta];
+		data = new byte[(int)delta];
 		random.nextBytes(data);
 		FileUtils.writeByteArrayToFile(file, data, true);
 		

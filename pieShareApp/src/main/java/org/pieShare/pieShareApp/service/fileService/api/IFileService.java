@@ -10,8 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.model.message.NewFileMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
@@ -41,5 +39,7 @@ public interface IFileService {
 	void setCorrectModificationDate(PieFile file);
 	
 	Path relitivizeFilePath(File file);
+	
 	Path getAbsolutePath(PieFile file);
+	Path getAbsoluteTmpPath(PieFile file);
 }

@@ -6,82 +6,51 @@
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
-import java.io.IOException;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileRequestMessage;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
+import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
+import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieShareApp.service.shareService.NoLocalFileException;
+import org.pieShare.pieShareApp.task.AMessageSendingEventTask;
+import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
-import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileRequestTask extends PieEventTaskBase<FileRequestMessage> {
+public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessage> {
 
-	private IFileService fileService;
 	private IShareService shareService;
-	private IHashService hashService;
-	private IRequestService requestService;
-	private IBeanService beanService;
+	private IBitTorrentService bitTorrentService;
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
+		this.bitTorrentService = bitTorrentService;
 	}
 
 	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
 	}
 
-	public void setHashService(IHashService hashService) {
-		this.hashService = hashService;
-	}
-
-	public void setRequestService(IRequestService requestService) {
-		this.requestService = requestService;
-	}
-
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
-
 	@Override
 	public void run() {
 
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
-		IPieShareConfiguration configuration = user.getPieShareConfiguration();
+		//todo: send to all or send only to the requesting client?
+		
+		try {				
+			File localTmpFile = this.shareService.prepareFile(this.msg.getPieFile());
+			byte[] meta = this.bitTorrentService.anounceTorrent(localTmpFile);
 
-		File file = new File(configuration.getWorkingDir(), this.msg.getPieFile().getRelativeFilePath());
-
-		if (!file.exists()) {
-			//if the file doesn't exist on this client it could be due the fact that itself
-			//is requesting it right now
-			requestService.checkForActiveFileHandle(msg.getPieFile());
-			return;
+			IMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
+			metaMsg.setMetaInfo(meta);
+			metaMsg.setPieFile(this.msg.getPieFile());
+			this.setDefaultAdresse(metaMsg);
+			this.clusterManagementService.sendMessage(metaMsg);
+		} catch (ClusterManagmentServiceException ex) {
+			PieLogger.error(this.getClass(), "Could not send MetaMessage!", ex);
+		} catch (NoLocalFileException ex) {
+			PieLogger.info(this.getClass(), ex.getMessage());
 		}
-
-		//shareService.handleActiveShare(msg.getPieFile());
-		PieFile pieFile = null;
-
-		try {
-			pieFile = this.fileService.getPieFile(file);
-		}
-		catch (IOException ex) {
-			PieLogger.error(this.getClass(), "File error.", ex);
-			return;
-		}
-
-		if (hashService.isMD5Equal(msg.getPieFile().getMd5(), pieFile.getMd5())) {
-			shareService.shareFile(file);
-		}
-		//todo: what happens when it is the "same file" with different MD5?!
 	}
 
 }

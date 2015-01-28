@@ -18,7 +18,6 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
@@ -26,6 +25,7 @@ import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
 import pieShareAppITs.helper.config.PieShareAppModelITConfig;
@@ -71,9 +71,10 @@ public class ITUtil {
         }
 
 	public static void setUpEnviroment(boolean main) {
-		System.setProperty("java.net.preferIPv4Stack", "true");
+		//System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 		PieShareAppServiceConfig.main = main;
+		PieLogger.info(ITUtil.class, "MainInstance: {}", main);
 	}
 	
 	public static void performTearDownDelete() throws Exception {
@@ -81,8 +82,8 @@ public class ITUtil {
 		FileUtils.deleteDirectory(new File(getMainTmpDir()));
 		FileUtils.deleteDirectory(new File(getBotWorkingDir()));
 		FileUtils.deleteDirectory(new File(getBotTmpDir()));
-                FileUtils.deleteDirectory(new File(getMainDbDir()));
-                FileUtils.deleteDirectory(new File(getBotDbDir()));
+		FileUtils.deleteDirectory(new File(getMainDbDir()));
+		FileUtils.deleteDirectory(new File(getBotDbDir()));
 		(new File(getMainKey())).delete();
 		(new File(getBotKey())).delete();
 	}
@@ -93,14 +94,14 @@ public class ITUtil {
 		service.stop();
 
 		//get dirs to delete
-		PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
+		/*PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
 		File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
 		File mainTmpDir = config.getTmpDir();
 		File configMain = config.getPwdFile();
 		config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
 		File botWorkingDir = config.getWorkingDir();
 		File botTmpDir = config.getTmpDir();
-		File configBot = config.getPwdFile();
+		File configBot = config.getPwdFile();*/
 		
 		//stop context
 		context.close();
