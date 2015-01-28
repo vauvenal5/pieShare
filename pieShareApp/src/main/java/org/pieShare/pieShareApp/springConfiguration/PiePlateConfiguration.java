@@ -159,7 +159,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleAckTask loopHoleAckTask() {
         LoopHoleAckTask task = new LoopHoleAckTask();
-        task.setLoopHoleService(loopHoleFactory());
+        task.setLoopHoleFactory(loopHoleFactory());
         return task;
     }
 

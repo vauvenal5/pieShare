@@ -18,18 +18,18 @@ public class NewLoopHoleConnectionEvent extends EventObject {
     private UdpAddress address;
     private DatagramSocket socket;
 
-    public UdpAddress getAddress() {
-        return address;
-    }
-
-    public void setAddress(UdpAddress address) {
-        this.address = address;
-    }
-
     public NewLoopHoleConnectionEvent(Object source, UdpAddress address, DatagramSocket socket) {
         super(source);
         this.address = address;
         this.socket = socket;
+    }
+
+    public DatagramSocket getSocket() {
+        return socket;
+    }
+
+    public UdpAddress getAddress() {
+        return address;
     }
 
 }
