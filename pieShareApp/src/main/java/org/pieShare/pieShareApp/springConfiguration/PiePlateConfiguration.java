@@ -119,7 +119,6 @@ public class PiePlateConfiguration {
         service.setSerializerService(jacksonSerializerService());
         service.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
         service.setExecutorService(utilitiesConfiguration.pieExecutorService());
-        service.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
         service.setLoopHoleFactory(loopHoleFactory());
         return service;
     }
@@ -131,6 +130,7 @@ public class PiePlateConfiguration {
         fac.setBeanService(utilitiesConfiguration.beanService());
         fac.setIdService(utilitiesConfiguration.idService());
         fac.setSerializerService(jacksonSerializerService());
+        fac.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
         return fac;
     }
 
@@ -150,7 +150,7 @@ public class PiePlateConfiguration {
     public LoopHolePuncherTask holePuncherTask() {
         LoopHolePuncherTask task = new LoopHolePuncherTask();
         task.setBeanService(utilitiesConfiguration.beanService());
-        task.setLoopHoleService(loopHoleService());
+        task.setFactory(loopHoleFactory());
         return task;
     }
 
@@ -159,7 +159,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleAckTask loopHoleAckTask() {
         LoopHoleAckTask task = new LoopHoleAckTask();
-        task.setLoopHoleService(loopHoleService());
+        task.setLoopHoleService(loopHoleFactory());
         return task;
     }
 
