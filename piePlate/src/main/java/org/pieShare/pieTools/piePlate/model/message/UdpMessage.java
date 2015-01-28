@@ -16,7 +16,8 @@ public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
 
     private UdpAddress senderAddress;
     private String ID;
-
+    private String subID;
+    
     @Override
     public void setSenderAddress(UdpAddress senderAddress) {
         this.senderAddress = senderAddress;
@@ -35,5 +36,15 @@ public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
     @Override
     public void setSenderID(String ID) {
         this.ID = ID;
+    }
+
+    @Override
+    public String getLocalLoopID() {
+        return subID;
+    }
+
+    @Override
+    public void setLocalLoopID(String ID) {
+        this.subID = ID;
     }
 }
