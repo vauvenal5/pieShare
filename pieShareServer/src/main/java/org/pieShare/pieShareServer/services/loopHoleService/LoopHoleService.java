@@ -106,9 +106,9 @@ public class LoopHoleService implements ILoopHoleService {
             WaitForAckFromClientTask waitTask = beanService.getBean(WaitForAckFromClientTask.class);
             waitTask.setMmsgToSend(msg);
             waitTask.setUdpAddress(address);
-            executorService.execute(waitTask);
-            waitForAckQueue.put(msg.getSenderID(), waitTask);
 
+            waitForAckQueue.put(msg.getLocalLoopID(), waitTask);
+            executorService.execute(waitTask);
             PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", address.getHost(), address.getPort(), new String(bytes)));
 
             DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address.getHost()), address.getPort());
