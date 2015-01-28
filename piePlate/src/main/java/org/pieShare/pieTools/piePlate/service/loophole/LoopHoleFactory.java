@@ -55,10 +55,6 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
 
     public LoopHoleFactory() {
-        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
-        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
-        this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
-
         loopQueue = new HashMap<>();
 
         nextUdpPort = 1234;
@@ -70,6 +66,9 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     @PostConstruct
     public void init() {
+        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
+        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
+        this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
         clientID = idService.getNewID();
     }
 
