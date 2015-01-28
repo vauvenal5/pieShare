@@ -53,7 +53,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private PieExecutorService executorService;
 
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
-    
+
     public LoopHoleFactory() {
         this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
         this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
@@ -74,7 +74,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     }
 
     @Override
-     public IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> getNewLoopHoleConnectionEvent() {
+    public IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> getNewLoopHoleConnectionEvent() {
         return newLoopHoleConnectionEvent;
     }
 
@@ -82,12 +82,12 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         this.newLoopHoleConnectionEvent = newLoopHoleConnectionEvent;
     }
 
-     @Override
+    @Override
     public synchronized void newClientAvailable(UdpAddress address, DatagramSocket socket) {
         PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHost(), address.getPort()));
         newLoopHoleConnectionEvent.fireEvent(new NewLoopHoleConnectionEvent(this, address, socket));
     }
-    
+
     @Override
     public String getClientID() {
         return clientID;
@@ -135,7 +135,11 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     }
 
     @Override
-    public synchronized void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address) {
+    public void sendToServer(DatagramSocket socket, IUdpMessage msg) {
+        send(socket, msg, serverAddress);
+    }
+
+    private synchronized void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address) {
         try {
             msg.setSenderID(this.clientID);
             byte[] bytes = serializerService.serialize(msg);
@@ -152,11 +156,6 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         } catch (InterruptedException ex) {
             PieLogger.error(this.getClass(), "InterruptedException", ex);
         }
-    }
-
-    @Override
-    public void sendToServer(DatagramSocket socket, IUdpMessage msg) {
-        send(socket, msg, serverAddress);
     }
 
     @Override

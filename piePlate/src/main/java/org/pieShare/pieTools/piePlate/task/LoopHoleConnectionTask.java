@@ -75,6 +75,8 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
             punchMsg.setTo(msg.getFromId());
             punchMsg.setFrom(loopHoleFactory.getClientID());
             punchMsg.setName(loopHoleService.getName());
+            punchMsg.setLocalLoopID(msg.getClientLocalLoopID());
+            punchMsg.setClientLocalLoopID(msg.getLocalLoopID());
 
             loopHoleService.addInWaitFromAckQueu(msg.getFromId(), this);
             loopHoleService.send(punchMsg, host, port);

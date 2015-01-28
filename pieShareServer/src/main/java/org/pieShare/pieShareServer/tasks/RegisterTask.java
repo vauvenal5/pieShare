@@ -41,36 +41,34 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
     @Override
     public void run() {
 
-        HashMap<String, User> sameUsers = userPersistanceService.getUsersByName(msg.getName());
-
         User newUser = new User();
         newUser.setId(msg.getSenderID());
         newUser.setName(msg.getName());
-        
+
         UdpAddress privateAddress = new UdpAddress();
         privateAddress.setHost(msg.getPrivateHost());
         privateAddress.setPort(msg.getPrivatePort());
-        
+
         newUser.setPrivateAddress(privateAddress);
         newUser.setPublicAddress(msg.getSenderAddress());
-        
-        userPersistanceService.addUser(newUser);
-        PieLogger.info(this.getClass(), String.format("User:        %s registered sucessfully.", newUser.getName()));
+        newUser.setLoopHoleID(msg.getLocalLoopID());
+
+        PieLogger.info(this.getClass(), String.format("User:        %s  with SubUD: %s   registered sucessfully.", newUser.getName(), msg.getLocalLoopID()));
         PieLogger.info(this.getClass(), String.format("PublicHost:  %s, PublicPort:  %s", newUser.getPublicAddress().getHost(), newUser.getPublicAddress().getPort()));
         PieLogger.info(this.getClass(), String.format("PrivateHost: %s, PrivatePort: %s", newUser.getPrivateAddress().getHost(), newUser.getPrivateAddress().getPort()));
-        
+
         LoopHoleConnectionMessage connectionMessageToReceiver = new LoopHoleConnectionMessage();
         connectionMessageToReceiver.setClientPrivateIP(newUser.getPrivateAddress().getHost());
         connectionMessageToReceiver.setClientPrivatePort(newUser.getPrivateAddress().getPort());
         connectionMessageToReceiver.setClientPublicIP(newUser.getPublicAddress().getHost());
         connectionMessageToReceiver.setClientPublicPort(newUser.getPublicAddress().getPort());
         connectionMessageToReceiver.setFromId(newUser.getId());
-        
 
-        for (User user : sameUsers.values()) {
+        HashMap<String, User> notConnectedUsers = userPersistanceService.getNonConnectedUsersByName(msg.getName());
+        for (User user : notConnectedUsers.values()) {
 
             if (!msg.getSenderID().equals(user.getId())) {
-                
+
                 LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
                 connectionMessageToSender.setClientPrivateIP(user.getPrivateAddress().getHost());
                 connectionMessageToSender.setClientPrivatePort(user.getPrivateAddress().getPort());
@@ -78,10 +76,42 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                 connectionMessageToSender.setClientPublicPort(user.getPublicAddress().getPort());
                 connectionMessageToSender.setFromId(user.getId());
                 connectionMessageToSender.setSenderID(msg.getSenderID());
+                connectionMessageToSender.setLocalLoopID(msg.getLocalLoopID());
+                connectionMessageToSender.setClientLocalLoopID(user.getLoopHoleID());
+
                 loopHoleService.send(connectionMessageToSender, msg.getSenderAddress());
+
+                connectionMessageToReceiver.setSenderID(user.getId());
+                connectionMessageToReceiver.setLocalLoopID(user.getLoopHoleID());
+                connectionMessageToReceiver.setClientLocalLoopID(msg.getLocalLoopID());
+
+                loopHoleService.send(connectionMessageToReceiver, user.getPublicAddress());
+
+                user.setConnectedTo(msg.getLocalLoopID());
+                newUser.setConnectedTo(user.getLoopHoleID());
+                break;
             }
-            connectionMessageToReceiver.setSenderID(user.getId());
-            loopHoleService.send(connectionMessageToReceiver, user.getPublicAddress());
+
         }
+
+        userPersistanceService.addUser(newUser);
+
+        /*
+         for (User user : notConnectedUsers.values()) {
+
+         if (!msg.getSenderID().equals(user.getId())) {
+
+         LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
+         connectionMessageToSender.setClientPrivateIP(user.getPrivateAddress().getHost());
+         connectionMessageToSender.setClientPrivatePort(user.getPrivateAddress().getPort());
+         connectionMessageToSender.setClientPublicIP(user.getPublicAddress().getHost());
+         connectionMessageToSender.setClientPublicPort(user.getPublicAddress().getPort());
+         connectionMessageToSender.setFromId(user.getId());
+         connectionMessageToSender.setSenderID(msg.getSenderID());
+         loopHoleService.send(connectionMessageToSender, msg.getSenderAddress());
+         }
+         connectionMessageToReceiver.setSenderID(user.getId());
+         loopHoleService.send(connectionMessageToReceiver, user.getPublicAddress());
+         }*/
     }
 }

@@ -27,4 +27,8 @@ public interface IUdpMessage extends IPieMessage {
         String getLocalLoopID();
         
         void setLocalLoopID(String ID);
+        
+        String getClientLocalLoopID();
+        
+        void setClientLocalLoopID(String ID);
 }
