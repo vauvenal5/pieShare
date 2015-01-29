@@ -48,7 +48,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
         if (newUser == null) {
             newUser = new User();
             newUser.setIdName(msg.getName());
-            //ToDo: Add to persistance
+            userPersistanceService.addUser(newUser);
         }
 
         Client client = newUser.getClients().get(msg.getSenderID());
@@ -95,15 +95,14 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                 if (sub.getConnectedTo() == null) {
                     subToUse = sub;
                 }
-                
+
                 if (sub.getConnectedTo().equals(msg.getSenderID())) {
                     subToUse = null;
                     break;
                 }
             }
-            
-            if(subToUse != null)
-            {
+
+            if (subToUse != null) {
                 LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
                 connectionMessageToSender.setClientPrivateIP(subToUse.getPrivateAddress().getHost());
                 connectionMessageToSender.setClientPrivatePort(subToUse.getPrivateAddress().getPort());
@@ -130,40 +129,40 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
 
         }
 
-       /* HashMap<String, User> notConnectedUsers = userPersistanceService.getNonConnectedUsersByName(msg.getName());
-        for (User user : notConnectedUsers.values()) {
-            PieLogger.info(this.getClass(), String.format("Found non connected users. Count: %s", notConnectedUsers.size()));
+        /* HashMap<String, User> notConnectedUsers = userPersistanceService.getNonConnectedUsersByName(msg.getName());
+         for (User user : notConnectedUsers.values()) {
+         PieLogger.info(this.getClass(), String.format("Found non connected users. Count: %s", notConnectedUsers.size()));
 
-            if (!msg.getSenderID().equals(user.getId())) {
+         if (!msg.getSenderID().equals(user.getId())) {
 
-                LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
-                connectionMessageToSender.setClientPrivateIP(subClient.getPrivateAddress().getHost());
-                connectionMessageToSender.setClientPrivatePort(subClient.getPrivateAddress().getPort());
-                connectionMessageToSender.setClientPublicIP(subClient.getPublicAddress().getHost());
-                connectionMessageToSender.setClientPublicPort(subClient.getPublicAddress().getPort());
-                connectionMessageToSender.setFromId(user.getId());
-                connectionMessageToSender.setSenderID(msg.getSenderID());
-                connectionMessageToSender.setLocalLoopID(msg.getLocalLoopID());
-                connectionMessageToSender.setClientLocalLoopID(subClient.getLoopHoleID());
+         LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
+         connectionMessageToSender.setClientPrivateIP(subClient.getPrivateAddress().getHost());
+         connectionMessageToSender.setClientPrivatePort(subClient.getPrivateAddress().getPort());
+         connectionMessageToSender.setClientPublicIP(subClient.getPublicAddress().getHost());
+         connectionMessageToSender.setClientPublicPort(subClient.getPublicAddress().getPort());
+         connectionMessageToSender.setFromId(user.getId());
+         connectionMessageToSender.setSenderID(msg.getSenderID());
+         connectionMessageToSender.setLocalLoopID(msg.getLocalLoopID());
+         connectionMessageToSender.setClientLocalLoopID(subClient.getLoopHoleID());
 
-                loopHoleService.send(connectionMessageToSender, msg.getSenderAddress());
+         loopHoleService.send(connectionMessageToSender, msg.getSenderAddress());
 
-                connectionMessageToReceiver.setSenderID(user.getId());
-                connectionMessageToReceiver.setLocalLoopID(subClient.getLoopHoleID());
-                connectionMessageToReceiver.setClientLocalLoopID(msg.getLocalLoopID());
+         connectionMessageToReceiver.setSenderID(user.getId());
+         connectionMessageToReceiver.setLocalLoopID(subClient.getLoopHoleID());
+         connectionMessageToReceiver.setClientLocalLoopID(msg.getLocalLoopID());
 
-                loopHoleService.send(connectionMessageToReceiver, subClient.getPublicAddress());
+         loopHoleService.send(connectionMessageToReceiver, subClient.getPublicAddress());
 
-                subClient.setConnectedTo(msg.getLocalLoopID());
-                userPersistanceService.mergeUser(user);
-                subClient.setConnectedTo(subClient.getLoopHoleID());
-                break;
-            }
-        }
+         subClient.setConnectedTo(msg.getLocalLoopID());
+         userPersistanceService.mergeUser(user);
+         subClient.setConnectedTo(subClient.getLoopHoleID());
+         break;
+         }
+         }
 
-        userPersistanceService.addUser(newUser);
+         userPersistanceService.addUser(newUser);
 
-        /*
+         /*
          for (User user : notConnectedUsers.values()) {
 
          if (!msg.getSenderID().equals(user.getId())) {
