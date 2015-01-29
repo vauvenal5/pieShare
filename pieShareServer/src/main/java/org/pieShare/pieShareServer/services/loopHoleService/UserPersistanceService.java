@@ -25,11 +25,12 @@ public class UserPersistanceService implements IUserPersistanceService {
         this.newUsers = new HashMap<>();
     }
 
+    
     @Override
     public synchronized void addUser(User msg) {
         newUsers.put(msg.getIdName(), msg);
     }
-
+    
     @Override
     public synchronized User getByID(String name) {
         return newUsers.get(name);
