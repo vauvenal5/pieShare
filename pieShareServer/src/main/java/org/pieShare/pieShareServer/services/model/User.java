@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareServer.services.model;
 
+import java.util.HashMap;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 
 /**
@@ -13,59 +14,26 @@ import org.pieShare.pieTools.piePlate.model.UdpAddress;
  */
 public class User {
 
-    private String name;
-    private String clientID;
-    private UdpAddress privateAddress;
-    private UdpAddress publicAddress;
-    private String loopHoleID;
-    private String connectedTo = null;
-    
-    public String getName() {
-        return name;
+    private String idName;
+    private HashMap<String, Client> clients;
+
+    public User() {
+        this.clients = new HashMap<String, Client>();
     }
 
-    public String getConnectedTo() {
-        return connectedTo;
+    public String getIdName() {
+        return idName;
     }
 
-    public void setConnectedTo(String connectedTo) {
-        this.connectedTo = connectedTo;
+    public void setIdName(String id) {
+        this.idName = id;
     }
 
-    public String getLoopHoleID() {
-        return loopHoleID;
+    public HashMap<String, Client> getClients() {
+        return clients;
     }
 
-    public void setLoopHoleID(String loopHoleID) {
-        this.loopHoleID = loopHoleID;
+    public void setClients(HashMap<String, Client> cleints) {
+        this.clients = cleints;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getId() {
-        return clientID;
-    }
-
-    public void setId(String id) {
-        this.clientID = id;
-    }
-
-    public UdpAddress getPrivateAddress() {
-        return privateAddress;
-    }
-
-    public void setPrivateAddress(UdpAddress privateAddress) {
-        this.privateAddress = privateAddress;
-    }
-
-    public UdpAddress getPublicAddress() {
-        return publicAddress;
-    }
-
-    public void setPublicAddress(UdpAddress publicAddress) {
-        this.publicAddress = publicAddress;
-    }
-
 }
