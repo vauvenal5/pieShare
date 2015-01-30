@@ -6,6 +6,7 @@
 package org.pieShare.pieShareServer.services.loopHoleService.api;
 
 import java.util.HashMap;
+import org.pieShare.pieShareServer.services.model.Client;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieShareServer.services.model.User;
 
@@ -15,12 +16,17 @@ import org.pieShare.pieShareServer.services.model.User;
  */
 public interface IUserPersistanceService {
 
-	void addUser(User user);
+    void addUser(User user);
 
-	HashMap<String, User> getUsersByName(String name);
+     HashMap<String, Client> getClients(String name);
+    
+    //HashMap<String, User> getConnectedUsersByName(String name);
 
-	User getUserById(String id);
+    //HashMap<String, User> getNonConnectedUsersByName(String name);
 
-	void deleteUser(String id);
+    User getByID(String name);
 
+    void deleteUser(String id);
+
+    //void mergeUser(User user);
 }

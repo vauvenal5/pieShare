@@ -5,13 +5,9 @@
  */
 package org.pieShare.pieTools.piePlate.service.loophole.api;
 
-import java.net.DatagramSocket;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
-import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 
 /**
  *
@@ -31,7 +27,7 @@ public interface ILoopHoleService {
 
     void addInWaitFromAckQueu(String id, LoopHoleConnectionTask task);
 
-    void newClientAvailable(UdpAddress address);
+    void newClientAvailable(InetSocketAddress address);
 
     String getLocalLoopID();
 
@@ -39,7 +35,9 @@ public interface ILoopHoleService {
 
     void setName(String name);
 
-    void send(IUdpMessage msg, String host, int port);
+    void send(IUdpMessage msg, InetSocketAddress address);
 
     void sendToServer(IUdpMessage msg);
+
+    void clientCompletedLoopHole();
 }
