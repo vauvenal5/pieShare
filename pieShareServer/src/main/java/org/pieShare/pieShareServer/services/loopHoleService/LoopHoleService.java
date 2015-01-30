@@ -9,12 +9,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
@@ -27,8 +25,6 @@ import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
 import org.pieShare.pieShareServer.tasks.LoopHoleServerAckTask;
 import org.pieShare.pieShareServer.tasks.RegisterTask;
 import org.pieShare.pieShareServer.tasks.WaitForAckFromClientTask;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
@@ -70,7 +66,7 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public void ackArrived(String ID) {
+    public synchronized void ackArrived(String ID) {
         if (waitForAckQueue.containsKey(ID)) {
             waitForAckQueue.get(ID).ackArrived();
         }
@@ -98,7 +94,7 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public synchronized void send(IUdpMessage msg, UdpAddress address) {
+    public synchronized void send(IUdpMessage msg, InetSocketAddress address) {
         try {
             byte[] bytes = serializerService.serialize(msg);
 
@@ -106,12 +102,11 @@ public class LoopHoleService implements ILoopHoleService {
             WaitForAckFromClientTask waitTask = beanService.getBean(WaitForAckFromClientTask.class);
             waitTask.setMmsgToSend(msg);
             waitTask.setUdpAddress(address);
+            waitForAckQueue.put(msg.getLocalLoopID(), waitTask);
             executorService.execute(waitTask);
-            waitForAckQueue.put(msg.getSenderID(), waitTask);
+            PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", address.getAddress().getHostAddress(), address.getPort(), new String(bytes)));
 
-            PieLogger.info(this.getClass(), String.format("Sending to Host: %s, Port: %s. Data: %s", address.getHost(), address.getPort(), new String(bytes)));
-
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address.getHost()), address.getPort());
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address.getAddress().getHostAddress()), address.getPort());
             socket.send(packet);
             Thread.sleep(1000);
         } catch (SerializerServiceException ex) {

@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.springConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
@@ -23,6 +24,7 @@ import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
@@ -133,6 +135,9 @@ public class PiePlateConfiguration {
         fac.setIdService(utilitiesConfiguration.idService());
         fac.setSerializerService(jacksonSerializerService());
         fac.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
+        fac.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
+        fac.setExecutorService(utilitiesConfiguration.pieExecutorService());
+        fac.setUdpPortService(utilitiesConfiguration.udpPortService());
         return fac;
     }
 
@@ -173,6 +178,23 @@ public class PiePlateConfiguration {
         task.setBeanService(utilitiesConfiguration.beanService());
         task.setLoopHoleFactory(loopHoleFactory());
         return task;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
+    public LoopHoleCompleteTask loopHoleCompleteTask() {
+        LoopHoleCompleteTask task = new LoopHoleCompleteTask();
+        task.setLoopholeFactory(loopHoleFactory());
+        return task;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
+    public LoopHoleCompleteMessage loopHoleCompleteMessage() {
+        LoopHoleCompleteMessage msg = new LoopHoleCompleteMessage();
+        return msg;
     }
 
     @Bean

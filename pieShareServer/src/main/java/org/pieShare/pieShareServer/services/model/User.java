@@ -5,48 +5,34 @@
  */
 package org.pieShare.pieShareServer.services.model;
 
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import java.util.HashMap;
 
 /**
  *
  * @author Richard
  */
 public class User {
-	private String name;
-	private String id;
-	private UdpAddress privateAddress;
-	private UdpAddress publicAddress;
 
-	public String getName() {
-		return name;
-	}
+    private String idName;
+    private HashMap<String, Client> clients;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public User() {
+        this.clients = new HashMap<String, Client>();
+    }
 
-	public String getId() {
-		return id;
-	}
+    public String getIdName() {
+        return idName;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setIdName(String id) {
+        this.idName = id;
+    }
 
-	public UdpAddress getPrivateAddress() {
-		return privateAddress;
-	}
+    public HashMap<String, Client> getClients() {
+        return clients;
+    }
 
-	public void setPrivateAddress(UdpAddress privateAddress) {
-		this.privateAddress = privateAddress;
-	}
-
-	public UdpAddress getPublicAddress() {
-		return publicAddress;
-	}
-
-	public void setPublicAddress(UdpAddress publicAddress) {
-		this.publicAddress = publicAddress;
-	}
-	
+    public void setClients(HashMap<String, Client> cleints) {
+        this.clients = cleints;
+    }
 }
