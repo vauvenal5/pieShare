@@ -36,9 +36,6 @@ public class LoopHoleDiscovery  extends Discovery {
 	}
 	
 	public LoopHoleDiscovery() {
-		ProtocolStack stack;
-		
-		
 	}
 
 	@Override
