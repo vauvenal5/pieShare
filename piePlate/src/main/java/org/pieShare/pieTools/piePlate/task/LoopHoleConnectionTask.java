@@ -7,6 +7,7 @@ package org.pieShare.pieTools.piePlate.task;
 
 import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
@@ -98,6 +99,11 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
             stop = true;
             InetSocketAddress address = new InetSocketAddress(host, port);
             loopHoleService.newClientAvailable(address);
+
+            LoopHoleCompleteMessage completeMessage = beanService.getBean(LoopHoleCompleteMessage.class);
+            msg.setLocalLoopID(msg.getClientLocalLoopID());
+            msg.setClientLocalLoopID(msg.getLocalLoopID());
+            loopHoleService.send(completeMessage, address);
         }
     }
 }
