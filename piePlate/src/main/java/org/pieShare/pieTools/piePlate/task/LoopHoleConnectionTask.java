@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
@@ -55,7 +55,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
     public void run() {
         LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
         ackMsg.setLocalLoopID(msg.getLocalLoopID());
-        
+
         loopHoleService = loopHoleFactory.getLoopHoleService(msg.getLocalLoopID());
         loopHoleService.sendToServer(ackMsg);
         int endpoint = 0;
@@ -80,7 +80,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
             punchMsg.setClientLocalLoopID(msg.getLocalLoopID());
 
             loopHoleService.addInWaitFromAckQueu(msg.getFromId(), this);
-            loopHoleService.send(punchMsg, host, port);
+            loopHoleService.send(punchMsg, new InetSocketAddress(host, port));
 
             isWaitingForAck = true;
             try {
@@ -96,9 +96,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
     public void ackArrived() {
         if (isWaitingForAck) {
             stop = true;
-            UdpAddress address = new UdpAddress();
-            address.setHost(host);
-            address.setPort(port);
+            InetSocketAddress address = new InetSocketAddress(host, port);
             loopHoleService.newClientAvailable(address);
         }
     }

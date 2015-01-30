@@ -5,8 +5,8 @@
  */
 package org.pieShare.pieShareServer.tasks;
 
+import java.net.InetSocketAddress;
 import org.pieShare.pieShareServer.services.loopHoleService.api.ILoopHoleService;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -18,11 +18,11 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class WaitForAckFromClientTask implements IPieTask {
 
     private IUdpMessage msgToSend;
-    private UdpAddress udpAddress;
+    private InetSocketAddress udpAddress;
     private boolean ackArrived = false;
     private ILoopHoleService loopHoleService;
 
-    public void setUdpAddress(UdpAddress udpAddress) {
+    public void setUdpAddress(InetSocketAddress udpAddress) {
         this.udpAddress = udpAddress;
     }
 
