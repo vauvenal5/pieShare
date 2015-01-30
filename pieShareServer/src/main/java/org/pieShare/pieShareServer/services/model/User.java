@@ -6,7 +6,6 @@
 package org.pieShare.pieShareServer.services.model;
 
 import java.util.HashMap;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
 
 /**
  *

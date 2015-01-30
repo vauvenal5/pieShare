@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareServer.services.loopHoleService.api;
 
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 
 /**
@@ -14,7 +14,7 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMes
  */
 public interface ILoopHoleService {
 
-	void send(IUdpMessage msg, UdpAddress address);
+	void send(IUdpMessage msg, InetSocketAddress address);
         
         void ackArrived(String ID);
 }

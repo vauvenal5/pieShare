@@ -5,8 +5,7 @@
  */
 package org.pieShare.pieShareServer.tasks;
 
-import java.util.HashMap;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
@@ -64,9 +63,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
             client.getSubClients().put(msg.getLocalLoopID(), subClient);
         }
 
-        UdpAddress privateAddress = new UdpAddress();
-        privateAddress.setHost(msg.getPrivateHost());
-        privateAddress.setPort(msg.getPrivatePort());
+        InetSocketAddress privateAddress = new InetSocketAddress(msg.getPrivateHost(), msg.getPrivatePort());
 
         subClient.setPrivateAddress(privateAddress);
         subClient.setPublicAddress(msg.getSenderAddress());
@@ -75,13 +72,13 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
         client.getSubClients().put(subClient.getLoopHoleID(), subClient);
 
         PieLogger.info(this.getClass(), String.format("User:        %s  with SubUD: %s   Registered Sucessfully.", newUser.getIdName(), msg.getLocalLoopID()));
-        PieLogger.info(this.getClass(), String.format("PublicHost:  %s, PublicPort:  %s", subClient.getPublicAddress().getHost(), subClient.getPublicAddress().getPort()));
-        PieLogger.info(this.getClass(), String.format("PrivateHost: %s, PrivatePort: %s", subClient.getPrivateAddress().getHost(), subClient.getPrivateAddress().getPort()));
+        PieLogger.info(this.getClass(), String.format("PublicHost:  %s, PublicPort:  %s", subClient.getPublicAddress().getAddress().getHostAddress(), subClient.getPublicAddress().getPort()));
+        PieLogger.info(this.getClass(), String.format("PrivateHost: %s, PrivatePort: %s", subClient.getPrivateAddress().getAddress().getHostAddress(), subClient.getPrivateAddress().getPort()));
 
         LoopHoleConnectionMessage connectionMessageToReceiver = new LoopHoleConnectionMessage();
-        connectionMessageToReceiver.setClientPrivateIP(subClient.getPrivateAddress().getHost());
+        connectionMessageToReceiver.setClientPrivateIP(subClient.getPrivateAddress().getAddress().getHostAddress());
         connectionMessageToReceiver.setClientPrivatePort(subClient.getPrivateAddress().getPort());
-        connectionMessageToReceiver.setClientPublicIP(subClient.getPublicAddress().getHost());
+        connectionMessageToReceiver.setClientPublicIP(subClient.getPublicAddress().getAddress().getHostAddress());
         connectionMessageToReceiver.setClientPublicPort(subClient.getPublicAddress().getPort());
         connectionMessageToReceiver.setFromId(client.getId());
 
@@ -104,9 +101,9 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
 
             if (subToUse != null) {
                 LoopHoleConnectionMessage connectionMessageToSender = new LoopHoleConnectionMessage();
-                connectionMessageToSender.setClientPrivateIP(subToUse.getPrivateAddress().getHost());
+                connectionMessageToSender.setClientPrivateIP(subToUse.getPrivateAddress().getAddress().getHostAddress());
                 connectionMessageToSender.setClientPrivatePort(subToUse.getPrivateAddress().getPort());
-                connectionMessageToSender.setClientPublicIP(subToUse.getPublicAddress().getHost());
+                connectionMessageToSender.setClientPublicIP(subToUse.getPublicAddress().getAddress().getHostAddress());
                 connectionMessageToSender.setClientPublicPort(subToUse.getPublicAddress().getPort());
                 connectionMessageToSender.setFromId(cl.getId());
                 connectionMessageToSender.setSenderID(msg.getSenderID());

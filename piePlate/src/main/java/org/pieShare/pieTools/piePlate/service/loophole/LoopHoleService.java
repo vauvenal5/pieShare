@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
@@ -51,7 +51,7 @@ public class LoopHoleService implements ILoopHoleService {
     private ILoopHoleFactory loopHoleFactory;
     private boolean localLoopHoleComplete;
     private boolean clientLoopHoleComplete;
-    private UdpAddress clientAddress;
+    private InetSocketAddress clientAddress;
 
     public LoopHoleService() {
 
@@ -170,7 +170,7 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public void newClientAvailable(UdpAddress address) {
+    public void newClientAvailable(InetSocketAddress address) {
         clientAddress = address;
         localLoopHoleComplete = true;
         loopHoleComplete();
@@ -188,11 +188,11 @@ public class LoopHoleService implements ILoopHoleService {
     }
 
     @Override
-    public synchronized void send(IUdpMessage msg, String host, int port) {
+    public synchronized void send(IUdpMessage msg, InetSocketAddress address) {
         try {
             msg.setSenderID(loopHoleFactory.getClientID());
             byte[] bytes = serializerService.serialize(msg);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(host), port);
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address.getAddress(), address.getPort());
             socket.send(packet);
 
             Thread.sleep(500);
