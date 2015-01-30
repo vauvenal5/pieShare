@@ -97,13 +97,14 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
     public void ackArrived() {
         if (isWaitingForAck) {
             stop = true;
-            InetSocketAddress address = new InetSocketAddress(host, port);
-            loopHoleService.newClientAvailable(address);
-
+            InetSocketAddress address = new InetSocketAddress(host, port); 
+            
             LoopHoleCompleteMessage completeMessage = beanService.getBean(LoopHoleCompleteMessage.class);
             completeMessage.setLocalLoopID(msg.getClientLocalLoopID());
             completeMessage.setClientLocalLoopID(msg.getLocalLoopID());
             loopHoleService.send(completeMessage, address);
+            
+            loopHoleService.newClientAvailable(address);
         }
     }
 }
