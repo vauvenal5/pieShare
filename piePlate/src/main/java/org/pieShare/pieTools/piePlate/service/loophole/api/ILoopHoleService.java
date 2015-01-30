@@ -42,4 +42,6 @@ public interface ILoopHoleService {
     void send(IUdpMessage msg, String host, int port);
 
     void sendToServer(IUdpMessage msg);
+
+    void clientCompletedLoopHole();
 }
