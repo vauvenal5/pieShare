@@ -96,7 +96,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                     subToUse = sub;
                 }
 
-                if (sub.getConnectedTo().equals(msg.getSenderID())) {
+                if (sub.getConnectedTo() != null && sub.getConnectedTo().equals(msg.getSenderID())) {
                     subToUse = null;
                     break;
                 }
