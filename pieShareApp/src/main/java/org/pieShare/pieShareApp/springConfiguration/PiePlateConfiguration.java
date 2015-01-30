@@ -16,6 +16,8 @@ import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
+import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ProtocolFactory;
+import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.protocols.LoopHoleDiscovery;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
@@ -70,7 +72,7 @@ public class PiePlateConfiguration {
     @Lazy
     @Scope(value = "prototype")
     public JChannel jChannel() throws Exception {
-        return new JChannel();
+        return new JChannel(this.protocolFactory().getUdpStack());
     }
 
     @Bean
@@ -205,4 +207,20 @@ public class PiePlateConfiguration {
         return msg;
     }
 
+	@Bean
+    @Lazy
+    @Scope(value = "prototype")
+	public LoopHoleDiscovery loopHoleDiscovery() {
+		LoopHoleDiscovery dis = new LoopHoleDiscovery();
+		dis.setLoopHoleFactory(this.loopHoleFactory());
+		return dis;
+	}
+	
+	@Bean
+	@Lazy
+	public ProtocolFactory protocolFactory() {
+		ProtocolFactory pf = new ProtocolFactory();
+		pf.setBeanService(this.utilitiesConfiguration.beanService());
+		return pf;
+	}
 }

@@ -6,6 +6,8 @@
 package org.pieShare.pieTools.piePlate.service.loophole.api;
 
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.util.List;
 import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnectionEvent;
@@ -31,4 +33,6 @@ public interface ILoopHoleFactory {
     void newClientAvailable(UdpAddress address, DatagramSocket socket);
     
     IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> getNewLoopHoleConnectionEvent();
+	
+	List<InetSocketAddress> getMembers();
 }

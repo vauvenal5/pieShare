@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.lang3.Validate;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
+import org.jgroups.stack.ProtocolStack;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
@@ -72,11 +73,10 @@ public class JGroupsClusterService implements IClusterService {
 		try {
 			Validate.notNull(this.receiver);
 			this.receiver.setClusterService(this);
-
+			
 			this.channel.setReceiver(this.receiver);
 			this.channel.setDiscardOwnMessages(true);
 			this.channel.connect(clusterName);
-
 		}
 		catch (NullPointerException e) {
 			throw new ClusterServiceException("Receiver not set!");
