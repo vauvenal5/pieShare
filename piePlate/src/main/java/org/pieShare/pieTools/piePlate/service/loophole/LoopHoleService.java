@@ -17,14 +17,11 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMes
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
-import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnectionEvent;
-import org.pieShare.pieTools.piePlate.service.loophole.event.api.INewLoopHoleConnectionEventListener;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -49,9 +46,12 @@ public class LoopHoleService implements ILoopHoleService {
     private String localLoopHoleID;
     private String name;
     private PieExecutorService executorService;
-    
+
     private LoopHoleListenerTask listenerTask;
     private ILoopHoleFactory loopHoleFactory;
+    private boolean localLoopHoleComplete;
+    private boolean clientLoopHoleComplete;
+    private UdpAddress clientAddress;
 
     public LoopHoleService() {
 
@@ -69,6 +69,8 @@ public class LoopHoleService implements ILoopHoleService {
 
         //Will be set by setter from factory
         this.localPort = -1;
+        localLoopHoleComplete = false;
+        clientLoopHoleComplete = false;
     }
 
     @Override
@@ -105,7 +107,6 @@ public class LoopHoleService implements ILoopHoleService {
         this.loopHoleFactory = loopHoleFactory;
     }
 
-   
     @Override
     public String getName() {
         return name;
@@ -145,6 +146,19 @@ public class LoopHoleService implements ILoopHoleService {
         }
     }
 
+    private synchronized void loopHoleComplete() {
+            if (clientLoopHoleComplete && localLoopHoleComplete) {
+                listenerTask.stop();
+                loopHoleFactory.newClientAvailable(clientAddress, socket);
+            }
+    }
+
+    @Override
+    public void clientCompletedLoopHole() {
+        clientLoopHoleComplete = true;
+        loopHoleComplete();
+    }
+
     @Override
     public void removeTaskFromAckWaitQueue(String id) {
         waitForAckQueue.remove(id);
@@ -157,7 +171,9 @@ public class LoopHoleService implements ILoopHoleService {
 
     @Override
     public void newClientAvailable(UdpAddress address) {
-        loopHoleFactory.newClientAvailable(address, socket);
+        clientAddress = address;
+        localLoopHoleComplete = true;
+        loopHoleComplete();
     }
 
     @Override
