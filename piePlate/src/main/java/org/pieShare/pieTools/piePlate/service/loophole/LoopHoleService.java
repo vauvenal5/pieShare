@@ -149,6 +149,7 @@ public class LoopHoleService implements ILoopHoleService {
     private synchronized void loopHoleComplete() {
             if (clientLoopHoleComplete && localLoopHoleComplete) {
                 listenerTask.stop();
+                socket.close();
                 loopHoleFactory.newClientAvailable(clientAddress, socket);
             }
     }
