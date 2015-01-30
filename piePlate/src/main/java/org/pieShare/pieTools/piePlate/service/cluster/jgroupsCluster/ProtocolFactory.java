@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jgroups.JChannel;
 import static org.jgroups.Message.RSVP;
+import org.jgroups.conf.ClassConfigurator;
 import org.jgroups.protocols.BARRIER;
 import org.jgroups.protocols.FD_ALL;
 import org.jgroups.protocols.FD_SOCK;
@@ -30,6 +31,7 @@ import org.jgroups.protocols.relay.RELAY2;
 import org.jgroups.protocols.relay.config.RelayConfig;
 import org.jgroups.stack.Protocol;
 import org.jgroups.stack.ProtocolStack;
+import org.jgroups.util.UUID;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.protocols.LoopHoleDiscovery;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.protocols.UDP;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -45,6 +47,11 @@ public class ProtocolFactory {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
+	}
+	
+	public ProtocolFactory() {
+		ClassConfigurator.addProtocol((short)776, UDP.class);
+		ClassConfigurator.addProtocol((short)777, LoopHoleDiscovery.class);
 	}
 	
 	public Protocol[] getBridgeConfig() {
