@@ -79,8 +79,9 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         clientID = idService.getNewID();
     }
 
-    public void setMembers(List<InetSocketAddress> members) {
-        this.members = members;
+    @Override
+    public List<InetSocketAddress> getMembers() {
+        return members;
     }
 
     @Override

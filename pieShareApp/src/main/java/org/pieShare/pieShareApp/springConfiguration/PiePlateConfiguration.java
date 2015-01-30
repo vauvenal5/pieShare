@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.springConfiguration;
 
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
