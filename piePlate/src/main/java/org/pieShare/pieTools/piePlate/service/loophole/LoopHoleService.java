@@ -150,6 +150,7 @@ public class LoopHoleService implements ILoopHoleService {
             if (clientLoopHoleComplete && localLoopHoleComplete) {
                 listenerTask.stop();
                 socket.close();
+                loopHoleFactory.addLocalUsedPort(localPort);
                 loopHoleFactory.newClientAvailable(clientAddress, socket);
             }
     }
