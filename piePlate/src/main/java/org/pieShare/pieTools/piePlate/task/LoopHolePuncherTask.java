@@ -44,6 +44,6 @@ public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> 
         ackMsg.setLocalLoopID(msg.getClientLocalLoopID());
         ackMsg.setClientLocalLoopID(msg.getLocalLoopID());
         
-        factory.getLoopHoleService(msg.getLocalLoopID()).send(ackMsg, msg.getSenderAddress().getHost(), msg.getSenderAddress().getPort());
+        factory.getLoopHoleService(msg.getLocalLoopID()).send(ackMsg, msg.getSenderAddress());
     }
 }

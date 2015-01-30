@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareServer.services.model;
 
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
+import java.net.InetSocketAddress;
 
 /**
  *
@@ -13,8 +13,8 @@ import org.pieShare.pieTools.piePlate.model.UdpAddress;
  */
 public class SubClient {
 
-    private UdpAddress privateAddress;
-    private UdpAddress publicAddress;
+    private InetSocketAddress privateAddress;
+    private InetSocketAddress publicAddress;
     private String loopHoleID;
     private String connectedTo = null;
 
@@ -34,19 +34,19 @@ public class SubClient {
         this.loopHoleID = loopHoleID;
     }
 
-    public UdpAddress getPrivateAddress() {
+    public InetSocketAddress getPrivateAddress() {
         return privateAddress;
     }
 
-    public void setPrivateAddress(UdpAddress privateAddress) {
+    public void setPrivateAddress(InetSocketAddress privateAddress) {
         this.privateAddress = privateAddress;
     }
 
-    public UdpAddress getPublicAddress() {
+    public InetSocketAddress getPublicAddress() {
         return publicAddress;
     }
 
-    public void setPublicAddress(UdpAddress publicAddress) {
+    public void setPublicAddress(InetSocketAddress publicAddress) {
         this.publicAddress = publicAddress;
     }
 }

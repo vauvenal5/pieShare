@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import javax.annotation.PostConstruct;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -49,7 +49,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private String clientID;
     private IIDService idService;
     private ISerializerService serializerService;
-    private final UdpAddress serverAddress;
+    private final InetSocketAddress serverAddress;
     private String name;
     private PieExecutorTaskFactory executorFactory;
     private PieExecutorService executorService;
@@ -61,9 +61,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
         nextUdpPort = 1234;
 
-        serverAddress = new UdpAddress();
-        serverAddress.setPort(6312);
-        serverAddress.setHost("server.piesystems.org");
+        serverAddress = new InetSocketAddress("server.piesystems.org", 6312);
     }
 
     @PostConstruct
@@ -85,8 +83,8 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     }
 
     @Override
-    public synchronized void newClientAvailable(UdpAddress address, DatagramSocket socket) {
-        PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHost(), address.getPort()));
+    public synchronized void newClientAvailable(InetSocketAddress address, DatagramSocket socket) {
+        PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHostString(), address.getPort()));
         newLoopHoleConnectionEvent.fireEvent(new NewLoopHoleConnectionEvent(this, address, socket));
         initializeNewLoopHole();
     }
@@ -144,11 +142,11 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         send(socket, msg, serverAddress);
     }
 
-    private synchronized void send(DatagramSocket socket, IUdpMessage msg, UdpAddress address) {
+    private synchronized void send(DatagramSocket socket, IUdpMessage msg, InetSocketAddress address) {
         try {
             msg.setSenderID(this.clientID);
             byte[] bytes = serializerService.serialize(msg);
-            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, InetAddress.getByName(address.getHost()), address.getPort());
+            DatagramPacket packet = new DatagramPacket(bytes, bytes.length, address.getAddress(), address.getPort());
             socket.send(packet);
 
             Thread.sleep(500);

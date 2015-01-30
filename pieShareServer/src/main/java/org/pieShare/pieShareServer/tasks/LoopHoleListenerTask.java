@@ -8,8 +8,8 @@ package org.pieShare.pieShareServer.tasks;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
 import org.bouncycastle.util.Arrays;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
@@ -58,9 +58,7 @@ public class LoopHoleListenerTask implements IPieTask {
                 socket.receive(packet);
                 bytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
                 IUdpMessage msg = (IUdpMessage) serializerService.deserialize(bytes);
-                UdpAddress address = new UdpAddress();
-                address.setHost(packet.getAddress().getHostAddress());
-                address.setPort(packet.getPort());
+                InetSocketAddress address = new InetSocketAddress(packet.getAddress(), packet.getPort());
                 msg.setSenderAddress(address);
                 excuterService.handlePieEvent(msg);
             } catch (IOException ex) {

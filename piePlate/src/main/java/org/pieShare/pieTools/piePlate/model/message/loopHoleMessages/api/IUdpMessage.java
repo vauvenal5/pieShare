@@ -5,9 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api;
 
-import org.pieShare.pieTools.piePlate.model.IPieAddress;
-import org.pieShare.pieTools.piePlate.model.UdpAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
@@ -16,9 +14,9 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
  */
 public interface IUdpMessage extends IPieMessage {
 
-	void setSenderAddress(UdpAddress senderAddress);
+	void setSenderAddress(InetSocketAddress senderAddress);
 
-	UdpAddress getSenderAddress();
+	InetSocketAddress getSenderAddress();
         
         String getSenderID();
         
