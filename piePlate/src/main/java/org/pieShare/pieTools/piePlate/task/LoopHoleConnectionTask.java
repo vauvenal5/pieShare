@@ -101,8 +101,8 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
             loopHoleService.newClientAvailable(address);
 
             LoopHoleCompleteMessage completeMessage = beanService.getBean(LoopHoleCompleteMessage.class);
-            msg.setLocalLoopID(msg.getClientLocalLoopID());
-            msg.setClientLocalLoopID(msg.getLocalLoopID());
+            completeMessage.setLocalLoopID(msg.getClientLocalLoopID());
+            completeMessage.setClientLocalLoopID(msg.getLocalLoopID());
             loopHoleService.send(completeMessage, address);
         }
     }
