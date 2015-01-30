@@ -11,7 +11,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
@@ -55,6 +57,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private PieExecutorService executorService;
 
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
+    private List<InetSocketAddress> members;
 
     public LoopHoleFactory() {
         loopQueue = new HashMap<>();
@@ -62,6 +65,8 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         nextUdpPort = 1234;
 
         serverAddress = new InetSocketAddress("server.piesystems.org", 6312);
+
+        members = new ArrayList<>();
     }
 
     @PostConstruct
@@ -71,6 +76,10 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
         this.executorFactory.registerTask(LoopHoleCompleteMessage.class, LoopHoleCompleteTask.class);
         clientID = idService.getNewID();
+    }
+
+    public void setMembers(List<InetSocketAddress> members) {
+        this.members = members;
     }
 
     @Override
@@ -84,6 +93,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     @Override
     public synchronized void newClientAvailable(InetSocketAddress address, DatagramSocket socket) {
+        members.add(address);
         PieLogger.info(this.getClass(), String.format("New UPD connection available. Host: %s, Port: %s", address.getHostString(), address.getPort()));
         newLoopHoleConnectionEvent.fireEvent(new NewLoopHoleConnectionEvent(this, address, socket));
         initializeNewLoopHole();
@@ -130,7 +140,19 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     @Override
     public void initializeNewLoopHole() {
         ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
+
         nextUdpPort = udpPortService.getNewPortFrom(nextUdpPort);
+
+        int newPort = 0;
+        while (newPort != nextUdpPort) {
+            newPort = nextUdpPort;
+            for (InetSocketAddress address : members) {
+                if (nextUdpPort == address.getPort()) {
+                    nextUdpPort++;
+                }
+            }
+        }
+
         loopHoleService.setLocalPort(nextUdpPort);
         loopHoleService.setName(name);
 
