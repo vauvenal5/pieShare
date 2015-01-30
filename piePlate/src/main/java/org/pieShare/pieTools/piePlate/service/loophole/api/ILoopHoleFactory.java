@@ -33,4 +33,6 @@ public interface ILoopHoleFactory {
     void newClientAvailable(InetSocketAddress address, DatagramSocket socket);
     
     IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> getNewLoopHoleConnectionEvent();
+    
+    void addLocalUsedPort(int port);
 }

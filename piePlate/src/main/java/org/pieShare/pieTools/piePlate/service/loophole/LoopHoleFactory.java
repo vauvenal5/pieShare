@@ -58,6 +58,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
     private List<InetSocketAddress> members;
+    private List<Integer> localUsedPorts;
 
     public LoopHoleFactory() {
         loopQueue = new HashMap<>();
@@ -65,7 +66,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         nextUdpPort = 1234;
 
         serverAddress = new InetSocketAddress("server.piesystems.org", 6312);
-
+        localUsedPorts = new ArrayList<>();
         members = new ArrayList<>();
     }
 
@@ -80,6 +81,11 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     public void setMembers(List<InetSocketAddress> members) {
         this.members = members;
+    }
+
+    @Override
+    public void addLocalUsedPort(int port) {
+        localUsedPorts.add(port);
     }
 
     @Override
@@ -146,10 +152,8 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         int newPort = 0;
         while (newPort != nextUdpPort) {
             newPort = nextUdpPort;
-            for (InetSocketAddress address : members) {
-                if (nextUdpPort == address.getPort()) {
-                    nextUdpPort++;
-                }
+            if (localUsedPorts.contains(newPort)) {
+                nextUdpPort++;
             }
         }
 
