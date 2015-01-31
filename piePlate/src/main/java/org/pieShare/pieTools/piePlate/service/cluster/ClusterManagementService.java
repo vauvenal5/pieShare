@@ -44,7 +44,6 @@ public class ClusterManagementService implements IClusterManagementService {
     private IBeanService beanService;
     private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
     private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
-    private IClusterService returnService = null;
     private boolean sleep;
 
     @Override
@@ -79,18 +78,14 @@ public class ClusterManagementService implements IClusterManagementService {
             return this.clusters.get(id);
         }
 
-         sleep = true;
+        sleep = true;
         ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
 
         loopHoleFactory.getNewLoopHoleConnectionEvent().addEventListener(new INewLoopHoleConnectionEventListener() {
             @Override
             public void handleObject(NewLoopHoleConnectionEvent event) {
-                try {
-                    returnService = initConnection(id);
-                    sleep = false;
-                } catch (ClusterManagmentServiceException ex) {
-                    PieLogger.error(this.getClass(), "Error", ex);
-                }
+                sleep = false;
+
             }
         });
 
@@ -105,7 +100,7 @@ public class ClusterManagementService implements IClusterManagementService {
             }
         }
 
-        return returnService;
+        return initConnection(id);
     }
 
     private IClusterService initConnection(String id) throws ClusterManagmentServiceException {
