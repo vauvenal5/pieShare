@@ -79,6 +79,7 @@ public class ClusterManagementService implements IClusterManagementService {
             return this.clusters.get(id);
         }
 
+         sleep = true;
         ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
 
         loopHoleFactory.getNewLoopHoleConnectionEvent().addEventListener(new INewLoopHoleConnectionEventListener() {
