@@ -43,6 +43,8 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
     @Override
     public void run() {
 
+        InetSocketAddress senderAddress = new InetSocketAddress(msg.getSenderHost(), msg.getSenderPort());
+        
         User newUser = userPersistanceService.getByID(msg.getName());
 
         if (newUser == null) {
@@ -55,7 +57,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
             PieLogger.debug(this.getClass(), "FIRST CLIENT..Sending message!");
             FirstLoopHoleUserMessage loopHoleUserMessage = new FirstLoopHoleUserMessage();
             loopHoleUserMessage.setLocalLoopID(msg.getLocalLoopID());
-            loopHoleService.send(msg, msg.getSenderAddress());
+            loopHoleService.send(msg, senderAddress);
         } else {
             PieLogger.debug(this.getClass(), "NOT FIRST CLIENT!");
         }
@@ -76,7 +78,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
         InetSocketAddress privateAddress = new InetSocketAddress(msg.getPrivateHost(), msg.getPrivatePort());
 
         subClient.setPrivateAddress(privateAddress);
-        subClient.setPublicAddress(msg.getSenderAddress());
+        subClient.setPublicAddress(senderAddress);
         subClient.setLoopHoleID(msg.getLocalLoopID());
 
         client.getSubClients().put(subClient.getLoopHoleID(), subClient);
@@ -120,7 +122,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
                 connectionMessageToSender.setLocalLoopID(msg.getLocalLoopID());
                 connectionMessageToSender.setClientLocalLoopID(subToUse.getLoopHoleID());
 
-                loopHoleService.send(connectionMessageToSender, msg.getSenderAddress());
+                loopHoleService.send(connectionMessageToSender, senderAddress);
 
                 connectionMessageToReceiver.setSenderID(cl.getId());
                 connectionMessageToReceiver.setLocalLoopID(subToUse.getLoopHoleID());

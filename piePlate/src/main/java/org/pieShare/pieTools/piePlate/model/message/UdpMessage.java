@@ -14,19 +14,26 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMes
  */
 public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
 
-    private InetSocketAddress senderAddress;
+    private String senderHost;
+    private int senderPort;
     private String ID;
     private String localLoppHoleID;
     private String clientLoppHoleID;
-    
-    @Override
-    public void setSenderAddress(InetSocketAddress senderAddress) {
-        this.senderAddress = senderAddress;
+
+    public String getSenderHost() {
+        return senderHost;
     }
 
-    @Override
-    public InetSocketAddress getSenderAddress() {
-        return senderAddress;
+    public void setSenderHost(String senderHost) {
+        this.senderHost = senderHost;
+    }
+
+    public int getSenderPort() {
+        return senderPort;
+    }
+
+    public void setSenderPort(int senderPort) {
+        this.senderPort = senderPort;
     }
 
     @Override
@@ -56,6 +63,6 @@ public abstract class UdpMessage extends HeaderMessage implements IUdpMessage {
 
     @Override
     public void setClientLocalLoopID(String ID) {
-       this.clientLoppHoleID = ID;
+        this.clientLoppHoleID = ID;
     }
 }

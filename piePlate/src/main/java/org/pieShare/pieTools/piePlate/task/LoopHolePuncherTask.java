@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
+import java.net.InetSocketAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
@@ -44,6 +45,8 @@ public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> 
         ackMsg.setLocalLoopID(msg.getClientLocalLoopID());
         ackMsg.setClientLocalLoopID(msg.getLocalLoopID());
         
-        factory.getLoopHoleService(msg.getLocalLoopID()).send(ackMsg, msg.getSenderAddress());
+        InetSocketAddress address = new InetSocketAddress(msg.getSenderHost(), msg.getSenderPort());
+        
+        factory.getLoopHoleService(msg.getLocalLoopID()).send(ackMsg, address);
     }
 }
