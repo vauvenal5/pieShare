@@ -58,8 +58,9 @@ public class LoopHoleListenerTask implements IPieTask {
                 socket.receive(packet);
                 bytes = Arrays.copyOfRange(packet.getData(), 0, packet.getLength());
                 IUdpMessage msg = (IUdpMessage) serializerService.deserialize(bytes);
-                InetSocketAddress address = new InetSocketAddress(packet.getAddress(), packet.getPort());
-                msg.setSenderAddress(address);
+                msg.setSenderHost(packet.getAddress().getHostAddress());
+                msg.setSenderPort(packet.getPort());
+                
                 excuterService.handlePieEvent(msg);
             } catch (IOException ex) {
                 PieLogger.error(this.getClass(), "Error receiving message.", ex);

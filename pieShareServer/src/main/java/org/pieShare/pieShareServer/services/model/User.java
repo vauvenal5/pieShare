@@ -17,7 +17,7 @@ public class User {
     private HashMap<String, Client> clients;
 
     public User() {
-        this.clients = new HashMap<String, Client>();
+        this.clients = new HashMap<>();
     }
 
     public String getIdName() {

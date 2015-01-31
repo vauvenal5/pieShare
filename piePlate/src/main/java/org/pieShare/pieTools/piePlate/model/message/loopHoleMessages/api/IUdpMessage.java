@@ -14,19 +14,23 @@ import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
  */
 public interface IUdpMessage extends IPieMessage {
 
-	void setSenderAddress(InetSocketAddress senderAddress);
+    String getSenderHost();
 
-	InetSocketAddress getSenderAddress();
-        
-        String getSenderID();
-        
-        void setSenderID(String ID);
-        
-        String getLocalLoopID();
-        
-        void setLocalLoopID(String ID);
-        
-        String getClientLocalLoopID();
-        
-        void setClientLocalLoopID(String ID);
+    void setSenderHost(String senderHost);
+
+    int getSenderPort();
+
+    void setSenderPort(int senderPort);
+
+    String getSenderID();
+
+    void setSenderID(String ID);
+
+    String getLocalLoopID();
+
+    void setLocalLoopID(String ID);
+
+    String getClientLocalLoopID();
+
+    void setClientLocalLoopID(String ID);
 }
