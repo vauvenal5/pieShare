@@ -57,6 +57,7 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
             PieLogger.debug(this.getClass(), "FIRST CLIENT..Sending message!");
             FirstLoopHoleUserMessage loopHoleUserMessage = new FirstLoopHoleUserMessage();
             loopHoleUserMessage.setLocalLoopID(msg.getLocalLoopID());
+            msg.setSenderID(msg.getSenderID());
             loopHoleService.send(loopHoleUserMessage, senderAddress);
         } else {
             PieLogger.debug(this.getClass(), "NOT FIRST CLIENT!");
