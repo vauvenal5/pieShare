@@ -14,6 +14,7 @@ import org.pieShare.pieShareServer.services.loopHoleService.api.IUserPersistance
 import org.pieShare.pieShareServer.services.model.Client;
 import org.pieShare.pieShareServer.services.model.SubClient;
 import org.pieShare.pieShareServer.services.model.User;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.FirstLoopHoleUserMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -48,6 +49,12 @@ public class RegisterTask implements IPieEventTask<RegisterMessage> {
             newUser = new User();
             newUser.setIdName(msg.getName());
             userPersistanceService.addUser(newUser);
+        }
+
+        if (newUser.getClients().isEmpty()) {
+            FirstLoopHoleUserMessage loopHoleUserMessage = new FirstLoopHoleUserMessage();
+            loopHoleUserMessage.setLocalLoopID(msg.getLocalLoopID());
+            loopHoleService.send(msg, msg.getSenderAddress());
         }
 
         Client client = newUser.getClients().get(msg.getSenderID());

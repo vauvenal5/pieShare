@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.swing.text.StyleConstants;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.FirstLoopHoleUserMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -26,6 +28,7 @@ import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnecti
 import org.pieShare.pieTools.piePlate.service.loophole.event.api.INewLoopHoleConnectionEventListener;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
+import org.pieShare.pieTools.piePlate.task.FirstLoopHoleUserTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
@@ -76,6 +79,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
         this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
         this.executorFactory.registerTask(LoopHoleCompleteMessage.class, LoopHoleCompleteTask.class);
+        this.executorFactory.registerTask(FirstLoopHoleUserMessage.class, FirstLoopHoleUserTask.class);
         clientID = idService.getNewID();
     }
 

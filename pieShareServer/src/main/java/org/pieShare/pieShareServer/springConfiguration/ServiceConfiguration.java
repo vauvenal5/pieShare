@@ -21,6 +21,7 @@ import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
 import org.pieShare.pieShareServer.tasks.LoopHoleServerAckTask;
 import org.pieShare.pieShareServer.tasks.RegisterTask;
 import org.pieShare.pieShareServer.tasks.WaitForAckFromClientTask;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.FirstLoopHoleUserMessage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -117,6 +118,14 @@ public class ServiceConfiguration {
     public RegisterMessage registerMessage() {
         RegisterMessage message = new RegisterMessage();
         return message;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
+    public FirstLoopHoleUserMessage firstLoopHoleUserMessage() {
+        FirstLoopHoleUserMessage msg = new FirstLoopHoleUserMessage();
+        return msg;
     }
 
     @Bean

@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.springConfiguration;
 
 import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.FirstLoopHoleUserMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -22,6 +23,7 @@ import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
+import org.pieShare.pieTools.piePlate.task.FirstLoopHoleUserTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
@@ -191,6 +193,23 @@ public class PiePlateConfiguration {
     @Bean
     @Lazy
     @Scope(value = "prototype")
+    public FirstLoopHoleUserTask firstLoopHoleUserTask() {
+        FirstLoopHoleUserTask task = new FirstLoopHoleUserTask();
+        task.setFactory(loopHoleFactory());
+        return task;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
+    public FirstLoopHoleUserMessage firstLoopHoleUserMessage() {
+        FirstLoopHoleUserMessage msg = new FirstLoopHoleUserMessage();
+        return msg;
+    }
+
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
     public LoopHoleCompleteMessage loopHoleCompleteMessage() {
         LoopHoleCompleteMessage msg = new LoopHoleCompleteMessage();
         return msg;
@@ -228,20 +247,20 @@ public class PiePlateConfiguration {
         return msg;
     }
 
-	@Bean
+    @Bean
     @Lazy
     @Scope(value = "prototype")
-	public LoopHoleDiscovery loopHoleDiscovery() {
-		LoopHoleDiscovery dis = new LoopHoleDiscovery();
-		dis.setLoopHoleFactory(this.loopHoleFactory());
-		return dis;
-	}
-	
-	@Bean
-	@Lazy
-	public ProtocolFactory protocolFactory() {
-		ProtocolFactory pf = new ProtocolFactory();
-		pf.setBeanService(this.utilitiesConfiguration.beanService());
-		return pf;
-	}
+    public LoopHoleDiscovery loopHoleDiscovery() {
+        LoopHoleDiscovery dis = new LoopHoleDiscovery();
+        dis.setLoopHoleFactory(this.loopHoleFactory());
+        return dis;
+    }
+
+    @Bean
+    @Lazy
+    public ProtocolFactory protocolFactory() {
+        ProtocolFactory pf = new ProtocolFactory();
+        pf.setBeanService(this.utilitiesConfiguration.beanService());
+        return pf;
+    }
 }
