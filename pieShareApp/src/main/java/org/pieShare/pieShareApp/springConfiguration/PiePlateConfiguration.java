@@ -195,6 +195,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public FirstLoopHoleUserTask firstLoopHoleUserTask() {
         FirstLoopHoleUserTask task = new FirstLoopHoleUserTask();
+        task.setBeanService(utilitiesConfiguration.beanService());
         task.setFactory(loopHoleFactory());
         return task;
     }

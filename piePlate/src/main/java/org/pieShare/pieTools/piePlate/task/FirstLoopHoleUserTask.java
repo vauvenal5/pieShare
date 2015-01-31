@@ -41,7 +41,7 @@ public class FirstLoopHoleUserTask implements IPieEventTask<FirstLoopHoleUserMes
         LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
         ackMsg.setLocalLoopID(msg.getLocalLoopID());
 
-        factory.getLoopHoleService(msg.getLocalLoopID()).sendToServer(msg);
+        factory.getLoopHoleService(msg.getLocalLoopID()).sendToServer(ackMsg);
 
         factory.getNewLoopHoleConnectionEvent().fireEvent(null);
     }
