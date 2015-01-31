@@ -7,6 +7,8 @@ package org.pieShare.pieTools.piePlate.service.cluster;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
@@ -24,6 +26,8 @@ import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnectionEvent;
+import org.pieShare.pieTools.piePlate.service.loophole.event.api.INewLoopHoleConnectionEventListener;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -40,6 +44,8 @@ public class ClusterManagementService implements IClusterManagementService {
     private IBeanService beanService;
     private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
     private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+    private IClusterService returnService = null;
+    private boolean sleep;
 
     @Override
     public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
@@ -68,13 +74,40 @@ public class ClusterManagementService implements IClusterManagementService {
     }
 
     private IClusterService connect(String id) throws ClusterManagmentServiceException {
-        ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
-	loopHoleFactory.setName(id);
-        loopHoleFactory.initializeNewLoopHole();
 
         if (this.clusters.containsKey(id)) {
             return this.clusters.get(id);
         }
+
+        ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
+
+        loopHoleFactory.getNewLoopHoleConnectionEvent().addEventListener(new INewLoopHoleConnectionEventListener() {
+            @Override
+            public void handleObject(NewLoopHoleConnectionEvent event) {
+                try {
+                    returnService = initConnection(id);
+                    sleep = false;
+                } catch (ClusterManagmentServiceException ex) {
+                    PieLogger.error(this.getClass(), "Error", ex);
+                }
+            }
+        });
+
+        loopHoleFactory.setName(id);
+        loopHoleFactory.initializeNewLoopHole();
+
+        while (sleep) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ClusterManagementService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return returnService;
+    }
+
+    private IClusterService initConnection(String id) throws ClusterManagmentServiceException {
 
         try {
             IClusterService cluster = (IClusterService) this.beanService.getBean(PiePlateBeanNames.getClusterService());
