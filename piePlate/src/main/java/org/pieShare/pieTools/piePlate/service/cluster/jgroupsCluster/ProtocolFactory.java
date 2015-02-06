@@ -63,7 +63,7 @@ public class ProtocolFactory {
 		
 		Protocol[] protStack={
 			udp,
-			lhd,
+			new PING(),
 			new MERGE3(),
 			new FD_SOCK(),
 			new FD_ALL(),
