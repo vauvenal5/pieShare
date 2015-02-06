@@ -79,6 +79,7 @@ public class LoopHoleService implements ILoopHoleService {
 
         try {
             this.socket = new DatagramSocket(localPort);
+			this.socket.setReuseAddress(true);
         } catch (SocketException ex) {
             PieLogger.error(this.getClass(), "Error creating DatagramSocket of client", ex);
         }

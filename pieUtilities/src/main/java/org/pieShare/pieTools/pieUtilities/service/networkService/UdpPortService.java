@@ -30,6 +30,7 @@ public class UdpPortService implements IUdpPortService {
         for (int i = port; i <= MAX_PORT; i++) {
             try {
                 DatagramSocket s = new DatagramSocket(i);
+				s.setReuseAddress(true);
                 s.close();
                 return i;
             } catch (BindException ex) {
