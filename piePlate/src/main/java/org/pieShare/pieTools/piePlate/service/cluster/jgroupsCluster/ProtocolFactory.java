@@ -57,6 +57,7 @@ public class ProtocolFactory {
 	public Protocol[] getBridgeConfig() {
 		UDP udp = new UDP();
 		udp.setIpMcast(false);
+		udp.setBindPort(1234);
 		
 		LoopHoleDiscovery lhd = this.beanService.getBean(LoopHoleDiscovery.class);
 		
@@ -95,7 +96,7 @@ public class ProtocolFactory {
 		
 		//todo: dynamic adding of sites when they join?
 		RELAY2 relay2 = new RELAY2();
-		relay2.site("test2");
+		relay2.site("test1");
 		relay2.relayMulticasts(true);
 		relay2.addSite("test1", site1);
 		relay2.addSite("test2", site2);

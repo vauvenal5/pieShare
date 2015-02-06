@@ -75,7 +75,7 @@ public class PiePlateConfiguration {
     @Lazy
     @Scope(value = "prototype")
     public JChannel jChannel() throws Exception {
-        return new JChannel(this.protocolFactory().getUdpStack());
+        return new JChannel(this.protocolFactory().getBridgeConfig());
     }
 
     @Bean
