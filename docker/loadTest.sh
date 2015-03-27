@@ -3,7 +3,9 @@ if [[ $# != 1 ]]; then
 	exit
 fi
 
-if [[ $1 < 2 ]]; then
+nodes=$1
+
+if [[ $nodes -lt 2 ]]; then
 	echo "You need at least two nodes!"
 	exit
 fi
@@ -13,7 +15,7 @@ docker build -t vauvenal5/master .
 docker build -t vauvenal5/slave .
 
 #start all slave nodes
-for (( i = 1; i < $1; i++ )); do
+for (( i = 1; i < $nodes; i++ )); do
 	docker run vauvenal5/slave "slave" &
 done
 
