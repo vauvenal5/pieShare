@@ -8,5 +8,3 @@ RUN sudo apt-get -y install oracle-java8-installer
 
 RUN sudo apt-get -y install git
 RUN sudo apt-get -y install maven
-
-RUN git clone https://github.com/vauvenal5/pieShare.git
