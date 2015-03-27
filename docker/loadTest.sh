@@ -1,4 +1,4 @@
-if [[ $# != 2 ]]; then
+if [[ $# != 1 ]]; then
 	echo "Wrong number of parameters!"
 	exit
 fi
