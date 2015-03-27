@@ -14,7 +14,7 @@ docker build -t vauvenal5/slave .
 
 #start all slave nodes
 for (( i = 1; i < $1; i++ )); do
-	docker run vauvenal5/slave "slave"
+	docker run vauvenal5/slave "slave" &
 done
 
 #start the master node
