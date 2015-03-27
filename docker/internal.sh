@@ -1,3 +1,3 @@
 cd /pieShare
-mvn clean install -DskipTests
+echo $1
 #mvn -Dit.test=LoadTestLT verify
