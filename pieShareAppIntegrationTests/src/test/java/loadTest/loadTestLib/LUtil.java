@@ -5,7 +5,10 @@
  */
 package loadTest.loadTestLib;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
@@ -78,4 +81,10 @@ public class LUtil {
 		(new File(getMainKey())).delete();
 		(new File(getBotKey())).delete();
 	}
+        
+        public static LoadTestConfigModel readJSONConfig() throws IOException {
+            InputStream in = LUtil.class.getClassLoader().getResourceAsStream("loadTestConfig.json");
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(in, LoadTestConfigModel.class);
+        }
 }
