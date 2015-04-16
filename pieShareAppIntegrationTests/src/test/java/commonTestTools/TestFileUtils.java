@@ -12,8 +12,8 @@ import java.io.IOException;
  *
  * @author vauvenal5
  */
-public class FileUtils {
-    public void createFile(File file, long sizeInMB) throws InterruptedException, IOException
+public class TestFileUtils {
+    public static void createFile(File file, long sizeInMB) throws InterruptedException, IOException
     {
         ProcessBuilder pb;
 		
@@ -25,7 +25,9 @@ public class FileUtils {
         }
         else {
                 //dd if=/dev/zero of=file.out bs=1MB count=1024 
-                pb = new ProcessBuilder("dd", "if=/dev/zero", "of=" + file.getAbsolutePath(), "bs=1MB", "count=" + String.valueOf(sizeInMB));
+                String count = "count=" + String.valueOf(sizeInMB);
+                System.out.println(count);
+                pb = new ProcessBuilder("dd", "if=/dev/zero", "of=" + file.getAbsolutePath(), "bs=1MB", count);
         }
 
         Process p = pb.start();
