@@ -34,6 +34,8 @@ public class LoadTestLT {
     private AnnotationConfigApplicationContext context;
     private boolean isMaster = false;
     private ITTasksCounter counter;
+    private int nodeCount = 5;
+    private int fileCount = 5;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -92,6 +94,12 @@ public class LoadTestLT {
 
         task.setEvent(command);
         task.run();
+
+        System.out.println("Waiting for transfer complete!");
+        while (counter.getCount(AllFilesCompleteTask.class) < nodeCount) {
+            Thread.sleep(10000);
+        }
+        System.out.println("All nodes complete!");
 
     }
 }
