@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -39,7 +40,7 @@ public class LUtil {
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
 		context.register(PieShareAppModel.class);
-		context.register(PieShareAppServiceConfig.class);
+		context.register(PieShareAppService.class);
 		context.register(PieShareAppTasks.class);
                 context.register(LoadTestConfig.class);
 		context.refresh();
