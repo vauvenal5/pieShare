@@ -5,6 +5,8 @@
  */
 package loadTest;
 
+import commonTestTools.TestFileUtils;
+import java.io.File;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
@@ -14,6 +16,7 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
@@ -36,6 +39,7 @@ public class LoadTestLT {
     private ITTasksCounter counter;
     private int nodeCount = 5;
     private int fileCount = 5;
+    private long fileSize = 10;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -53,7 +57,7 @@ public class LoadTestLT {
         LUtil.performTearDown(context);
     }
 
-    @Test
+    @Test(timeOut = 600000)
     public void loadTest() throws Exception {
 
         String userName = "testUser";
@@ -93,13 +97,34 @@ public class LoadTestLT {
         });
 
         task.setEvent(command);
+
+        if (isMaster) {
+            user.getPieShareConfiguration().getWorkingDir().mkdirs();
+            System.out.println("Creating files!");
+            for (int i = 0; i < fileCount; i++) {
+                String fileName = String.format("testFile_%s", i);
+                File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
+                TestFileUtils.createFile(file, fileSize);
+            }
+            System.out.println("Files successfully created!");
+        }
+
         task.run();
 
-        System.out.println("Waiting for transfer complete!");
-        while (counter.getCount(AllFilesCompleteTask.class) < nodeCount) {
-            Thread.sleep(10000);
-        }
-        System.out.println("All nodes complete!");
+        System.out.println("Waiting for completion!");
+        if (isMaster) {
+            while (counter.getCount(AllFilesCompleteTask.class) < nodeCount) {
+                Thread.sleep(10000);
+            }
+        } else {
+            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < fileCount) {
+                Thread.sleep(10000);
+            }
 
+            AllFilesCompleteMessage message = context.getBean(AllFilesCompleteMessage.class);
+            ClusterManagementService service = context.getBean(ClusterManagementService.class);
+            service.sendMessage(message);
+        }
+        System.out.println("Finished!");
     }
 }
