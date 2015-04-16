@@ -6,6 +6,7 @@
 
 package pieShareAppITs;
 
+import commonTestTools.TestFileUtils;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
@@ -19,7 +20,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pieShareAppITs.helper.ITFileUtils;
 import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.runner.FileSyncMain;
@@ -47,8 +47,12 @@ public class SyncChangesIT {
 	public void setUpMethod() throws Exception {
 		ITUtil.performTearDownDelete();
 		
-		file = ITFileUtils.createFile(new File(ITUtil.getMainWorkingDir(), "test"), 2048);
+		//file = ITFileUtils.createFile(new File(ITUtil.getMainWorkingDir(), "test"), 2048);
+                file = new File(ITUtil.getMainWorkingDir(), "test");
+                file.getParentFile().mkdirs();
+                TestFileUtils.createFile(file, 2);
 		fileBot = new File(ITUtil.getBotWorkingDir(), "test");
+                fileBot.getParentFile().mkdirs();
 		FileUtils.copyFile(file, fileBot, true);
 		
 		this.process = ITUtil.startProcess(FileSyncMain.class);
@@ -78,7 +82,6 @@ public class SyncChangesIT {
 		ITUtil.executeLoginToTestCloud(context);
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
-		//FileUtils.writeByteArrayToFile(fileBot, "hello world".getBytes(), true);
 		
 		while(counter.getCount(FileTransferCompleteTask.class) <= 0) {
 			Thread.sleep(1000);
