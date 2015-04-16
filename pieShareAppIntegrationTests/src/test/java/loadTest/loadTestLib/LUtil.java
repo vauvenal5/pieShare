@@ -87,4 +87,14 @@ public class LUtil {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(in, LoadTestConfigModel.class);
         }
+        
+        public static boolean IsMaster()
+        {
+            String ltType = System.getenv("LTTYPE");
+            if(ltType.equals("master")) {
+                return true;
+            }
+            
+            return false;
+        }
 }
