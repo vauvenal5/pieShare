@@ -6,6 +6,7 @@
 package loadTest;
 
 import loadTest.loadTestLib.LUtil;
+import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -67,6 +68,8 @@ public class LoadTestLT {
         pwd.password = "test".getBytes();
         command.setPlainTextPassword(pwd);
         command.setUserName(userName);
+        
+        LoadTestConfigModel ltModel = LUtil.readJSONConfig();
 
         IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
