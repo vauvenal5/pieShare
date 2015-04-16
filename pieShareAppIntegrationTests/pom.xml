@@ -39,6 +39,10 @@
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
+                                        <excludes>
+                                            <exclude>*/*LoadTestIT.java</exclude>
+                                            <exclude>*/*LTIT.java</exclude>
+                                        </excludes>
 				</configuration>
 				<executions>
 				  <execution>
