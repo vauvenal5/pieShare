@@ -112,7 +112,7 @@ public class LoadTestIT {
 
         System.out.println("Waiting for completion!");
         if (LUtil.IsMaster()) {
-            while (counter.getCount(AllFilesCompleteTask.class) <= ltModel.getNodeCount()) {
+            while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount()-1)) {
                 Thread.sleep(10000);
             }
         } else {
