@@ -5,6 +5,7 @@
  */
 package pieShareAppITs;
 
+import commonTestTools.TestFileUtils;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -22,7 +23,6 @@ import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import org.testng.annotations.*;
-import pieShareAppITs.helper.ITFileUtils;
 import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.runner.FileSyncMain;
@@ -77,20 +77,8 @@ public class SyncOneBigFileIT {
 		ITUtil.waitForProcessToStartup(this.process);
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
-		
-		ProcessBuilder pb;
-		
-		if(System.getProperty("os.name").toLowerCase().contains("win")) {
-			//fsutil file createnew file.out 1000000000 
-			pb = new ProcessBuilder("fsutil", "file", "createnew", filex.getAbsolutePath(), "1073741824");
-		}
-		else {
-			//dd if=/dev/zero of=file.out bs=1MB count=1024 
-			pb = new ProcessBuilder("dd", "if=/dev/zero", "of="+filex.getAbsolutePath(), "bs=1MB", "count=1024");
-		}
-		
-		Process p = pb.start();
-		p.waitFor();
+                
+                TestFileUtils.createFile(filex, 1024);
 		
 		
 		//ITFileUtils.createFile(filex, 4294967296L);

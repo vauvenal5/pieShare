@@ -5,6 +5,7 @@
  */
 package pieShareAppITs;
 
+import commonTestTools.TestFileUtils;
 import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -23,7 +24,6 @@ import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import org.testng.annotations.*;
-import pieShareAppITs.helper.ITFileUtils;
 import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.runner.FileSyncMain;
@@ -82,7 +82,7 @@ public class SyncOneFileIT {
 		System.out.println("Bot started!");
 
 		File filex = new File(config.getWorkingDir().getParent(), "test.txt");
-		ITFileUtils.createFile(filex, 2048);
+                TestFileUtils.createFile(filex, 2);
 		File fileMain = new File(config.getWorkingDir(), "test.txt");
 		
 		PieUser botUser = context.getBean("botPieUser", PieUser.class);
