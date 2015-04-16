@@ -36,11 +36,7 @@ import pieShareAppITs.helper.ITTasksCounter;
 public class LoadTestLT {
 
     private AnnotationConfigApplicationContext context;
-    private boolean isMaster = false;
     private ITTasksCounter counter;
-    private int nodeCount = 5;
-    private int fileCount = 5;
-    private long fileSize = 10;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -77,7 +73,7 @@ public class LoadTestLT {
 
         IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
-        if (isMaster) {
+        if (LUtil.IsMaster()) {
             executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
             counter = context.getBean(ITTasksCounter.class);
         }
@@ -101,13 +97,13 @@ public class LoadTestLT {
 
         task.setEvent(command);
 
-        if (isMaster) {
+        if (LUtil.IsMaster()) {
             user.getPieShareConfiguration().getWorkingDir().mkdirs();
             System.out.println("Creating files!");
-            for (int i = 0; i < fileCount; i++) {
+            for (int i = 0; i < ltModel.getFileCount(); i++) {
                 String fileName = String.format("testFile_%s", i);
                 File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
-                TestFileUtils.createFile(file, fileSize);
+                TestFileUtils.createFile(file, ltModel.getFileSize());
             }
             System.out.println("Files successfully created!");
         }
@@ -115,12 +111,12 @@ public class LoadTestLT {
         task.run();
 
         System.out.println("Waiting for completion!");
-        if (isMaster) {
-            while (counter.getCount(AllFilesCompleteTask.class) < nodeCount) {
+        if (LUtil.IsMaster()) {
+            while (counter.getCount(AllFilesCompleteTask.class) < ltModel.getNodeCount()) {
                 Thread.sleep(10000);
             }
         } else {
-            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < fileCount) {
+            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()) {
                 Thread.sleep(10000);
             }
 
