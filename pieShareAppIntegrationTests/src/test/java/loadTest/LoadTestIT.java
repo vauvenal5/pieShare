@@ -33,7 +33,7 @@ import pieShareAppITs.helper.ITTasksCounter;
  *
  * @author richy
  */
-public class LoadTestLT {
+public class LoadTestIT {
 
     private AnnotationConfigApplicationContext context;
     private ITTasksCounter counter;
