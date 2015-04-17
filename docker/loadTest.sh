@@ -10,6 +10,8 @@ if [[ $nodes -lt 2 ]]; then
 	exit
 fi
 
+#add image removal!!! or move git clone to internal file
+
 cd loadTest
 docker build -t vauvenal5/master .
 docker build -t vauvenal5/slave .
