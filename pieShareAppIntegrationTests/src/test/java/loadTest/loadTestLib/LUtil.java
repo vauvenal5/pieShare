@@ -48,7 +48,7 @@ public class LUtil {
 	}
         
         public static void setUpEnviroment() {
-		//System.setProperty("java.net.preferIPv4Stack", "true");
+		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 	}
         
