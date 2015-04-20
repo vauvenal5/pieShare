@@ -183,6 +183,7 @@ public class PieShareAppTasks {
 		service.setHistoryService(services.historyService());
 		service.setFileWatcherService(this.services.apacheFileWatcherService());
 		service.setMessageFactoryService(this.services.messageFactoryService());
+                service.setFileService(this.services.historyFileService());
 		return service;
 	}
 
