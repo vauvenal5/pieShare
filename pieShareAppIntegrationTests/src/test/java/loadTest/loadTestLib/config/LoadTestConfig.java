@@ -7,6 +7,7 @@ package loadTest.loadTestLib.config;
 
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -24,6 +25,7 @@ public class LoadTestConfig {
     @Scope(value="prototype")
     public AllFilesCompleteMessage allFilesCompleteMessage() {
         AllFilesCompleteMessage message = new AllFilesCompleteMessage();
+        message.setAddress(new JGroupsPieAddress());
         return message;
     }
 
