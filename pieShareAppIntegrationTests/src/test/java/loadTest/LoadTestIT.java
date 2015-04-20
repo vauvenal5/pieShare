@@ -55,6 +55,10 @@ public class LoadTestIT {
     public void tearDownMethod() throws Exception {
         LUtil.performTearDown(context);
     }
+    
+    @Test
+    public void doNothing() {
+    }
 
     @Test(timeOut = 600000)
     public void loadTest() throws Exception {
