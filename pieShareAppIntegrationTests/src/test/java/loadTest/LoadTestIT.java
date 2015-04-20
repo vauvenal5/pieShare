@@ -22,6 +22,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
@@ -113,13 +114,18 @@ public class LoadTestIT {
 
         System.out.println("Waiting for completion!");
         if (LUtil.IsMaster()) {
+            PieLogger.info(this.getClass(), "Master");
             while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount()-1)) {
                 Thread.sleep(10000);
             }
         } else {
+            PieLogger.info(this.getClass(), "Slave");
             while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()) {
                 Thread.sleep(10000);
             }
+            
+            PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
+            PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
             AllFilesCompleteMessage message = context.getBean(AllFilesCompleteMessage.class);
             ClusterManagementService service = context.getBean(ClusterManagementService.class);
