@@ -108,6 +108,7 @@ public class LoadTestIT {
                 TestFileUtils.createFile(file, ltModel.getFileSize());
             }
             System.out.println("Files successfully created!");
+            PieLogger.info(this.getClass(), "Files successfully created!");
         }
 
         task.run();
