@@ -17,6 +17,7 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -122,6 +123,8 @@ public class LoadTestIT {
 
             AllFilesCompleteMessage message = context.getBean(AllFilesCompleteMessage.class);
             ClusterManagementService service = context.getBean(ClusterManagementService.class);
+            message.setAddress(new JGroupsPieAddress());
+            message.getAddress().setChannelId("testUser");
             service.sendMessage(message);
         }
         System.out.println("Finished!");
