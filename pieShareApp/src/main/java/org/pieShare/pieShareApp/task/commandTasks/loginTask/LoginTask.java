@@ -52,12 +52,17 @@ public class LoginTask implements ILoginTask {
 	private IHistoryService historyService;
 	private IFileWatcherService fileWatcherService;
 	private IMessageFactoryService messageFactoryService;
+        private IFileService fileService;
 	
 	private File pwdFile;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
 	}
+
+        public void setFileService(IFileService fileService) {
+            this.fileService = fileService;
+        }
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
@@ -154,6 +159,7 @@ public class LoginTask implements ILoginTask {
                         IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
                         fileList.getAddress().setClusterName(user.getCloudName());
                         fileList.getAddress().setChannelId(user.getUserName());
+                        fileList.setFileList(this.fileService.getAllFiles());
                         this.clusterManagementService.sendMessage(fileList);
                         
 			//send file list request message to cluster
