@@ -118,16 +118,19 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		}
 		
 		try {
-			if(tracker == null) {
-				//this section inits the local tracker
-				//todo: use beanService
-				int port = this.networkService.getAvailablePortStartingFrom(6969);
-				this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
-				PieLogger.info(this.getClass(), this.trackerUri.toString());
-				InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
-				this.tracker = new Tracker(ad);
-				tracker.start();
-			}
+                        synchronized(this)
+                        {
+                            if(tracker == null) {
+                                    //this section inits the local tracker
+                                    //todo: use beanService
+                                    int port = this.networkService.getAvailablePortStartingFrom(6969);
+                                    this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
+                                    PieLogger.info(this.getClass(), this.trackerUri.toString());
+                                    InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
+                                    this.tracker = new Tracker(ad);
+                                    tracker.start();
+                            }
+                        }
 
 			//todo: ther is a bug when triing to share 0 byte files
 			//todo: error handling when torrent null
