@@ -13,13 +13,12 @@ fi
 #add image removal!!! or move git clone to internal file
 
 cd loadTest
-docker build -t vauvenal5/master .
-docker build -t vauvenal5/slave .
+docker build -t vauvenal5/loadtest .
 
 #start all slave nodes
 for (( i = 1; i < $nodes; i++ )); do
-	docker run vauvenal5/slave "slave" &
+	docker run vauvenal5/loadtest "slave" &
 done
 
 #start the master node
-docker run vauvenal5/master "master"
+docker run vauvenal5/loadtest "master"
