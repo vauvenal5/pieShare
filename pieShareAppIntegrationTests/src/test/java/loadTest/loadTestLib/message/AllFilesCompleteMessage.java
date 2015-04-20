@@ -6,11 +6,12 @@
 package loadTest.loadTestLib.message;
 
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
  *
  * @author richy
  */
-public class AllFilesCompleteMessage extends AClusterMessage {
+public class AllFilesCompleteMessage extends AClusterMessage implements IEncryptedMessage {
     
 }
