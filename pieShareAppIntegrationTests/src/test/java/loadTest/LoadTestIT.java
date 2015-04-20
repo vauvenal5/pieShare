@@ -123,7 +123,7 @@ public class LoadTestIT {
 
             AllFilesCompleteMessage message = context.getBean(AllFilesCompleteMessage.class);
             ClusterManagementService service = context.getBean(ClusterManagementService.class);
-            message.setAddress(new JGroupsPieAddress());
+            message.getAddress().setClusterName("testUser");
             message.getAddress().setChannelId("testUser");
             service.sendMessage(message);
         }
