@@ -7,7 +7,7 @@ git clean -fd
 # DfailIfNoTests this is disabled to not fail after no unit tests where found
 # Dit.test sets the loadTest to be executed
 env LTTYPE=$1 mvn clean verify -Dtest=LoadTestIT -Dit.test=LoadTestIT -DfailIfNoTests=false
-#while true;
-#do
-#	sleep 1000
-#done
+while true;
+do
+	sleep 1000
+done
