@@ -13,6 +13,8 @@ import java.net.InetAddress;
  */
 public interface INetworkService {
 
+        void setNicDisplayName(String nicDisplayName);
+            
 	int getAvailablePort();
 
 	InetAddress getLocalHost();
