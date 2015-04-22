@@ -21,4 +21,4 @@ for (( i = 1; i < $nodes; i++ )); do
 done
 
 #start the master node
-docker run vauvenal5/loadtest "master"
+#docker run vauvenal5/loadtest "master"
