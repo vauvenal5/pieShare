@@ -14,6 +14,8 @@ import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -64,6 +66,11 @@ public class LoadTestIT {
     public void loadTest() throws Exception {
 
         String userName = "testUser";
+        
+        if(LUtil.IsMaster()) {
+            INetworkService networkService = context.getBean(NetworkService.class);
+            networkService.setNicDisplayName("docker0");
+        }
 
         PieUser user = context.getBean("pieUser", PieUser.class);
         PieShareConfiguration config = user.getPieShareConfiguration();
