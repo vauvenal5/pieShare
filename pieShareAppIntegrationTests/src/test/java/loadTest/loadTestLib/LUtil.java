@@ -92,10 +92,30 @@ public class LUtil {
         public static boolean IsMaster()
         {
             String ltType = System.getenv("LTTYPE");
+            
+            if(ltType == null) {
+                ltType = "master";
+            }
+            
             if(ltType.equals("master")) {
                 return true;
             }
             
             return false;
+        }
+        
+        public static Process startDockerBuild() throws IOException {
+                //get the path and substring the 'file:' from the URI
+                String dockerfile = LUtil.class.getClassLoader().getResource("docker").toString().substring(5);
+
+		ProcessBuilder processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
+                processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		return processBuilder.start();
+	}
+        
+        public static Process startDockerSlave() throws IOException {
+		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave");
+                //processBuilder.redirectOutput() // maybe redirect output to file
+		return processBuilder.start();
         }
 }

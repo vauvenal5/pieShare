@@ -7,6 +7,9 @@ package loadTest;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
@@ -41,6 +44,7 @@ public class LoadTestIT {
 
     private AnnotationConfigApplicationContext context;
     private ITTasksCounter counter;
+    private List<Process> slaves;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -51,23 +55,22 @@ public class LoadTestIT {
     public void setUpMethod() throws Exception {
         LUtil.performTearDownDelete();
         context = LUtil.getContext();
+        this.slaves = new ArrayList<>();
     }
 
     @AfterMethod
     public void tearDownMethod() throws Exception {
         LUtil.performTearDown(context);
     }
-    
-    @Test
-    public void doNothing() {
-    }
 
     @Test(timeOut = 600000)
     public void loadTest() throws Exception {
-
         String userName = "testUser";
         
         if(LUtil.IsMaster()) {
+            Process proc = LUtil.startDockerBuild();
+            int res = proc.waitFor();
+            Assert.assertEquals(res, 0);
             INetworkService networkService = context.getBean(NetworkService.class);
             networkService.setNicDisplayName("docker0");
         }
@@ -83,6 +86,12 @@ public class LoadTestIT {
         command.setUserName(userName);
         
         LoadTestConfigModel ltModel = LUtil.readJSONConfig();
+        
+        if(LUtil.IsMaster()) {
+            for(int i=1; i<ltModel.getNodeCount();i++) {
+                this.slaves.add(LUtil.startDockerSlave());
+            }
+        }
 
         IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
