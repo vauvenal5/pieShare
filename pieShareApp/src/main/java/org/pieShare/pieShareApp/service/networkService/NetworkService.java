@@ -27,6 +27,12 @@ public class NetworkService implements INetworkService {
 	private int minPort = 1024;
 	private int maxPort = 49151;
 	private InetAddress address = null;
+        private String nicDisplayName;
+
+        @Override
+        public void setNicDisplayName(String nicDisplayName) {
+            this.nicDisplayName = nicDisplayName;
+        }
 
 	@Override
 	public int getAvailablePort() {
@@ -62,6 +68,71 @@ public class NetworkService implements INetworkService {
 	public InetAddress getLocalHost() {
 		return this.getLocalHost(false);
 	}
+        
+        private boolean useFixedNic() {
+            return this.nicDisplayName != null && !this.nicDisplayName.isEmpty();
+        }
+        
+        private boolean checkFixedNic(NetworkInterface nic) {
+            if(nic.getDisplayName().equals(this.nicDisplayName)) {
+                return true;
+            }       
+            return false;
+        }
+        
+        private InetAddress checkReachableAddress(InetAddress ad) {
+            if(this.useFixedNic()) {
+                return ad;
+            }
+            else {
+                //test internet connection
+                try (SocketChannel socket = SocketChannel.open()) {
+                        socket.socket().setSoTimeout(5000);
+
+                        int freePort = this.getAvailablePort();
+
+                        socket.bind(new InetSocketAddress(ad, freePort));
+                        //this has to become way better
+                        //socket.connect(new InetSocketAddress("google.com", 80));
+                        //if everything passes the InetAddress should be okay.
+                        socket.close();
+                        this.address = ad;
+                        PieLogger.info(this.getClass(), "Found internet!");
+                        return this.address;
+                } catch (IOException ex) {
+                        PieLogger.info(this.getClass(), "No internet here!", ex);
+                }
+            }
+            
+            return null;
+        }
+        
+        private List<InetAddress> checkAddresses(NetworkInterface nic) {
+            List<InetAddress> possibleAds = new ArrayList<>();
+            Enumeration<InetAddress> ads = nic.getInetAddresses();
+
+            while (ads.hasMoreElements()) {
+                    InetAddress ad = ads.nextElement();
+                    try {
+                            if (ad instanceof Inet4Address) {
+                                    if(ad.isReachable(5000))
+                                    {
+                                        if(this.checkReachableAddress(ad) == ad) {
+                                            possibleAds = new ArrayList<>();
+                                            possibleAds.add(ad);
+                                            return possibleAds;
+                                        }
+                                        
+                                        possibleAds.add(ad);
+                                    }
+                            }
+                    } catch (IOException ex) {
+                            PieLogger.info(this.getClass(), "Well looks bad for internet!", ex);
+                    }
+            }
+            
+            return possibleAds;
+        }
 
 	@Override
 	public InetAddress getLocalHost(boolean invalidate) {
@@ -80,42 +151,26 @@ public class NetworkService implements INetworkService {
 			Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
 			while (nics.hasMoreElements()) {
 				NetworkInterface nic = nics.nextElement();
-				
-				if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
-					Enumeration<InetAddress> ads = nic.getInetAddresses();
-
-					while (ads.hasMoreElements()) {
-						InetAddress ad = ads.nextElement();
-						try {
-							if (ad instanceof Inet4Address) {
-								if(ad.isReachable(5000))
-								{
-									possibleAds.add(ad);
-
-									//test internet connection
-									try (SocketChannel socket = SocketChannel.open()) {
-										socket.socket().setSoTimeout(5000);
-
-										int freePort = this.getAvailablePort();
-
-										socket.bind(new InetSocketAddress(ad, freePort));
-										//this has to become way better
-										//socket.connect(new InetSocketAddress("google.com", 80));
-										//if everything passes the InetAddress should be okay.
-										socket.close();
-										this.address = ad;
-										PieLogger.info(this.getClass(), "Found internet!");
-										return this.address;
-									} catch (IOException ex) {
-										PieLogger.info(this.getClass(), "No internet here!", ex);
-									}
-								}
-							}
-						} catch (IOException ex) {
-							PieLogger.info(this.getClass(), "Well looks bad for internet!", ex);
-						}
-					}
-				}
+                                
+                                if(this.useFixedNic()) {
+                                    if(this.checkFixedNic(nic)) {
+                                        List<InetAddress> ads = this.checkAddresses(nic);
+                                        if(!ads.isEmpty()) {
+                                            return ads.get(0);
+                                        }
+                                    }
+                                }
+                                else {
+                                    if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
+                                        List<InetAddress> ads = this.checkAddresses(nic);
+                                        if(ads.size() == 1) {
+                                            return ads.get(0);
+                                        }
+                                        else {
+                                            possibleAds.addAll(ads);
+                                        }
+                                    }
+                                }
 			}
 		} catch (SocketException ex) {
 			PieLogger.info(this.getClass(), "God damit! Give me internet", ex);
