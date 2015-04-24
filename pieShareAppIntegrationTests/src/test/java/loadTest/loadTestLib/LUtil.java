@@ -28,15 +28,15 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 public class LUtil {
         
         public static String getWorkingDir() {
-            return "workingDir";
+            return "loadTest/workingDir";
         }
         
         public static String getTmpDir() {
-            return "tmpDir";
+            return "loadTest/tmpDir";
         }
         
         public static String getConfigDir() {
-            return "loadTestConfig";
+            return "loadTest/loadTestConfig";
         }
     
     	public static AnnotationConfigApplicationContext getContext() {
