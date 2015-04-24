@@ -24,7 +24,7 @@ import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoC
 public class ApplicationConfigurationService implements IApplicationConfigurationService {
 
 	private final String HOME_DIR;
-	private File BASE_CONFIG_FOLDER;
+	protected File BASE_CONFIG_FOLDER;
 	private IPropertiesReader propertiesReader;
 	private File configFile;
 	private Properties conf;
@@ -87,13 +87,6 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 			conf.replace(key, value);
 		}
 		propertiesReader.saveConfig(conf, configFile);
-	}
-
-	public void setConfigPath(String folder) {
-		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
-		if (!BASE_CONFIG_FOLDER.exists()) {
-			BASE_CONFIG_FOLDER.mkdirs();
-		}
 	}
 
 	public void init() {

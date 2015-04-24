@@ -66,6 +66,7 @@ public class LoadTestIT {
     @Test(timeOut = 600000)
     public void loadTest() throws Exception {
         String userName = "testUser";
+        LoadTestConfigModel ltModel = LUtil.readJSONConfig();
         
         if(LUtil.IsMaster()) {
             Process proc = LUtil.startDockerBuild();
@@ -73,6 +74,11 @@ public class LoadTestIT {
             Assert.assertEquals(res, 0);
             INetworkService networkService = context.getBean(NetworkService.class);
             networkService.setNicDisplayName("docker0");
+            
+            //start slave nodes
+            for(int i=1; i<ltModel.getNodeCount();i++) {
+                this.slaves.add(LUtil.startDockerSlave());
+            }
         }
 
         PieUser user = context.getBean("pieUser", PieUser.class);
@@ -84,14 +90,6 @@ public class LoadTestIT {
         pwd.password = "test".getBytes();
         command.setPlainTextPassword(pwd);
         command.setUserName(userName);
-        
-        LoadTestConfigModel ltModel = LUtil.readJSONConfig();
-        
-        if(LUtil.IsMaster()) {
-            for(int i=1; i<ltModel.getNodeCount();i++) {
-                this.slaves.add(LUtil.startDockerSlave());
-            }
-        }
 
         IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
