@@ -6,41 +6,45 @@
 package loadTest.loadTestLib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
+import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
+import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import pieShareAppITs.helper.ITUtil;
-import static pieShareAppITs.helper.ITUtil.getBotDbDir;
-import static pieShareAppITs.helper.ITUtil.getBotKey;
-import static pieShareAppITs.helper.ITUtil.getBotTmpDir;
-import static pieShareAppITs.helper.ITUtil.getBotWorkingDir;
-import static pieShareAppITs.helper.ITUtil.getMainDbDir;
-import static pieShareAppITs.helper.ITUtil.getMainKey;
-import static pieShareAppITs.helper.ITUtil.getMainTmpDir;
-import static pieShareAppITs.helper.ITUtil.getMainWorkingDir;
-import pieShareAppITs.helper.config.PieShareAppServiceConfig;
 
 /**
  *
  * @author richy
  */
 public class LUtil {
+        
+        public static String getWorkingDir() {
+            return "workingDir";
+        }
+        
+        public static String getTmpDir() {
+            return "tmpDir";
+        }
+        
+        public static String getConfigDir() {
+            return "loadTestConfig";
+        }
+    
     	public static AnnotationConfigApplicationContext getContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
 		context.register(PieShareAppModel.class);
-		context.register(PieShareAppService.class);
+		context.register(PieShareAppServiceTestConfig.class);
 		context.register(PieShareAppTasks.class);
                 context.register(LoadTestConfig.class);
 		context.refresh();
@@ -73,14 +77,9 @@ public class LUtil {
 	}
         
         public static void performTearDownDelete() throws Exception {
-		FileUtils.deleteDirectory(new File(getMainWorkingDir()));
-		FileUtils.deleteDirectory(new File(getMainTmpDir()));
-		FileUtils.deleteDirectory(new File(getBotWorkingDir()));
-		FileUtils.deleteDirectory(new File(getBotTmpDir()));
-		FileUtils.deleteDirectory(new File(getMainDbDir()));
-		FileUtils.deleteDirectory(new File(getBotDbDir()));
-		(new File(getMainKey())).delete();
-		(new File(getBotKey())).delete();
+		FileUtils.deleteDirectory(new File(getWorkingDir()));
+		FileUtils.deleteDirectory(new File(getTmpDir()));
+                FileUtils.deleteDirectory(new File(getConfigDir()));
 	}
         
         public static LoadTestConfigModel readJSONConfig() throws IOException {
