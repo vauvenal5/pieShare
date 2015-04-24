@@ -1,5 +1,4 @@
 cd /pieShare
-echo $1
 git pull
 # env runs the mvn command with the enviroment var LTTYPE set
 # Dtest is set to force skiping the unit tests by not finding any
