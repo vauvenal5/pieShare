@@ -67,6 +67,7 @@ public class LoadTestIT {
     public void loadTest() throws Exception {
         String userName = "testUser";
         LoadTestConfigModel ltModel = LUtil.readJSONConfig();
+		PieUser user = context.getBean("pieUser", PieUser.class);
         
         if(LUtil.IsMaster()) {
             Process proc = LUtil.startDockerBuild();
@@ -79,10 +80,13 @@ public class LoadTestIT {
             for(int i=1; i<ltModel.getNodeCount();i++) {
                 this.slaves.add(LUtil.startDockerSlave());
             }
+			
+			PieShareConfiguration config = user.getPieShareConfiguration();
+			config.setPwdFile(new File("./loadTest/pwdFile"));
+			config.setTmpDir(new File("./loadTest/tmpDir"));
+			config.setWorkingDir(new File("./loadTest/workingDir"));
         }
 
-        PieUser user = context.getBean("pieUser", PieUser.class);
-        PieShareConfiguration config = user.getPieShareConfiguration();
         LoginTask task = context.getBean(LoginTask.class);
 
         LoginCommand command = new LoginCommand();

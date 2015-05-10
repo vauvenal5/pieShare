@@ -105,7 +105,7 @@ public class LUtil {
         
         public static Process startDockerBuild() throws IOException {
                 //get the path and substring the 'file:' from the URI
-                String dockerfile = LUtil.class.getClassLoader().getResource("docker").toString().substring(5);
+                String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
 
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
                 processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
