@@ -39,7 +39,8 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 
 	@Override
 	public void run() {
-		if(!this.requestService.isRequested(msg.getPieFile())) {
+		
+		if(!this.requestService.handleRequest(msg.getPieFile())) {
 			return;
 		}
 		

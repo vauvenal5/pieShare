@@ -70,10 +70,15 @@ public class RequestService implements IRequestService {
 	}
 	
 	//todo: is this really needed?
-	/*@Override
-	public void requestIsBeingHandled(PieFile file) {
-		requestedFiles.replace(file, true);
-	}*/
+	@Override
+	public synchronized boolean handleRequest(PieFile file) {
+		if(this.isRequested(file) && !requestedFiles.get(file)) {
+			requestedFiles.replace(file, true);
+			return true;
+		}
+		
+		return false;
+	}
 
 	@Override
 	public synchronized boolean isRequested(PieFile file) {

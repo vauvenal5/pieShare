@@ -8,6 +8,7 @@ package loadTest.loadTestLib.task;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import org.jgroups.protocols.COUNTER;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import pieShareAppITs.helper.ITTasksCounter;
 
 /**
@@ -31,6 +32,7 @@ public class AllFilesCompleteTask implements IPieEventTask<AllFilesCompleteMessa
     @Override
     public void run() {
         counter.increment(this.getClass());
+		PieLogger.info(this.getClass(), "Slave done!");
     }
 
 }
