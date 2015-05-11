@@ -19,6 +19,8 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
+import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
+import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -143,8 +145,11 @@ public class LoadTestIT {
             }
         } else {
             PieLogger.info(this.getClass(), "Slave");
-            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()) {
-                Thread.sleep(10000);
+			BitTorrentService torrentService = context.getBean(BitTorrentService.class);
+			
+            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount() && 
+					torrentService.activeTorrents()) {
+                Thread.sleep(5000);
             }
             
             PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
