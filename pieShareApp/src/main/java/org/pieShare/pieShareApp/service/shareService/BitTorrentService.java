@@ -217,4 +217,8 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	public boolean isShareActive(FileMeta file) {
 		return (this.sharedFiles.getOrDefault(file, 0) > 0);
 	}
+	
+	public boolean activeTorrents() {
+		return !this.sharedFiles.isEmpty();
+	}
 }
