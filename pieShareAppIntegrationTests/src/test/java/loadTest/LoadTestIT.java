@@ -147,7 +147,7 @@ public class LoadTestIT {
             PieLogger.info(this.getClass(), "Slave");
 			BitTorrentService torrentService = context.getBean(BitTorrentService.class);
 			
-            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount() && 
+            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount() || 
 					torrentService.activeTorrents()) {
                 Thread.sleep(5000);
             }
