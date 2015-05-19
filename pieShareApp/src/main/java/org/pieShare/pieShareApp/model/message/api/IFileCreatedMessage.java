@@ -10,6 +10,6 @@ package org.pieShare.pieShareApp.model.message.api;
  *
  * @author Svetoslav
  */
-public interface INewFileMessage extends IFileMessageBase {
+public interface IFileCreatedMessage extends IFileMessageBase {
 	
 }
