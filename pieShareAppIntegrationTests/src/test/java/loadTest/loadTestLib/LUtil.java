@@ -10,6 +10,7 @@ import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
@@ -82,11 +83,18 @@ public class LUtil {
                 FileUtils.deleteDirectory(new File(getConfigDir()));
 	}
         
-        public static LoadTestConfigModel readJSONConfig() throws IOException {
+        public static List<LoadTestConfigModel> readJSONConfig() throws IOException {
             InputStream in = LUtil.class.getClassLoader().getResourceAsStream("loadTestConfig.json");
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(in, LoadTestConfigModel.class);
+			List<LoadTestConfigModel> myObjects = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, LoadTestConfigModel.class));
+            return myObjects;
         }
+		
+		public static void writeJSONResults(List<Long> results) throws IOException {
+			File resultFile = new File("loadTestResults");
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.writeValue(resultFile, results);
+		}
         
         public static boolean IsMaster()
         {
@@ -112,8 +120,8 @@ public class LUtil {
 		return processBuilder.start();
 	}
         
-        public static Process startDockerSlave() throws IOException {
-		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave");
+        public static Process startDockerSlave(LoadTestConfigModel ltModel) throws IOException {
+		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", String.valueOf(ltModel.getFileCount()));
                 //processBuilder.redirectOutput() // maybe redirect output to file
 		return processBuilder.start();
         }
