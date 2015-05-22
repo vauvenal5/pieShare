@@ -5,13 +5,13 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
-import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class NewFileTask extends ARequestTask<INewFileMessage> {
+public class NewFileTask extends ARequestTask<IFileCreatedMessage> {
 	@Override
 	public void run() {
 		this.doWork(this.msg.getPieFile());
