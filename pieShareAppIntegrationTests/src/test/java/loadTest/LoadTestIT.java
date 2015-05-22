@@ -9,6 +9,7 @@ import commonTestTools.TestFileUtils;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
@@ -64,11 +65,32 @@ public class LoadTestIT {
     public void tearDownMethod() throws Exception {
         LUtil.performTearDown(context);
     }
+	
+	@Test(timeOut = 600000)
+	public void loadTest() throws Exception {
+		if(LUtil.IsMaster()) {
+			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
+			List<Long> results = new ArrayList<>();
 
-    @Test(timeOut = 600000)
-    public void loadTest() throws Exception {
+			for(LoadTestConfigModel ltModel : ltModels) {
+				results.add(this.loadTestHelper(ltModel));
+			}
+			
+			LUtil.writeJSONResults(results);
+			
+			return;
+		}
+		
+		LoadTestConfigModel ltModesl = new LoadTestConfigModel();
+		ltModesl.setFileSize(0);
+		ltModesl.setNodeCount(0);
+		ltModesl.setFileCount(Integer.getInteger(System.getenv("LTFILES")));
+		
+		this.loadTestHelper(ltModesl);
+	}
+
+    public long loadTestHelper(LoadTestConfigModel ltModel) throws Exception {
         String userName = "testUser";
-        LoadTestConfigModel ltModel = LUtil.readJSONConfig();
 		PieUser user = context.getBean("pieUser", PieUser.class);
         
         if(LUtil.IsMaster()) {
@@ -80,7 +102,7 @@ public class LoadTestIT {
             
             //start slave nodes
             for(int i=1; i<ltModel.getNodeCount();i++) {
-                this.slaves.add(LUtil.startDockerSlave());
+                this.slaves.add(LUtil.startDockerSlave(ltModel));
             }
 			
 			PieShareConfiguration config = user.getPieShareConfiguration();
@@ -136,13 +158,21 @@ public class LoadTestIT {
         }
 
         task.run();
+		
+		long resultTime = -1;
 
         System.out.println("Waiting for completion!");
         if (LUtil.IsMaster()) {
             PieLogger.info(this.getClass(), "Master");
+			Date start = new Date();
+			
             while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount()-1)) {
                 Thread.sleep(10000);
             }
+			Date stop = new Date();
+			
+			resultTime = stop.getTime() - start.getTime();
+			
         } else {
             PieLogger.info(this.getClass(), "Slave");
 			BitTorrentService torrentService = context.getBean(BitTorrentService.class);
@@ -162,5 +192,6 @@ public class LoadTestIT {
             service.sendMessage(message);
         }
         System.out.println("Finished!");
+		return resultTime;
     }
 }

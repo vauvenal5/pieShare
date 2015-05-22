@@ -1,5 +1,12 @@
-{
-    "nodeCount": "3",
-    "fileCount": "2",
-    "fileSize": "1024"
-}
+[
+	{
+		"nodeCount": "2",
+		"fileCount": "2",
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "3",
+		"fileCount": "2",
+		"fileSize": "5"
+	}
+]
