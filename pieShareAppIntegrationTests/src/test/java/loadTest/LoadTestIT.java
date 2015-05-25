@@ -105,11 +105,11 @@ public class LoadTestIT {
 		LoadTestConfigModel ltModel = new LoadTestConfigModel();
 		ltModel.setFileSize(0);
 		ltModel.setNodeCount(0);
-		//String fileCount = System.getenv("LTFILES");
-		//System.out.println("FILECOUNT:"+fileCount);
+		String fileCount = System.getenv("LTFILES");
+		System.out.println("FILECOUNT:"+fileCount);
 		int fc = Integer.getInteger(System.getenv("LTFILES"));
-		/*Assert.assertNotNull(fc);
-		Assert.assertNotNull(ltModel);*/
+		Assert.assertNotNull(fc);
+		Assert.assertNotNull(ltModel);
 		ltModel.setFileCount(fc);
 		
 		return new Object[][]{{ltModel}};
