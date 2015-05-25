@@ -109,14 +109,16 @@ public class LUtil {
 		return false;
 	}
 
-	public static Process startDockerBuild() throws IOException {
+	public static Process startDockerBuild() throws IOException, InterruptedException {
 		//get the path and substring the 'file:' from the URI
 		String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
 		
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "rmi", "-f", "vauvenal5/loadtest");
 		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-		processBuilder.start();
+		Process docker = processBuilder.start();
 
+		docker.waitFor();
+		
 		processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
 		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 		return processBuilder.start();

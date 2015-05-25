@@ -36,6 +36,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import pieShareAppITs.helper.ITTasksCounter;
 
@@ -48,11 +49,22 @@ public class LoadTestIT {
     private AnnotationConfigApplicationContext context;
     private ITTasksCounter counter;
     private List<Process> slaves;
+	private static List<Long> results;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         LUtil.setUpEnviroment();
+		
+		if(LUtil.IsMaster()) {
+			results = new ArrayList<>();
+		}
     }
+	
+	public static void tearDownClass() throws Exception {
+		if(LUtil.IsMaster()) {
+			LUtil.writeJSONResults(results);
+		}
+	}
 
     @BeforeMethod
     public void setUpMethod() throws Exception {
@@ -66,35 +78,32 @@ public class LoadTestIT {
         LUtil.performTearDown(context);
     }
 	
-	@Test
-	public void loadTest() throws Exception {
+	@DataProvider(name="loadTestDataProvider")
+	public static Object[][] loadTestDataProvider() throws Exception {
 		if(LUtil.IsMaster()) {
 			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
-			List<Long> results = new ArrayList<>();
 
-			for(LoadTestConfigModel ltModel : ltModels) {
-				results.add(this.loadTestHelper(ltModel));
-			}
-			
-			LUtil.writeJSONResults(results);
-			
-			return;
+			return new Object[][] {ltModels.toArray()};
 		}
 		
-		LoadTestConfigModel ltModesl = new LoadTestConfigModel();
-		ltModesl.setFileSize(0);
-		ltModesl.setNodeCount(0);
+		LoadTestConfigModel ltModel = new LoadTestConfigModel();
+		ltModel.setFileSize(0);
+		ltModel.setNodeCount(0);
 		String fileCount = System.getenv("LTFILES");
 		System.out.println("FILECOUNT:"+fileCount);
 		int fc = Integer.getInteger(fileCount);
 		Assert.assertNotNull(fc);
-		Assert.assertNotNull(ltModesl);
-		ltModesl.setFileCount(fc);
+		Assert.assertNotNull(ltModel);
+		ltModel.setFileCount(fc);
 		
-		this.loadTestHelper(ltModesl);
+		return new Object[][]{{ltModel}};
 	}
+	
+	//todo: solve this another way!!!!
+	//todo: search for testng test configs like in C# at work
 
-    public long loadTestHelper(LoadTestConfigModel ltModel) throws Exception {
+	@Test(dataProvider = "loadTestDataProvider")
+    public long loadTest(LoadTestConfigModel ltModel) throws Exception {
         String userName = "testUser";
 		PieUser user = context.getBean("pieUser", PieUser.class);
         
