@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
@@ -57,6 +58,9 @@ public class LoadTestIT {
 		
 		if(LUtil.IsMaster()) {
 			results = new ArrayList<>();
+			Process proc = LUtil.startDockerBuild();
+            int res = proc.waitFor();
+            Assert.assertEquals(res, 0);
 		}
     }
 	
@@ -80,37 +84,54 @@ public class LoadTestIT {
 	
 	@DataProvider(name="loadTestDataProvider")
 	public static Object[][] loadTestDataProvider() throws Exception {
+		
+		//System.out.println("IsMaster: "+ String.valueOf(LUtil.IsMaster()) + "\n");
+		
 		if(LUtil.IsMaster()) {
 			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
 
-			return new Object[][] {ltModels.toArray()};
+			//System.out.println("DataSize: "+String.valueOf(ltModels.size()) + "\n");
+			Object[][] data = new Object[ltModels.size()][1];
+			
+			for(int i = 0; i<ltModels.size(); i++) {
+				data[i][0] = ltModels.get(i);
+			}
+			
+			//System.out.println("DataSize: "+String.valueOf(data.length) + "\n");
+			
+			return data;
 		}
 		
 		LoadTestConfigModel ltModel = new LoadTestConfigModel();
 		ltModel.setFileSize(0);
 		ltModel.setNodeCount(0);
-		String fileCount = System.getenv("LTFILES");
-		System.out.println("FILECOUNT:"+fileCount);
-		int fc = Integer.getInteger(fileCount);
-		Assert.assertNotNull(fc);
-		Assert.assertNotNull(ltModel);
+		//String fileCount = System.getenv("LTFILES");
+		//System.out.println("FILECOUNT:"+fileCount);
+		int fc = Integer.getInteger(System.getenv("LTFILES"));
+		/*Assert.assertNotNull(fc);
+		Assert.assertNotNull(ltModel);*/
 		ltModel.setFileCount(fc);
 		
 		return new Object[][]{{ltModel}};
+	}
+	
+	@Test
+	public void selfTest() throws Exception {
+		loadTestDataProvider();
 	}
 	
 	//todo: solve this another way!!!!
 	//todo: search for testng test configs like in C# at work
 
 	@Test(dataProvider = "loadTestDataProvider")
-    public long loadTest(LoadTestConfigModel ltModel) throws Exception {
+    public void loadTest(LoadTestConfigModel ltModel) throws Exception {
         String userName = "testUser";
 		PieUser user = context.getBean("pieUser", PieUser.class);
         
         if(LUtil.IsMaster()) {
-            Process proc = LUtil.startDockerBuild();
+            /*Process proc = LUtil.startDockerBuild();
             int res = proc.waitFor();
-            Assert.assertEquals(res, 0);
+            Assert.assertEquals(res, 0);*/
             INetworkService networkService = context.getBean(NetworkService.class);
             networkService.setNicDisplayName("docker0");
             
@@ -172,8 +193,6 @@ public class LoadTestIT {
         }
 
         task.run();
-		
-		long resultTime = -1;
 
         System.out.println("Waiting for completion!");
         if (LUtil.IsMaster()) {
@@ -185,7 +204,8 @@ public class LoadTestIT {
             }
 			Date stop = new Date();
 			
-			resultTime = stop.getTime() - start.getTime();
+			long resultTime = stop.getTime() - start.getTime();
+			results.add(resultTime);
 			
         } else {
             PieLogger.info(this.getClass(), "Slave");
@@ -206,6 +226,5 @@ public class LoadTestIT {
             service.sendMessage(message);
         }
         System.out.println("Finished!");
-		return resultTime;
     }
 }
