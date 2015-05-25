@@ -27,102 +27,104 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
  * @author richy
  */
 public class LUtil {
-        
-        public static String getWorkingDir() {
-            return "loadTest/workingDir";
-        }
-        
-        public static String getTmpDir() {
-            return "loadTest/tmpDir";
-        }
-        
-        public static String getConfigDir() {
-            return "loadTest/loadTestConfig";
-        }
-    
-    	public static AnnotationConfigApplicationContext getContext() {
+
+	public static String getWorkingDir() {
+		return "loadTest/workingDir";
+	}
+
+	public static String getTmpDir() {
+		return "loadTest/tmpDir";
+	}
+
+	public static String getConfigDir() {
+		return "loadTest/loadTestConfig";
+	}
+
+	public static AnnotationConfigApplicationContext getContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
 		context.register(PieShareAppModel.class);
 		context.register(PieShareAppServiceTestConfig.class);
 		context.register(PieShareAppTasks.class);
-                context.register(LoadTestConfig.class);
+		context.register(LoadTestConfig.class);
 		context.refresh();
 		return context;
 	}
-        
-        public static void setUpEnviroment() {
+
+	public static void setUpEnviroment() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 	}
-        
-        public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
+
+	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
 		//shutdown application
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 
 		//get dirs to delete
 		/*PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
-		File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
-		File mainTmpDir = config.getTmpDir();
-		File configMain = config.getPwdFile();
-		config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
-		File botWorkingDir = config.getWorkingDir();
-		File botTmpDir = config.getTmpDir();
-		File configBot = config.getPwdFile();*/
-		
+		 File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
+		 File mainTmpDir = config.getTmpDir();
+		 File configMain = config.getPwdFile();
+		 config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
+		 File botWorkingDir = config.getWorkingDir();
+		 File botTmpDir = config.getTmpDir();
+		 File configBot = config.getPwdFile();*/
 		//stop context
 		context.close();
 		context = null;
 	}
-        
-        public static void performTearDownDelete() throws Exception {
+
+	public static void performTearDownDelete() throws Exception {
 		FileUtils.deleteDirectory(new File(getWorkingDir()));
 		FileUtils.deleteDirectory(new File(getTmpDir()));
-                FileUtils.deleteDirectory(new File(getConfigDir()));
+		FileUtils.deleteDirectory(new File(getConfigDir()));
 	}
-        
-        public static List<LoadTestConfigModel> readJSONConfig() throws IOException {
-            InputStream in = LUtil.class.getClassLoader().getResourceAsStream("loadTestConfig.json");
-            ObjectMapper mapper = new ObjectMapper();
-			List<LoadTestConfigModel> myObjects = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, LoadTestConfigModel.class));
-            return myObjects;
-        }
-		
-		public static void writeJSONResults(List<Long> results) throws IOException {
-			File resultFile = new File("loadTestResults");
-			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(resultFile, results);
-		}
-        
-        public static boolean IsMaster()
-        {
-            String ltType = System.getenv("LTTYPE");
-            
-            if(ltType == null) {
-                ltType = "master";
-            }
-            
-            if(ltType.equals("master")) {
-                return true;
-            }
-            
-            return false;
-        }
-        
-        public static Process startDockerBuild() throws IOException {
-                //get the path and substring the 'file:' from the URI
-                String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
 
-		ProcessBuilder processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
-                processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+	public static List<LoadTestConfigModel> readJSONConfig() throws IOException {
+		InputStream in = LUtil.class.getClassLoader().getResourceAsStream("loadTestConfig.json");
+		ObjectMapper mapper = new ObjectMapper();
+		List<LoadTestConfigModel> myObjects = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, LoadTestConfigModel.class));
+		return myObjects;
+	}
+
+	public static void writeJSONResults(List<Long> results) throws IOException {
+		File resultFile = new File("loadTestResults");
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(resultFile, results);
+	}
+
+	public static boolean IsMaster() {
+		String ltType = System.getenv("LTTYPE");
+
+		if (ltType == null) {
+			ltType = "master";
+		}
+
+		if (ltType.equals("master")) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public static Process startDockerBuild() throws IOException {
+		//get the path and substring the 'file:' from the URI
+		String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
+		
+		ProcessBuilder processBuilder = new ProcessBuilder("docker", "rmi", "-f", "vauvenal5/loadtest");
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+		processBuilder.start();
+
+		processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
 		return processBuilder.start();
 	}
-        
-        public static Process startDockerSlave(LoadTestConfigModel ltModel) throws IOException {
+
+	public static Process startDockerSlave(LoadTestConfigModel ltModel) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", String.valueOf(ltModel.getFileCount()));
-                //processBuilder.redirectOutput() // maybe redirect output to file
+		//processBuilder.redirectOutput() // maybe redirect output to file
 		return processBuilder.start();
-        }
+	}
 }

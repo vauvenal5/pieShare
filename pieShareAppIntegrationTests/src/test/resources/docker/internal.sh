@@ -1,5 +1,6 @@
 cd /pieShare
-git pull
+# git pull not necessary any more because the image gets newly created before each loadTest run
+# git pull
 # env runs the mvn command with the enviroment var LTTYPE set
 # Dtest is set to force skiping the unit tests by not finding any
 # DfailIfNoTests this is disabled to not fail after no unit tests where found
