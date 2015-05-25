@@ -66,7 +66,7 @@ public class LoadTestIT {
         LUtil.performTearDown(context);
     }
 	
-	@Test(timeOut = 600000)
+	@Test
 	public void loadTest() throws Exception {
 		if(LUtil.IsMaster()) {
 			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
