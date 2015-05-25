@@ -86,7 +86,10 @@ public class LoadTestIT {
 		ltModesl.setNodeCount(0);
 		String fileCount = System.getenv("LTFILES");
 		System.out.println("FILECOUNT:"+fileCount);
-		ltModesl.setFileCount(Integer.getInteger(fileCount));
+		int fc = Integer.getInteger(fileCount);
+		Assert.assertNotNull(fc);
+		Assert.assertNotNull(ltModesl);
+		ltModesl.setFileCount(fc);
 		
 		this.loadTestHelper(ltModesl);
 	}
