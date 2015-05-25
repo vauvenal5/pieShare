@@ -107,7 +107,7 @@ public class LoadTestIT {
 		ltModel.setNodeCount(0);
 		String fileCount = System.getenv("LTFILES");
 		System.out.println("FILECOUNT:"+fileCount);
-		int fc = Integer.getInteger(fileCount);
+		int fc = Integer.parseInt(fileCount);
 		Assert.assertNotNull(fc);
 		Assert.assertNotNull(ltModel);
 		ltModel.setFileCount(fc);
