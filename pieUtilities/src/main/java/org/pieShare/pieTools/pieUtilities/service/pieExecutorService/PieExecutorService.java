@@ -67,6 +67,7 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 	public void execute(IPieTask task) {
 		Validate.notNull(task);
 		try{
+			PieLogger.trace(this.getClass(), "Executing {}", task);
 			super.execute(task);
 			//this.executor.execute(task);
 		}
