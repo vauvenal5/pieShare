@@ -153,7 +153,7 @@
 						</goals>
 						<configuration>
 							<groupId>com.turn</groupId>
-							<artifactId>ttorrent</artifactId>
+							<artifactId>ttorrent-core</artifactId>
 							<version>1.5-SNAPSHOT</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/lib/ttorrent-core-1.5-SNAPSHOT.jar</file>
