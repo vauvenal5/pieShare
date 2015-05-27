@@ -72,6 +72,7 @@ public class LoadTestIT {
 
     @BeforeMethod
     public void setUpMethod() throws Exception {
+		PieLogger.info(this.getClass(), "SetupMethod");
         LUtil.performTearDownDelete();
         context = LUtil.getContext();
         this.slaves = new ArrayList<>();
@@ -79,6 +80,7 @@ public class LoadTestIT {
 
     @AfterMethod
     public void tearDownMethod() throws Exception {
+		PieLogger.info(this.getClass(), "TeardownMethod");
         LUtil.performTearDown(context);
     }
 	

@@ -24,6 +24,7 @@ public class FileTransferCompleteTask extends PieEventTaskBase<IFileTransferComp
 
 	@Override
 	public void run() {
+		//todo: this message does not need to work with a Meta Object... PieFile is enough!!!
 		this.bitTorentService.remoteClientDone(this.msg.getFileMeta());
 	}
 
