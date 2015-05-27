@@ -2,7 +2,6 @@ target/
 .idea/
 *.iml
 out/
-*.jar
 *.out
 workingDir/
 *.java.orig

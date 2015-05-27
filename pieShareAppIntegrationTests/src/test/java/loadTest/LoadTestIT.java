@@ -209,6 +209,11 @@ public class LoadTestIT {
 			long resultTime = stop.getTime() - start.getTime();
 			results.add(resultTime);
 			
+			//wait for children to terminate
+			for(Process p: this.slaves) {
+				p.waitFor();
+			}
+			
         } else {
             PieLogger.info(this.getClass(), "Slave");
 			BitTorrentService torrentService = context.getBean(BitTorrentService.class);

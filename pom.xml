@@ -139,6 +139,28 @@
 				  <argLine>${jacoco.agent.arg}</argLine>
 				</configuration>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<inherited>false</inherited>
+				<executions>
+					<execution>
+						<phase>initialize</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.turn</groupId>
+							<artifactId>ttorrent</artifactId>
+							<version>1.5-SNAPSHOT</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/ttorrent-core-1.5-SNAPSHOT.jar</file>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 </project>

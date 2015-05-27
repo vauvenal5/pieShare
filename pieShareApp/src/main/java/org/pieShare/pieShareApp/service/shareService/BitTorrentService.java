@@ -102,13 +102,18 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	public void initTorrentService() {
 			this.shutdown = false;
 			//this section inits the semaphores
-			int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
+			/*int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
 			if (availablePorts == 0) {
 				//todo: handle this
 				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
-			}
+			}*/
+			int availablePorts = 100;
 			this.writePorts = new Semaphore(availablePorts);
-			this.readPorts = new Semaphore((availablePorts / 2) - 1);			
+			int read = (availablePorts / 2) - 1;
+			if(read < 1) {
+				read = 1;
+			}
+			this.readPorts = new Semaphore(read);
 	}
 
 	@Override

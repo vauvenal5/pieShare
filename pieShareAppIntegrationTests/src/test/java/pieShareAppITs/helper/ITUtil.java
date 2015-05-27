@@ -39,35 +39,35 @@ import pieShareAppITs.helper.config.PieShareUtilitiesITConfig;
 public class ITUtil {
 
 	public static String getMainWorkingDir() {
-		return "workingDirTestMain";
+		return "it/workingDirTestMain";
 	}
 
 	public static String getMainTmpDir() {
-		return "pieTempTestMain";
+		return "it/pieTempTestMain";
 	}
 
 	public static String getBotWorkingDir() {
-		return "workingDirTestBot";
+		return "it/workingDirTestBot";
 	}
 
 	public static String getBotTmpDir() {
-		return "pieTempTestBot";
+		return "it/pieTempTestBot";
 	}
 	
 	public static String getMainKey() {
-		return "testMainKey";
+		return "it/testMainKey";
 	}
 	
 	public static String getBotKey() {
-		return "testBotKey";
+		return "it/testBotKey";
 	}
         
         public static String getMainDbDir() {
-            return "mainDb";
+            return "it/mainDb";
         }
         
         public static String getBotDbDir() {
-            return "botDb";
+            return "it/botDb";
         }
 
 	public static void setUpEnviroment(boolean main) {
