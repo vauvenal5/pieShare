@@ -135,7 +135,7 @@ public class NetworkService implements INetworkService {
         }
 
 	@Override
-	public InetAddress getLocalHost(boolean invalidate) {
+	public synchronized InetAddress getLocalHost(boolean invalidate) {
 		//todo-sv: try to get local host out of cloud service
 		if (invalidate) {
 			this.address = null;

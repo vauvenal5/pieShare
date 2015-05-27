@@ -11,6 +11,7 @@ import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -43,6 +44,7 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		//todo: if not prepared don't do anything for the time being
 		//think of this later
 		if(!this.shareService.isPrepared(this.msg.getPieFile())) {
+			PieLogger.debug(this.getClass(), "File {} not prepared!", this.msg.getPieFile().getFileName());
 			return;
 		}
 		File destDir = this.fileService.getAbsoluteTmpPath(msg.getPieFile()).toFile().getParentFile();
