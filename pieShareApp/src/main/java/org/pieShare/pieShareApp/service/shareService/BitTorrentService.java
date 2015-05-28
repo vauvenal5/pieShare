@@ -107,7 +107,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 				//todo: handle this
 				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
 			}*/
-			int availablePorts = 1;
+			int availablePorts = 100;
 			this.writePorts = new Semaphore(availablePorts);
 			int read = (availablePorts / 2) - 1;
 			if(read < 1) {
