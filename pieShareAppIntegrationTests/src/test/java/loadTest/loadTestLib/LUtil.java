@@ -99,7 +99,7 @@ public class LUtil {
 		String ltType = System.getenv("LTTYPE");
 
 		if (ltType == null) {
-			ltType = "master";
+			return true;
 		}
 
 		if (ltType.equals("master")) {
