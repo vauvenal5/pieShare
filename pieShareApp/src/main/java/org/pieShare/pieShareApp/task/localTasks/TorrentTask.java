@@ -42,7 +42,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	private FileMeta fileMeta;
 	private SharedTorrent torrent;
 	private boolean shutdown;
-	private Timer timer = new Timer();
+	private Timer timer;
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
 		this.bitTorrentService = bitTorrentService;
@@ -76,22 +76,42 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			//todo: won't work for server and client the same way: problem with this timeout the server
 			//shuts down after 30 seconds... implement other timeout strategy or rerequest messages
 			//reregquest is maybe the better way
+			//todo: the problem is like follows: what happens if we never receive a fileShareCompleteMessage
+			//we have to recover somehow
 			boolean seeder = this.torrent.isSeeder();
 			client.share();
+			/*this.timer = new Timer(true);
 			
+			//todo: maybe instead of using a timer task move this to the while
+			//should work because we start sharing after the metacommitherefor there should be an active share
 			this.timer.schedule(new TimerTask() {
 				@Override
 				public void run() {
-					if(seeder && client.getPeers().isEmpty()) {
-						client.stop();
+					try {
+						System.out.println("InTIMMER!\n");
+						boolean shareActive = bitTorrentService.isShareActive(fileMeta);
+						System.out.println(String.valueOf(shareActive));
+						PieLogger.trace(this.getClass(), "Checking stop conditions for {} seeder: {} ShareActive: {}", fileMeta.getFile().getFileName(), seeder, shareActive);
+						if(seeder && !shareActive) {
+							PieLogger.debug(this.getClass(), String.format("Stoping client for %s by timer!", fileMeta.getFile().getFileName()));
+							client.stop(true);
+						}
+					} catch(Exception e) {
+						PieLogger.error(this.getClass(), "Torrent Timer Task crashed!", e);
 					}
 				}
-			}, 60000, 30000);
+			}, 60000, 30000);*/
 
 			//client.waitForCompletion();
 			while (!Client.ClientState.DONE.equals(client.getState())) {
 
+				// Display statistics
+				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
+						torrent.getCompletion(), client.getState(), torrent.getDownloaded(), 
+						torrent.getUploaded(), fileMeta.getFile().getFileName());
+
 				if (this.shutdown) {
+					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getFileName()));
 					client.stop();
 					return;
 				}
@@ -103,15 +123,16 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					throw new Exception("ttorrent client Error State");
 				}
 				
+				if (seeder && !this.bitTorrentService.isShareActive(this.fileMeta)) {
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
+					client.stop(true);
+				}
+				
 				if (Client.ClientState.SEEDING.equals(client.getState()) 
 						&& !this.bitTorrentService.isShareActive(this.fileMeta)) {
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
 					client.stop();
 				}
-
-				// Display statistics
-				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
-						torrent.getCompletion(), client.getState(), torrent.getDownloaded(), 
-						torrent.getUploaded(), fileMeta.getFile().getFileName());
 
 				// Wait one second
 				Thread.sleep(1000);

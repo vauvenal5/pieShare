@@ -47,7 +47,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private Semaphore readPorts;
 	private Semaphore writePorts;
 	private boolean shutdown;
-	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
+	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
 	
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
@@ -80,11 +80,11 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
 		boolean isNew = true;
 		
-		if (this.sharedFiles.containsKey(file)) {
-			value = this.sharedFiles.get(file) + value;
+		if (this.sharedFiles.containsKey(file.getFile())) {
+			value = this.sharedFiles.get(file.getFile()) + value;
 			
 			if(value <= 0) {
-				this.sharedFiles.remove(file);
+				this.sharedFiles.remove(file.getFile());
 				return false;
 			}
 			
@@ -92,7 +92,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 		}
 		
 		if(value >= 0) {
-			this.sharedFiles.put(file, value);
+			this.sharedFiles.put(file.getFile(), value);
 		}
 		
 		return isNew;
@@ -215,7 +215,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	
 	@Override
 	public boolean isShareActive(FileMeta file) {
-		return (this.sharedFiles.getOrDefault(file, 0) > 0);
+		return (this.sharedFiles.getOrDefault(file.getFile(), 0) > 0);
 	}
 	
 	public boolean activeTorrents() {
