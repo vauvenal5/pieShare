@@ -17,6 +17,9 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -36,19 +39,21 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  * @author Svetoslav
  */
 public class BitTorrentService implements IBitTorrentService, IShutdownableService {
-	
+
 	private INetworkService networkService;
 	private IBeanService beanService;
 	private IExecutorService executorService;
 	private IBase64Service base64Service;
-	
+
 	private Tracker tracker;
 	private URI trackerUri;
 	private Semaphore readPorts;
 	private Semaphore writePorts;
 	private boolean shutdown;
 	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
-	
+	private List<Tracker> trackers = new ArrayList<>();
+
+
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
 	}
@@ -68,100 +73,142 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
-	
+
 	/**
-	 * If this FileMeta allready exists the value will be changed by the given value.
-	 * If not it will be created with the given value.
-	 * It returns true if the FileMeta was new and false otherwise.
+	 * If this FileMeta allready exists the value will be changed by the given
+	 * value. If not it will be created with the given value. It returns true if
+	 * the FileMeta was new and false otherwise.
+	 *
 	 * @param file
 	 * @param value
-	 * @return 
+	 * @return
 	 */
 	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
 		boolean isNew = true;
-		
+
 		if (this.sharedFiles.containsKey(file.getFile())) {
 			value = this.sharedFiles.get(file.getFile()) + value;
-			
-			if(value <= 0) {
+
+			if (value <= 0) {
 				this.sharedFiles.remove(file.getFile());
 				return false;
 			}
-			
+
 			isNew = false;
 		}
-		
-		if(value >= 0) {
+
+		if (value >= 0) {
 			this.sharedFiles.put(file.getFile(), value);
 		}
-		
+
 		return isNew;
 	}
 
 	@Override
 	public void initTorrentService() {
-			this.shutdown = false;
+		this.shutdown = false;
 			//this section inits the semaphores
 			/*int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
-			if (availablePorts == 0) {
-				//todo: handle this
-				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
-			}*/
-			int availablePorts = 100;
-			this.writePorts = new Semaphore(availablePorts);
-			int read = (availablePorts / 2) - 1;
-			if(read < 1) {
-				read = 1;
-			}
-			this.readPorts = new Semaphore(read);
+		 if (availablePorts == 0) {
+		 //todo: handle this
+		 PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
+		 }*/
+		int availablePorts = 100;
+		this.writePorts = new Semaphore(availablePorts);
+		int read = (availablePorts / 2) - 1;
+		if (read < 1) {
+			read = 1;
+		}
+		this.readPorts = new Semaphore(read);
 	}
+	
+	//private int port;
+	private int firstPort = 6969;
 
 	@Override
-	public byte[] anounceTorrent(File localFile) {
-		if(this.shutdown) {
+	public synchronized byte[] anounceTorrent(File localFile) {
+		if (this.shutdown) {
 			return null;
 		}
-		
+
 		try {
-                        synchronized(this)
-                        {
-                            if(tracker == null) {
+			//synchronized(this)
+			{
+			
+				
+				/*if(tracker != null) {
+					Collection<TrackedTorrent> tts = tracker.getTrackedTorrents();
+					tracker.stop();
+					InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
+					tracker = new Tracker(ad);
+					
+					for(TrackedTorrent t: tts) {
+						tracker.announce(t);
+					}
+				}*/
+			
+				/*if (tracker == null) {
                                     //this section inits the local tracker
-                                    //todo: use beanService
-                                    int port = this.networkService.getAvailablePortStartingFrom(6969);
-                                    this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
-                                    PieLogger.info(this.getClass(), this.trackerUri.toString());
-                                    InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
-                                    this.tracker = new Tracker(ad);
-                                    tracker.start();
-                            }
-                        }
+					//todo: use beanService
+					port = this.networkService.getAvailablePortStartingFrom(6969);
+					this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
+					PieLogger.info(this.getClass(), this.trackerUri.toString());
+					InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
+					this.tracker = new Tracker(ad);
+					//tracker.start();
+				}*/
+	
+			}
+			firstPort++;
+			int port = this.networkService.getAvailablePortStartingFrom(firstPort);
+			URI tURI = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
+			
+			//todo: where is checked if a fail is allready shared?
+			// --> now the right meta info has to be forwarded!!!
+			
+			PieLogger.info(this.getClass(), tURI.toString());
+			InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
+			Tracker tracker = new Tracker(ad);
 
 			//todo: ther is a bug when triing to share 0 byte files
 			//todo: error handling when torrent null
 			//todo: replace name by nodeName
-			Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
+			//Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
+			Torrent torrent = Torrent.create(localFile, tURI, "replaceThisByNodeName");
 			//todo: security issues?
 			TrackedTorrent tt = new TrackedTorrent(torrent);
 			tracker.announce(tt);
 			
+			tracker.start();
+			
+			this.trackers.add(tracker);
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			torrent.save(baos);
 			return this.base64Service.encode(baos.toByteArray());
 		} catch (InterruptedException | URISyntaxException | IOException ex) {
 			PieLogger.error(this.getClass(), "Sharing error.", ex);
 		}
-		
+
 		return null;
 	}
-	
+
+	private boolean started = false;
+
+	public void startTracker() {
+		/*if (!started && tracker.getTrackedTorrents().size() >= 5) {
+			started = true;
+			tracker.start();
+		}*/
+	}
+
 	@Override
 	public void shareFile(FileMeta meta, File destDir) {
-		
-		if(!this.manipulateShareState(meta, 1)) {
+
+		if (!this.manipulateShareState(meta, 1)) {
 			return;
 		}
-		
+
 		try {
 			this.writePorts.acquire();
 			this.handleSharedTorrent(meta, destDir, true);
@@ -172,12 +219,12 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 			this.torrentClientDone(true);
 		}
 	}
-	
+
 	@Override
 	public void remoteClientDone(FileMeta meta) {
 		this.manipulateShareState(meta, -1);
 	}
-	
+
 	@Override
 	public void handleFile(FileMeta meta, File destDir) {
 		try {
@@ -191,7 +238,7 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 			this.torrentClientDone(false);
 		}
 	}
-	
+
 	private void handleSharedTorrent(FileMeta meta, File destDir, boolean seeder) throws IOException {
 		SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta.getData()), destDir, seeder);
 		TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
@@ -203,26 +250,30 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	@Override
 	public void torrentClientDone(boolean seeder) {
 		this.writePorts.release();
-		if(!seeder) {
+		if (!seeder) {
 			this.readPorts.release();
 		}
 	}
-	
+
 	@Override
 	public void shutdown() {
-		
-		if(this.tracker != null) {
+
+		if (this.tracker != null) {
 			this.tracker.stop();
 		}
 		
+		for(Tracker t: trackers) {
+			t.stop();
+		}
+
 		this.shutdown = true;
 	}
-	
+
 	@Override
 	public boolean isShareActive(FileMeta file) {
 		return (this.sharedFiles.getOrDefault(file.getFile(), 0) > 0);
 	}
-	
+
 	public boolean activeTorrents() {
 		return !this.sharedFiles.isEmpty();
 	}

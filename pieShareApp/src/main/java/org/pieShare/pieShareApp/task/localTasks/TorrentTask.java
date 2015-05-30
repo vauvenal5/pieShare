@@ -112,26 +112,26 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				
 				if (this.shutdown) {
 					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getFileName()));
-					client.stop();
+					client.stop(false);
 					return;
 				}
 
 				// Check if there's an error
 				if (Client.ClientState.ERROR.equals(client.getState())) {
-					client.stop();
+					client.stop(false);
 					//todo: ports release when exception
 					throw new Exception("ttorrent client Error State");
 				}
 				
 				if (seeder && !this.bitTorrentService.isShareActive(this.fileMeta)) {
-					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
-					client.stop(true);
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!1", fileMeta.getFile().getFileName()));
+					client.stop(false);
 				}
 				
 				if (Client.ClientState.SEEDING.equals(client.getState()) 
 						&& !this.bitTorrentService.isShareActive(this.fileMeta)) {
-					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
-					client.stop();
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!2", fileMeta.getFile().getFileName()));
+					client.stop(false);
 				}
 
 				// Wait one second

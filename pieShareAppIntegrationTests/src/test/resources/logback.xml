@@ -42,7 +42,7 @@
   
   <logger name="org.springframework" level="ERROR"/>
   <logger name="org.hibernate" level="ERROR"/>
-  <logger name="com.turn" level="DEBUG"/>
+  <logger name="com.turn" level="TRACE"/>
   <logger name="org.jgroups" level="ERROR"/>
   <logger name="org.apache" level="ERROR"/>
   <logger name="com.mchange.v2.async.ThreadPoolAsynchronousRunner" level="ERROR"/>

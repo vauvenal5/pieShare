@@ -12,6 +12,7 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
@@ -146,13 +147,15 @@ public class SyncOneFileIT {
 		PieUser botUser = context.getBean("botPieUser", PieUser.class);
 		PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
 		//File fileBot = new File(botConfig.getWorkingDir(), "test.txt");
-		
+		BitTorrentService bt = context.getBean(BitTorrentService.class);
 		//FileUtils.moveFile(filex, fileMain);
 		//FileUtils.moveFile(filex, fileBot);
 		
 		System.out.println("Waiting for transfer complete!");
 		while (counter.getCount(FileTransferCompleteTask.class) < 5) {
 			Thread.sleep(5000);
+			bt.startTracker();
+			
 		}
 		System.out.println("Recived transfer complete!");
 
