@@ -208,7 +208,6 @@ public class PieShareAppService {
 		BitTorrentService service = new BitTorrentService();
 		service.setBeanService(this.utilities.beanService());
 		service.setNetworkService(this.networkService());
-		service.setShutdownService(this.shutdownService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setBase64Service(this.utilities.base64Service());
 		

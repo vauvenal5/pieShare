@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.task.eventTasks;
 import java.io.File;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
+import org.pieShare.pieShareApp.service.shareService.CouldNotCreateMetaDataException;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieShareApp.service.shareService.NoLocalFileException;
@@ -36,10 +37,11 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 	public void run() {
 
 		//todo: send to all or send only to the requesting client?
+		//todo: if i am currently receiving the file I need to forwared the MetaMessage of the sharing instance!
 		
 		try {				
 			File localTmpFile = this.shareService.prepareFile(this.msg.getPieFile());
-			byte[] meta = this.bitTorrentService.anounceTorrent(localTmpFile);
+			byte[] meta = this.bitTorrentService.createMetaInformation(localTmpFile);
 
 			IMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
 			metaMsg.setMetaInfo(meta);
@@ -48,8 +50,8 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 			this.clusterManagementService.sendMessage(metaMsg);
 		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Could not send MetaMessage!", ex);
-		} catch (NoLocalFileException ex) {
-			PieLogger.info(this.getClass(), ex.getMessage());
+		} catch (NoLocalFileException | CouldNotCreateMetaDataException ex) {
+			PieLogger.error(this.getClass(), ex.getMessage(), ex);
 		}
 	}
 
