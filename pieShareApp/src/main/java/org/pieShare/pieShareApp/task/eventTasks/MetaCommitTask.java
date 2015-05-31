@@ -22,7 +22,6 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 	
 	private IShareService shareService;
 	private IBitTorrentService bitTorrentService;
-	private IFileService fileService;
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
 		this.bitTorrentService = bitTorrentService;
@@ -32,10 +31,6 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		this.shareService = shareService;
 	}
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
-	}
-
 	@Override
 	public void run() {
 		//every meta message we receive needs to be handled!!!
@@ -43,13 +38,13 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		
 		//todo: if not prepared don't do anything for the time being
 		//think of this later
+		//todo: we need also to do a isRequested check in case we are not the seeder but want the file!
 		if(!this.shareService.isPrepared(this.msg.getPieFile())) {
 			PieLogger.debug(this.getClass(), "File {} not prepared!", this.msg.getPieFile().getFileName());
 			return;
 		}
-		File destDir = this.fileService.getAbsoluteTmpPath(msg.getPieFile()).toFile().getParentFile();
 		
-		this.bitTorrentService.shareFile(this.msg.getFileMeta(), destDir);
+		this.bitTorrentService.shareFile(this.msg.getFileMeta());
 	}
 	
 }

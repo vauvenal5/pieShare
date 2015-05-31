@@ -23,14 +23,9 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 
 	private IRequestService requestService;
 	private IBitTorrentService bitTorrentService;
-	private IFileService fileService;
 
 	public void setRequestService(IRequestService requestService) {
 		this.requestService = requestService;
-	}
-
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
 	}
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
@@ -45,8 +40,7 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 		}
 		
 		try {
-			File destDir = this.fileService.getAbsoluteTmpPath(msg.getPieFile()).toFile().getParentFile();
-			this.bitTorrentService.handleFile(msg.getFileMeta(), destDir);
+			this.bitTorrentService.handleFile(msg.getFileMeta());
 			
 			IMetaCommitMessage metaCommit = this.messageFactoryService.getMetaCommitMessage();
 			metaCommit.setMetaInfo(msg.getMetaInfo());

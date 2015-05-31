@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.service.networkService;
 
+import java.io.IOException;
 import java.net.InetAddress;
 
 /**
@@ -13,7 +14,7 @@ import java.net.InetAddress;
  */
 public interface INetworkService {
 
-        void setNicDisplayName(String nicDisplayName);
+    void setNicDisplayName(String nicDisplayName);
             
 	int getAvailablePort();
 
@@ -24,4 +25,8 @@ public interface INetworkService {
 	int getAvailablePortStartingFrom(int port);
 	
 	int getNumberOfAvailablePorts(int firstPort, int lastPort);
+	
+	int reserveAvailablePortStartingFrom(int port) throws IOException;
+	
+	void freeReservedPort(int port) throws IOException;
 }
