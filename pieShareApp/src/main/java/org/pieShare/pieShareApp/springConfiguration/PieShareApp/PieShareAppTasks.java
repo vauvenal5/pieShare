@@ -70,7 +70,6 @@ public class PieShareAppTasks {
 		task.setBeanService(this.config.beanService());
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileService(this.services.localFileService());
 		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
@@ -217,6 +216,7 @@ public class PieShareAppTasks {
 		task.setShareService(this.services.shareService());
 		task.setShutdownService(this.services.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setFileService(this.services.localFileService());
 		return task;
 	}
 	
@@ -227,7 +227,6 @@ public class PieShareAppTasks {
 		MetaCommitTask task = new MetaCommitTask();
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
-		task.setFileService(this.services.localFileService());
 		return task;
 	}
 }

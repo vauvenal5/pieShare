@@ -3,28 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.task.localTasks;
 
 import com.turn.ttorrent.client.Client;
 import com.turn.ttorrent.client.SharedTorrent;
+import com.turn.ttorrent.common.Torrent;
+import com.turn.ttorrent.tracker.TrackedTorrent;
+import com.turn.ttorrent.tracker.Tracker;
 import java.io.File;
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
+import java.net.InetSocketAddress;
+import java.net.URI;
+import java.util.List;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
@@ -33,21 +29,26 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  * @author Svetoslav
  */
 public class TorrentTask extends AMessageSendingTask implements IShutdownableService {
-	
+
+	//services
 	private IShareService shareService;
 	private INetworkService networkService;
 	private IBitTorrentService bitTorrentService;
-	
-	private Client client;
+	private IFileService fileService;
+
+	//injected fields
 	private FileMeta fileMeta;
-	private SharedTorrent torrent;
+	private Torrent torrent;
+
+	//local fields
+	private Client client;
 	private boolean shutdown;
-	private Timer timer;
+	private Tracker tracker;
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
 		this.bitTorrentService = bitTorrentService;
 	}
-	
+
 	public void setShareService(IShareService shareService) {
 		this.shareService = shareService;
 	}
@@ -56,21 +57,46 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 		this.networkService = networkService;
 	}
 
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
+
 	public void setFile(FileMeta file) {
 		this.fileMeta = file;
 	}
 
-	public void setTorrent(SharedTorrent torrent) {
+	public void setTorrent(Torrent torrent) {
 		this.torrent = torrent;
 	}
 
 	@Override
 	public void run() {
 		try {
+			boolean seeder = this.torrent.isSeeder();
+			File destDir = this.fileService.getAbsoluteTmpPath(this.fileMeta.getFile()).toFile().getParentFile();
+
+			//todo: ther is a bug when triing to share 0 byte files
+			//start a tracker for each file seperately
+			//this is a workaround for the time being due to ttorrent bugs.
+			if (seeder) {
+				for (List<URI> list : torrent.getAnnounceList()) {
+					for (URI uri : list) {
+						if (uri.getHost().equals(this.networkService.getLocalHost().getHostAddress())) {
+							this.networkService.freeReservedPort(uri.getPort());
+							this.tracker = new Tracker(new InetSocketAddress(this.networkService.getLocalHost(), uri.getPort()));
+							//todo: security issues?
+							this.tracker.announce(new TrackedTorrent(this.torrent));
+							this.tracker.start();
+						}
+					}
+				}
+			}
+
 			//this.fileWatcherService.addPieFileToModifiedList(pieFile);
 			//todo: handle ports out problem!!!
 			//todo: this should run somehow over the beans
-			this.client = new Client(networkService.getLocalHost(), torrent);
+			SharedTorrent sharedTorrent = new SharedTorrent(this.torrent, destDir);
+			this.client = new Client(networkService.getLocalHost(), sharedTorrent);
 
 			//todo: this time has to move into the properties
 			//todo: won't work for server and client the same way: problem with this timeout the server
@@ -78,72 +104,44 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			//reregquest is maybe the better way
 			//todo: the problem is like follows: what happens if we never receive a fileShareCompleteMessage
 			//we have to recover somehow
-			boolean seeder = this.torrent.isSeeder();
 			client.share();
-			/*this.timer = new Timer(true);
-			
-			//todo: maybe instead of using a timer task move this to the while
-			//should work because we start sharing after the metacommitherefor there should be an active share
-			this.timer.schedule(new TimerTask() {
-				@Override
-				public void run() {
-					try {
-						System.out.println("InTIMMER!\n");
-						boolean shareActive = bitTorrentService.isShareActive(fileMeta);
-						System.out.println(String.valueOf(shareActive));
-						PieLogger.trace(this.getClass(), "Checking stop conditions for {} seeder: {} ShareActive: {}", fileMeta.getFile().getFileName(), seeder, shareActive);
-						if(seeder && !shareActive) {
-							PieLogger.debug(this.getClass(), String.format("Stoping client for %s by timer!", fileMeta.getFile().getFileName()));
-							client.stop(true);
-						}
-					} catch(Exception e) {
-						PieLogger.error(this.getClass(), "Torrent Timer Task crashed!", e);
-					}
-				}
-			}, 60000, 30000);*/
 
-			//client.waitForCompletion();
-			while (!Client.ClientState.DONE.equals(client.getState())) {
+			boolean loopDone = false;
+
+			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
+
+				// Wait one second
+				Thread.sleep(1000);
 
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
-						torrent.getCompletion(), client.getState(), torrent.getDownloaded(), 
-						torrent.getUploaded(), fileMeta.getFile().getFileName());
+						sharedTorrent.getCompletion(), client.getState(), sharedTorrent.getDownloaded(),
+						sharedTorrent.getUploaded(), fileMeta.getFile().getFileName());
 
 				if (this.shutdown) {
 					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getFileName()));
-					client.stop();
 					return;
 				}
 
 				// Check if there's an error
 				if (Client.ClientState.ERROR.equals(client.getState())) {
-					client.stop();
+					this.shutdown();
 					//todo: ports release when exception
 					throw new Exception("ttorrent client Error State");
 				}
-				
-				if (seeder && !this.bitTorrentService.isShareActive(this.fileMeta)) {
-					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
-					client.stop(true);
-				}
-				
-				if (Client.ClientState.SEEDING.equals(client.getState()) 
-						&& !this.bitTorrentService.isShareActive(this.fileMeta)) {
-					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
-					client.stop();
-				}
 
-				// Wait one second
-				Thread.sleep(1000);
+				if ((seeder || Client.ClientState.SEEDING.equals(client.getState())) && !this.bitTorrentService.isShareActive(this.fileMeta)) {
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
+					loopDone = true;
+				}
 			}
-			
-			this.client.stop(false);
+
+			this.shutdown();
 
 			this.bitTorrentService.torrentClientDone(seeder);
 			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
-			
-			if(!seeder) {
+
+			if (!seeder) {
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
 				msgComplete.setPieFile(fileMeta.getFile());
 				this.setDefaultAdresse(msgComplete);
@@ -157,6 +155,10 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	@Override
 	public void shutdown() {
 		this.shutdown = true;
+		if (this.tracker != null) {
+			this.tracker.stop();
+		}
+		this.client.stop(false);
 	}
-	
+
 }
