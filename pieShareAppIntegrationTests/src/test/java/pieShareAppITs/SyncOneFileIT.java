@@ -111,7 +111,7 @@ public class SyncOneFileIT {
 		}
 	}
 	
-	@Test(timeOut = 120000)
+	@Test(timeOut = 180000)
 	public void syncFiveFilesTest() throws Exception {
 		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
@@ -164,6 +164,8 @@ public class SyncOneFileIT {
 				String fileName = String.format("testFile_%s", i);
 				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
 				File fileBot = new File(botConfig.getWorkingDir(), fileName);
+				assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
+				assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
 				filesAreEqual = FileUtils.contentEquals(file, fileBot);
 				assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
 				assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));

@@ -216,7 +216,8 @@ public class PieShareAppTasks {
 		task.setShareService(this.services.shareService());
 		task.setShutdownService(this.services.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
-		task.setFileService(this.services.localFileService());
+		task.setFileService(this.services.historyFileService());
+		task.setRequestService(this.services.requestService());
 		return task;
 	}
 	
