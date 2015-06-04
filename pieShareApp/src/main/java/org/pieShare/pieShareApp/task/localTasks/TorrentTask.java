@@ -18,6 +18,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
@@ -35,6 +36,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	private INetworkService networkService;
 	private IBitTorrentService bitTorrentService;
 	private IFileService fileService;
+	private IRequestService requestService;
 
 	//injected fields
 	private FileMeta fileMeta;
@@ -67,6 +69,10 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 	public void setTorrent(Torrent torrent) {
 		this.torrent = torrent;
+	}
+
+	public void setRequestService(IRequestService requestService) {
+		this.requestService = requestService;
 	}
 
 	@Override
@@ -107,6 +113,9 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			client.share();
 
 			boolean loopDone = false;
+			long lastAmount = 0;
+			int errorSeconds = 0;
+			int errorThreshold = 30;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
 
@@ -114,9 +123,9 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				Thread.sleep(1000);
 
 				// Display statistics
-				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - {}",
+				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - peers {} - {}",
 						sharedTorrent.getCompletion(), client.getState(), sharedTorrent.getDownloaded(),
-						sharedTorrent.getUploaded(), fileMeta.getFile().getFileName());
+						sharedTorrent.getUploaded(), client.getPeers().size(), fileMeta.getFile().getFileName());
 
 				if (this.shutdown) {
 					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getFileName()));
@@ -134,12 +143,32 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
 					loopDone = true;
 				}
+
+				long currentState = sharedTorrent.getDownloaded();
+
+				if (seeder) {
+					currentState = sharedTorrent.getUploaded();
+				}
+
+				if (currentState == lastAmount) {
+					errorSeconds++;
+				}
+				else {
+					errorSeconds = 0;
+				}
+
+				if (errorSeconds > errorThreshold) {
+					loopDone = true;
+				}
+
+				lastAmount = currentState;
 			}
 
 			this.shutdown();
 
 			this.bitTorrentService.torrentClientDone(seeder);
 			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
+			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
 			if (!seeder) {
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
@@ -147,6 +176,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				this.setDefaultAdresse(msgComplete);
 				this.clusterManagementService.sendMessage(msgComplete);
 			}
+
+			if (errorSeconds > errorThreshold && !seeder) {
+				this.requestService.requestFile(this.fileMeta.getFile());
+			}
+
 		} catch (Exception ex) {
 			PieLogger.error(this.getClass(), "Exception in torrent task.", ex);
 		}
@@ -155,10 +189,10 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	@Override
 	public void shutdown() {
 		this.shutdown = true;
+		this.client.stop(false);
 		if (this.tracker != null) {
 			this.tracker.stop();
 		}
-		this.client.stop(false);
 	}
 
 }
