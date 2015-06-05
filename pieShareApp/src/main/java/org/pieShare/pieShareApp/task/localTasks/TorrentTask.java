@@ -77,6 +77,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 	@Override
 	public void run() {
+		PieLogger.trace(this.getClass(), "Starting torrent task for {}.", this.fileMeta.getFile());
 		try {
 			boolean seeder = this.torrent.isSeeder();
 			File destDir = this.fileService.getAbsoluteTmpPath(this.fileMeta.getFile()).toFile().getParentFile();
@@ -116,6 +117,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			long lastAmount = 0;
 			int errorSeconds = 0;
 			int errorThreshold = 20;
+			boolean errorState = false;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
 
@@ -158,6 +160,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 				if (errorSeconds > errorThreshold) {
 					loopDone = true;
+					errorState = true;
 				}
 
 				lastAmount = currentState;
@@ -169,14 +172,14 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
-			if (!seeder) {
+			if (!errorState && !seeder) {
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
 				msgComplete.setPieFile(fileMeta.getFile());
 				this.setDefaultAdresse(msgComplete);
 				this.clusterManagementService.sendMessage(msgComplete);
 			}
 
-			if (errorSeconds > errorThreshold && !seeder) {
+			if (errorState && !seeder) {
 				this.requestService.requestFile(this.fileMeta.getFile());
 			}
 
