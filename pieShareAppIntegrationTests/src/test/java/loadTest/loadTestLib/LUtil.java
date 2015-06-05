@@ -19,6 +19,7 @@ import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
@@ -62,9 +63,13 @@ public class LUtil {
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		
+		System.out.println("Services stoped!");
+		
 		//stop context
 		context.close();
 		context = null;
+		
+		System.out.println("Context closed!");
 	}
 
 	public static void performTearDownDelete() throws Exception {
@@ -81,7 +86,7 @@ public class LUtil {
 	}
 	
 	public static void setUpResultFile() throws IOException {
-		FileWriter writer = new FileWriter("loadTestResults");
+		FileWriter writer = new FileWriter("loadTestResults.csv");
 		writer.write("NodeCount,FileCount,FileSize,ResultTime\n");
 		writer.flush();
 		writer.close();
