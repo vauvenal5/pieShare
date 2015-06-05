@@ -130,7 +130,9 @@ public class JGroupsClusterService implements IClusterService {
 	@Override
 	public void disconnect() throws ClusterServiceException {
 		this.channel.disconnect();
+		PieLogger.trace(this.getClass(), "Channel {} disconnected!", this.id);
 		this.channel.close();
+		PieLogger.trace(this.getClass(), "Channel {} closed!", this.id);
 		clusterRemovedEventBase.fireEvent(new ClusterRemovedEvent(this));
 	}
 
