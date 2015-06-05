@@ -126,6 +126,7 @@ public class BitTorrentService implements IBitTorrentService {
 
 		//this is important in case we are already sharing that file!
 		if (!this.manipulateShareState(meta, 1)) {
+			PieLogger.trace(this.getClass(), "Allready sharing file {}!", meta.getFile().getFileName());
 			return;
 		}
 
@@ -136,7 +137,7 @@ public class BitTorrentService implements IBitTorrentService {
 			PieLogger.error(this.getClass(), "Acquire write failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(true);
+			this.torrentClientDone(true, meta.getFile());
 		}
 	}
 
@@ -155,7 +156,7 @@ public class BitTorrentService implements IBitTorrentService {
 			PieLogger.error(this.getClass(), "Acquire read failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(false);
+			this.torrentClientDone(false, meta.getFile());
 		}
 	}
 
@@ -168,10 +169,14 @@ public class BitTorrentService implements IBitTorrentService {
 	}
 
 	@Override
-	public void torrentClientDone(boolean seeder) {
+	public void torrentClientDone(boolean seeder, PieFile file) {
 		this.writePorts.release();
 		if (!seeder) {
 			this.readPorts.release();
+		}
+		
+		synchronized(this) {
+			this.sharedFiles.remove(file);
 		}
 	}
 

@@ -152,8 +152,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 				if (currentState == lastAmount) {
 					errorSeconds++;
-				}
-				else {
+				} else {
 					errorSeconds = 0;
 				}
 
@@ -166,7 +165,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 			this.shutdown();
 
-			this.bitTorrentService.torrentClientDone(seeder);
+			this.bitTorrentService.torrentClientDone(seeder, this.fileMeta.getFile());
 			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
