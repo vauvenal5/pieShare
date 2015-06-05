@@ -20,7 +20,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
@@ -122,7 +121,9 @@ public class ClusterManagementService implements IClusterManagementService {
 	
 	@Override
 	public void disconnect(String id) throws ClusterServiceException {
-		this.clusters.get(id).disconnect();
+		if(this.clusters.containsKey(id)) {
+			this.clusters.get(id).disconnect();
+		}
 	}
 
 	@Override
