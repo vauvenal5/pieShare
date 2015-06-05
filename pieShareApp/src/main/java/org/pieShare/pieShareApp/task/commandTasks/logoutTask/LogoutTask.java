@@ -48,7 +48,9 @@ public class LogoutTask implements ILogoutTask {
 	@Override
 	public void run() {
 		logout();
-		logoutCommand.getCallback().finished();
+		if(logoutCommand.getCallback() != null) {
+			logoutCommand.getCallback().finished();
+		}
 	}
 
 	@Override
