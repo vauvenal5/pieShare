@@ -191,7 +191,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	@Override
 	public void shutdown() {
 		this.shutdown = true;
-		this.client.stop(false);
+
+		if (this.client != null) {
+			this.client.stop(false);
+		}
+
 		if (this.tracker != null) {
 			this.tracker.stop();
 		}
