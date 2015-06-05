@@ -8,14 +8,13 @@ package loadTest.loadTestLib;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
-import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
@@ -58,19 +57,11 @@ public class LUtil {
 	}
 
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
+		
 		//shutdown application
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
-
-		//get dirs to delete
-		/*PieShareConfiguration config = context.getBean("pieUser", PieUser.class).getPieShareConfiguration();
-		 File mainWorkingDir = config.getWorkingDir();//config.getWorkingDirectory();
-		 File mainTmpDir = config.getTmpDir();
-		 File configMain = config.getPwdFile();
-		 config = context.getBean("botPieUser", PieUser.class).getPieShareConfiguration();
-		 File botWorkingDir = config.getWorkingDir();
-		 File botTmpDir = config.getTmpDir();
-		 File configBot = config.getPwdFile();*/
+		
 		//stop context
 		context.close();
 		context = null;
@@ -88,11 +79,26 @@ public class LUtil {
 		List<LoadTestConfigModel> myObjects = mapper.readValue(in, mapper.getTypeFactory().constructCollectionType(List.class, LoadTestConfigModel.class));
 		return myObjects;
 	}
-
-	public static void writeJSONResults(List<Long> results) throws IOException {
-		File resultFile = new File("loadTestResults");
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.writeValue(resultFile, results);
+	
+	public static void setUpResultFile() throws IOException {
+		FileWriter writer = new FileWriter("loadTestResults");
+		writer.write("NodeCount,FileCount,FileSize,ResultTime\n");
+		writer.flush();
+		writer.close();
+	}
+	
+	public static void writeCSVResult(LoadTestConfigModel model, long resTime) throws IOException {
+		FileWriter writer = new FileWriter("loadTestResults.csv",true);
+		writer.append(String.valueOf(model.getNodeCount()));
+		writer.append(",");
+		writer.append(String.valueOf(model.getFileCount()));
+		writer.append(",");
+		writer.append(String.valueOf(model.getFileSize()));
+		writer.append(",");
+		writer.append(String.valueOf(resTime));
+		writer.append("\n");
+		writer.flush();
+		writer.close();
 	}
 
 	public static boolean IsMaster() {
@@ -126,7 +132,6 @@ public class LUtil {
 
 	public static Process startDockerSlave(LoadTestConfigModel ltModel) throws IOException {
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", String.valueOf(ltModel.getFileCount()));
-		//processBuilder.redirectOutput() // maybe redirect output to file
 		return processBuilder.start();
 	}
 }

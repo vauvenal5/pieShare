@@ -115,7 +115,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			boolean loopDone = false;
 			long lastAmount = 0;
 			int errorSeconds = 0;
-			int errorThreshold = 30;
+			int errorThreshold = 10;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
 

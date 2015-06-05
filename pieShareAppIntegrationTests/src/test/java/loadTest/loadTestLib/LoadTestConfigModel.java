@@ -36,7 +36,5 @@ public class LoadTestConfigModel {
 
     public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
-    }
-    
-    
+    }      
 }

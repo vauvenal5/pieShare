@@ -6,14 +6,12 @@
 package org.pieShare.pieShareApp.service.networkService;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -43,6 +41,7 @@ public class NetworkService implements INetworkService {
 	@Override
 	public void setNicDisplayName(String nicDisplayName) {
 		this.nicDisplayName = nicDisplayName;
+		System.setProperty("jgroups.bind_addr", this.getLocalHost(true).getHostAddress());
 	}
 
 	@Override
