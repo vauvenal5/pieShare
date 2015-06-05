@@ -18,15 +18,12 @@ public class TestFileUtils {
         ProcessBuilder pb;
 		
         if(System.getProperty("os.name").toLowerCase().contains("win")) {
-                //fsutil file createnew file.out 1000000000 
                 //this tool needs the size in byte
                 long actualSize = 1024 * 1024 * sizeInMB;
                 pb = new ProcessBuilder("fsutil", "file", "createnew", file.getAbsolutePath(), String.valueOf(actualSize));
         }
         else {
-                //dd if=/dev/zero of=file.out bs=1MB count=1024 
                 String count = "count=" + String.valueOf(sizeInMB);
-                System.out.println(count);
                 pb = new ProcessBuilder("dd", "if=/dev/zero", "of=" + file.getAbsolutePath(), "bs=1MB", count);
         }
 
