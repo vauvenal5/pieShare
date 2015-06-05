@@ -228,6 +228,8 @@ public class PieShareAppTasks {
 		MetaCommitTask task = new MetaCommitTask();
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
+		task.setCompareService(this.services.fileCompareService());
+		task.setRequestService(this.services.requestService());
 		return task;
 	}
 }

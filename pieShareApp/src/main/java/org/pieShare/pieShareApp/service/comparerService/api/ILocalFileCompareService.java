@@ -23,7 +23,9 @@ public interface ILocalFileCompareService {
 	 * @throws IOException
 	 * @throws FileConflictException 
 	 */
-	int compareToLocalPieFile(PieFile remoteFile) throws IOException;
+	int compareToLocalPieFile(PieFile remoteFile);
 	
 	boolean equalsWithLocalPieFile(PieFile remoteFile);
+	
+	boolean isConflictedOrNotNeeded(PieFile file);
 }
