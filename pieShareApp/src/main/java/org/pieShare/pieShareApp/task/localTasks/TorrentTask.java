@@ -116,7 +116,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			boolean loopDone = false;
 			long lastAmount = 0;
 			int errorSeconds = 0;
-			int sleepTime = 2000;
+			int sleepTime = 1000;
 			int errorThreshold = 15000/sleepTime;
 			boolean errorState = false;
 
