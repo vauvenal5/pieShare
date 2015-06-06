@@ -230,6 +230,7 @@ public class PieShareAppTasks {
 		task.setShareService(this.services.shareService());
 		task.setCompareService(this.services.fileCompareService());
 		task.setRequestService(this.services.requestService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
 		return task;
 	}
 }
