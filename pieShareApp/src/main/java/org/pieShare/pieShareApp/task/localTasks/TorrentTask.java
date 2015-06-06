@@ -122,7 +122,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
 
 				// Wait one second
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - peers {} - {}",
