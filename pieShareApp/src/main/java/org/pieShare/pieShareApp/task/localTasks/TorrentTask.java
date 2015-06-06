@@ -113,6 +113,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			//we have to recover somehow
 			client.share();
 
+			//todo: errorState discovery is just a dirty fix for bug in ttorrent library!!
 			boolean loopDone = false;
 			long lastAmount = 0;
 			int errorSeconds = 0;
