@@ -36,6 +36,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	protected IFileFilterService fileFilterService;
 	protected IFileEncryptionService fileEncrypterService;
 	protected IFileWatcherService fileWatcherService;
+	protected IFileService historyFileService;
 	
 	protected File file;
 
@@ -60,6 +61,10 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		this.fileService = fileService;
 	}
 
+	public void setHistoryFileService(IFileService historyFileService) {
+		this.historyFileService = historyFileService;
+	}
+
 	public void setFile(File file) {
 		this.file = file;
 	}
@@ -72,6 +77,12 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		this.fileService.waitUntilCopyFinished(this.file);
 		
 		PieFile pieFile = this.fileService.getPieFile(file);
+		
+		PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
+		
+		if(oldPieFile.equals(pieFile)) {
+			return null;
+		}
 		
 		if(this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
 			this.fileWatcherService.removePieFileFromModifiedList(pieFile);

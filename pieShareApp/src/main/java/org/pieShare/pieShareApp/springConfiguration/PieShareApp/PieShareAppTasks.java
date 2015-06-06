@@ -60,6 +60,7 @@ public class PieShareAppTasks {
 		task.setHistoryService(services.historyService());
 		task.setFileEncrypterService(services.fileEncryptionService());
 		task.setFileWatcherService(this.services.apacheFileWatcherService());
+		task.setHistoryFileService(this.services.historyFileService());
 	}
 
 	@Bean
