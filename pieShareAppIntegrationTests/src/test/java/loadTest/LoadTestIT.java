@@ -206,6 +206,8 @@ public class LoadTestIT {
             message.getAddress().setChannelId("testUser");
             service.sendMessage(message);
         }
-        System.out.println("Finished!");
+		
+		Date now = new Date();
+        System.out.println(now.toString() + ": Finished!");
     }
 }
