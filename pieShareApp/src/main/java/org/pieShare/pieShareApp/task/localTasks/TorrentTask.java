@@ -116,13 +116,15 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			boolean loopDone = false;
 			long lastAmount = 0;
 			int errorSeconds = 0;
-			int errorThreshold = 20;
+			int sleepTime = 2000;
+			//we want a treshold of 20 seconds sleep time is 2 seconds so we allow only 10 iterations before error state is reached
+			int errorThreshold = 20000/sleepTime;
 			boolean errorState = false;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
 
 				// Wait one second
-				Thread.sleep(2000);
+				Thread.sleep(sleepTime);
 
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - peers {} - {}",
