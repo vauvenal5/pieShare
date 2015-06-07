@@ -6,21 +6,14 @@
 package loadTest.loadTestLib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import loadTest.loadTestLib.config.LoadTestConfig;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 /**
  *
@@ -40,7 +33,7 @@ public class LUtil {
 		return "loadTest/loadTestConfig";
 	}
 
-	public static AnnotationConfigApplicationContext getContext() {
+	/*public static AnnotationConfigApplicationContext getContext() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(PieUtilitiesConfiguration.class);
 		context.register(PiePlateConfiguration.class);
@@ -50,14 +43,14 @@ public class LUtil {
 		context.register(LoadTestConfig.class);
 		context.refresh();
 		return context;
-	}
+	}*/
 
 	public static void setUpEnviroment() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 	}
 
-	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
+	public static void performTearDown(ApplicationContext context) throws Exception {
 		
 		//shutdown application
 		PieShareService service = context.getBean(PieShareService.class);
@@ -66,10 +59,10 @@ public class LUtil {
 		System.out.println("Services stoped!");
 		
 		//stop context
-		context.close();
+		/*context.close();
 		context = null;
 		
-		System.out.println("Context closed!");
+		System.out.println("Context closed!");*/
 	}
 
 	public static void performTearDownDelete() throws Exception {

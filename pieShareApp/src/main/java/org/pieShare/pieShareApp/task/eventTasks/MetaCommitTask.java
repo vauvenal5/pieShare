@@ -61,11 +61,13 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		//think of this later
 		//todo: we need also to do a isRequested check in case we are not the seeder but want the file!
 		if(this.shareService.isPrepared(this.msg.getPieFile())) {
+			PieLogger.trace(this.getClass(), "Starting to share file {}!", msg.getPieFile().getFileName());
 			this.bitTorrentService.shareFile(this.msg.getFileMeta());
 			return;
 		}
 		
 		if(!this.compareService.isConflictedOrNotNeeded(this.msg.getPieFile()) && this.requestService.handleRequest(this.msg.getPieFile(), true)) {
+			PieLogger.trace(this.getClass(), "Starting to handle file {}!", msg.getPieFile().getFileName());
 			this.bitTorrentService.handleFile(this.msg.getFileMeta());
 			try {
 				//we have to pass the message commit forward so the server 
