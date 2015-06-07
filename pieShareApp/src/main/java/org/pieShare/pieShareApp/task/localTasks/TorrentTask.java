@@ -152,25 +152,27 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
 					loopDone = true;
 				}
+				
+				if(!Client.ClientState.VALIDATING.equals(client.getState())) {
+					long currentState = sharedTorrent.getDownloaded();
 
-				long currentState = sharedTorrent.getDownloaded();
+					if (seeder) {
+						currentState = sharedTorrent.getUploaded();
+					}
 
-				if (seeder) {
-					currentState = sharedTorrent.getUploaded();
+					if (currentState == lastAmount) {
+						errorSeconds++;
+					} else {
+						errorSeconds = 0;
+					}
+
+					if (errorSeconds > errorThreshold) {
+						loopDone = true;
+						errorState = true;
+					}
+
+					lastAmount = currentState;
 				}
-
-				if (currentState == lastAmount) {
-					errorSeconds++;
-				} else {
-					errorSeconds = 0;
-				}
-
-				if (errorSeconds > errorThreshold) {
-					loopDone = true;
-					errorState = true;
-				}
-
-				lastAmount = currentState;
 			}
 
 			this.shutdown();
