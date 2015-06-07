@@ -80,7 +80,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		
 		PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
 		
-		if(oldPieFile.equals(pieFile)) {
+		if(oldPieFile != null && oldPieFile.equals(pieFile)) {
 			return null;
 		}
 		

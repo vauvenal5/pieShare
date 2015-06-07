@@ -8,21 +8,6 @@
 <!--    http://www.qos.ch/shop/products/professionalSupport         -->
 <!--                                                                -->
 <configuration>
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <!-- Tests run on modern PCs show that buffering related property -->
-    <!-- "ImmediateFlush" has negligible impact and will be ignored.  -->
-    <!--See also http://logback.qos.ch/manual/appenders.html#RollingFileAppender-->
-    <Append>false</Append>
-    <File>log.out</File>
-    <encoder>
-      <pattern>%date{HH:mm:ss.SSS} %level [%thread] %logger %msg%n</pattern>
-    </encoder>
-    <!--filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>debug</level>
-    </filter-->
-    <!--rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy"/-->
-    <!--triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy"/-->
-  </appender>
   
 	<appender name="lilithFile" class="ch.qos.logback.core.FileAppender">
 	  <file>log.lilith</file>
@@ -48,7 +33,6 @@
   <logger name="com.mchange.v2.async.ThreadPoolAsynchronousRunner" level="ERROR"/>
   
   <root level="TRACE">
-    <appender-ref ref="FILE"/>
 	<appender-ref ref="lilithFile"/>
 	<appender-ref ref="LogbackClassic"/>
   </root>

@@ -94,7 +94,7 @@ public class ShareService implements IShareService{
 				
 				this.fileEncryptionService.decryptFile(localEncTmpFile, localTmpFile);
 				
-				this.fileService.setCorrectModificationDate(file);
+				this.fileService.setCorrectModificationDateOnTmpFile(file);
 				
 				this.fileWatcherService.addPieFileToModifiedList(file);
 				Files.move(localTmpFile.toPath(), localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);

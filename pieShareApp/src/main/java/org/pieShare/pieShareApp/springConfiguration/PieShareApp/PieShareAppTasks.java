@@ -136,7 +136,7 @@ public class PieShareAppTasks {
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
 		this.aLocalFileEventTask(task);
-		task.setFileService(this.services.historyFileService());
+		task.setFileService(this.services.localFileService());
 		return task;
 	}
 
