@@ -16,6 +16,7 @@ import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
+import org.junit.runner.RunWith;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -34,11 +35,14 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -55,11 +59,9 @@ import pieShareAppITs.helper.ITTasksCounter;
 @ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class, 
 	PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class LoadTestIT {
+public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
     //private AnnotationConfigApplicationContext context;
-	@Autowired
-	private ApplicationContext context;
     private ITTasksCounter counter;
     private List<Process> slaves;
 
@@ -90,7 +92,7 @@ public class LoadTestIT {
     @AfterMethod
     public void tearDownMethod() throws Exception {
 		PieLogger.info(this.getClass(), "TeardownMethod");
-        LUtil.performTearDown(context);
+        LUtil.performTearDown(this.applicationContext);
     }
 	
 	@DataProvider(name="loadTestDataProvider")
@@ -125,10 +127,10 @@ public class LoadTestIT {
 	@Test(dataProvider = "loadTestDataProvider")
     public void loadTest(LoadTestConfigModel ltModel) throws Exception {
         String userName = "testUser";
-		PieUser user = context.getBean("pieUser", PieUser.class);
+		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
         
         if(LUtil.IsMaster()) {
-            INetworkService networkService = context.getBean(NetworkService.class);
+            INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
             networkService.setNicDisplayName("docker0");
             
             //start slave nodes
@@ -142,7 +144,7 @@ public class LoadTestIT {
 			config.setWorkingDir(new File("./loadTest/workingDir"));
         }
 
-        LoginTask task = context.getBean(LoginTask.class);
+        LoginTask task = this.applicationContext.getBean(LoginTask.class);
 
         LoginCommand command = new LoginCommand();
         PlainTextPassword pwd = new PlainTextPassword();
@@ -150,11 +152,11 @@ public class LoadTestIT {
         command.setPlainTextPassword(pwd);
         command.setUserName(userName);
 
-        IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
+        IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
         if (LUtil.IsMaster()) {
             executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
-            counter = context.getBean(ITTasksCounter.class);
+            counter = this.applicationContext.getBean(ITTasksCounter.class);
         }
 
         command.setCallback(new ILoginFinished() {
@@ -205,7 +207,7 @@ public class LoadTestIT {
 			
         } else {
             PieLogger.info(this.getClass(), "Slave");
-			BitTorrentService torrentService = context.getBean(BitTorrentService.class);
+			BitTorrentService torrentService = this.applicationContext.getBean(BitTorrentService.class);
 			
             while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount() || 
 					torrentService.activeTorrents()) {
@@ -215,8 +217,8 @@ public class LoadTestIT {
             PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
             PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
-            AllFilesCompleteMessage message = context.getBean(AllFilesCompleteMessage.class);
-            ClusterManagementService service = context.getBean(ClusterManagementService.class);
+            AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
+            ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
             message.getAddress().setClusterName("testUser");
             message.getAddress().setChannelId("testUser");
             service.sendMessage(message);
