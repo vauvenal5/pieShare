@@ -144,7 +144,7 @@ public class BitTorrentService implements IBitTorrentService {
 	}
 
 	@Override
-	public void remoteClientDone(FileMeta meta) {
+	public void clientDone(FileMeta meta) {
 		this.manipulateShareState(meta, -1);
 	}
 

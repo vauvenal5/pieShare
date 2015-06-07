@@ -97,11 +97,12 @@ public class SyncOneBigFileIT {
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
+			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
+			
 			boolean filesAreEqual = FileUtils.contentEquals(fileMain, fileBot);
 
 			assertTrue(filesAreEqual);
-			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
-			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
 		}
 		else {
 			fail("To much file transerfers?!");

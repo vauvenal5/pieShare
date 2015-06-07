@@ -98,14 +98,30 @@ public abstract class FileServiceBase implements IFileService {
 	
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
-		PieLogger.trace(this.getClass(), "Date modified {} of {}", file.getLastModified(), file.getRelativeFilePath());
 		File targetFile = this.getAbsolutePath(file).toFile();
 
 		this.fileWatcherService.addPieFileToModifiedList(file);
-		if (!targetFile.setLastModified(file.getLastModified())) {
+		if (setCorrectModificationDate(file, targetFile)) {
 			this.fileWatcherService.removePieFileFromModifiedList(file);
-			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getRelativeFilePath());
 		}
+	}
+	
+	@Override
+	public void setCorrectModificationDateOnTmpFile(PieFile file) {
+		File tmpFile = this.getAbsoluteTmpPath(file).toFile();
+		
+		setCorrectModificationDate(file, tmpFile);
+	}
+	
+	private boolean setCorrectModificationDate(PieFile pieFile, File file) {
+		PieLogger.trace(this.getClass(), "Date modified {} of {}", pieFile.getLastModified(), pieFile.getRelativeFilePath());
+		
+		if (!file.setLastModified(pieFile.getLastModified())) {
+			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getAbsolutePath());
+			return false;
+		}
+		
+		return true;
 	}
 	
 	@Override

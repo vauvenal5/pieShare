@@ -60,6 +60,9 @@ public class LocalFileService extends FileServiceBase {
 		if (file.exists()) {
 			pieFile.setMd5(hashService.hashStream(file));
 		}
+		else {
+			pieFile.setDeleted(true);
+		}
 
 		return pieFile;
 	}

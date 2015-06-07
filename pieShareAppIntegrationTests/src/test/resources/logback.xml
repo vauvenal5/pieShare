@@ -18,14 +18,14 @@
 	
 	
   
-  <appender name="LogbackClassic" class="ch.qos.logback.classic.net.SocketAppender">
+  <appender name="LogbackClassic1" class="ch.qos.logback.classic.net.SocketAppender">
     <RemoteHost>localhost</RemoteHost>
     <Port>4560</Port>
     <ReconnectionDelay>170</ReconnectionDelay>
     <IncludeCallerData>true</IncludeCallerData>
  </appender>
  
- <appender name="LogbackClassic" class="ch.qos.logback.classic.net.SocketAppender">
+ <appender name="LogbackClassic2" class="ch.qos.logback.classic.net.SocketAppender">
     <RemoteHost>172.17.42.1</RemoteHost>
     <Port>4560</Port>
     <ReconnectionDelay>170</ReconnectionDelay>
@@ -40,8 +40,8 @@
   <logger name="com.mchange.v2.async.ThreadPoolAsynchronousRunner" level="ERROR"/>
   
   <root level="TRACE">
-    <appender-ref ref="FILE"/>
 	<appender-ref ref="lilithFile"/>
-	<appender-ref ref="LogbackClassic"/>
+	<appender-ref ref="LogbackClassic1"/>
+	<appender-ref ref="LogbackClassic2"/>
   </root>
 </configuration>
