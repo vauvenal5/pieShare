@@ -188,7 +188,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			this.bitTorrentService.torrentClientDone(seeder, this.fileMeta);
 			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
-			if (!errorState && !seeder) {
+			if (!seeder && (!errorState || sharedTorrent.isComplete())) {
 				//todo: improve this to work in parallel so we can copy file while still sharing
 				this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 
@@ -198,7 +198,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				this.clusterManagementService.sendMessage(msgComplete);*/
 			}
 
-			if (errorState && !seeder) {
+			if (errorState && !sharedTorrent.isComplete() && !seeder) {
 				this.requestService.requestFile(this.fileMeta.getFile());
 			}
 
