@@ -6,12 +6,14 @@
 package loadTest;
 
 import commonTestTools.TestFileUtils;
+import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
+import loadTest.loadTestLib.config.LoadTestConfig;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -20,6 +22,10 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
+import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -28,7 +34,11 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
@@ -42,9 +52,14 @@ import pieShareAppITs.helper.ITTasksCounter;
  *
  * @author richy
  */
+@ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class, 
+	PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LoadTestIT {
 
-    private AnnotationConfigApplicationContext context;
+    //private AnnotationConfigApplicationContext context;
+	@Autowired
+	private ApplicationContext context;
     private ITTasksCounter counter;
     private List<Process> slaves;
 
@@ -68,7 +83,7 @@ public class LoadTestIT {
     public void setUpMethod() throws Exception {
 		PieLogger.info(this.getClass(), "SetupMethod");
         LUtil.performTearDownDelete();
-        context = LUtil.getContext();
+        //context = LUtil.getContext();
         this.slaves = new ArrayList<>();
     }
 
