@@ -118,7 +118,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			long lastAmount = 0;
 			int errorSeconds = 0;
 			int sleepTime = 1000;
-			int errorThreshold = 15000/sleepTime;
+			int errorThreshold = 20000/sleepTime;
 			boolean errorState = false;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
@@ -141,6 +141,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					this.shutdown();
 					//todo: ports release when exception
 					throw new Exception("ttorrent client Error State");
+				}
+				
+				if(!seeder && Client.ClientState.SEEDING.equals(client.getState())) {
+					//the local client is done
+					this.bitTorrentService.clientDone(fileMeta);
 				}
 
 				if ((seeder || Client.ClientState.SEEDING.equals(client.getState())) && !this.bitTorrentService.isShareActive(this.fileMeta)) {
@@ -171,10 +176,12 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			this.shutdown();
 
 			this.bitTorrentService.torrentClientDone(seeder, this.fileMeta);
-			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
 			if (!errorState && !seeder) {
+				//todo: improve this to work in parallel so we can copy file while still sharing
+				this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
+				
 				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
 				msgComplete.setPieFile(fileMeta.getFile());
 				this.setDefaultAdresse(msgComplete);

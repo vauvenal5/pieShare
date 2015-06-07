@@ -17,7 +17,7 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
 public interface IBitTorrentService {
 	void initTorrentService();
 	
-	void remoteClientDone(FileMeta meta);
+	void clientDone(FileMeta meta);
 	void torrentClientDone(boolean seeder, FileMeta file);
 	void shareFile(FileMeta file);
 	void handleFile(FileMeta file);

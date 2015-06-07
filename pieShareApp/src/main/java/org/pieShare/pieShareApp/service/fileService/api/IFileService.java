@@ -38,6 +38,8 @@ public interface IFileService {
 	
 	void setCorrectModificationDate(PieFile file);
 	
+	void setCorrectModificationDateOnTmpFile(PieFile file);
+	
 	Path relitivizeFilePath(File file);
 	
 	Path getAbsolutePath(PieFile file);
