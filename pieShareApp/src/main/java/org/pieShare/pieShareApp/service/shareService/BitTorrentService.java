@@ -37,7 +37,9 @@ public class BitTorrentService implements IBitTorrentService {
 
 	private Semaphore readPorts;
 	private Semaphore writePorts;
-	private ConcurrentHashMap<PieFile, Integer> sharedFiles;
+	//for the time being it is neccessary to work with the FileMeta and not the PieFile due to the fact
+	//that there can be multiple unrelated trackers present
+	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
 
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
@@ -70,12 +72,12 @@ public class BitTorrentService implements IBitTorrentService {
 	 */
 	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
 		boolean isNew = true;
-
-		if (this.sharedFiles.containsKey(file.getFile())) {
-			value = this.sharedFiles.get(file.getFile()) + value;
+		
+		if (this.sharedFiles.containsKey(file)) {
+			value = this.sharedFiles.get(file) + value;
 
 			if (value <= 0) {
-				this.sharedFiles.remove(file.getFile());
+				this.sharedFiles.remove(file);
 				return false;
 			}
 
@@ -83,7 +85,7 @@ public class BitTorrentService implements IBitTorrentService {
 		}
 
 		if (value >= 0) {
-			this.sharedFiles.put(file.getFile(), value);
+			this.sharedFiles.put(file, value);
 		}
 
 		return isNew;
@@ -137,7 +139,7 @@ public class BitTorrentService implements IBitTorrentService {
 			PieLogger.error(this.getClass(), "Acquire write failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(true, meta.getFile());
+			this.torrentClientDone(true, meta);
 		}
 	}
 
@@ -148,6 +150,12 @@ public class BitTorrentService implements IBitTorrentService {
 
 	@Override
 	public void handleFile(FileMeta meta) {
+		//this is important in case we are already sharing that file!
+		if (!this.manipulateShareState(meta, 1)) {
+			PieLogger.trace(this.getClass(), "Allready handling file {}!", meta.getFile().getFileName());
+			return;
+		}
+		
 		try {
 			this.readPorts.acquire();
 			this.writePorts.acquire();
@@ -156,7 +164,7 @@ public class BitTorrentService implements IBitTorrentService {
 			PieLogger.error(this.getClass(), "Acquire read failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(false, meta.getFile());
+			this.torrentClientDone(false, meta);
 		}
 	}
 
@@ -169,7 +177,7 @@ public class BitTorrentService implements IBitTorrentService {
 	}
 
 	@Override
-	public void torrentClientDone(boolean seeder, PieFile file) {
+	public void torrentClientDone(boolean seeder, FileMeta file) {
 		this.writePorts.release();
 		if (!seeder) {
 			this.readPorts.release();
@@ -182,7 +190,7 @@ public class BitTorrentService implements IBitTorrentService {
 
 	@Override
 	public boolean isShareActive(FileMeta file) {
-		return (this.sharedFiles.getOrDefault(file.getFile(), 0) > 0);
+		return (this.sharedFiles.getOrDefault(file, 0) > 0);
 	}
 
 	public boolean activeTorrents() {

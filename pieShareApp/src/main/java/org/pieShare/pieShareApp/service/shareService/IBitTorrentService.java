@@ -18,7 +18,7 @@ public interface IBitTorrentService {
 	void initTorrentService();
 	
 	void remoteClientDone(FileMeta meta);
-	void torrentClientDone(boolean seeder, PieFile file);
+	void torrentClientDone(boolean seeder, FileMeta file);
 	void shareFile(FileMeta file);
 	void handleFile(FileMeta file);
 	boolean isShareActive(FileMeta file);

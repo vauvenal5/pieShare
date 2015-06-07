@@ -170,7 +170,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 			this.shutdown();
 
-			this.bitTorrentService.torrentClientDone(seeder, this.fileMeta.getFile());
+			this.bitTorrentService.torrentClientDone(seeder, this.fileMeta);
 			this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
 			this.requestService.deleteRequestedFile(this.fileMeta.getFile());
 
