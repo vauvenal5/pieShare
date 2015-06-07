@@ -118,7 +118,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			long lastAmount = 0;
 			int errorSeconds = 0;
 			int sleepTime = 1000;
-			int errorThreshold = 20000/sleepTime;
+			int errorThreshold = 20000 / sleepTime;
 			boolean errorState = false;
 
 			while (!Client.ClientState.DONE.equals(client.getState()) && !loopDone) {
@@ -142,18 +142,26 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					//todo: ports release when exception
 					throw new Exception("ttorrent client Error State");
 				}
-				
-				if(!seeder && Client.ClientState.SEEDING.equals(client.getState())) {
+
+				if (!seeder && Client.ClientState.SEEDING.equals(client.getState())) {
 					//the local client is done
 					this.bitTorrentService.clientDone(fileMeta);
+
+					//it is important that this message gets send as soon as possible so the different clients don't block each other
+					//for example on server instance and two clients
+					//each client will keep sharing until the error timeout if this message doesn't get send here
+					IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
+					msgComplete.setPieFile(fileMeta.getFile());
+					this.setDefaultAdresse(msgComplete);
+					this.clusterManagementService.sendMessage(msgComplete);
 				}
 
 				if ((seeder || Client.ClientState.SEEDING.equals(client.getState())) && !this.bitTorrentService.isShareActive(this.fileMeta)) {
 					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
 					loopDone = true;
 				}
-				
-				if(!Client.ClientState.VALIDATING.equals(client.getState())) {
+
+				if (!Client.ClientState.VALIDATING.equals(client.getState())) {
 					long currentState = sharedTorrent.getDownloaded();
 
 					if (seeder) {
@@ -183,11 +191,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			if (!errorState && !seeder) {
 				//todo: improve this to work in parallel so we can copy file while still sharing
 				this.shareService.localFileTransferComplete(fileMeta.getFile(), seeder);
-				
-				IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
+
+				/*IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
 				msgComplete.setPieFile(fileMeta.getFile());
 				this.setDefaultAdresse(msgComplete);
-				this.clusterManagementService.sendMessage(msgComplete);
+				this.clusterManagementService.sendMessage(msgComplete);*/
 			}
 
 			if (errorState && !seeder) {
