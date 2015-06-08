@@ -14,12 +14,15 @@ import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
+import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.junit.runner.RunWith;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -56,34 +59,35 @@ import pieShareAppITs.helper.ITTasksCounter;
  *
  * @author richy
  */
-@ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class, 
-	PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
+@ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class,
+    PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
     //private AnnotationConfigApplicationContext context;
     private ITTasksCounter counter;
+    private LFileComparer comparer;
     private List<Process> slaves;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         LUtil.setUpEnviroment();
-		
-		if(LUtil.IsMaster()) {
-			LUtil.setUpResultFile();
-			Process proc = LUtil.startDockerBuild();
+
+        if (LUtil.IsMaster()) {
+            LUtil.setUpResultFile();
+            Process proc = LUtil.startDockerBuild();
             int res = proc.waitFor();
             Assert.assertEquals(res, 0);
-		}
+        }
     }
-	
-	@AfterClass
-	public static void tearDownClass() throws Exception {
-	}
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
 
     @BeforeMethod
     public void setUpMethod() throws Exception {
-		PieLogger.info(this.getClass(), "SetupMethod");
+        PieLogger.info(this.getClass(), "SetupMethod");
         LUtil.performTearDownDelete();
         //context = LUtil.getContext();
         this.slaves = new ArrayList<>();
@@ -91,57 +95,57 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
     @AfterMethod
     public void tearDownMethod() throws Exception {
-		PieLogger.info(this.getClass(), "TeardownMethod");
+        PieLogger.info(this.getClass(), "TeardownMethod");
         LUtil.performTearDown(this.applicationContext);
     }
-	
-	@DataProvider(name="loadTestDataProvider")
-	public static Object[][] loadTestDataProvider() throws Exception {
-		
-		if(LUtil.IsMaster()) {
-			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
 
-			Object[][] data = new Object[ltModels.size()][1];
-			
-			for(int i = 0; i<ltModels.size(); i++) {
-				data[i][0] = ltModels.get(i);
-			}
-			
-			return data;
-		}
-		
-		LoadTestConfigModel ltModel = new LoadTestConfigModel();
-		ltModel.setFileSize(0);
-		ltModel.setNodeCount(0);
-		int fc = Integer.parseInt(System.getenv("LTFILES"));
-		ltModel.setFileCount(fc);
-		
-		return new Object[][]{{ltModel}};
-	}
-	
-	@Test
-	public void selfTest() throws Exception {
-		loadTestDataProvider();
-	}
+    @DataProvider(name = "loadTestDataProvider")
+    public static Object[][] loadTestDataProvider() throws Exception {
 
-	@Test(dataProvider = "loadTestDataProvider")
+        if (LUtil.IsMaster()) {
+            List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
+
+            Object[][] data = new Object[ltModels.size()][1];
+
+            for (int i = 0; i < ltModels.size(); i++) {
+                data[i][0] = ltModels.get(i);
+            }
+
+            return data;
+        }
+
+        LoadTestConfigModel ltModel = new LoadTestConfigModel();
+        ltModel.setFileSize(0);
+        ltModel.setNodeCount(0);
+        int fc = Integer.parseInt(System.getenv("LTFILES"));
+        ltModel.setFileCount(fc);
+
+        return new Object[][]{{ltModel}};
+    }
+
+    @Test
+    public void selfTest() throws Exception {
+        loadTestDataProvider();
+    }
+
+    @Test(dataProvider = "loadTestDataProvider")
     public void loadTest(LoadTestConfigModel ltModel) throws Exception {
         String userName = "testUser";
-		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
-        
-        if(LUtil.IsMaster()) {
+        PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
+
+        if (LUtil.IsMaster()) {
             INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
             networkService.setNicDisplayName("docker0");
-            
+
             //start slave nodes
-            for(int i=1; i<ltModel.getNodeCount();i++) {
+            for (int i = 1; i < ltModel.getNodeCount(); i++) {
                 this.slaves.add(LUtil.startDockerSlave(ltModel));
             }
-			
-			PieShareConfiguration config = user.getPieShareConfiguration();
-			config.setPwdFile(new File("./loadTest/pwdFile"));
-			config.setTmpDir(new File("./loadTest/tmpDir"));
-			config.setWorkingDir(new File("./loadTest/workingDir"));
+
+            PieShareConfiguration config = user.getPieShareConfiguration();
+            config.setPwdFile(new File("./loadTest/pwdFile"));
+            config.setTmpDir(new File("./loadTest/tmpDir"));
+            config.setWorkingDir(new File("./loadTest/workingDir"));
         }
 
         LoginTask task = this.applicationContext.getBean(LoginTask.class);
@@ -152,11 +156,13 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
         command.setPlainTextPassword(pwd);
         command.setUserName(userName);
 
+        LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
         IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
         if (LUtil.IsMaster()) {
             executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
             counter = this.applicationContext.getBean(ITTasksCounter.class);
+            comparer = this.applicationContext.getBean(LFileComparer.class);
         }
 
         command.setCallback(new ILoginFinished() {
@@ -186,8 +192,12 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
                 File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
                 TestFileUtils.createFile(file, ltModel.getFileSize());
             }
+            
+            comparer.setFile(fileService.getAllFiles().get(0));
+            
             System.out.println("Files successfully created!");
             PieLogger.info(this.getClass(), "Files successfully created!");
+            
         }
 
         task.run();
@@ -195,36 +205,43 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
         System.out.println("Waiting for completion!");
         if (LUtil.IsMaster()) {
             PieLogger.info(this.getClass(), "Master");
-			Date start = new Date();
-			
-            while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount()-1)) {
+            Date start = new Date();
+
+            while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
                 Thread.sleep(1000);
             }
-			Date stop = new Date();
-			
-			long resultTime = stop.getTime() - start.getTime();
-			LUtil.writeCSVResult(ltModel, resultTime);
-			
+            
+            Date stop = new Date();
+
+            long resultTime = stop.getTime() - start.getTime();
+            
+            Assert.assertTrue(comparer.getResult());
+            
+            LUtil.writeCSVResult(ltModel, resultTime);
+
         } else {
             PieLogger.info(this.getClass(), "Slave");
-			BitTorrentService torrentService = this.applicationContext.getBean(BitTorrentService.class);
-			
-            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount() || 
-					torrentService.activeTorrents()) {
+            BitTorrentService torrentService = this.applicationContext.getBean(BitTorrentService.class);
+
+            while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()
+                    || torrentService.activeTorrents()) {
                 Thread.sleep(5000);
             }
-            
+
             PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
             PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
             AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
+            
+            message.setFiles(fileService.getAllFiles());
+
             ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
             message.getAddress().setClusterName("testUser");
             message.getAddress().setChannelId("testUser");
             service.sendMessage(message);
         }
-		
-		Date now = new Date();
+
+        Date now = new Date();
         System.out.println(now.toString() + ": Finished!");
     }
 }
