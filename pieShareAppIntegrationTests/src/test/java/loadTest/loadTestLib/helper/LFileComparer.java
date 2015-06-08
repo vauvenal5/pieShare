@@ -5,8 +5,10 @@
  */
 package loadTest.loadTestLib.helper;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 
 /**
  *
@@ -14,18 +16,18 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  */
 public class LFileComparer {
 
-    private PieFile file;
     private boolean result = true;
+    private ILocalFileCompareService fileCompareService;
 
     public LFileComparer() {
     }
 
-    public void setFile(PieFile file) {
-        this.file = file;
+    public void setFileCompareService(ILocalFileCompareService fileCompareService) {
+        this.fileCompareService = fileCompareService;
     }
-    
+
     public synchronized void comarare(List<PieFile> files) {
-       result = result && files.stream().allMatch(f -> f.equals(file));
+        result = result && files.stream().allMatch(pf -> fileCompareService.equalsWithLocalPieFile(pf));
     }
 
     public synchronized boolean getResult() {
