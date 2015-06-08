@@ -5,6 +5,7 @@
  */
 package loadTest.loadTestLib.config;
 
+import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
@@ -20,27 +21,34 @@ import pieShareAppITs.helper.ITTasksCounter;
  */
 @Configuration
 public class LoadTestConfig {
-
+    
     @Bean
-    @Scope(value="prototype")
+    @Scope(value = "prototype")
     public AllFilesCompleteMessage allFilesCompleteMessage() {
         AllFilesCompleteMessage message = new AllFilesCompleteMessage();
         message.setAddress(new JGroupsPieAddress());
         return message;
     }
-
+    
     @Bean
-    @Scope(value="prototype")
+    @Scope(value = "prototype")
     public AllFilesCompleteTask allFilesCompleteTask() {
         AllFilesCompleteTask task = new AllFilesCompleteTask();
         task.setTaskCounter(iTTasksCounter());
+        task.setComparer(ltFileComparer());
         return task;
     }
-
+    
     @Bean
     @Lazy
     public ITTasksCounter iTTasksCounter() {
         return new ITTasksCounter();
     }
-
+    
+    @Bean
+    @Lazy
+    public LFileComparer ltFileComparer() {
+        return new LFileComparer();
+    }
+    
 }
