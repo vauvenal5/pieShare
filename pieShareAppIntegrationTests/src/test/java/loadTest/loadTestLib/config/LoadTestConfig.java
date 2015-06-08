@@ -8,7 +8,9 @@ package loadTest.loadTestLib.config;
 import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -21,6 +23,9 @@ import pieShareAppITs.helper.ITTasksCounter;
  */
 @Configuration
 public class LoadTestConfig {
+    
+    @Autowired
+    private PieShareAppService pieShareAppService;
     
     @Bean
     @Scope(value = "prototype")
@@ -48,7 +53,9 @@ public class LoadTestConfig {
     @Bean
     @Lazy
     public LFileComparer ltFileComparer() {
-        return new LFileComparer();
+       LFileComparer com = new  LFileComparer();
+       com.setFileCompareService(pieShareAppService.fileCompareService());
+       return com;
     }
     
 }

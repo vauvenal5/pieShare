@@ -68,6 +68,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
     private ITTasksCounter counter;
     private LFileComparer comparer;
     private List<Process> slaves;
+    private List<PieFile> files;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -156,7 +157,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
         command.setPlainTextPassword(pwd);
         command.setUserName(userName);
 
-        LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
         IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
         if (LUtil.IsMaster()) {
@@ -192,12 +192,10 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
                 File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
                 TestFileUtils.createFile(file, ltModel.getFileSize());
             }
-            
-            comparer.setFile(fileService.getAllFiles().get(0));
-            
+
             System.out.println("Files successfully created!");
             PieLogger.info(this.getClass(), "Files successfully created!");
-            
+
         }
 
         task.run();
@@ -210,13 +208,13 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
             while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
                 Thread.sleep(1000);
             }
-            
+
             Date stop = new Date();
 
             long resultTime = stop.getTime() - start.getTime();
-            
+
             Assert.assertTrue(comparer.getResult());
-            
+
             LUtil.writeCSVResult(ltModel, resultTime);
 
         } else {
@@ -232,7 +230,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
             PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
             AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
-            
+
+            LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
             message.setFiles(fileService.getAllFiles());
 
             ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
