@@ -17,6 +17,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -210,22 +211,68 @@ public class LUtil {
 		Process proc = processBuilder.start();
 		return proc.waitFor() == 0;
 	}
-	
+
 	private HashMap<String, Integer> startedClusterContainer;
 
-	public boolean startDockerSlave(LoadTestConfigModel ltModel) throws IOException {
-		
-		if(runInDockerCluster) {
-			HashMap<String, Integer> dockerNodes = getDockerNodes();
-			
+	private Entry<String, Integer> getLowestDockerHost() {
+		HashMap<String, Integer> dockerNodes = getDockerNodes();
+		Entry<String, Integer> lowest = null;
+
+		if (this.startedClusterContainer.size() < dockerNodes.size()) {
 			for (Entry<String, Integer> entry : dockerNodes.entrySet()) {
-				if(startedClusterContainer.containsKey(entry) && startedClusterContainer.get(entry) < entry.getValue()) {
-					
+				if (!this.startedClusterContainer.containsKey(entry.getKey())) {
+					return new AbstractMap.SimpleEntry<>(entry.getKey(), 0);
 				}
 			}
-			
+		}
+
+		for (Entry<String, Integer> entry : startedClusterContainer.entrySet()) {
+			if (entry.getValue() < dockerNodes.get(entry.getKey())) {
+				if (lowest == null) {
+					lowest = entry;
+				} else {
+					if (lowest.getValue() > entry.getValue()) {
+						lowest = entry;
+					}
+				}
+			}
 		}
 		
+		return lowest;
+	}
+
+	public boolean startDockerSlave(LoadTestConfigModel ltModel) throws InterruptedException, IOException {
+
+		if (runInDockerCluster) {
+			HashMap<String, Integer> dockerNodes = getDockerNodes();
+
+			Entry<String, Integer> entry = this.getLowestDockerHost();
+
+			startedClusterContainer.put(entry.getKey(), entry.getValue() + 1);
+			
+			String dockerCommand = ""
+					+ "\"Hostname\":\"\","
+					+ "\"User\":\"\","
+					+ "\"Memory\":0,"
+					+ "\"MemorySwap\":0,"
+					+ "\"AttachStdin\":false,"
+					+ "\"AttachStdout\":true,"
+					+ "\"AttachStderr\":true,"
+					+ "\"PortSpecs\":null,"
+					+ "\"Privileged\": false,"
+					+ "\"Tty\":false,"
+					+ "\"OpenStdin\":false,"
+					+ "\"StdinOnce\":false,"
+					+ "\"Env\":null"
+					+ "\"Dns\":null,"
+					+ "\"Image\":\"vauvenal5/loadtest\","
+					+ "\"Volumes\":{},"
+					+ "\"VolumesFrom\":\"\","
+					+ "\"WorkingDir\":\"\"}";
+			
+			return true;
+		}
+
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", String.valueOf(ltModel.getFileCount()));
 		Process proc = processBuilder.start();
 		return proc.waitFor() == 0;
