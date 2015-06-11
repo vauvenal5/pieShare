@@ -5,6 +5,8 @@
  */
 package loadTest.loadTestLib.message;
 
+import java.util.List;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
@@ -14,4 +16,13 @@ import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
  */
 public class AllFilesCompleteMessage extends AClusterMessage implements IEncryptedMessage {
     
+    private List<PieFile> files;
+
+    public List<PieFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<PieFile> files) {
+        this.files = files;
+    }
 }

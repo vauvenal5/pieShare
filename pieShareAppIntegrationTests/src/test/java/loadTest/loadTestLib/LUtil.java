@@ -72,11 +72,16 @@ public class LUtil {
 
 		System.out.println("Services stoped!");
 
-		//stop context
+	//stop context
 		/*context.close();
 		 context = null;
 		
 		 System.out.println("Context closed!");*/
+	}
+
+	public static void performTearDown(ApplicationContext context, List<Process> slaves) throws Exception {
+		performTearDown(context);
+		slaves.forEach(s -> s.destroy());
 	}
 
 	public static void performTearDownDelete() throws Exception {
