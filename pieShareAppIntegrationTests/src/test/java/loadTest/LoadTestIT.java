@@ -97,7 +97,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
     @AfterMethod
     public void tearDownMethod() throws Exception {
         PieLogger.info(this.getClass(), "TeardownMethod");
-        LUtil.performTearDown(this.applicationContext);
+        LUtil.performTearDown(this.applicationContext, slaves);
     }
 
     @DataProvider(name = "loadTestDataProvider")
