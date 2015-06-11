@@ -35,6 +35,12 @@ import org.springframework.context.ApplicationContext;
  * @author richy
  */
 public class LUtil {
+	
+	private static boolean runInDockerCluster = false;
+	private static boolean dockerError;
+	private HashMap<String, Integer> startedClusterContainer;
+	private HashMap<String, List<String>> runningContainers;
+	private List<Process> slaves;
 
 	public static String getWorkingDir() {
 		return "loadTest/workingDir";
@@ -48,43 +54,23 @@ public class LUtil {
 		return "loadTest/loadTestConfig";
 	}
 
-	/*public static AnnotationConfigApplicationContext getContext() {
-	 AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-	 context.register(PieUtilitiesConfiguration.class);
-	 context.register(PiePlateConfiguration.class);
-	 context.register(PieShareAppModel.class);
-	 context.register(PieShareAppServiceTestConfig.class);
-	 context.register(PieShareAppTasks.class);
-	 context.register(LoadTestConfig.class);
-	 context.refresh();
-	 return context;
-	 }*/
 	public static void setUpEnviroment() {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		System.setProperty("jgroups.logging.log_factory_class", "org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsLoggerFactory");
 	}
 
-	public static void performTearDown(ApplicationContext context) throws Exception {
-
-		//shutdown application
+	public void performTearDown(ApplicationContext context) throws Exception {
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
-
 		System.out.println("Services stoped!");
-
-	//stop context
-		/*context.close();
-		 context = null;
-		
-		 System.out.println("Context closed!");*/
 	}
 
-	public static void performTearDown(ApplicationContext context, List<Process> slaves) throws Exception {
+	public void performTearDown(ApplicationContext context, List<Process> slaves) throws Exception {
 		performTearDown(context);
 		slaves.forEach(s -> s.destroy());
 	}
 
-	public static void performTearDownDelete() throws Exception {
+	public void performTearDownDelete() throws Exception {
 		FileUtils.deleteDirectory(new File(getWorkingDir()));
 		FileUtils.deleteDirectory(new File(getTmpDir()));
 		FileUtils.deleteDirectory(new File(getConfigDir()));
@@ -142,9 +128,6 @@ public class LUtil {
 	public static void runInDockerCluster() {
 		runInDockerCluster = true;
 	}
-
-	private static boolean runInDockerCluster = false;
-	private static boolean dockerError;
 
 	public static boolean startDockerBuild() throws IOException, InterruptedException {
 
@@ -217,9 +200,6 @@ public class LUtil {
 		Process proc = processBuilder.start();
 		return proc.waitFor() == 0;
 	}
-
-	private HashMap<String, Integer> startedClusterContainer;
-	private HashMap<String, List<String>> runningContainers;
 
 	private Entry<String, Integer> getLowestDockerHost() {
 		HashMap<String, Integer> dockerNodes = getDockerNodes();
