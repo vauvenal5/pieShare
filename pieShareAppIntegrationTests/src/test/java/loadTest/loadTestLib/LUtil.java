@@ -18,6 +18,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -299,6 +300,12 @@ public class LUtil {
 			if(responseCode != 204) {
 				return false;
 			}
+			
+			if(!this.runningContainers.containsKey(entry.getKey())) {
+				this.runningContainers.put(entry.getKey(), new ArrayList<>());
+			}
+			
+			this.runningContainers.get(entry.getKey()).add(containerId);
 			
 			return true;
 		}
