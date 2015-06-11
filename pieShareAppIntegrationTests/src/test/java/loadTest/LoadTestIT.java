@@ -67,8 +67,9 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	//private AnnotationConfigApplicationContext context;
 	private ITTasksCounter counter;
 	private LFileComparer comparer;
-	private List<Process> slaves;
+	
 	private List<PieFile> files;
+	private LUtil lUtil = new LUtil();
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -89,15 +90,13 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@BeforeMethod
 	public void setUpMethod() throws Exception {
 		PieLogger.info(this.getClass(), "SetupMethod");
-		LUtil.performTearDownDelete();
-		//context = LUtil.getContext();
-		this.slaves = new ArrayList<>();
+		lUtil.performTearDownDelete();
 	}
 
 	@AfterMethod
 	public void tearDownMethod() throws Exception {
 		PieLogger.info(this.getClass(), "TeardownMethod");
-		LUtil.performTearDown(this.applicationContext, slaves);
+		lUtil.performTearDown(this.applicationContext);
 	}
 
 	@DataProvider(name = "loadTestDataProvider")
@@ -124,7 +123,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		return new Object[][]{{ltModel}};
 	}
 
-	@Test
+	//@Test
 	public void dockerSetUpTest() throws Exception {
 
 	}
@@ -134,7 +133,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		loadTestDataProvider();
 	}
 
-	//@Test(dataProvider = "loadTestDataProvider")
+	@Test(dataProvider = "loadTestDataProvider")
 	public void loadTest(LoadTestConfigModel ltModel) throws Exception {
 		String userName = "testUser";
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
@@ -145,7 +144,9 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			//start slave nodes
 			for (int i = 1; i < ltModel.getNodeCount(); i++) {
-				this.slaves.add(LUtil.startDockerSlave(ltModel));
+				if(!lUtil.startDockerSlave(ltModel)) {
+					i--;
+				}
 			}
 
 			PieShareConfiguration config = user.getPieShareConfiguration();
