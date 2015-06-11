@@ -35,12 +35,13 @@ import org.springframework.context.ApplicationContext;
  * @author richy
  */
 public class LUtil {
-	
+
 	private static boolean runInDockerCluster = false;
 	private static boolean dockerError;
-	private HashMap<String, Integer> startedClusterContainer;
-	private HashMap<String, List<String>> runningContainers;
-	private List<Process> slaves;
+	private static int doneDockers;
+	private HashMap<String, Integer> startedClusterContainer = new HashMap<>();
+	private HashMap<String, List<String>> runningContainers = new HashMap<>();
+	private List<Process> slaves = new ArrayList<>();
 
 	public static String getWorkingDir() {
 		return "loadTest/workingDir";
@@ -63,10 +64,7 @@ public class LUtil {
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		System.out.println("Services stoped!");
-	}
 
-	public void performTearDown(ApplicationContext context, List<Process> slaves) throws Exception {
-		performTearDown(context);
 		slaves.forEach(s -> s.destroy());
 	}
 
@@ -138,6 +136,7 @@ public class LUtil {
 			ExecutorService exec = Executors.newFixedThreadPool(dockerNodes.size());
 
 			dockerError = false;
+			doneDockers = 0;
 
 			for (Entry<String, Integer> entry : dockerNodes.entrySet()) {
 				exec.submit(new Runnable() {
@@ -171,19 +170,49 @@ public class LUtil {
 							if (responseCode != 200) {
 								dockerError = true;
 							}
+							
+							String msg = "";
+
+							do {
+								Thread.sleep(5000);
+								msg = "";
+								url = entry.getKey() + "/images/json";
+								obj = new URL(url);
+								HttpURLConnection con2 = (HttpURLConnection) obj.openConnection();
+								con2.setRequestMethod("GET");
+								responseCode = con2.getResponseCode();
+
+								BufferedReader in = new BufferedReader(new InputStreamReader(con2.getInputStream()));
+								String line = null;
+
+								while ((line = in.readLine()) != null) {
+									msg += line;
+								}
+
+								con2.disconnect();
+							}
+							while (!msg.contains("vauvenal5/loadtest"));
+							
+							con.disconnect();
+							doneDockers++;
 						} catch (MalformedURLException ex) {
 							dockerError = true;
 						} catch (FileNotFoundException ex) {
 							dockerError = true;
 						} catch (IOException ex) {
 							dockerError = true;
+						} catch (InterruptedException ex) {
+							dockerError = true;
 						}
 					}
 				});
 			}
 
-			return dockerError;
+			while (doneDockers < dockerNodes.size()) {
+				Thread.sleep(5000);
+			}
 
+			return !dockerError;
 		}
 
 		//get the path and substring the 'file:' from the URI
@@ -224,12 +253,12 @@ public class LUtil {
 				}
 			}
 		}
-		
+
 		return lowest;
 	}
 
 	public boolean startDockerSlave(LoadTestConfigModel ltModel) throws InterruptedException, IOException {
-		
+
 		String fileCount = String.valueOf(ltModel.getFileCount());
 
 		if (runInDockerCluster) {
@@ -238,11 +267,11 @@ public class LUtil {
 			Entry<String, Integer> entry = this.getLowestDockerHost();
 
 			startedClusterContainer.put(entry.getKey(), entry.getValue() + 1);
-			
+
 			String dockerCommand = ""
 					+ "\"Hostname\":\"\","
 					+ "\"User\":\"\","
-					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave "+fileCount+"\","
+					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave " + fileCount + "\","
 					+ "\"Memory\":0,"
 					+ "\"MemorySwap\":0,"
 					+ "\"AttachStdin\":false,"
@@ -259,7 +288,7 @@ public class LUtil {
 					+ "\"Volumes\":{},"
 					+ "\"VolumesFrom\":\"\","
 					+ "\"WorkingDir\":\"\"}";
-			
+
 			String url = entry.getKey() + "/containers/create";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -269,34 +298,35 @@ public class LUtil {
 			con.getOutputStream().write(dockerCommand.getBytes());
 			con.getOutputStream().flush();
 			con.getOutputStream().close();
-			
+
 			int responseCode = con.getResponseCode();
 			String containerId = con.getHeaderField("Id");
 			con.disconnect();
-			
+
 			url = entry.getKey() + "/containers/" + containerId + "/start";
 			obj = new URL(url);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-type", "application/json");
-			
+
 			responseCode = con.getResponseCode();
-			
-			if(responseCode != 204) {
+
+			if (responseCode != 204) {
 				return false;
 			}
-			
-			if(!this.runningContainers.containsKey(entry.getKey())) {
+
+			if (!this.runningContainers.containsKey(entry.getKey())) {
 				this.runningContainers.put(entry.getKey(), new ArrayList<>());
 			}
-			
+
 			this.runningContainers.get(entry.getKey()).add(containerId);
-			
+
 			return true;
 		}
 
 		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", fileCount);
 		Process proc = processBuilder.start();
-		return proc.waitFor() == 0;
+		this.slaves.add(proc);
+		return true;
 	}
 }
