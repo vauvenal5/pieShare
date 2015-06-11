@@ -35,7 +35,7 @@ import org.springframework.context.ApplicationContext;
  * @author richy
  */
 public class LUtil {
-	
+
 	private static boolean runInDockerCluster = false;
 	private static boolean dockerError;
 	private HashMap<String, Integer> startedClusterContainer;
@@ -60,6 +60,37 @@ public class LUtil {
 	}
 
 	public void performTearDown(ApplicationContext context) throws Exception {
+
+		int responseCode = -1;
+		if (runInDockerCluster) {
+			try {
+				for (Entry<String, List<String>> node : runningContainers.entrySet()) {
+					for (String container : node.getValue()) {
+						String url = String.format("%s/containers/%s/stop?t=0", node.getKey(), container);
+						URL obj = new URL(url);
+						HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+						con.setRequestMethod("POST");
+						responseCode = con.getResponseCode();
+						con.disconnect();
+					}
+				}
+
+				if (responseCode != 204) {
+					dockerError = true;
+				}
+			} catch (MalformedURLException ex) {
+				dockerError = true;
+			} catch (FileNotFoundException ex) {
+				dockerError = true;
+			} catch (IOException ex) {
+				dockerError = true;
+			}
+
+			if (dockerError) {
+				throw new Exception("Error closing docker containers!");
+			}
+		}
+
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		System.out.println("Services stoped!");
@@ -224,12 +255,12 @@ public class LUtil {
 				}
 			}
 		}
-		
+
 		return lowest;
 	}
 
 	public boolean startDockerSlave(LoadTestConfigModel ltModel) throws InterruptedException, IOException {
-		
+
 		String fileCount = String.valueOf(ltModel.getFileCount());
 
 		if (runInDockerCluster) {
@@ -238,11 +269,11 @@ public class LUtil {
 			Entry<String, Integer> entry = this.getLowestDockerHost();
 
 			startedClusterContainer.put(entry.getKey(), entry.getValue() + 1);
-			
+
 			String dockerCommand = ""
 					+ "\"Hostname\":\"\","
 					+ "\"User\":\"\","
-					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave "+fileCount+"\","
+					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave " + fileCount + "\","
 					+ "\"Memory\":0,"
 					+ "\"MemorySwap\":0,"
 					+ "\"AttachStdin\":false,"
@@ -259,7 +290,7 @@ public class LUtil {
 					+ "\"Volumes\":{},"
 					+ "\"VolumesFrom\":\"\","
 					+ "\"WorkingDir\":\"\"}";
-			
+
 			String url = entry.getKey() + "/containers/create";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -269,29 +300,29 @@ public class LUtil {
 			con.getOutputStream().write(dockerCommand.getBytes());
 			con.getOutputStream().flush();
 			con.getOutputStream().close();
-			
+
 			int responseCode = con.getResponseCode();
 			String containerId = con.getHeaderField("Id");
 			con.disconnect();
-			
+
 			url = entry.getKey() + "/containers/" + containerId + "/start";
 			obj = new URL(url);
 			con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("POST");
 			con.setRequestProperty("Content-type", "application/json");
-			
+
 			responseCode = con.getResponseCode();
-			
-			if(responseCode != 204) {
+
+			if (responseCode != 204) {
 				return false;
 			}
-			
-			if(!this.runningContainers.containsKey(entry.getKey())) {
+
+			if (!this.runningContainers.containsKey(entry.getKey())) {
 				this.runningContainers.put(entry.getKey(), new ArrayList<>());
 			}
-			
+
 			this.runningContainers.get(entry.getKey()).add(containerId);
-			
+
 			return true;
 		}
 
