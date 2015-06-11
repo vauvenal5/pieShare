@@ -213,6 +213,7 @@ public class LUtil {
 	}
 
 	private HashMap<String, Integer> startedClusterContainer;
+	private HashMap<String, List<String>> runningContainers;
 
 	private Entry<String, Integer> getLowestDockerHost() {
 		HashMap<String, Integer> dockerNodes = getDockerNodes();
@@ -242,6 +243,8 @@ public class LUtil {
 	}
 
 	public boolean startDockerSlave(LoadTestConfigModel ltModel) throws InterruptedException, IOException {
+		
+		String fileCount = String.valueOf(ltModel.getFileCount());
 
 		if (runInDockerCluster) {
 			HashMap<String, Integer> dockerNodes = getDockerNodes();
@@ -253,11 +256,12 @@ public class LUtil {
 			String dockerCommand = ""
 					+ "\"Hostname\":\"\","
 					+ "\"User\":\"\","
+					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave "+fileCount+"\","
 					+ "\"Memory\":0,"
 					+ "\"MemorySwap\":0,"
 					+ "\"AttachStdin\":false,"
-					+ "\"AttachStdout\":true,"
-					+ "\"AttachStderr\":true,"
+					+ "\"AttachStdout\":false,"
+					+ "\"AttachStderr\":false,"
 					+ "\"PortSpecs\":null,"
 					+ "\"Privileged\": false,"
 					+ "\"Tty\":false,"
@@ -270,10 +274,36 @@ public class LUtil {
 					+ "\"VolumesFrom\":\"\","
 					+ "\"WorkingDir\":\"\"}";
 			
+			String url = entry.getKey() + "/containers/create";
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-type", "application/json");
+			con.setDoOutput(true);
+			con.getOutputStream().write(dockerCommand.getBytes());
+			con.getOutputStream().flush();
+			con.getOutputStream().close();
+			
+			int responseCode = con.getResponseCode();
+			String containerId = con.getHeaderField("Id");
+			con.disconnect();
+			
+			url = entry.getKey() + "/containers/" + containerId + "/start";
+			obj = new URL(url);
+			con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("POST");
+			con.setRequestProperty("Content-type", "application/json");
+			
+			responseCode = con.getResponseCode();
+			
+			if(responseCode != 204) {
+				return false;
+			}
+			
 			return true;
 		}
 
-		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", String.valueOf(ltModel.getFileCount()));
+		ProcessBuilder processBuilder = new ProcessBuilder("docker", "run", "vauvenal5/loadtest", "slave", fileCount);
 		Process proc = processBuilder.start();
 		return proc.waitFor() == 0;
 	}
