@@ -14,12 +14,15 @@ import java.util.List;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
+import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import org.junit.runner.RunWith;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -63,7 +66,9 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 	//private AnnotationConfigApplicationContext context;
 	private ITTasksCounter counter;
+	private LFileComparer comparer;
 	private List<Process> slaves;
+	private List<PieFile> files;
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -92,7 +97,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@AfterMethod
 	public void tearDownMethod() throws Exception {
 		PieLogger.info(this.getClass(), "TeardownMethod");
-		LUtil.performTearDown(this.applicationContext);
+		LUtil.performTearDown(this.applicationContext, slaves);
 	}
 
 	@DataProvider(name = "loadTestDataProvider")
@@ -162,6 +167,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		if (LUtil.IsMaster()) {
 			executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
 			counter = this.applicationContext.getBean(ITTasksCounter.class);
+			comparer = this.applicationContext.getBean(LFileComparer.class);
 		}
 
 		command.setCallback(new ILoginFinished() {
@@ -191,8 +197,10 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
 				TestFileUtils.createFile(file, ltModel.getFileSize());
 			}
+
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
+
 		}
 
 		task.run();
@@ -205,9 +213,13 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
 				Thread.sleep(1000);
 			}
+
 			Date stop = new Date();
 
 			long resultTime = stop.getTime() - start.getTime();
+
+			Assert.assertTrue(comparer.getResult());
+
 			LUtil.writeCSVResult(ltModel, resultTime);
 
 		} else {
@@ -223,6 +235,10 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
 			AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
+
+			LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
+			message.setFiles(fileService.getAllFiles());
+
 			ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 			message.getAddress().setClusterName("testUser");
 			message.getAddress().setChannelId("testUser");
