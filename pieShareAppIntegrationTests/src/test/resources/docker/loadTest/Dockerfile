@@ -1,5 +1,4 @@
 FROM vauvenal5/pieshare
 RUN git clone https://github.com/vauvenal5/pieShare.git
 RUN cd /pieShare && git checkout fLoadTest && mvn clean install -DskipTests
-RUN chmod +x "/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh"
 ENTRYPOINT ["/bin/bash", "/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh"]
