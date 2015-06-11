@@ -5,6 +5,7 @@
  */
 package loadTest.loadTestLib;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.BufferedReader;
 import java.io.File;
@@ -299,10 +300,10 @@ public class LUtil {
 
 			startedClusterContainer.put(entry.getKey(), entry.getValue() + 1);
 
-			String dockerCommand = ""
+			String dockerCommand = "{"
 					+ "\"Hostname\":\"\","
 					+ "\"User\":\"\","
-					+ "\"Entrypoint\": \"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh slave " + fileCount + "\","
+					+ "\"Entrypoint\":\"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh\","
 					+ "\"Memory\":0,"
 					+ "\"MemorySwap\":0,"
 					+ "\"AttachStdin\":false,"
@@ -313,7 +314,7 @@ public class LUtil {
 					+ "\"Tty\":false,"
 					+ "\"OpenStdin\":false,"
 					+ "\"StdinOnce\":false,"
-					+ "\"Env\":null"
+					+ "\"Env\":[\"LTTYPE=slave\",\"LTFILES="+fileCount.toString()+"\"],"
 					+ "\"Dns\":null,"
 					+ "\"Image\":\"vauvenal5/loadtest\","
 					+ "\"Volumes\":{},"
@@ -331,7 +332,23 @@ public class LUtil {
 			con.getOutputStream().close();
 
 			int responseCode = con.getResponseCode();
-			String containerId = con.getHeaderField("Id");
+			
+			if(responseCode != 201) {
+				return false;
+			}
+			
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String line = null;
+			String msg = "";
+			
+			while ((line = in.readLine()) != null) {
+				msg += line;
+			}
+			
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode node = mapper.readTree(msg);
+			
+			String containerId = node.get("Id").asText();
 			con.disconnect();
 
 			url = entry.getKey() + "/containers/" + containerId + "/start";
