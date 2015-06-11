@@ -61,6 +61,37 @@ public class LUtil {
 	}
 
 	public void performTearDown(ApplicationContext context) throws Exception {
+
+		int responseCode = -1;
+		if (runInDockerCluster) {
+			try {
+				for (Entry<String, List<String>> node : runningContainers.entrySet()) {
+					for (String container : node.getValue()) {
+						String url = String.format("%s/containers/%s/stop?t=0", node.getKey(), container);
+						URL obj = new URL(url);
+						HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+						con.setRequestMethod("POST");
+						responseCode = con.getResponseCode();
+						con.disconnect();
+					}
+				}
+
+				if (responseCode != 204) {
+					dockerError = true;
+				}
+			} catch (MalformedURLException ex) {
+				dockerError = true;
+			} catch (FileNotFoundException ex) {
+				dockerError = true;
+			} catch (IOException ex) {
+				dockerError = true;
+			}
+
+			if (dockerError) {
+				throw new Exception("Error closing docker containers!");
+			}
+		}
+
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		System.out.println("Services stoped!");
