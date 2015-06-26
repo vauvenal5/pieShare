@@ -40,9 +40,14 @@ public class LUtil {
 	private static boolean runInDockerCluster = false;
 	private static boolean dockerError;
 	private static int doneDockers;
+	private static boolean useDocker = false;
 	private HashMap<String, Integer> startedClusterContainer = new HashMap<>();
 	private HashMap<String, List<String>> runningContainers = new HashMap<>();
 	private List<Process> slaves = new ArrayList<>();
+	
+	public static boolean UseDocker() {
+		return useDocker;
+	}
 
 	public static String getWorkingDir() {
 		return "loadTest/workingDir";
@@ -160,106 +165,107 @@ public class LUtil {
 	}
 
 	public static boolean startDockerBuild() throws IOException, InterruptedException {
+		if (useDocker) {
+			if (runInDockerCluster) {
 
-		if (runInDockerCluster) {
+				HashMap<String, Integer> dockerNodes = getDockerNodes();
+				String dockerTar = LUtil.class.getClassLoader().getResource("docker/loadTest.tar").toString().substring(5);
+				ExecutorService exec = Executors.newFixedThreadPool(dockerNodes.size());
 
-			HashMap<String, Integer> dockerNodes = getDockerNodes();
-			String dockerTar = LUtil.class.getClassLoader().getResource("docker/loadTest.tar").toString().substring(5);
-			ExecutorService exec = Executors.newFixedThreadPool(dockerNodes.size());
+				dockerError = false;
+				doneDockers = 0;
 
-			dockerError = false;
-			doneDockers = 0;
+				for (Entry<String, Integer> entry : dockerNodes.entrySet()) {
+					exec.submit(new Runnable() {
+						@Override
+						public void run() {
+							try {
+								String url = entry.getKey() + "/images/vauvenal5/loadtest";
+								URL obj = new URL(url);
+								HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+								con.setRequestMethod("DELETE");
+								con.setRequestProperty("force", "true");
+								int responseCode = con.getResponseCode();
+								con.disconnect();
 
-			for (Entry<String, Integer> entry : dockerNodes.entrySet()) {
-				exec.submit(new Runnable() {
-					@Override
-					public void run() {
-						try {
-							String url = entry.getKey() + "/images/vauvenal5/loadtest";
-							URL obj = new URL(url);
-							HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-							con.setRequestMethod("DELETE");
-							con.setRequestProperty("force", "true");
-							int responseCode = con.getResponseCode();
-							con.disconnect();
-
-							url = entry.getKey() + "/build?t=vauvenal5/loadtest&dockerfile=./loadTest/Dockerfile";
-							obj = new URL(url);
-							con = (HttpURLConnection) obj.openConnection();
-							con.setRequestMethod("POST");
-							con.setRequestProperty("Content-type", "application/tar");
-							con.setDoOutput(true);
-							File file = new File(dockerTar);
-							FileInputStream fileStr = new FileInputStream(file);
-							byte[] b = new byte[(int) file.length()];
-							fileStr.read(b);
-							con.getOutputStream().write(b);
-							con.getOutputStream().flush();
-							con.getOutputStream().close();
-
-							responseCode = con.getResponseCode();
-
-							if (responseCode != 200) {
-								dockerError = true;
-							}
-							
-							String msg = "";
-
-							do {
-								Thread.sleep(5000);
-								msg = "";
-								url = entry.getKey() + "/images/json";
+								url = entry.getKey() + "/build?t=vauvenal5/loadtest&dockerfile=./loadTest/Dockerfile";
 								obj = new URL(url);
-								HttpURLConnection con2 = (HttpURLConnection) obj.openConnection();
-								con2.setRequestMethod("GET");
-								responseCode = con2.getResponseCode();
+								con = (HttpURLConnection) obj.openConnection();
+								con.setRequestMethod("POST");
+								con.setRequestProperty("Content-type", "application/tar");
+								con.setDoOutput(true);
+								File file = new File(dockerTar);
+								FileInputStream fileStr = new FileInputStream(file);
+								byte[] b = new byte[(int) file.length()];
+								fileStr.read(b);
+								con.getOutputStream().write(b);
+								con.getOutputStream().flush();
+								con.getOutputStream().close();
 
-								BufferedReader in = new BufferedReader(new InputStreamReader(con2.getInputStream()));
-								String line = null;
+								responseCode = con.getResponseCode();
 
-								while ((line = in.readLine()) != null) {
-									msg += line;
+								if (responseCode != 200) {
+									dockerError = true;
 								}
 
-								con2.disconnect();
+								String msg = "";
+
+								do {
+									Thread.sleep(5000);
+									msg = "";
+									url = entry.getKey() + "/images/json";
+									obj = new URL(url);
+									HttpURLConnection con2 = (HttpURLConnection) obj.openConnection();
+									con2.setRequestMethod("GET");
+									responseCode = con2.getResponseCode();
+
+									BufferedReader in = new BufferedReader(new InputStreamReader(con2.getInputStream()));
+									String line = null;
+
+									while ((line = in.readLine()) != null) {
+										msg += line;
+									}
+
+									con2.disconnect();
+								} while (!msg.contains("vauvenal5/loadtest"));
+
+								con.disconnect();
+								doneDockers++;
+							} catch (MalformedURLException ex) {
+								dockerError = true;
+							} catch (FileNotFoundException ex) {
+								dockerError = true;
+							} catch (IOException ex) {
+								dockerError = true;
+							} catch (InterruptedException ex) {
+								dockerError = true;
 							}
-							while (!msg.contains("vauvenal5/loadtest"));
-							
-							con.disconnect();
-							doneDockers++;
-						} catch (MalformedURLException ex) {
-							dockerError = true;
-						} catch (FileNotFoundException ex) {
-							dockerError = true;
-						} catch (IOException ex) {
-							dockerError = true;
-						} catch (InterruptedException ex) {
-							dockerError = true;
 						}
-					}
-				});
+					});
+				}
+
+				while (doneDockers < dockerNodes.size()) {
+					Thread.sleep(5000);
+				}
+
+				return !dockerError;
 			}
 
-			while (doneDockers < dockerNodes.size()) {
-				Thread.sleep(5000);
-			}
+			//get the path and substring the 'file:' from the URI
+			String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
 
-			return !dockerError;
+			ProcessBuilder processBuilder = new ProcessBuilder("docker", "rmi", "-f", "vauvenal5/loadtest");
+			processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+			Process docker = processBuilder.start();
+
+			docker.waitFor();
+
+			processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
+			processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+			Process proc = processBuilder.start();
+			return proc.waitFor() == 0;
 		}
-
-		//get the path and substring the 'file:' from the URI
-		String dockerfile = LUtil.class.getClassLoader().getResource("docker/loadTest").toString().substring(5);
-
-		ProcessBuilder processBuilder = new ProcessBuilder("docker", "rmi", "-f", "vauvenal5/loadtest");
-		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-		Process docker = processBuilder.start();
-
-		docker.waitFor();
-
-		processBuilder = new ProcessBuilder("docker", "build", "-t", "vauvenal5/loadtest", dockerfile);
-		processBuilder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-		Process proc = processBuilder.start();
-		return proc.waitFor() == 0;
+		return true;
 	}
 
 	private Entry<String, Integer> getLowestDockerHost() {
@@ -304,7 +310,7 @@ public class LUtil {
 					+ "\"Hostname\":\"\","
 					+ "\"User\":\"\","
 					+ "\"Entrypoint\":[\"/bin/bash\",\"/pieShare/pieShareAppIntegrationTests/src/test/resources/docker/internal.sh\"],"
-					+ "\"Cmd\":[\"slave\",\""+fileCount.toString()+"\"],"
+					+ "\"Cmd\":[\"slave\",\"" + fileCount.toString() + "\"],"
 					+ "\"Memory\":0,"
 					+ "\"MemorySwap\":0,"
 					+ "\"AttachStdin\":false,"
@@ -333,22 +339,22 @@ public class LUtil {
 			con.getOutputStream().close();
 
 			int responseCode = con.getResponseCode();
-			
-			if(responseCode != 201) {
+
+			if (responseCode != 201) {
 				return false;
 			}
-			
+
 			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line = null;
 			String msg = "";
-			
+
 			while ((line = in.readLine()) != null) {
 				msg += line;
 			}
-			
+
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode node = mapper.readTree(msg);
-			
+
 			String containerId = node.get("Id").asText();
 			con.disconnect();
 
