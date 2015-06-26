@@ -8,7 +8,6 @@ package loadTest;
 import commonTestTools.TestFileUtils;
 import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import loadTest.loadTestLib.LUtil;
@@ -16,8 +15,9 @@ import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
+import loadTest.loadTestLib.message.ClientIsUpMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
-import org.junit.runner.RunWith;
+import loadTest.loadTestLib.task.ClientIsUpTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -38,11 +38,6 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -67,18 +62,18 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	//private AnnotationConfigApplicationContext context;
 	private ITTasksCounter counter;
 	private LFileComparer comparer;
-	
+
 	private List<PieFile> files;
 	private LUtil lUtil = new LUtil();
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		LUtil.runInDockerCluster();
+		//LUtil.runInDockerCluster();
 		LUtil.setUpEnviroment();
 
 		if (LUtil.IsMaster()) {
 			LUtil.setUpResultFile();
-			
+
 			Assert.assertTrue(LUtil.startDockerBuild());
 		}
 	}
@@ -137,14 +132,17 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	public void loadTest(LoadTestConfigModel ltModel) throws Exception {
 		String userName = "testUser";
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
+		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 
 		if (LUtil.IsMaster()) {
+			counter = this.applicationContext.getBean(ITTasksCounter.class);
+			comparer = this.applicationContext.getBean(LFileComparer.class);
 			INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
 			networkService.setNicDisplayName("docker0");
 
 			//start slave nodes
 			for (int i = 1; i < ltModel.getNodeCount(); i++) {
-				if(!lUtil.startDockerSlave(ltModel)) {
+				if (!lUtil.startDockerSlave(ltModel)) {
 					i--;
 				}
 			}
@@ -153,6 +151,12 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			config.setPwdFile(new File("./loadTest/pwdFile"));
 			config.setTmpDir(new File("./loadTest/tmpDir"));
 			config.setWorkingDir(new File("./loadTest/workingDir"));
+
+			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
+				Thread.sleep(2000);
+				PieLogger.debug(this.getClass(),
+						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
+			}
 		}
 
 		LoginTask task = this.applicationContext.getBean(LoginTask.class);
@@ -167,8 +171,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 		if (LUtil.IsMaster()) {
 			executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
-			counter = this.applicationContext.getBean(ITTasksCounter.class);
-			comparer = this.applicationContext.getBean(LFileComparer.class);
 		}
 
 		command.setCallback(new ILoginFinished() {
@@ -206,6 +208,13 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 		task.run();
 
+		if (!LUtil.IsMaster()) {
+			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
+			message.getAddress().setClusterName("testUser");
+			message.getAddress().setChannelId("testUser");
+			service.sendMessage(message);
+		}
+
 		System.out.println("Waiting for completion!");
 		if (LUtil.IsMaster()) {
 			PieLogger.info(this.getClass(), "Master");
@@ -213,6 +222,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
 				Thread.sleep(1000);
+				PieLogger.debug(this.getClass(),
+						String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
 			}
 
 			Date stop = new Date();
@@ -240,7 +251,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
 			message.setFiles(fileService.getAllFiles());
 
-			ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 			message.getAddress().setClusterName("testUser");
 			message.getAddress().setChannelId("testUser");
 			service.sendMessage(message);
