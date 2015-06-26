@@ -7,7 +7,9 @@ package loadTest.loadTestLib.config;
 
 import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
+import loadTest.loadTestLib.message.ClientIsUpMessage;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
+import loadTest.loadTestLib.task.ClientIsUpTask;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,14 @@ public class LoadTestConfig {
         message.setAddress(new JGroupsPieAddress());
         return message;
     }
+	
+	@Bean
+    @Scope(value = "prototype")
+    public ClientIsUpMessage clientIsUpMessage() {
+        ClientIsUpMessage message = new ClientIsUpMessage();
+        message.setAddress(new JGroupsPieAddress());
+        return message;
+    }
     
     @Bean
     @Scope(value = "prototype")
@@ -41,6 +51,14 @@ public class LoadTestConfig {
         AllFilesCompleteTask task = new AllFilesCompleteTask();
         task.setTaskCounter(iTTasksCounter());
         task.setComparer(ltFileComparer());
+        return task;
+    }
+	
+	@Bean
+    @Scope(value = "prototype")
+    public ClientIsUpTask clientIsUpTask() {
+        ClientIsUpTask task = new ClientIsUpTask();
+        task.setTaskCounter(iTTasksCounter());
         return task;
     }
     
@@ -57,5 +75,4 @@ public class LoadTestConfig {
        com.setFileCompareService(pieShareAppService.fileCompareService());
        return com;
     }
-    
 }
