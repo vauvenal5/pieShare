@@ -151,12 +151,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			config.setPwdFile(new File("./loadTest/pwdFile"));
 			config.setTmpDir(new File("./loadTest/tmpDir"));
 			config.setWorkingDir(new File("./loadTest/workingDir"));
-
-			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
-				Thread.sleep(2000);
-				PieLogger.debug(this.getClass(),
-						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
-			}
 		}
 
 		LoginTask task = this.applicationContext.getBean(LoginTask.class);
@@ -191,8 +185,16 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		});
 
 		task.setEvent(command);
+		task.run();
 
 		if (LUtil.IsMaster()) {
+
+			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
+				Thread.sleep(2000);
+				PieLogger.debug(this.getClass(),
+						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
+			}
+
 			user.getPieShareConfiguration().getWorkingDir().mkdirs();
 			System.out.println("Creating files!");
 			for (int i = 0; i < ltModel.getFileCount(); i++) {
@@ -203,10 +205,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
-
 		}
-
-		task.run();
 
 		if (!LUtil.IsMaster()) {
 			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
@@ -218,6 +217,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		System.out.println("Waiting for completion!");
 		if (LUtil.IsMaster()) {
 			PieLogger.info(this.getClass(), "Master");
+
 			Date start = new Date();
 
 			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
