@@ -165,6 +165,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 		if (LUtil.IsMaster()) {
 			executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
+			executorFactory.registerTask(ClientIsUpMessage.class, ClientIsUpTask.class);
 		}
 
 		command.setCallback(new ILoginFinished() {
