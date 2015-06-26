@@ -124,8 +124,8 @@ public abstract class FileServiceBase implements IFileService {
 	@Override
 	public Path relitivizeFilePath(File file) {
 		try {
-			Path pathBase = configuration.getWorkingDir().getAbsoluteFile().getCanonicalFile().toPath();
-			Path pathAbsolute = file.getAbsoluteFile().getCanonicalFile().toPath();
+			Path pathBase = configuration.getWorkingDir().getCanonicalFile().toPath();
+			Path pathAbsolute = file.getCanonicalFile().toPath();
 			return pathBase.relativize(pathAbsolute);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Error in creating relativ file path!", ex);
