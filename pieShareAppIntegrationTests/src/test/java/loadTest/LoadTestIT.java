@@ -206,9 +206,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
-		}
-
-		if (!LUtil.IsMaster()) {
+		} else {
 			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
 			message.getAddress().setClusterName("testUser");
 			message.getAddress().setChannelId("testUser");
@@ -223,8 +221,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
 				Thread.sleep(1000);
-				PieLogger.debug(this.getClass(),
-						String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
+			//	PieLogger.debug(this.getClass(),
+			//			String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
 			}
 
 			Date stop = new Date();
