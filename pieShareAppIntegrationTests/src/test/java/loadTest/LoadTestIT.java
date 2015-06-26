@@ -140,13 +140,14 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
 			networkService.setNicDisplayName("docker0");
 
-			//start slave nodes
-			for (int i = 1; i < ltModel.getNodeCount(); i++) {
-				if (!lUtil.startDockerSlave(ltModel)) {
-					i--;
+			if (LUtil.UseDocker()) {
+				//start slave nodes
+				for (int i = 1; i < ltModel.getNodeCount(); i++) {
+					if (!lUtil.startDockerSlave(ltModel)) {
+						i--;
+					}
 				}
 			}
-
 			PieShareConfiguration config = user.getPieShareConfiguration();
 			config.setPwdFile(new File("./loadTest/pwdFile"));
 			config.setTmpDir(new File("./loadTest/tmpDir"));
@@ -222,7 +223,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
 				Thread.sleep(1000);
 			//	PieLogger.debug(this.getClass(),
-			//			String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
+				//			String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
 			}
 
 			Date stop = new Date();
