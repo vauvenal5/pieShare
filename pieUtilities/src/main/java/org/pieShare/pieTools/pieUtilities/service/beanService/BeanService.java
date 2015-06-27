@@ -1,8 +1,10 @@
 package org.pieShare.pieTools.pieUtilities.service.beanService;
 
 //todo: here is maybe something rong with the dependencies
+import org.hibernate.id.Configurable;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ConfigurableApplicationContext;
 
 public class BeanService implements IBeanService, ApplicationContextAware {
 
@@ -42,6 +44,9 @@ public class BeanService implements IBeanService, ApplicationContextAware {
 	@Override
 	public <T> T getBean(String beanID) {
 		try {
+			if (!((ConfigurableApplicationContext) context).isActive()) {
+				return null;
+			}
 			Object o = context.getBean(beanID);
 			return (T) o;
 		} catch (Exception e) {
