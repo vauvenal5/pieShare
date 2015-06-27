@@ -136,8 +136,9 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
 		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 
+		counter = this.applicationContext.getBean(ITTasksCounter.class);
+
 		if (LUtil.IsMaster()) {
-			counter = this.applicationContext.getBean(ITTasksCounter.class);
 			comparer = this.applicationContext.getBean(LFileComparer.class);
 
 			if (LUtil.UseDocker()) {
@@ -150,11 +151,12 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 					}
 				}
 			}
-			PieShareConfiguration config = user.getPieShareConfiguration();
-			config.setPwdFile(new File("./loadTest/pwdFile"));
-			config.setTmpDir(new File("./loadTest/tmpDir"));
-			config.setWorkingDir(new File("./loadTest/workingDir"));
 		}
+
+		PieShareConfiguration config = user.getPieShareConfiguration();
+		config.setPwdFile(new File("./loadTest/pwdFile"));
+		config.setTmpDir(new File("./loadTest/tmpDir"));
+		config.setWorkingDir(new File("./loadTest/workingDir"));
 
 		LoginTask task = this.applicationContext.getBean(LoginTask.class);
 
