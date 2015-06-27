@@ -201,19 +201,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			public void OK() {
 			}
 		});
-		
-		if (LUtil.IsMaster()) {
-			user.getPieShareConfiguration().getWorkingDir().mkdirs();
-			System.out.println("Creating files!");
-			for (int i = 0; i < ltModel.getFileCount(); i++) {
-				String fileName = String.format("testFile_%s", i);
-				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
-				TestFileUtils.createFile(file, ltModel.getFileSize());
-			}
-
-			System.out.println("Files successfully created!");
-			PieLogger.info(this.getClass(), "Files successfully created!");
-		}
 
 		task.setEvent(command);
 		task.run();
@@ -229,6 +216,19 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			message.getAddress().setClusterName("testUser");
 			message.getAddress().setChannelId("testUser");
 			service.sendMessage(message);
+		}
+		
+		if (LUtil.IsMaster()) {
+			user.getPieShareConfiguration().getWorkingDir().mkdirs();
+			System.out.println("Creating files!");
+			for (int i = 0; i < ltModel.getFileCount(); i++) {
+				String fileName = String.format("testFile_%s", i);
+				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
+				TestFileUtils.createFile(file, ltModel.getFileSize());
+			}
+
+			System.out.println("Files successfully created!");
+			PieLogger.info(this.getClass(), "Files successfully created!");
 		}
 
 		System.out.println("Waiting for completion!");
