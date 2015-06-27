@@ -43,6 +43,8 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExe
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -59,6 +61,7 @@ import pieShareAppITs.helper.ITTasksCounter;
  */
 @ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class,
 	PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
+@TestExecutionListeners({DirtiesContextTestExecutionListener.class})
 public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 	//private AnnotationConfigApplicationContext context;
