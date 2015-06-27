@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.FileListener;
+import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
@@ -84,6 +85,13 @@ public class PieShareAppService {
 	}
 
 	@Bean
+	@Scope(value = "prototype")
+	public DefaultFileMonitor defaultFileMonitor() {
+		DefaultFileMonitor filelistener = new DefaultFileMonitor(fileListenerService());
+		return filelistener;
+	}
+
+	@Bean
 	@Lazy
 	public NetworkService networkService() {
 		return new NetworkService();
@@ -98,7 +106,7 @@ public class PieShareAppService {
 		service.init();
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public MessageFactoryService messageFactoryService() {
@@ -115,7 +123,7 @@ public class PieShareAppService {
 		service.setMessageFactoryService(this.messageFactoryService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public FileEncryptionService fileEncryptionService() {
@@ -134,13 +142,13 @@ public class PieShareAppService {
 		service.setWrappedCompareService(this.historyCompareServicePrivate());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ILocalFileCompareService historyCompareService() {
 		return this.historyCompareServicePrivate();
 	}
-	
+
 	@Bean
 	@Lazy
 	protected ALocalFileCompareService historyCompareServicePrivate() {
@@ -151,7 +159,7 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public ApacheDefaultFileListener fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
@@ -168,7 +176,7 @@ public class PieShareAppService {
 		watcher.init();
 		return watcher;
 	}
-	
+
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
@@ -176,23 +184,23 @@ public class PieShareAppService {
 	}
 
 	@Bean
-        @Lazy
+	@Lazy
 	public LocalFileService localFileService() {
 		LocalFileService service = new LocalFileService();
 		this.fileServiceBase(service);
 		service.setHashService(this.utilities.md5Service());
 		return service;
 	}
-	
+
 	@Bean
-        @Lazy
+	@Lazy
 	public HistoryFileService historyFileService() {
 		HistoryFileService service = new HistoryFileService();
 		this.fileServiceBase(service);
 		service.setDatabaseService(this.databaseService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public HistoryService historyService() {
@@ -210,11 +218,11 @@ public class PieShareAppService {
 		service.setNetworkService(this.networkService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setBase64Service(this.utilities.base64Service());
-		
+
 		service.initTorrentService();
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ShareService shareService() {
@@ -223,7 +231,7 @@ public class PieShareAppService {
 		service.setFileWatcherService(this.apacheFileWatcherService());
 		service.setComparerService(this.fileCompareService());
 		service.setFileService(this.localFileService());
-		
+
 		service.init();
 		return service;
 	}
@@ -281,5 +289,4 @@ public class PieShareAppService {
 		return service;
 	}
 
-	
 }
