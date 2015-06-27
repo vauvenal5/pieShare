@@ -93,6 +93,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@AfterMethod
 	public void tearDownMethod() throws Exception {
 		PieLogger.info(this.getClass(), "TeardownMethod");
+		lUtil.performTearDown(this.applicationContext);
 	}
 
 	@DataProvider(name = "loadTestDataProvider")
@@ -197,18 +198,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			public void OK() {
 			}
 		});
-
-		task.setEvent(command);
-		task.run();
-
+		
 		if (LUtil.IsMaster()) {
-
-			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
-				Thread.sleep(2000);
-				PieLogger.debug(this.getClass(),
-						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
-			}
-
 			user.getPieShareConfiguration().getWorkingDir().mkdirs();
 			System.out.println("Creating files!");
 			for (int i = 0; i < ltModel.getFileCount(); i++) {
@@ -219,6 +210,17 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
+		}
+
+		task.setEvent(command);
+		task.run();
+
+		if (LUtil.IsMaster()) {
+			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
+				Thread.sleep(2000);
+				PieLogger.debug(this.getClass(),
+						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
+			}
 		} else {
 			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
 			message.getAddress().setClusterName("testUser");
@@ -281,6 +283,5 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 		Date now = new Date();
 		System.out.println(now.toString() + ": Finished!");
-		lUtil.performTearDown(this.applicationContext);
 	}
 }
