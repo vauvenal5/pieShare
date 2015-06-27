@@ -68,8 +68,8 @@ public class ApacheFileWatcherService implements IFileWatcherService {
 		FileObject dirToWatchFO = null;
 		dirToWatchFO = fileSystemManager.resolveFile(file.getAbsolutePath());
 
-		IFileListenerService fileListener = this.beanService.getBean(ApacheDefaultFileListener.class);
-		DefaultFileMonitor fileMonitor = new DefaultFileMonitor(fileListener);
+		//IFileListenerService fileListener = this.beanService.getBean(ApacheDefaultFileListener.class);
+		DefaultFileMonitor fileMonitor = this.beanService.getBean(DefaultFileMonitor.class);
 
 		fileMonitor.setRecursive(true);
 		fileMonitor.addFile(dirToWatchFO);
@@ -82,6 +82,7 @@ public class ApacheFileWatcherService implements IFileWatcherService {
 	public void shutdown() {
 		for(DefaultFileMonitor fm: this.fileMonitors) {
 			fm.stop();
+			fm = null;
 		}
 	}
 
