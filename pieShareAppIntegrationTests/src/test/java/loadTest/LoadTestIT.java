@@ -30,6 +30,7 @@ import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
@@ -131,6 +132,11 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@DirtiesContext
 	@Test(dataProvider = "loadTestDataProvider")
 	public void loadTest(LoadTestConfigModel ltModel) throws Exception {
+		
+		//validate context
+		PieShareAppService appService = this.applicationContext.getBean(PieShareAppService.class);
+		Assert.assertNotNull(appService);
+		
 		String userName = "testUser";
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
 		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
