@@ -58,7 +58,6 @@ import pieShareAppITs.helper.ITTasksCounter;
  */
 @ContextConfiguration(classes = {PieUtilitiesConfiguration.class, PiePlateConfiguration.class,
 	PieShareAppModel.class, PieShareAppServiceTestConfig.class, PieShareAppTasks.class, LoadTestConfig.class})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 	//private AnnotationConfigApplicationContext context;
@@ -93,7 +92,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@AfterMethod
 	public void tearDownMethod() throws Exception {
 		PieLogger.info(this.getClass(), "TeardownMethod");
-		lUtil.performTearDown(this.applicationContext);
 	}
 
 	@DataProvider(name = "loadTestDataProvider")
@@ -130,6 +128,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		loadTestDataProvider();
 	}
 
+	@DirtiesContext
 	@Test(dataProvider = "loadTestDataProvider")
 	public void loadTest(LoadTestConfigModel ltModel) throws Exception {
 		String userName = "testUser";
@@ -276,5 +275,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 
 		Date now = new Date();
 		System.out.println(now.toString() + ": Finished!");
+		lUtil.performTearDown(this.applicationContext);
 	}
 }
