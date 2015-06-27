@@ -263,9 +263,11 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			message.getAddress().setChannelId("testUser");
 			service.sendMessage(message);
 
-			while (counter.getCount(AllClientsDoneTask.class) < 1) {
+			PieLogger.info(this.getClass(), "Before waiting for AllClientsDone!");
+			while (counter.getCount(AllClientsDoneMessage.class) < 1) {
 				Thread.sleep(1000);
 			}
+			PieLogger.info(this.getClass(), "After waiting for AllClientsDone!");
 
 			Thread.sleep(5000);
 		}

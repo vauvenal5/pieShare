@@ -30,6 +30,6 @@ public abstract class AMessageCounterTask<P extends IPieEvent> implements IPieEv
 
 	@Override
     public void run() {
-        counter.increment(this.getClass());
+        counter.increment(msg.getClass());
     }
 }
