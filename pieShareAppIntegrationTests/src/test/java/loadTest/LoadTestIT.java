@@ -14,8 +14,10 @@ import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
 import loadTest.loadTestLib.helper.LFileComparer;
+import loadTest.loadTestLib.message.AllClientsDoneMessage;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.message.ClientIsUpMessage;
+import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -97,166 +99,176 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 	@DataProvider(name = "loadTestDataProvider")
 	public static Object[][] loadTestDataProvider() throws Exception {
 
-		if (LUtil.IsMaster()) {
-			List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
+		//if (LUtil.IsMaster()) {
+		List<LoadTestConfigModel> ltModels = LUtil.readJSONConfig();
 
-			Object[][] data = new Object[ltModels.size()][1];
+		Object[][] data = new Object[ltModels.size()][1];
 
-			for (int i = 0; i < ltModels.size(); i++) {
-				data[i][0] = ltModels.get(i);
-			}
-
-			return data;
+		for (int i = 0; i < ltModels.size(); i++) {
+			data[i][0] = ltModels.get(i);
 		}
 
-		LoadTestConfigModel ltModel = new LoadTestConfigModel();
-		ltModel.setFileSize(0);
-		ltModel.setNodeCount(0);
-		int fc = Integer.parseInt(System.getenv("LTFILES"));
-		ltModel.setFileCount(fc);
+		return data;
+		//}
 
-		return new Object[][]{{ltModel}};
-	}
+		/*LoadTestConfigModel ltModel = new LoadTestConfigModel();
+		 ltModel.setFileSize(0);
+		 ltModel.setNodeCount(0);
+		 int fc = Integer.parseInt(System.getenv("LTFILES"));
+		 ltModel.setFileCount(fc);
 
-	//@Test
-	public void dockerSetUpTest() throws Exception {
+		 return new Object[][]{{ltModel}};*/
+		 }
 
-	}
+		 //@Test
+		 public void dockerSetUpTest() throws Exception {
 
-	//@Test
-	public void selfTest() throws Exception {
-		loadTestDataProvider();
-	}
+		 }
 
-	@Test(dataProvider = "loadTestDataProvider")
-	public void loadTest(LoadTestConfigModel ltModel) throws Exception {
-		String userName = "testUser";
-		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
-		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
+		 //@Test
+		 public void selfTest() throws Exception {
+		 loadTestDataProvider();
+		 }
 
-		if (LUtil.IsMaster()) {
-			counter = this.applicationContext.getBean(ITTasksCounter.class);
-			comparer = this.applicationContext.getBean(LFileComparer.class);
-			INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
-			networkService.setNicDisplayName("docker0");
+		 @Test(dataProvider = "loadTestDataProvider")
+		 public void loadTest(LoadTestConfigModel ltModel) throws Exception {
+		 String userName = "testUser";
+		 PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
+		 ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 
-			if (LUtil.UseDocker()) {
-				//start slave nodes
-				for (int i = 1; i < ltModel.getNodeCount(); i++) {
-					if (!lUtil.startDockerSlave(ltModel)) {
-						i--;
-					}
-				}
-			}
-			PieShareConfiguration config = user.getPieShareConfiguration();
-			config.setPwdFile(new File("./loadTest/pwdFile"));
-			config.setTmpDir(new File("./loadTest/tmpDir"));
-			config.setWorkingDir(new File("./loadTest/workingDir"));
-		}
+		 if (LUtil.IsMaster()) {
+		 counter = this.applicationContext.getBean(ITTasksCounter.class);
+		 comparer = this.applicationContext.getBean(LFileComparer.class);
+		 INetworkService networkService = this.applicationContext.getBean(NetworkService.class);
+		 networkService.setNicDisplayName("docker0");
 
-		LoginTask task = this.applicationContext.getBean(LoginTask.class);
+		 if (LUtil.UseDocker()) {
+		 //start slave nodes
+		 for (int i = 1; i < ltModel.getNodeCount(); i++) {
+		 if (!lUtil.startDockerSlave(ltModel)) {
+		 i--;
+		 }
+		 }
+		 }
+		 PieShareConfiguration config = user.getPieShareConfiguration();
+		 config.setPwdFile(new File("./loadTest/pwdFile"));
+		 config.setTmpDir(new File("./loadTest/tmpDir"));
+		 config.setWorkingDir(new File("./loadTest/workingDir"));
+		 }
 
-		LoginCommand command = new LoginCommand();
-		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".getBytes();
-		command.setPlainTextPassword(pwd);
-		command.setUserName(userName);
+		 LoginTask task = this.applicationContext.getBean(LoginTask.class);
 
-		IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
+		 LoginCommand command = new LoginCommand();
+		 PlainTextPassword pwd = new PlainTextPassword();
+		 pwd.password = "test".getBytes();
+		 command.setPlainTextPassword(pwd);
+		 command.setUserName(userName);
 
-		if (LUtil.IsMaster()) {
-			executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
-			executorFactory.registerTask(ClientIsUpMessage.class, ClientIsUpTask.class);
-		}
+		 IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
-		command.setCallback(new ILoginFinished() {
+		 if (LUtil.IsMaster()) {
+		 executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
+		 executorFactory.registerTask(ClientIsUpMessage.class, ClientIsUpTask.class);
+		 executorFactory.registerTask(AllClientsDoneMessage.class, AllClientsDoneTask.class);
+		 }
 
-			@Override
-			public void error(Exception ex) {
-				Assert.fail(ex.getMessage());
-			}
+		 command.setCallback(new ILoginFinished() {
 
-			@Override
-			public void wrongPassword(WrongPasswordException ex) {
-				Assert.fail(ex.getMessage());
-			}
+		 @Override
+		 public void error(Exception ex) {
+		 Assert.fail(ex.getMessage());
+		 }
 
-			@Override
-			public void OK() {
-			}
-		});
+		 @Override
+		 public void wrongPassword(WrongPasswordException ex) {
+		 Assert.fail(ex.getMessage());
+		 }
 
-		task.setEvent(command);
-		task.run();
+		 @Override
+		 public void OK() {
+		 }
+		 });
 
-		if (LUtil.IsMaster()) {
+		 task.setEvent(command);
+		 task.run();
 
-			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
-				Thread.sleep(2000);
-				PieLogger.debug(this.getClass(),
-						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
-			}
+		 if (LUtil.IsMaster()) {
 
-			user.getPieShareConfiguration().getWorkingDir().mkdirs();
-			System.out.println("Creating files!");
-			for (int i = 0; i < ltModel.getFileCount(); i++) {
-				String fileName = String.format("testFile_%s", i);
-				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
-				TestFileUtils.createFile(file, ltModel.getFileSize());
-			}
+		 while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
+		 Thread.sleep(2000);
+		 PieLogger.debug(this.getClass(),
+		 String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
+		 }
 
-			System.out.println("Files successfully created!");
-			PieLogger.info(this.getClass(), "Files successfully created!");
-		} else {
-			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
-			message.getAddress().setClusterName("testUser");
-			message.getAddress().setChannelId("testUser");
-			service.sendMessage(message);
-		}
+		 user.getPieShareConfiguration().getWorkingDir().mkdirs();
+		 System.out.println("Creating files!");
+		 for (int i = 0; i < ltModel.getFileCount(); i++) {
+		 String fileName = String.format("testFile_%s", i);
+		 File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
+		 TestFileUtils.createFile(file, ltModel.getFileSize());
+		 }
 
-		System.out.println("Waiting for completion!");
-		if (LUtil.IsMaster()) {
-			PieLogger.info(this.getClass(), "Master");
+		 System.out.println("Files successfully created!");
+		 PieLogger.info(this.getClass(), "Files successfully created!");
+		 } else {
+		 ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
+		 message.getAddress().setClusterName("testUser");
+		 message.getAddress().setChannelId("testUser");
+		 service.sendMessage(message);
+		 }
 
-			Date start = new Date();
+		 System.out.println("Waiting for completion!");
+		 if (LUtil.IsMaster()) {
+		 PieLogger.info(this.getClass(), "Master");
 
-			while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
-				Thread.sleep(1000);
-			//	PieLogger.debug(this.getClass(),
-				//			String.format("Waiting for nodes to complete! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(AllFilesCompleteTask.class)));
-			}
+		 Date start = new Date();
 
-			Date stop = new Date();
+		 while (counter.getCount(AllFilesCompleteTask.class) < (ltModel.getNodeCount() - 1)) {
+		 Thread.sleep(1000);
+		 }
 
-			long resultTime = stop.getTime() - start.getTime();
+		 Date stop = new Date();
 
-			Assert.assertTrue(comparer.getResult());
+		 long resultTime = stop.getTime() - start.getTime();
 
-			LUtil.writeCSVResult(ltModel, resultTime);
+		 Assert.assertTrue(comparer.getResult());
 
-		} else {
-			PieLogger.info(this.getClass(), "Slave");
-			BitTorrentService torrentService = this.applicationContext.getBean(BitTorrentService.class);
+		 LUtil.writeCSVResult(ltModel, resultTime);
 
-			while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()
-					|| torrentService.activeTorrents()) {
-				Thread.sleep(5000);
-			}
+		 AllClientsDoneMessage doneMsg = this.applicationContext.getBean(AllClientsDoneMessage.class);
+		 doneMsg.getAddress().setClusterName("testUser");
+		 doneMsg.getAddress().setChannelId("testUser");
+		 service.sendMessage(doneMsg);
 
-			PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
-			PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
+		 } else {
+		 PieLogger.info(this.getClass(), "Slave");
+		 BitTorrentService torrentService = this.applicationContext.getBean(BitTorrentService.class);
 
-			AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
+		 while (user.getPieShareConfiguration().getWorkingDir().listFiles().length < ltModel.getFileCount()
+		 || torrentService.activeTorrents()) {
+		 Thread.sleep(1000);
+		 }
 
-			LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
-			message.setFiles(fileService.getAllFiles());
+		 PieLogger.info(this.getClass(), "WorkingDirFileCount: " + String.valueOf(user.getPieShareConfiguration().getWorkingDir().listFiles().length));
+		 PieLogger.info(this.getClass(), "TestModelCount: " + String.valueOf(ltModel.getFileCount()));
 
-			message.getAddress().setClusterName("testUser");
-			message.getAddress().setChannelId("testUser");
-			service.sendMessage(message);
-		}
+		 AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
 
-		Date now = new Date();
-		System.out.println(now.toString() + ": Finished!");
-	}
-}
+		 LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
+		 message.setFiles(fileService.getAllFiles());
+
+		 message.getAddress().setClusterName("testUser");
+		 message.getAddress().setChannelId("testUser");
+		 service.sendMessage(message);
+
+		 while (counter.getCount(AllClientsDoneTask.class) < 1) {
+		 Thread.sleep(1000);
+		 }
+			
+		 Thread.sleep(5000);
+		 }
+
+		 Date now = new Date();
+		 System.out.println(now.toString() + ": Finished!");
+		 }
+		 				 		 }

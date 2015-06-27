@@ -6,8 +6,10 @@
 package loadTest.loadTestLib.config;
 
 import loadTest.loadTestLib.helper.LFileComparer;
+import loadTest.loadTestLib.message.AllClientsDoneMessage;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.message.ClientIsUpMessage;
+import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
@@ -25,54 +27,70 @@ import pieShareAppITs.helper.ITTasksCounter;
  */
 @Configuration
 public class LoadTestConfig {
-    
-    @Autowired
-    private PieShareAppService pieShareAppService;
-    
-    @Bean
-    @Scope(value = "prototype")
-    public AllFilesCompleteMessage allFilesCompleteMessage() {
-        AllFilesCompleteMessage message = new AllFilesCompleteMessage();
-        message.setAddress(new JGroupsPieAddress());
-        return message;
-    }
-	
+
+	@Autowired
+	private PieShareAppService pieShareAppService;
+
 	@Bean
-    @Scope(value = "prototype")
-    public ClientIsUpMessage clientIsUpMessage() {
-        ClientIsUpMessage message = new ClientIsUpMessage();
-        message.setAddress(new JGroupsPieAddress());
-        return message;
-    }
-    
-    @Bean
-    @Scope(value = "prototype")
-    public AllFilesCompleteTask allFilesCompleteTask() {
-        AllFilesCompleteTask task = new AllFilesCompleteTask();
-        task.setTaskCounter(iTTasksCounter());
-        task.setComparer(ltFileComparer());
-        return task;
-    }
-	
+	@Scope(value = "prototype")
+	public AllFilesCompleteMessage allFilesCompleteMessage() {
+		AllFilesCompleteMessage message = new AllFilesCompleteMessage();
+		message.setAddress(new JGroupsPieAddress());
+		return message;
+	}
+
 	@Bean
-    @Scope(value = "prototype")
-    public ClientIsUpTask clientIsUpTask() {
-        ClientIsUpTask task = new ClientIsUpTask();
-        task.setTaskCounter(iTTasksCounter());
-        return task;
-    }
-    
-    @Bean
-    @Lazy
-    public ITTasksCounter iTTasksCounter() {
-        return new ITTasksCounter();
-    }
-    
-    @Bean
-    @Lazy
-    public LFileComparer ltFileComparer() {
-       LFileComparer com = new  LFileComparer();
-       com.setFileCompareService(pieShareAppService.fileCompareService());
-       return com;
-    }
+	@Scope(value = "prototype")
+	public ClientIsUpMessage clientIsUpMessage() {
+		ClientIsUpMessage message = new ClientIsUpMessage();
+		message.setAddress(new JGroupsPieAddress());
+		return message;
+	}
+
+	@Bean
+	@Scope(value = "prototype")
+	public AllClientsDoneMessage allClientsDoneMessage() {
+		AllClientsDoneMessage message = new AllClientsDoneMessage();
+		message.setAddress(new JGroupsPieAddress());
+		return message;
+	}
+
+	@Bean
+	@Scope(value = "prototype")
+	public AllFilesCompleteTask allFilesCompleteTask() {
+		AllFilesCompleteTask task = new AllFilesCompleteTask();
+		task.setTaskCounter(iTTasksCounter());
+		task.setComparer(ltFileComparer());
+		return task;
+	}
+
+	@Bean
+	@Scope(value = "prototype")
+	public ClientIsUpTask clientIsUpTask() {
+		ClientIsUpTask task = new ClientIsUpTask();
+		task.setTaskCounter(iTTasksCounter());
+		return task;
+	}
+
+	@Bean
+	@Scope(value = "prototype")
+	public AllClientsDoneTask allClientsDoneTask() {
+		AllClientsDoneTask task = new AllClientsDoneTask();
+		task.setTaskCounter(iTTasksCounter());
+		return task;
+	}
+
+	@Bean
+	@Lazy
+	public ITTasksCounter iTTasksCounter() {
+		return new ITTasksCounter();
+	}
+
+	@Bean
+	@Lazy
+	public LFileComparer ltFileComparer() {
+		LFileComparer com = new LFileComparer();
+		com.setFileCompareService(pieShareAppService.fileCompareService());
+		return com;
+	}
 }
