@@ -47,7 +47,11 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 			metaMsg.setMetaInfo(meta);
 			metaMsg.setPieFile(this.msg.getPieFile());
 			
-			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {}.", metaMsg.getFileMeta().getFile().getFileName(), metaMsg.getFileMeta().hashCode());
+			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {} "
+					+ "including PieFile with HashCode {}.", 
+					metaMsg.getFileMeta().getFile().getFileName(), 
+					metaMsg.getFileMeta().hashCode(),
+					metaMsg.getFileMeta().getFile().hashCode());
 			
 			this.setDefaultAdresse(metaMsg);
 			this.clusterManagementService.sendMessage(metaMsg);
