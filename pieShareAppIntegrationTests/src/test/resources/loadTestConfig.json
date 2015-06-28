@@ -1,7 +1,17 @@
 [
 	{
-		"nodeCount": "3",
+		"nodeCount": "2",
 		"fileCount": "5",
-		"fileSize": "500"
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "2",
+		"fileCount": "5",
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "2",
+		"fileCount": "5",
+		"fileSize": "50"
 	}
 ]

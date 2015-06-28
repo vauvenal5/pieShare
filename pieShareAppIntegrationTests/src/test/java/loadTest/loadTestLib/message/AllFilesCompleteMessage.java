@@ -9,12 +9,13 @@ import java.util.List;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
+import org.pieShare.pieTools.piePlate.model.message.api.IPiePlainTextMessage;
 
 /**
  *
  * @author richy
  */
-public class AllFilesCompleteMessage extends AClusterMessage implements IEncryptedMessage {
+public class AllFilesCompleteMessage extends AClusterMessage implements IPiePlainTextMessage {
     
     private List<PieFile> files;
 
