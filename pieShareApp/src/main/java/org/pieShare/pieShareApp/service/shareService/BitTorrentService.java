@@ -40,6 +40,7 @@ public class BitTorrentService implements IBitTorrentService {
 	//for the time being it is neccessary to work with the FileMeta and not the PieFile due to the fact
 	//that there can be multiple unrelated trackers present
 	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
+	private ConcurrentHashMap<File, byte[]> cachedMetaInformation;
 
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
@@ -75,7 +76,7 @@ public class BitTorrentService implements IBitTorrentService {
 			boolean isNew = true;
 
 			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getFileName(), file.hashCode());
-			
+
 			if (this.sharedFiles.containsKey(file)) {
 				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
 				value = this.sharedFiles.get(file) + value;
@@ -111,18 +112,28 @@ public class BitTorrentService implements IBitTorrentService {
 	@Override
 	public byte[] createMetaInformation(File localFile) throws CouldNotCreateMetaDataException {
 		try {
-			int port = -1;
-			synchronized (this) {
-				port = this.networkService.reserveAvailablePortStartingFrom(6969);
-			}
-			URI trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
-			//todo: error handling when torrent null
-			//todo: replace name by nodeName
-			Torrent torrent = Torrent.create(localFile, trackerUri, "replaceThisByNodeName");
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			torrent.save(baos);
-			return this.base64Service.encode(baos.toByteArray());
+			//todo: in future we need to synchronize on the file context so requests for different files can work in parallel
+			synchronized (this.cachedMetaInformation) {
+				if (this.cachedMetaInformation.containsKey(localFile)) {
+					return this.cachedMetaInformation.get(localFile);
+				}
+
+				int port = -1;
+				synchronized (this) {
+					port = this.networkService.reserveAvailablePortStartingFrom(6969);
+				}
+				URI trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
+			//todo: error handling when torrent null
+				//todo: replace name by nodeName
+				Torrent torrent = Torrent.create(localFile, trackerUri, "replaceThisByNodeName");
+
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				torrent.save(baos);
+				byte[] meta = this.base64Service.encode(baos.toByteArray());
+				this.cachedMetaInformation.put(localFile, meta);
+				return meta;
+			}
 		} catch (InterruptedException | IOException | URISyntaxException ex) {
 			throw new CouldNotCreateMetaDataException(ex);
 		}
