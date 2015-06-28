@@ -75,10 +75,6 @@ public class BitTorrentService implements IBitTorrentService {
 			boolean isNew = true;
 
 			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getFileName(), file.hashCode());
-
-			this.sharedFiles.keySet().stream().forEach(set -> {
-				PieLogger.trace(this.getClass(), "List contains file meta {} with has code {}.", set.getFile().getFileName(), set.hashCode());
-			});
 			
 			if (this.sharedFiles.containsKey(file)) {
 				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
