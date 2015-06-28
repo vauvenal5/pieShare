@@ -201,22 +201,6 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			public void OK() {
 			}
 		});
-
-		task.setEvent(command);
-		task.run();
-
-		if (LUtil.IsMaster()) {
-			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
-				Thread.sleep(2000);
-				PieLogger.debug(this.getClass(),
-						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
-			}
-		} else {
-			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
-			message.getAddress().setClusterName("testUser");
-			message.getAddress().setChannelId("testUser");
-			service.sendMessage(message);
-		}
 		
 		if (LUtil.IsMaster()) {
 			user.getPieShareConfiguration().getWorkingDir().mkdirs();
@@ -230,6 +214,22 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
 		}
+
+		task.setEvent(command);
+		task.run();
+
+		/*if (LUtil.IsMaster()) {
+			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
+				Thread.sleep(2000);
+				PieLogger.debug(this.getClass(),
+						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
+			}
+		} else {
+			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
+			message.getAddress().setClusterName("testUser");
+			message.getAddress().setChannelId("testUser");
+			service.sendMessage(message);
+		}*/
 
 		System.out.println("Waiting for completion!");
 		if (LUtil.IsMaster()) {
