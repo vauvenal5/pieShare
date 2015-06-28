@@ -17,6 +17,7 @@ import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllClientsDoneMessage;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.message.ClientIsUpMessage;
+import loadTest.loadTestLib.message.MasterIsReadyMessage;
 import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
@@ -36,6 +37,7 @@ import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieTools.piePlate.service.channel.PlainTextChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -144,6 +146,10 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		String userName = "testUser";
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
 		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
+		
+		PlainTextChannel loadTestChannel = new PlainTextChannel();
+		loadTestChannel.setChannelId("loadTest");
+		service.registerChannel("loadTest", loadTestChannel);
 
 		counter = this.applicationContext.getBean(ITTasksCounter.class);
 
@@ -214,22 +220,33 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			System.out.println("Files successfully created!");
 			PieLogger.info(this.getClass(), "Files successfully created!");
 		}
-
-		task.setEvent(command);
-		task.run();
-
-		/*if (LUtil.IsMaster()) {
+		
+		//this block syncs master and client nodes so test starts when all ready
+		if (LUtil.IsMaster()) {
 			while (counter.getCount(ClientIsUpTask.class) < ltModel.getNodeCount() - 1) {
 				Thread.sleep(2000);
 				PieLogger.debug(this.getClass(),
 						String.format("Waiting for nodes to start up! Missing nodes: %s", ltModel.getNodeCount() - 1 - counter.getCount(ClientIsUpTask.class)));
 			}
+			
+			MasterIsReadyMessage masterReadyMsg = this.applicationContext.getBean(MasterIsReadyMessage.class);
+			masterReadyMsg.getAddress().setClusterName("loadTest");
+			masterReadyMsg.getAddress().setChannelId("loadTest");
+			service.sendMessage(masterReadyMsg);
+			
 		} else {
 			ClientIsUpMessage message = this.applicationContext.getBean(ClientIsUpMessage.class);
-			message.getAddress().setClusterName("testUser");
-			message.getAddress().setChannelId("testUser");
+			message.getAddress().setClusterName("loadTest");
+			message.getAddress().setChannelId("loadTest");
 			service.sendMessage(message);
-		}*/
+			
+			while (counter.getCount(MasterIsReadyMessage.class) < 1) {
+				Thread.sleep(2000);
+			}
+		}
+
+		task.setEvent(command);
+		task.run();
 
 		System.out.println("Waiting for completion!");
 		if (LUtil.IsMaster()) {
@@ -250,8 +267,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			LUtil.writeCSVResult(ltModel, resultTime);
 
 			AllClientsDoneMessage doneMsg = this.applicationContext.getBean(AllClientsDoneMessage.class);
-			doneMsg.getAddress().setClusterName("testUser");
-			doneMsg.getAddress().setChannelId("testUser");
+			doneMsg.getAddress().setClusterName("loadTest");
+			doneMsg.getAddress().setChannelId("loadTest");
 			service.sendMessage(doneMsg);
 
 		} else {
@@ -271,8 +288,8 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
 			message.setFiles(fileService.getAllFiles());
 
-			message.getAddress().setClusterName("testUser");
-			message.getAddress().setChannelId("testUser");
+			message.getAddress().setClusterName("loadTest");
+			message.getAddress().setChannelId("loadTest");
 			service.sendMessage(message);
 
 			PieLogger.info(this.getClass(), "Before waiting for AllClientsDone!");

@@ -9,9 +9,11 @@ import loadTest.loadTestLib.helper.LFileComparer;
 import loadTest.loadTestLib.message.AllClientsDoneMessage;
 import loadTest.loadTestLib.message.AllFilesCompleteMessage;
 import loadTest.loadTestLib.message.ClientIsUpMessage;
+import loadTest.loadTestLib.message.MasterIsReadyMessage;
 import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
+import loadTest.loadTestLib.task.MasterIsReadyTask;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +56,14 @@ public class LoadTestConfig {
 		message.setAddress(new JGroupsPieAddress());
 		return message;
 	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public MasterIsReadyMessage masterIsReadyMessage() {
+		MasterIsReadyMessage message = new MasterIsReadyMessage();
+		message.setAddress(new JGroupsPieAddress());
+		return message;
+	}
 
 	@Bean
 	@Scope(value = "prototype")
@@ -76,6 +86,14 @@ public class LoadTestConfig {
 	@Scope(value = "prototype")
 	public AllClientsDoneTask allClientsDoneTask() {
 		AllClientsDoneTask task = new AllClientsDoneTask();
+		task.setTaskCounter(iTTasksCounter());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public MasterIsReadyTask masterIsReadyTask() {
+		MasterIsReadyTask task = new MasterIsReadyTask();
 		task.setTaskCounter(iTTasksCounter());
 		return task;
 	}
