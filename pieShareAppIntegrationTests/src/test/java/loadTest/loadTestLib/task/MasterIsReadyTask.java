@@ -6,12 +6,12 @@
 package loadTest.loadTestLib.task;
 
 import commonTestTools.AMessageCounterTask;
-import loadTest.loadTestLib.message.AllClientsDoneMessage;
+import loadTest.loadTestLib.message.MasterIsReadyMessage;
 
 /**
  *
  * @author sveto_000
  */
-public class MasterIsReadyTask extends AMessageCounterTask<AllClientsDoneMessage>  {
+public class MasterIsReadyTask extends AMessageCounterTask<MasterIsReadyMessage>  {
 	
 }

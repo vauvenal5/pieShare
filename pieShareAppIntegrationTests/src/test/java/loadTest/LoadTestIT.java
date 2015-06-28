@@ -21,6 +21,7 @@ import loadTest.loadTestLib.message.MasterIsReadyMessage;
 import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
+import loadTest.loadTestLib.task.MasterIsReadyTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -189,6 +190,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		}
 		else {
 			executorFactory.registerTask(AllClientsDoneMessage.class, AllClientsDoneTask.class);
+			executorFactory.registerTask(MasterIsReadyMessage.class, MasterIsReadyTask.class);
 		}
 
 		command.setCallback(new ILoginFinished() {
