@@ -46,6 +46,9 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 			IMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
 			metaMsg.setMetaInfo(meta);
 			metaMsg.setPieFile(this.msg.getPieFile());
+			
+			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {}.", metaMsg.getFileMeta().getFile().getFileName(), metaMsg.getFileMeta().hashCode());
+			
 			this.setDefaultAdresse(metaMsg);
 			this.clusterManagementService.sendMessage(metaMsg);
 		} catch (ClusterManagmentServiceException ex) {
