@@ -14,8 +14,10 @@ import loadTest.loadTestLib.task.AllClientsDoneTask;
 import loadTest.loadTestLib.task.AllFilesCompleteTask;
 import loadTest.loadTestLib.task.ClientIsUpTask;
 import loadTest.loadTestLib.task.MasterIsReadyTask;
+import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppService;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.PlainTextChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +34,8 @@ public class LoadTestConfig {
 
 	@Autowired
 	private PieShareAppService pieShareAppService;
+	@Autowired
+	private PiePlateConfiguration piePlateConf;
 
 	@Bean
 	@Scope(value = "prototype")
@@ -110,5 +114,13 @@ public class LoadTestConfig {
 		LFileComparer com = new LFileComparer();
 		com.setFileCompareService(pieShareAppService.fileCompareService());
 		return com;
+	}
+	
+	@Bean
+	@Lazy
+	public PlainTextChannel plainTextChannel() {
+		PlainTextChannel channel = new PlainTextChannel();
+		channel.setSerializerService(this.piePlateConf.jacksonSerializerService());
+		return channel;
 	}
 }

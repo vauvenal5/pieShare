@@ -147,7 +147,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		PieUser user = this.applicationContext.getBean("pieUser", PieUser.class);
 		ClusterManagementService service = this.applicationContext.getBean(ClusterManagementService.class);
 		
-		PlainTextChannel loadTestChannel = new PlainTextChannel();
+		PlainTextChannel loadTestChannel = this.applicationContext.getBean(PlainTextChannel.class);
 		loadTestChannel.setChannelId("loadTest");
 		service.registerChannel("loadTest", loadTestChannel);
 
