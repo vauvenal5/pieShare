@@ -70,28 +70,34 @@ public class BitTorrentService implements IBitTorrentService {
 	 * @param value
 	 * @return
 	 */
-	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
-		boolean isNew = true;
-		
-		PieLogger.trace(this.getClass(), "Manipulating share state for {}.", file.getFile().getFileName());
-		
-		if (this.sharedFiles.containsKey(file)) {
-			PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
-			value = this.sharedFiles.get(file) + value;
+	private boolean manipulateShareState(FileMeta file, Integer value) {
+		synchronized (this.sharedFiles) {
+			boolean isNew = true;
 
-			if (value <= 0) {
-				this.sharedFiles.remove(file);
-				return false;
+			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getFileName(), file.hashCode());
+
+			this.sharedFiles.keySet().stream().forEach(set -> {
+				PieLogger.trace(this.getClass(), "List contains file meta {} with has code {}.", set.getFile().getFileName(), set.hashCode());
+			});
+			
+			if (this.sharedFiles.containsKey(file)) {
+				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
+				value = this.sharedFiles.get(file) + value;
+
+				if (value <= 0) {
+					this.sharedFiles.remove(file);
+					return false;
+				}
+
+				isNew = false;
 			}
 
-			isNew = false;
-		}
+			if (value >= 0) {
+				this.sharedFiles.put(file, value);
+			}
 
-		if (value >= 0) {
-			this.sharedFiles.put(file, value);
+			return isNew;
 		}
-
-		return isNew;
 	}
 
 	@Override
@@ -110,14 +116,14 @@ public class BitTorrentService implements IBitTorrentService {
 	public byte[] createMetaInformation(File localFile) throws CouldNotCreateMetaDataException {
 		try {
 			int port = -1;
-			synchronized(this) {
-			 port = this.networkService.reserveAvailablePortStartingFrom(6969);
+			synchronized (this) {
+				port = this.networkService.reserveAvailablePortStartingFrom(6969);
 			}
 			URI trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
 			//todo: error handling when torrent null
 			//todo: replace name by nodeName
 			Torrent torrent = Torrent.create(localFile, trackerUri, "replaceThisByNodeName");
-			
+
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			torrent.save(baos);
 			return this.base64Service.encode(baos.toByteArray());
@@ -158,7 +164,7 @@ public class BitTorrentService implements IBitTorrentService {
 			PieLogger.trace(this.getClass(), "Allready handling file {}!", meta.getFile().getFileName());
 			return;
 		}
-		
+
 		try {
 			this.readPorts.acquire();
 			this.writePorts.acquire();
@@ -185,8 +191,8 @@ public class BitTorrentService implements IBitTorrentService {
 		if (!seeder) {
 			this.readPorts.release();
 		}
-		
-		synchronized(this) {
+
+		synchronized (this) {
 			this.sharedFiles.remove(file);
 		}
 	}
