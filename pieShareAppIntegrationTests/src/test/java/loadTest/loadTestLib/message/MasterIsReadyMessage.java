@@ -6,13 +6,12 @@
 package loadTest.loadTestLib.message;
 
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPiePlainTextMessage;
 
 /**
  *
- * @author richy
+ * @author sveto_000
  */
-public class ClientIsUpMessage extends AClusterMessage implements IPiePlainTextMessage {
-    
+public class MasterIsReadyMessage extends AClusterMessage implements IPiePlainTextMessage {
+	
 }
