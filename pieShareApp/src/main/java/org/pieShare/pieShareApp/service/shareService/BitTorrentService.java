@@ -44,6 +44,7 @@ public class BitTorrentService implements IBitTorrentService {
 
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
+		this.cachedMetaInformation = new ConcurrentHashMap<>();
 	}
 
 	public void setNetworkService(INetworkService networkService) {
