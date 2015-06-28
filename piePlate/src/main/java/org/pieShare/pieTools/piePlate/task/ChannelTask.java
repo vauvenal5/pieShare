@@ -52,7 +52,7 @@ public class ChannelTask implements IPieTask {
 			msg.setAddress(address);
 			this.executorService.handlePieEvent(msg);
 		} catch (PieChannelException ex) {
-			PieLogger.info(this.getClass(), "Given channel {} cann't handle message. Stoping work!", channel.getClass());
+			PieLogger.info(this.getClass(), String.format("Given channel %s cann't handle message. Stoping work!", channel.getClass()), ex);
 		} catch (PieExecutorTaskFactoryException ex) {
 			PieLogger.error(this.getClass(), String.format("Could not execute task for message: %s", msg), ex);
 		}
