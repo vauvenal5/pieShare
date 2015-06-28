@@ -73,7 +73,10 @@ public class BitTorrentService implements IBitTorrentService {
 	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
 		boolean isNew = true;
 		
+		PieLogger.trace(this.getClass(), "Manipulating share state for {}.", file.getFile().getFileName());
+		
 		if (this.sharedFiles.containsKey(file)) {
+			PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
 			value = this.sharedFiles.get(file) + value;
 
 			if (value <= 0) {
