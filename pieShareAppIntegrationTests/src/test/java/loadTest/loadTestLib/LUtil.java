@@ -31,6 +31,8 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 /**
  *
@@ -102,6 +104,9 @@ public class LUtil {
 		PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		System.out.println("Services stoped!");
+		
+		ConfigurableApplicationContext con = (ConfigurableApplicationContext)context;
+		con.close();
 
 		slaves.forEach(s -> s.destroy());
 	}

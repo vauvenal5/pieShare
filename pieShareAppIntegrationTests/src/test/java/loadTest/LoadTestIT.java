@@ -300,6 +300,7 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			}
 			PieLogger.info(this.getClass(), "After waiting for AllClientsDone!");
 
+			//this sleep alows the master to be first up in order to receive all client up notifications
 			Thread.sleep(5000);
 		}
 
