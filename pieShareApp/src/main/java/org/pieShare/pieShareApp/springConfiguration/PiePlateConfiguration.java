@@ -79,6 +79,7 @@ public class PiePlateConfiguration {
 		service.setReceiver(this.objectReceiver());
 		service.setChannel(this.jChannel());
 		service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
+		service.setShutdownService(this.utilitiesConfiguration.shutdownService());
 		return service;
 	}
 
