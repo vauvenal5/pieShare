@@ -151,7 +151,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					//for example on server instance and two clients
 					//each client will keep sharing until the error timeout if this message doesn't get send here
 					IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
-					msgComplete.setPieFile(fileMeta.getFile());
+					msgComplete.setFileMeta(fileMeta);
 					this.setDefaultAdresse(msgComplete);
 					this.clusterManagementService.sendMessage(msgComplete);
 				}
