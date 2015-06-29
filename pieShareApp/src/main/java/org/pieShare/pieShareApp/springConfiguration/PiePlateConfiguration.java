@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.springConfiguration;
 
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -57,6 +56,7 @@ public class PiePlateConfiguration {
 
 	@Bean
 	@Lazy
+	@Scope(value = "prototype")
 	public ObjectBasedReceiver objectReceiver() {
 		ObjectBasedReceiver receiver = new ObjectBasedReceiver();
 		receiver.setBeanService(this.utilitiesConfiguration.beanService());
