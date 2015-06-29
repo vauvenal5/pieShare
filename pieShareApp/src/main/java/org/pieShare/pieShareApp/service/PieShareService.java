@@ -42,12 +42,13 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  *
  * @author Svetoslav
  */
-public class PieShareService {
+public class PieShareService implements DisposableBean {
 
 	private PieExecutorTaskFactory executorFactory;
 	private IClusterManagementService clusterManagementService;
@@ -130,5 +131,10 @@ public class PieShareService {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
 		}
 		this.shutdownService.fireShutdown();
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		this.stop();
 	}
 }
