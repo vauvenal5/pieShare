@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
@@ -215,7 +214,7 @@ public class PieShareAppTasks {
 		this.aMessageSendingTask(task);
 		task.setNetworkService(this.services.networkService());
 		task.setShareService(this.services.shareService());
-		task.setShutdownService(this.services.shutdownService());
+		task.setShutdownService(this.config.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setFileService(this.services.historyFileService());
 		task.setRequestService(this.services.requestService());

@@ -124,12 +124,13 @@ public class PieShareService implements DisposableBean {
 	}
 
 	public void stop() {
-		try {
+		//not needed anymore because cluster now implements shutdownable
+		/*try {
 			this.clusterManagementService.diconnectAll();
 		}
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
-		}
+		}*/
 		this.shutdownService.fireShutdown();
 	}
 

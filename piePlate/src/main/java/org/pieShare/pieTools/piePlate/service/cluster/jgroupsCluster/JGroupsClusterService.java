@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -22,8 +24,10 @@ import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
-public class JGroupsClusterService implements IClusterService {
+public class JGroupsClusterService implements IClusterService, IShutdownableService {
 
 	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
 	private List<IIncomingChannel> incomingChannels;
@@ -129,11 +133,13 @@ public class JGroupsClusterService implements IClusterService {
 
 	@Override
 	public void disconnect() throws ClusterServiceException {
+		this.channel.setReceiver(null);
+		
 		this.channel.disconnect();
 		PieLogger.trace(this.getClass(), "Channel {} disconnected!", this.id);
 		this.channel.close();
 		PieLogger.trace(this.getClass(), "Channel {} closed!", this.id);
-		this.channel.setReceiver(null);
+		
 		this.channel = null;
 		clusterRemovedEventBase.fireEvent(new ClusterRemovedEvent(this));
 	}
@@ -153,5 +159,14 @@ public class JGroupsClusterService implements IClusterService {
 		//todo-piePlate: throw exceptions if adding to map is not possible
 
 		this.outgoingChannels.put(channel.getChannelId(), channel);
+	}
+
+	@Override
+	public void shutdown() {
+		try {
+			this.disconnect();
+		} catch (ClusterServiceException ex) {
+			PieLogger.error(this.getClass(), "Could not disconnect!", ex);
+		}
 	}
 }
