@@ -101,12 +101,12 @@ public class LUtil {
 			}
 		}
 
-		PieShareService service = context.getBean(PieShareService.class);
+		/*PieShareService service = context.getBean(PieShareService.class);
 		service.stop();
 		System.out.println("Services stoped!");
 		
 		ConfigurableApplicationContext con = (ConfigurableApplicationContext)context;
-		con.close();
+		con.close();*/
 
 		slaves.forEach(s -> s.destroy());
 	}
