@@ -133,7 +133,8 @@ public class JGroupsClusterService implements IClusterService {
 		PieLogger.trace(this.getClass(), "Channel {} disconnected!", this.id);
 		this.channel.close();
 		PieLogger.trace(this.getClass(), "Channel {} closed!", this.id);
-		this.receiver = null;
+		this.channel.setReceiver(null);
+		this.channel = null;
 		clusterRemovedEventBase.fireEvent(new ClusterRemovedEvent(this));
 	}
 
