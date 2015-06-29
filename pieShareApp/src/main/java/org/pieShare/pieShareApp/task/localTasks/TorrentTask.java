@@ -44,7 +44,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 	//local fields
 	private Client client;
-	private boolean shutdown;
+	private boolean shutdown = false;
 	private Tracker tracker;
 
 	public void setBitTorrentService(IBitTorrentService bitTorrentService) {
@@ -210,6 +210,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 	@Override
 	public void shutdown() {
 		this.shutdown = true;
+		PieLogger.info(this.getClass(), "Shuting down torrent task!");
 
 		if (this.client != null) {
 			this.client.stop(false);
