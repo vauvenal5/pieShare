@@ -1,12 +1,17 @@
 [
 	{
 		"nodeCount": "5",
-		"fileCount": "20",
+		"fileCount": "10",
 		"fileSize": "5"
 	},
 	{
 		"nodeCount": "5",
-		"fileCount": "20",
+		"fileCount": "10",
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "5",
+		"fileCount": "10",
 		"fileSize": "5"
 	}
 ]
