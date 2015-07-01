@@ -1,51 +1,6 @@
 [
 	{
 		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "5"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "5"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "5"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "50"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "50"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "50"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "500"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "500"
-	},
-	{
-		"nodeCount": "9",
-		"fileCount": "5",
-		"fileSize": "500"
-	},
-	{
-		"nodeCount": "9",
 		"fileCount": "10",
 		"fileSize": "5"
 	},
@@ -56,7 +11,17 @@
 	},
 	{
 		"nodeCount": "9",
-		"fileCount": "10",
+		"fileCount": "20",
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "9",
+		"fileCount": "20",
+		"fileSize": "5"
+	},
+	{
+		"nodeCount": "9",
+		"fileCount": "20",
 		"fileSize": "5"
 	}
 ]
