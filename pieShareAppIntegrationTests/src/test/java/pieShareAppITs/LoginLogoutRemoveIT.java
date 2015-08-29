@@ -119,6 +119,12 @@ public class LoginLogoutRemoveIT {
 			public void pwdResetOK() {
 			}
 		});
+		
+		ResetPwdTask resetPwdTask = context.getBean(ResetPwdTask.class);
+		resetPwdTask.setEvent(resetPwdCommand);
+		resetPwdTask.run();
+		
+		Assert.assertFalse(config.getPwdFile().exists());
 	}
 
 	@Test
