@@ -55,7 +55,9 @@ public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory, IS
 			countSemaphore.acquire();
 
 			while (count > 0) {
+				countSemaphore.release();
 				Thread.sleep(500);
+				countSemaphore.acquire();
 			}
 
 			entityManagers.entrySet().stream().forEach((entity) -> {
@@ -63,6 +65,8 @@ public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory, IS
 			});
 			entityManagers.clear();
 			emf.close();
+			
+			countSemaphore.release();
 		}
 		catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Error with database lock.", ex);

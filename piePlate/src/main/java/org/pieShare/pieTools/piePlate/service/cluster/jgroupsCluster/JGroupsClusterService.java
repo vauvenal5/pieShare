@@ -133,6 +133,11 @@ public class JGroupsClusterService implements IClusterService, IShutdownableServ
 
 	@Override
 	public void disconnect() throws ClusterServiceException {
+		//todo: this needs additional fixing: the true error is that this class doesn't get removed from the shutdown event listeners after manually shuting down
+		//todo: all listeners need to proper handle event unsubscription
+		if(this.channel == null) {
+			return;
+		}
 		this.channel.setReceiver(null);
 		
 		this.channel.disconnect();
