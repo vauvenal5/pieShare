@@ -94,10 +94,10 @@ public class ShareService implements IShareService{
 				
 				this.fileEncryptionService.decryptFile(localEncTmpFile, localTmpFile);
 				
+				this.fileService.setCorrectModificationDateOnTmpFile(file);
+				
 				this.fileWatcherService.addPieFileToModifiedList(file);
 				Files.move(localTmpFile.toPath(), localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				
-				this.fileService.setCorrectModificationDate(file);
 				
 				//todo: is it better to delete the enc file or not?
 			}

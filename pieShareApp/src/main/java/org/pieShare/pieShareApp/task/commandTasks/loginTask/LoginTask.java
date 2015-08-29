@@ -13,6 +13,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
@@ -51,12 +52,17 @@ public class LoginTask implements ILoginTask {
 	private IHistoryService historyService;
 	private IFileWatcherService fileWatcherService;
 	private IMessageFactoryService messageFactoryService;
+        private IFileService fileService;
 	
 	private File pwdFile;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
 	}
+
+        public void setFileService(IFileService fileService) {
+            this.fileService = fileService;
+        }
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
@@ -148,6 +154,14 @@ public class LoginTask implements ILoginTask {
 			//listen to working dir
 			this.fileWatcherService.watchDir(user.getPieShareConfiguration().getWorkingDir());
 			
+                        //todo: change this maybe in future to different aproach
+                        //this is needed to recognize local changes on this node
+                        IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
+                        fileList.getAddress().setClusterName(user.getCloudName());
+                        fileList.getAddress().setChannelId(user.getUserName());
+                        fileList.setFileList(this.fileService.getAllFiles());
+                        this.clusterManagementService.sendMessage(fileList);
+                        
 			//send file list request message to cluster
 			IFileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
 			msg.getAddress().setClusterName(user.getCloudName());

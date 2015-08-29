@@ -29,6 +29,13 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.1.0.RELEASE</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 	
 	<build>
@@ -39,6 +46,10 @@
 				<configuration>
 					<forkCount>1</forkCount>
 					<reuseForks>false</reuseForks>
+                                        <excludes>
+                                            <exclude>*/*LoadTestIT.java</exclude>
+                                            <exclude>*/*LTIT.java</exclude>
+                                        </excludes>
 				</configuration>
 				<executions>
 				  <execution>

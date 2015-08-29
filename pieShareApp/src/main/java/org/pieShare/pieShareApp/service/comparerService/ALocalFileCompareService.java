@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.comparerService;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
@@ -64,12 +65,24 @@ public abstract class ALocalFileCompareService implements ILocalFileCompareServi
 	}
 	
 	@Override
-	public int compareToLocalPieFile(PieFile remoteFile) throws NullPointerException {
+	public int compareToLocalPieFile(PieFile remoteFile) {
 		try {
 			return this.compareToLocal(remoteFile);
 		}
 		catch(NullPointerException | IOException ex) {
 			return -1;
 		}
+	}
+	
+	@Override
+	public boolean isConflictedOrNotNeeded(PieFile file) {
+		if(this.compareToLocalPieFile(file) == -1) {
+			PieLogger.info(this.getClass(), "Compared false!");
+			return false;
+		}
+		
+		PieLogger.info(this.getClass(), "Compared true!");
+		
+		return true;
 	}
 }

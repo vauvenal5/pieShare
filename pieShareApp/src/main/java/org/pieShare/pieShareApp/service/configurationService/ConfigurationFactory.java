@@ -44,7 +44,7 @@ public class ConfigurationFactory implements IConfigurationFactory {
 		}
 
 		if (conf.getTmpDir() == null) {
-			conf.setTmpDir(new File("tmpDir"));
+			conf.setTmpDir(new File(String.format("%s/%s", configurationService.getBaseConfigPath(), "tmpDir")));
 		}
 
 		if (!conf.getTmpDir().exists() && createFolders) {
@@ -52,7 +52,10 @@ public class ConfigurationFactory implements IConfigurationFactory {
 		}
 
 		if (conf.getWorkingDir() == null) {
-			conf.setWorkingDir(new File("workingDir"));
+                        //todo: important!!! this has to be change to work relatively to the tmpDir!!!
+                        //instead of configuring seperate paths for tmp database and working dir setup one path
+                        //and relatively to this path all other dirs get set up
+			conf.setWorkingDir(new File("PieShare"));
 		}
 
 		if (!conf.getWorkingDir().exists() && createFolders) {

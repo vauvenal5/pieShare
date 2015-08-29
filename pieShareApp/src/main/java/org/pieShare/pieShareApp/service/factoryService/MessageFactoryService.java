@@ -18,12 +18,12 @@ import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
-import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -82,8 +82,8 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public INewFileMessage getNewFileMessage() {
-		return this.prepareMessage(new NewFileMessage());
+	public IFileCreatedMessage getNewFileMessage() {
+		return this.prepareMessage(new FileCreatedMessage());
 	}
 
 	@Override
