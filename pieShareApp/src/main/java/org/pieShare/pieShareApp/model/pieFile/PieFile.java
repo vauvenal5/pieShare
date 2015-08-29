@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.model.pieFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Objects;
 import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
@@ -65,15 +66,6 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 	public void setRelativeFilePath(String relativeFilePath) {
 		this.relativeFilePath = relativeFilePath;
 	}
-
-	@Override
-	public int hashCode() {
-		//TODO: Test this
-		//TODO: what is this? has something to do with hashMaps?
-		ByteBuffer bb = ByteBuffer.wrap(md5);
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		return bb.getInt();
-	}
 	
 	@Override
 	public boolean equals(Object o) {
@@ -92,6 +84,17 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 		}
 		
 		return this.equalFilePara(f);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 3;
+		hash = 79 * hash + Arrays.hashCode(this.md5);
+		hash = 79 * hash + Objects.hashCode(this.relativeFilePath);
+		hash = 79 * hash + Objects.hashCode(this.fileName);
+		hash = 79 * hash + (int) (this.lastModified ^ (this.lastModified >>> 32));
+		hash = 79 * hash + (this.deleted ? 1 : 0);
+		return hash;
 	}
 	
 	protected boolean equalFilePara(PieFile f) {

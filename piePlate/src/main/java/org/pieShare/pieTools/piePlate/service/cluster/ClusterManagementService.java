@@ -24,7 +24,6 @@ import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
-import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
@@ -36,36 +35,36 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ClusterManagementService implements IClusterManagementService {
 
-    private Map<String, IClusterService> clusters;
-    private IBeanService beanService;
-    private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
-    private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+	private Map<String, IClusterService> clusters;
+	private IBeanService beanService;
+	private IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase;
+	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 
-    @Override
-    public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
-        return this.clusterAddedEventBase;
-    }
+	@Override
+	public IEventBase<IClusterAddedListener, ClusterAddedEvent> getClusterAddedEventBase() {
+		return this.clusterAddedEventBase;
+	}
 
-    public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
-        this.clusterAddedEventBase = clusterAddedEventBase;
-    }
+	public void setClusterAddedEventBase(IEventBase<IClusterAddedListener, ClusterAddedEvent> clusterAddedEventBase) {
+		this.clusterAddedEventBase = clusterAddedEventBase;
+	}
 
-    @Override
-    public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
-        return this.clusterRemovedEventBase;
-    }
+	@Override
+	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
+		return this.clusterRemovedEventBase;
+	}
 
-    public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
-        this.clusterRemovedEventBase = clusterRemovedEventBase;
-    }
+	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+		this.clusterRemovedEventBase = clusterRemovedEventBase;
+	}
 
-    public void setBeanService(IBeanService service) {
-        this.beanService = service;
-    }
+	public void setBeanService(IBeanService service) {
+		this.beanService = service;
+	}
 
-    public void setMap(Map<String, IClusterService> map) {
-        this.clusters = map;
-    }
+	public void setMap(Map<String, IClusterService> map) {
+		this.clusters = map;
+	}
 
     private IClusterService connect(String id) throws ClusterManagmentServiceException {
         ILoopHoleFactory loopHoleFactory = beanService.getBean(LoopHoleFactory.class);
@@ -128,7 +127,9 @@ public class ClusterManagementService implements IClusterManagementService {
 
     @Override
     public void disconnect(String id) throws ClusterServiceException {
-        this.clusters.get(id).disconnect();
+		if(this.clusters.containsKey(id)) {
+			this.clusters.get(id).disconnect();
+		}
     }
 
     @Override

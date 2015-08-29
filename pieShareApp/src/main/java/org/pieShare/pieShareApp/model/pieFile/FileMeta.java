@@ -7,6 +7,7 @@
 package org.pieShare.pieShareApp.model.pieFile;
 
 import java.util.Arrays;
+import java.util.Objects;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
@@ -46,5 +47,12 @@ public class FileMeta {
 		}
 		
 		return Arrays.equals(this.data, f.data);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = this.file.hashCode();
+		hash = 59 * hash + Arrays.hashCode(this.data);
+		return hash;
 	}
 }

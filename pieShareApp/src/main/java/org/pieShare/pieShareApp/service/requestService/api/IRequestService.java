@@ -18,7 +18,9 @@ public interface IRequestService {
 
 	public boolean isRequested(PieFile file);
 	
-	//public void requestIsBeingHandled(PieFile file);
+	public boolean handleRequest(PieFile file);
+	
+	public boolean handleRequest(PieFile file, boolean force);
 
 	public boolean deleteRequestedFile(PieFile pieFile);
 

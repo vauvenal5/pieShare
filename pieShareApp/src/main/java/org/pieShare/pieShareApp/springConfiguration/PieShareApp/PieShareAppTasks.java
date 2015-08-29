@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.util.CompareGenerator;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
@@ -60,6 +59,7 @@ public class PieShareAppTasks {
 		task.setHistoryService(services.historyService());
 		task.setFileEncrypterService(services.fileEncryptionService());
 		task.setFileWatcherService(this.services.apacheFileWatcherService());
+		task.setHistoryFileService(this.services.historyFileService());
 	}
 
 	@Bean
@@ -70,7 +70,6 @@ public class PieShareAppTasks {
 		task.setBeanService(this.config.beanService());
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setFileService(this.services.localFileService());
 		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
@@ -136,7 +135,7 @@ public class PieShareAppTasks {
 	public LocalFileDeletedTask localFileDeletedTask() {
 		LocalFileDeletedTask task = new LocalFileDeletedTask();
 		this.aLocalFileEventTask(task);
-		task.setFileService(this.services.historyFileService());
+		task.setFileService(this.services.localFileService());
 		return task;
 	}
 
@@ -183,6 +182,7 @@ public class PieShareAppTasks {
 		service.setHistoryService(services.historyService());
 		service.setFileWatcherService(this.services.apacheFileWatcherService());
 		service.setMessageFactoryService(this.services.messageFactoryService());
+                service.setFileService(this.services.historyFileService());
 		return service;
 	}
 
@@ -214,8 +214,10 @@ public class PieShareAppTasks {
 		this.aMessageSendingTask(task);
 		task.setNetworkService(this.services.networkService());
 		task.setShareService(this.services.shareService());
-		task.setShutdownService(this.services.shutdownService());
+		task.setShutdownService(this.config.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setFileService(this.services.historyFileService());
+		task.setRequestService(this.services.requestService());
 		return task;
 	}
 	
@@ -226,7 +228,9 @@ public class PieShareAppTasks {
 		MetaCommitTask task = new MetaCommitTask();
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
-		task.setFileService(this.services.localFileService());
+		task.setCompareService(this.services.fileCompareService());
+		task.setRequestService(this.services.requestService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
 		return task;
 	}
 }

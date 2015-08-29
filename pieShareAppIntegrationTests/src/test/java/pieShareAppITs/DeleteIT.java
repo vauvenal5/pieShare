@@ -6,6 +6,7 @@
 
 package pieShareAppITs;
 
+import commonTestTools.TestFileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,6 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-import pieShareAppITs.helper.ITFileUtils;
 import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.runner.FileSyncMain;
@@ -52,7 +52,9 @@ public class DeleteIT {
 		
 		for(int i = 0; i< 10; i++) {
 			String fileName = String.valueOf(i);
-			File file = ITFileUtils.createFile(new File(ITUtil.getMainWorkingDir(), fileName), 2048);
+                        File file = new File(ITUtil.getMainWorkingDir(), fileName);
+                        file.getParentFile().mkdirs();
+                        TestFileUtils.createFile(file, 2);
 			files.add(file);
 			FileUtils.copyFile(file, new File(ITUtil.getBotWorkingDir(), fileName), true);
 		}

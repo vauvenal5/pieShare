@@ -6,11 +6,11 @@
 
 package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
-import org.pieShare.pieShareApp.model.message.api.INewFileMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class NewFileMessage extends FileMessageBase implements INewFileMessage {
+public class FileCreatedMessage extends FileMessageBase implements IFileCreatedMessage {
 }

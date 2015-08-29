@@ -29,6 +29,10 @@ public abstract class ACheckConflictTask<T extends IClusterMessage> extends PieE
 	}
 	
 	protected boolean isConflictedOrNotNeeded(PieFile file) {
+		return this.comparerService.isConflictedOrNotNeeded(file);
+	}
+	
+	/*protected boolean isConflictedOrNotNeeded(PieFile file) {
 		try {
 			if(this.comparerService.compareToLocalPieFile(file) == -1) {
 				PieLogger.info(this.getClass(), "Compared!");
@@ -41,5 +45,5 @@ public abstract class ACheckConflictTask<T extends IClusterMessage> extends PieE
 		PieLogger.info(this.getClass(), "Compared2!");
 		
 		return true;
-	}
+	}*/
 }
