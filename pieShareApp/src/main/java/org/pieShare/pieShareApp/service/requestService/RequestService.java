@@ -48,11 +48,11 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
-		if(this.isRequested(pieFile)) {
+		if (this.isRequested(pieFile)) {
 			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
 			return;
 		}
-		
+
 		//todo: who is responsible for sending the messages? the service or the task?
 		//i belive the task
 		IFileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
@@ -68,12 +68,29 @@ public class RequestService implements IRequestService {
 			PieLogger.error(this.getClass(), "Error sending RequestMessage.", ex);
 		}
 	}
-	
+
 	//todo: is this really needed?
-	/*@Override
-	public void requestIsBeingHandled(PieFile file) {
-		requestedFiles.replace(file, true);
-	}*/
+	@Override
+	public synchronized boolean handleRequest(PieFile file) {
+		return this.handleRequest(file, false);
+	}
+
+	@Override
+	public synchronized boolean handleRequest(PieFile file, boolean force) {
+		if (this.isRequested(file)) {
+			if (!requestedFiles.get(file)) {
+				requestedFiles.replace(file, true);
+				return true;
+			}
+		} else {
+			if (force) {
+				requestedFiles.put(file, true);
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 	@Override
 	public synchronized boolean isRequested(PieFile file) {
@@ -82,19 +99,20 @@ public class RequestService implements IRequestService {
 		}
 		return false;
 	}
-	
+
 	/**
-	 * If this client is in a process of getting a new file and another client requests the
-	 * very same file from us we want to keep our seeder open so we notify the shareService about it.
-	 * @param pieFile 
+	 * If this client is in a process of getting a new file and another client
+	 * requests the very same file from us we want to keep our seeder open so we
+	 * notify the shareService about it.
+	 *
+	 * @param pieFile
 	 */
 	/*@Override
-	public synchronized void checkForActiveFileHandle(PieFile pieFile) {
-		if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
-			return true;
-		}
-	}*/
-
+	 public synchronized void checkForActiveFileHandle(PieFile pieFile) {
+	 if (requestedFiles.containsKey(pieFile) && requestedFiles.get(pieFile).equals(true)) {
+	 return true;
+	 }
+	 }*/
 	@Override
 	public synchronized boolean deleteRequestedFile(PieFile pieFile) {
 		if (this.isRequested(pieFile)) {

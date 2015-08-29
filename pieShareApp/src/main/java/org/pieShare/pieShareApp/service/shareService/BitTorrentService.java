@@ -6,21 +6,15 @@
 package org.pieShare.pieShareApp.service.shareService;
 
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
-import com.turn.ttorrent.client.SharedTorrent;
 import com.turn.ttorrent.common.Torrent;
 import com.turn.ttorrent.tracker.TrackedTorrent;
-import com.turn.ttorrent.tracker.Tracker;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
@@ -29,28 +23,28 @@ import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Servi
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Svetoslav
  */
-public class BitTorrentService implements IBitTorrentService, IShutdownableService {
-	
+public class BitTorrentService implements IBitTorrentService {
+
 	private INetworkService networkService;
 	private IBeanService beanService;
 	private IExecutorService executorService;
 	private IBase64Service base64Service;
-	
-	private Tracker tracker;
-	private URI trackerUri;
+
 	private Semaphore readPorts;
 	private Semaphore writePorts;
-	private boolean shutdown;
+	//for the time being it is neccessary to work with the FileMeta and not the PieFile due to the fact
+	//that there can be multiple unrelated trackers present
 	private ConcurrentHashMap<FileMeta, Integer> sharedFiles;
-	
+	private ConcurrentHashMap<File, byte[]> cachedMetaInformation;
+
 	public BitTorrentService() {
 		this.sharedFiles = new ConcurrentHashMap<>();
+		this.cachedMetaInformation = new ConcurrentHashMap<>();
 	}
 
 	public void setNetworkService(INetworkService networkService) {
@@ -68,124 +62,131 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	public void setBase64Service(IBase64Service base64Service) {
 		this.base64Service = base64Service;
 	}
-	
+
 	/**
-	 * If this FileMeta allready exists the value will be changed by the given value.
-	 * If not it will be created with the given value.
-	 * It returns true if the FileMeta was new and false otherwise.
+	 * If this FileMeta allready exists the value will be changed by the given
+	 * value. If not it will be created with the given value. It returns true if
+	 * the FileMeta was new and false otherwise.
+	 *
 	 * @param file
 	 * @param value
-	 * @return 
+	 * @return
 	 */
-	private synchronized boolean manipulateShareState(FileMeta file, Integer value) {
-		boolean isNew = true;
-		
-		if (this.sharedFiles.containsKey(file)) {
-			value = this.sharedFiles.get(file) + value;
-			
-			if(value <= 0) {
-				this.sharedFiles.remove(file);
-				return false;
+	private boolean manipulateShareState(FileMeta file, Integer value) {
+		synchronized (this.sharedFiles) {
+			boolean isNew = true;
+
+			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getFileName(), file.hashCode());
+
+			if (this.sharedFiles.containsKey(file)) {
+				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
+				value = this.sharedFiles.get(file) + value;
+
+				if (value <= 0) {
+					this.sharedFiles.remove(file);
+					return false;
+				}
+
+				isNew = false;
 			}
-			
-			isNew = false;
+
+			if (value >= 0) {
+				this.sharedFiles.put(file, value);
+			}
+
+			return isNew;
 		}
-		
-		if(value >= 0) {
-			this.sharedFiles.put(file, value);
-		}
-		
-		return isNew;
 	}
 
 	@Override
 	public void initTorrentService() {
-			this.shutdown = false;
-			//this section inits the semaphores
-			int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
-			if (availablePorts == 0) {
-				//todo: handle this
-				PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
-			}
-			this.writePorts = new Semaphore(availablePorts);
-			this.readPorts = new Semaphore((availablePorts / 2) - 1);			
+		//this section inits the semaphores
+		int availablePorts = this.networkService.getNumberOfAvailablePorts(6881, 6889);
+		if (availablePorts == 0) {
+			//todo: handle this
+			PieLogger.error(this.getClass(), "NO PORTS AVAILABLE ON THIS MACHINE!!!");
+		}
+		this.writePorts = new Semaphore(availablePorts);
+		this.readPorts = new Semaphore((availablePorts / 2) - 1);
 	}
 
 	@Override
-	public byte[] anounceTorrent(File localFile) {
-		if(this.shutdown) {
-			return null;
-		}
-		
+	public byte[] createMetaInformation(File localFile) throws CouldNotCreateMetaDataException {
 		try {
-			if(tracker == null) {
-				//this section inits the local tracker
-				//todo: use beanService
-				int port = this.networkService.getAvailablePortStartingFrom(6969);
-				this.trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
-				PieLogger.info(this.getClass(), this.trackerUri.toString());
-				InetSocketAddress ad = new InetSocketAddress(networkService.getLocalHost(), port);
-				this.tracker = new Tracker(ad);
-				tracker.start();
-			}
 
-			//todo: ther is a bug when triing to share 0 byte files
+			//todo: in future we need to synchronize on the file context so requests for different files can work in parallel
+			synchronized (this.cachedMetaInformation) {
+				if (this.cachedMetaInformation.containsKey(localFile)) {
+					return this.cachedMetaInformation.get(localFile);
+				}
+
+				int port = -1;
+				synchronized (this) {
+					port = this.networkService.reserveAvailablePortStartingFrom(6969);
+				}
+				URI trackerUri = new URI("http://" + networkService.getLocalHost().getHostAddress() + ":" + String.valueOf(port) + "/announce");
 			//todo: error handling when torrent null
-			//todo: replace name by nodeName
-			Torrent torrent = Torrent.create(localFile, this.trackerUri, "replaceThisByNodeName");
-			//todo: security issues?
-			TrackedTorrent tt = new TrackedTorrent(torrent);
-			tracker.announce(tt);
-			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			torrent.save(baos);
-			return this.base64Service.encode(baos.toByteArray());
-		} catch (InterruptedException | URISyntaxException | IOException ex) {
-			PieLogger.error(this.getClass(), "Sharing error.", ex);
+				//todo: replace name by nodeName
+				Torrent torrent = Torrent.create(localFile, trackerUri, "replaceThisByNodeName");
+
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				torrent.save(baos);
+				byte[] meta = this.base64Service.encode(baos.toByteArray());
+				this.cachedMetaInformation.put(localFile, meta);
+				return meta;
+			}
+		} catch (InterruptedException | IOException | URISyntaxException ex) {
+			throw new CouldNotCreateMetaDataException(ex);
 		}
-		
-		return null;
 	}
-	
+
 	@Override
-	public void shareFile(FileMeta meta, File destDir) {
-		
-		if(!this.manipulateShareState(meta, 1)) {
+	public void shareFile(FileMeta meta) {
+
+		//this is important in case we are already sharing that file!
+		if (!this.manipulateShareState(meta, 1)) {
+			PieLogger.trace(this.getClass(), "Allready sharing file {}!", meta.getFile().getFileName());
 			return;
 		}
-		
+
 		try {
 			this.writePorts.acquire();
-			this.handleSharedTorrent(meta, destDir, true);
+			this.handleSharedTorrent(meta, true);
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Acquire write failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(true);
+			this.torrentClientDone(true, meta);
 		}
 	}
-	
+
 	@Override
-	public void remoteClientDone(FileMeta meta) {
+	public void clientDone(FileMeta meta) {
 		this.manipulateShareState(meta, -1);
 	}
-	
+
 	@Override
-	public void handleFile(FileMeta meta, File destDir) {
+	public void handleFile(FileMeta meta) {
+		//this is important in case we are already sharing that file!
+		if (!this.manipulateShareState(meta, 1)) {
+			PieLogger.trace(this.getClass(), "Allready handling file {}!", meta.getFile().getFileName());
+			return;
+		}
+
 		try {
 			this.readPorts.acquire();
 			this.writePorts.acquire();
-			this.handleSharedTorrent(meta, destDir, false);
+			this.handleSharedTorrent(meta, false);
 		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Acquire read failed!", ex);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Init torrent failed!", ex);
-			this.torrentClientDone(false);
+			this.torrentClientDone(false, meta);
 		}
 	}
-	
-	private void handleSharedTorrent(FileMeta meta, File destDir, boolean seeder) throws IOException {
-		SharedTorrent torrent = new SharedTorrent(base64Service.decode(meta.getData()), destDir, seeder);
+
+	private void handleSharedTorrent(FileMeta meta, boolean seeder) throws IOException {
+		Torrent torrent = new Torrent(base64Service.decode(meta.getData()), seeder);
 		TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
 		task.setFile(meta);
 		task.setTorrent(torrent);
@@ -193,25 +194,23 @@ public class BitTorrentService implements IBitTorrentService, IShutdownableServi
 	}
 
 	@Override
-	public void torrentClientDone(boolean seeder) {
+	public void torrentClientDone(boolean seeder, FileMeta file) {
 		this.writePorts.release();
-		if(!seeder) {
+		if (!seeder) {
 			this.readPorts.release();
 		}
-	}
-	
-	@Override
-	public void shutdown() {
-		
-		if(this.tracker != null) {
-			this.tracker.stop();
+
+		synchronized (this) {
+			this.sharedFiles.remove(file);
 		}
-		
-		this.shutdown = true;
 	}
-	
+
 	@Override
 	public boolean isShareActive(FileMeta file) {
 		return (this.sharedFiles.getOrDefault(file, 0) > 0);
+	}
+
+	public boolean activeTorrents() {
+		return !this.sharedFiles.isEmpty();
 	}
 }

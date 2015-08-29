@@ -19,7 +19,7 @@ import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMess
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.fileMessageBase.NewFileMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
@@ -42,12 +42,13 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  *
  * @author Svetoslav
  */
-public class PieShareService {
+public class PieShareService implements DisposableBean {
 
 	private PieExecutorTaskFactory executorFactory;
 	private IClusterManagementService clusterManagementService;
@@ -109,7 +110,7 @@ public class PieShareService {
 
 		this.executorFactory.registerTask(MetaMessage.class, FileMetaTask.class);
 		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
-		this.executorFactory.registerTask(NewFileMessage.class, NewFileTask.class);
+		this.executorFactory.registerTask(FileCreatedMessage.class, NewFileTask.class);
 		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
 		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
 		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
@@ -123,12 +124,18 @@ public class PieShareService {
 	}
 
 	public void stop() {
-		try {
+		//not needed anymore because cluster now implements shutdownable
+		/*try {
 			this.clusterManagementService.diconnectAll();
 		}
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
-		}
+		}*/
 		this.shutdownService.fireShutdown();
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		this.stop();
 	}
 }

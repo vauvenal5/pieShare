@@ -23,8 +23,7 @@ import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoC
  */
 public class ApplicationConfigurationService implements IApplicationConfigurationService {
 
-	private final String HOME_DIR;
-	private File BASE_CONFIG_FOLDER;
+	protected File BASE_CONFIG_FOLDER;
 	private IPropertiesReader propertiesReader;
 	private File configFile;
 	private Properties conf;
@@ -32,8 +31,14 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 
 	public ApplicationConfigurationService() {
 		//ToDo: Config Folder is hard coded. Check if we could do this in an other way.
-		HOME_DIR = System.getProperty("user.home");
-		BASE_CONFIG_FOLDER = new File(String.format("%s/%s/%s", HOME_DIR, ".pieSystems", ".pieShare"));
+		String os = System.getProperty("os.name");
+		//try to get the appData folder in windows
+		String baseFolder = System.getenv("APPDATA");
+		//if on linux fall back to home folder
+		if (baseFolder == null || !os.contains("win")) {
+			baseFolder = System.getProperty("user.home");
+		}
+		BASE_CONFIG_FOLDER = new File(String.format("%s/%s/%s", baseFolder, ".pieSystems", ".pieShare"));
 
 		if (!BASE_CONFIG_FOLDER.exists() || !BASE_CONFIG_FOLDER.isDirectory()) {
 			BASE_CONFIG_FOLDER.mkdirs();
@@ -59,13 +64,11 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 			for (File file : db.listFiles()) {
 				if (file.isDirectory()) {
 					FileUtils.moveDirectory(file, folder);
-				}
-				else {
+				} else {
 					FileUtils.moveFileToDirectory(file, folder, false);
 				}
 			}
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Error copy database to new location", ex);
 		}
 
@@ -82,18 +85,10 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 		}
 		if (!conf.containsKey(key)) {
 			conf.put(key, value);
-		}
-		else {
+		} else {
 			conf.replace(key, value);
 		}
 		propertiesReader.saveConfig(conf, configFile);
-	}
-
-	public void setConfigPath(String folder) {
-		BASE_CONFIG_FOLDER = new File(BASE_CONFIG_FOLDER, folder);
-		if (!BASE_CONFIG_FOLDER.exists()) {
-			BASE_CONFIG_FOLDER.mkdirs();
-		}
 	}
 
 	public void init() {
@@ -109,8 +104,7 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 		try {
 			//pieShare.properties
 			conf = propertiesReader.getConfig(configFile);
-		}
-		catch (NoConfigFoundException ex) {
+		} catch (NoConfigFoundException ex) {
 			PieLogger.error(this.getClass(), "Cannot find pieShareAppConfig.", ex);
 		}
 	}
@@ -121,8 +115,7 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 
 		if (conf == null || !conf.containsKey("databaseDir")) {
 			file = new File(BASE_CONFIG_FOLDER, "database");
-		}
-		else {
+		} else {
 			file = new File(conf.getProperty("databaseDir"));
 		}
 

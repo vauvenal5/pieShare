@@ -5,8 +5,7 @@
  */
 package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
 
-import org.apache.commons.vfs2.FileListener;
-import org.pieShare.pieShareApp.model.PieShareConfiguration;
+import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
@@ -27,7 +26,6 @@ import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheDefaultFileListener;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.ApacheFileWatcherService;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
 import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
@@ -35,8 +33,6 @@ import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
 import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -63,24 +59,23 @@ public class PieShareAppService {
 	}
 
 	@Bean
-	@Lazy
-	public ShutdownService shutdownService() {
-		ShutdownService service = new ShutdownService();
-		service.setListener(this.utilities.pieExecutorService());
-		return service;
-	}
-
-	@Bean
 	public PieShareService pieShareService() {
 		PieShareService service = new PieShareService();
 		service.setExecutorFactory(this.utilities.pieExecutorTaskFactory());
 		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setShutdownService(this.shutdownService());
+		service.setShutdownService(this.utilities.shutdownService());
 		service.setDatabaseService(databaseService());
 		service.setConfigurationFactory(this.configurationFactory());
 		service.setBeanService(utilities.beanService());
 		service.start();
 		return service;
+	}
+
+	@Bean
+	@Scope(value = "prototype")
+	public DefaultFileMonitor defaultFileMonitor() {
+		DefaultFileMonitor filelistener = new DefaultFileMonitor(fileListenerService());
+		return filelistener;
 	}
 
 	@Bean
@@ -98,7 +93,7 @@ public class PieShareAppService {
 		service.init();
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public MessageFactoryService messageFactoryService() {
@@ -115,7 +110,7 @@ public class PieShareAppService {
 		service.setMessageFactoryService(this.messageFactoryService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public FileEncryptionService fileEncryptionService() {
@@ -134,13 +129,13 @@ public class PieShareAppService {
 		service.setWrappedCompareService(this.historyCompareServicePrivate());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ILocalFileCompareService historyCompareService() {
 		return this.historyCompareServicePrivate();
 	}
-	
+
 	@Bean
 	@Lazy
 	protected ALocalFileCompareService historyCompareServicePrivate() {
@@ -151,7 +146,7 @@ public class PieShareAppService {
 
 	@Bean
 	@Lazy
-	@Scope(value="prototype")
+	@Scope(value = "prototype")
 	public ApacheDefaultFileListener fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 		listener.setBeanService(this.utilities.beanService());
@@ -164,11 +159,11 @@ public class PieShareAppService {
 	public ApacheFileWatcherService apacheFileWatcherService() {
 		ApacheFileWatcherService watcher = new ApacheFileWatcherService();
 		watcher.setBeanService(this.utilities.beanService());
-		watcher.setShutdownService(this.shutdownService());
+		watcher.setShutdownService(this.utilities.shutdownService());
 		watcher.init();
 		return watcher;
 	}
-	
+
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
@@ -176,23 +171,23 @@ public class PieShareAppService {
 	}
 
 	@Bean
-        @Lazy
+	@Lazy
 	public LocalFileService localFileService() {
 		LocalFileService service = new LocalFileService();
 		this.fileServiceBase(service);
 		service.setHashService(this.utilities.md5Service());
 		return service;
 	}
-	
+
 	@Bean
-        @Lazy
+	@Lazy
 	public HistoryFileService historyFileService() {
 		HistoryFileService service = new HistoryFileService();
 		this.fileServiceBase(service);
 		service.setDatabaseService(this.databaseService());
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public HistoryService historyService() {
@@ -208,14 +203,13 @@ public class PieShareAppService {
 		BitTorrentService service = new BitTorrentService();
 		service.setBeanService(this.utilities.beanService());
 		service.setNetworkService(this.networkService());
-		service.setShutdownService(this.shutdownService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setBase64Service(this.utilities.base64Service());
-		
+
 		service.initTorrentService();
 		return service;
 	}
-	
+
 	@Bean
 	@Lazy
 	public ShareService shareService() {
@@ -224,7 +218,7 @@ public class PieShareAppService {
 		service.setFileWatcherService(this.apacheFileWatcherService());
 		service.setComparerService(this.fileCompareService());
 		service.setFileService(this.localFileService());
-		
+
 		service.init();
 		return service;
 	}
@@ -252,7 +246,7 @@ public class PieShareAppService {
 	public PieDatabaseManagerFactory pieDatabaseManagerFactory() {
 		PieDatabaseManagerFactory fac = new PieDatabaseManagerFactory();
 		fac.setApplicationConfigurationService(applicationConfigurationService());
-		fac.setShutdownService(this.shutdownService());
+		fac.setShutdownService(this.utilities.shutdownService());
 		return fac;
 	}
 
@@ -282,5 +276,4 @@ public class PieShareAppService {
 		return service;
 	}
 
-	
 }

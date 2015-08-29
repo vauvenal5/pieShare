@@ -112,7 +112,7 @@ public class ITUtil {
 		String separator = System.getProperty("file.separator");
 		String classpath = System.getProperty("java.class.path");
 		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-		ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath, mainClazz.getName());
+		ProcessBuilder processBuilder = new ProcessBuilder(path, "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005", "-cp", classpath, mainClazz.getName());
 		return processBuilder.start();
 	}
 
