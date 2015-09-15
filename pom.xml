@@ -12,6 +12,12 @@
 		<jacoco.out.path>${session.executionRootDirectory}/target</jacoco.out.path>
 		<jacoco.out.file>jacoco.exec</jacoco.out.file>
 	</properties>
+	
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.2.5.RELEASE</version>
+	</parent>
 
 	<modules>
 		<module>pieUtilities</module>
@@ -29,8 +35,8 @@
 			<version>4.0.2.RELEASE</version>
 			<exclusions>
 				<exclusion>
-				  <artifactId>commons-logging</artifactId>
-				  <groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -94,20 +100,20 @@
 				<!--todo:Stop copying all classes after jacoco has be reconfigured to be able to work with
 				multimodule maven projects. See https://github.com/jacoco/jacoco/pull/97-->
 				<executions>
-				  <execution>
-					<phase>verify</phase>
-					<goals>
-					  <goal>copy-resources</goal>
-					</goals>
-					<configuration>
-					  <outputDirectory>${jacoco.out.path}/classes</outputDirectory>
-					  <resources>          
-						<resource>
-						  <directory>${project.build.directory}/classes</directory>
-						</resource>
-					  </resources>              
-					</configuration>            
-				  </execution>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${jacoco.out.path}/classes</outputDirectory>
+							<resources>          
+								<resource>
+									<directory>${project.build.directory}/classes</directory>
+								</resource>
+							</resources>              
+						</configuration>            
+					</execution>
 				</executions>
 			</plugin>
 			
@@ -136,7 +142,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.18</version>
 				<configuration>
-				  <argLine>${jacoco.agent.arg}</argLine>
+					<argLine>${jacoco.agent.arg}</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
