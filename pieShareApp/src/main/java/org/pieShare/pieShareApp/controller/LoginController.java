@@ -5,10 +5,13 @@
  */
 package org.pieShare.pieShareApp.controller;
 
+import org.springframework.web.bind.annotation.RestController;
+
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
+@RestController
 public class LoginController {
 	
 }

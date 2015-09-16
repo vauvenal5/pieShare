@@ -5,8 +5,10 @@
  */
 package org.pieShare.pieShareApp;
 
+import java.util.Arrays;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  *
@@ -14,12 +16,19 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 public class Application {
-
 	/**
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
+		//todo: register contexts like in old main function
+		//todo: at least until reconfiguration to autoconfiguration is done... will be done?
+		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
+		
+		String[] beanNames = ctx.getBeanDefinitionNames();
+        Arrays.sort(beanNames);
+        for (String beanName : beanNames) {
+            System.out.println(beanName);
+        }
 	}
 	
 }
