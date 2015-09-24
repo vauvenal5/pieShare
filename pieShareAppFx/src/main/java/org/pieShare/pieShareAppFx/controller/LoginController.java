@@ -192,6 +192,8 @@ public class LoginController implements IController {
 	animation.start();
 
 	try {
+		//todo-rest: here we have to send the loginCommand as a REST command
+			//to the local server consider also state changes and right replay value
 	    executorService.handlePieEvent(loginCommand);
 	}
 	catch (PieExecutorTaskFactoryException ex) {
