@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieShareApp.controller;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -14,4 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 	
+	@RequestMapping(value="/", method=RequestMethod.GET)
+	public String greeting() {
+		return "Welcome to your local PieShare backbone server!";
+	}
 }
