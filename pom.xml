@@ -26,6 +26,7 @@
 		<module>pieShareAppFx</module>
 		<module>pieShareAppIntegrationTests</module>
 		<module>pieShareServer</module>
+	 <module>pieShareCli</module>
 	</modules>
 
 	<dependencies>		
