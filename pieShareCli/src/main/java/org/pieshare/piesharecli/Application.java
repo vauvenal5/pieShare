@@ -7,7 +7,7 @@ package org.pieshare.piesharecli;
 
 import io.airlift.airline.Cli;
 import io.airlift.airline.Help;
-import org.pieshare.piesharecli.commands.LoginCommand;
+import org.pieshare.piesharecli.commands.LoginUICommand;
 import sun.security.ssl.Debug;
 
 /**
@@ -24,7 +24,7 @@ public class Application {
 		Cli.CliBuilder<Runnable> builder = Cli.<Runnable>builder("pieShare")
 				.withDescription("Your PieShare command line tool.")
 				.withDefaultCommand(Help.class)
-				.withCommands(Help.class, LoginCommand.class);
+				.withCommands(Help.class, LoginUICommand.class);
 
 		Cli<Runnable> parser = builder.build();
 		parser.parse(args).run();

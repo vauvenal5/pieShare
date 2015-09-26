@@ -10,6 +10,6 @@ package org.pieShare.pieTools.pieUtilities.model;
  * @author Svetoslav
  */
 public class PlainTextPassword {
-
+	//todo: maybe this class is overkill?
 	public byte[] password;
 }
