@@ -16,8 +16,30 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.2.5.RELEASE</version>
+		<version>1.3.0.M5</version>
 	</parent>
+	
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	
+	<pluginRepositories>
+		<pluginRepository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>http://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<modules>
 		<module>pieUtilities</module>
@@ -26,7 +48,7 @@
 		<module>pieShareAppFx</module>
 		<module>pieShareAppIntegrationTests</module>
 		<module>pieShareServer</module>
-	 <module>pieShareCli</module>
+		<module>pieShareCli</module>
 	</modules>
 
 	<dependencies>		
