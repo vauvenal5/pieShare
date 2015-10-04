@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piesharecli.commands;
+package org.pieShare.pieShareCli.commands;
 
 import io.airlift.airline.Arguments;
 import io.airlift.airline.Command;

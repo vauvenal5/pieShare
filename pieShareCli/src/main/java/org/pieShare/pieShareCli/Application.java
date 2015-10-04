@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piesharecli;
+package org.pieShare.pieShareCli;
 
 import io.airlift.airline.Cli;
 import io.airlift.airline.Help;
-import org.pieshare.piesharecli.commands.LoginUICommand;
+import org.pieShare.pieShareCli.commands.LoginUICommand;
 import sun.security.ssl.Debug;
 
 /**

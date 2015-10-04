@@ -20,7 +20,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>org.pieshare.piesharecli.Application</mainClass>
+							<mainClass>org.pieShare.pieShareCli.Application</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

@@ -1,0 +1,9 @@
+[Unit]
+Description=pieShare
+After=syslog.target
+
+[Service]
+ExecStart=/home/vauvenal5/repos/github/pieShare/pieShareService/target/pieShareService-1.0-SNAPSHOT.jar
+
+[Install]
+WantedBy=multi-user.target
