@@ -49,6 +49,7 @@
 		<module>pieShareAppIntegrationTests</module>
 		<module>pieShareServer</module>
 		<module>pieShareCli</module>
+		<module>pieShareService</module>
 	</modules>
 
 	<dependencies>		
