@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>
+  
+	<appender name="lilithFile" class="ch.qos.logback.core.FileAppender">
+	  <file>log.lilith</file>
+	  <Append>false</Append>
+	  <encoder class="de.huxhorn.lilith.logback.encoder.ClassicLilithEncoder">
+	  </encoder>
+	</appender>
+	
+	
+  
+  <appender name="LogbackClassic1" class="ch.qos.logback.classic.net.SocketAppender">
+    <RemoteHost>localhost</RemoteHost>
+    <Port>4560</Port>
+    <ReconnectionDelay>170</ReconnectionDelay>
+    <IncludeCallerData>true</IncludeCallerData>
+ </appender>
+ 
+ <appender name="LogbackClassic2" class="ch.qos.logback.classic.net.SocketAppender">
+    <RemoteHost>172.17.42.1</RemoteHost>
+    <Port>4560</Port>
+    <ReconnectionDelay>170</ReconnectionDelay>
+    <IncludeCallerData>true</IncludeCallerData>
+ </appender>
+  
+  <logger name="org.springframework" level="ERROR"/>
+  <logger name="org.hibernate" level="ERROR"/>
+  <logger name="com.turn" level="ERROR"/>
+  <logger name="org.jgroups" level="ERROR"/>
+  <logger name="org.apache" level="ERROR"/>
+  <logger name="com.mchange.v2.async.ThreadPoolAsynchronousRunner" level="ERROR"/>
+  
+  <root level="TRACE">
+	<appender-ref ref="lilithFile"/>
+	<appender-ref ref="LogbackClassic1"/>
+	<appender-ref ref="LogbackClassic2"/>
+  </root>
+</configuration>

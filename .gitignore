@@ -1,0 +1,12 @@
+target/
+.idea/
+*.iml
+out/
+*.jar
+*.out
+workingDir/
+*.java.orig
+*.idx
+*.lilith
+nbactions-User2.xml
+nbactions-User1.xml

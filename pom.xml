@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.pieShare</groupId>
+	<artifactId>pieShare</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jacoco.out.path>${session.executionRootDirectory}/target</jacoco.out.path>
+		<jacoco.out.file>jacoco.exec</jacoco.out.file>
+	</properties>
+
+	<modules>
+		<module>pieUtilities</module>
+		<module>piePlate</module>
+		<module>pieShareApp</module>
+		<module>pieShareAppFx</module>
+		<module>pieShareAppIntegrationTests</module>
+		<module>pieShareServer</module>
+	</modules>
+
+	<dependencies>		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.0.2.RELEASE</version>
+			<exclusions>
+				<exclusion>
+				  <artifactId>commons-logging</artifactId>
+				  <groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!--todo:not needed if we don't log into lilith-->
+		<dependency>
+			<groupId>de.huxhorn.lilith</groupId>
+			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
+			<version>0.9.44</version>
+		</dependency>
+		
+		<dependency> 
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+		
+		<dependency>                                    
+			<groupId>org.slf4j</groupId>                
+			<artifactId>jcl-over-slf4j</artifactId>    
+			<version>1.7.7</version>  
+		</dependency>
+	</dependencies>
+	
+
+	<build>		
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+            
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>3.0.1</version>
+				<configuration>
+					<sourceEncoding>utf8</sourceEncoding>
+					<sourceDirectories>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieUtilities/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/piePlate/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareApp/src/main/java</sourceDirectory>
+						<sourceDirectory>/home/travis/build/vauvenal5/pieShare/pieShareAppFx/src/main/java</sourceDirectory>
+					</sourceDirectories>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+				<!--todo:Stop copying all classes after jacoco has be reconfigured to be able to work with
+				multimodule maven projects. See https://github.com/jacoco/jacoco/pull/97-->
+				<executions>
+				  <execution>
+					<phase>verify</phase>
+					<goals>
+					  <goal>copy-resources</goal>
+					</goals>
+					<configuration>
+					  <outputDirectory>${jacoco.out.path}/classes</outputDirectory>
+					  <resources>          
+						<resource>
+						  <directory>${project.build.directory}/classes</directory>
+						</resource>
+					  </resources>              
+					</configuration>            
+				  </execution>
+				</executions>
+			</plugin>
+			
+			<!--todo:Reconfigure jacoco when https://github.com/jacoco/jacoco/pull/97 is merged and 
+			new version is released!-->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.2.201409121644</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${jacoco.out.path}/${jacoco.out.file}</destFile>
+							<propertyName>jacoco.agent.arg</propertyName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18</version>
+				<configuration>
+				  <argLine>${jacoco.agent.arg}</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
