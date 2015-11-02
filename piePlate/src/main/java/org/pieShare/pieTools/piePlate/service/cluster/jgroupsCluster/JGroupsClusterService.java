@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.Validate;
 import org.jgroups.Address;
 import org.jgroups.JChannel;
@@ -14,20 +12,16 @@ import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
-import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
-import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
-public class JGroupsClusterService implements IClusterService, IShutdownableService {
+public class JGroupsClusterService extends AShutdownableService implements IClusterService, IShutdownableService {
 
 	//todo-sv: the model / service seperation is fuzzy in here: check it out!!!
 	private List<IIncomingChannel> incomingChannels;

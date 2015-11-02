@@ -6,23 +6,22 @@
 package org.pieShare.pieShareApp.service.database;
 
 import java.util.HashMap;
-import java.util.Map.Entry;
 import java.util.concurrent.Semaphore;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import org.jgroups.util.BoundedHashMap;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Richard
  */
-public class PieDatabaseManagerFactory implements IPieDatabaseManagerFactory, IShutdownableService {
+public class PieDatabaseManagerFactory extends AShutdownableService implements IPieDatabaseManagerFactory, IShutdownableService {
 
 	private IApplicationConfigurationService appConfiguration;
 	private EntityManagerFactory emf;
