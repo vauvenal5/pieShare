@@ -23,6 +23,7 @@ import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
@@ -219,6 +220,11 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 		if (this.tracker != null) {
 			this.tracker.stop();
 		}
+	}
+
+	@Override
+	public void setShutdownService(IShutdownService service) {
+		service.registerListener(this);
 	}
 
 }

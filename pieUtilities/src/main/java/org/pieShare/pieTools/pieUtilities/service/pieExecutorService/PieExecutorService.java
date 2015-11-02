@@ -8,8 +8,8 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -17,13 +17,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
@@ -33,7 +33,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
 public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService, IShutdownableService {
 
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 	}
 	
 	//private ExecutorService executor;
@@ -108,5 +108,10 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 				PieLogger.error(this.getClass(), "Task canceled!", ex);
 			}
 		}
+	}
+
+	@Override
+	public void setShutdownService(IShutdownService service) {
+		service.registerListener(this);
 	}
 }

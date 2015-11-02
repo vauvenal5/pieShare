@@ -14,26 +14,16 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileListenerService;
 import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
-import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
-import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 
 /**
  *
  * @author Richard
  */
-public class ApacheFileWatcherService implements IFileWatcherService {
+public class ApacheFileWatcherService extends AShutdownableService implements IFileWatcherService {
 
 	private IBeanService beanService;
 	
