@@ -9,7 +9,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -31,12 +30,11 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  * @author Svetoslav
  */
 public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService, IShutdownableService {
-
+	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
 	
-	//private ExecutorService executor;
 	private IPieExecutorTaskFactory executorFactory;
 
 	public PieExecutorService(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
@@ -96,6 +94,7 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 			PieLogger.error(this.getClass(), "Error in task!", t);
 		}
 		
+		//todo-sv: why?... just why?
 		if(r instanceof Future<?>){
 			try {
 				Future<?> future = (Future<?>) r;
