@@ -79,10 +79,16 @@ public class ClusterManagementService implements IClusterManagementService {
             cluster.connect(id);
             this.clusters.put(id, cluster);
             this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
-            cluster.getClusterRemovedEventBase().addEventListener((IClusterRemovedListener) (ClusterRemovedEvent event) -> {
-                clusters.remove(((IClusterService) event.getSource()).getId());
-                clusterRemovedEventBase.fireEvent(event);
-            });
+			
+			//todo: check if event listener deregistration is handled properly
+			//todo: further check if events are needed at all in future
+			cluster.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+				@Override
+				public void handleObject(ClusterRemovedEvent event) {
+					clusters.remove(((IClusterService)event.getSource()).getId());
+					clusterRemovedEventBase.fireEvent(event);
+				}
+			});
 
             return cluster;
         } catch (BeanServiceError | ClusterServiceException ex) {
