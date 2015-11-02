@@ -38,8 +38,8 @@ public class EventBase<L extends IEventListener<E>, E extends EventObject> imple
 
 	@Override
 	public void fireEvent(E event) {
-		this.listeners.stream().forEach((listener) -> {
+		for(L listener: this.listeners) {
 			listener.handleObject(event);
-		});
+		}
 	}
 }
