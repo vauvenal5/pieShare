@@ -1,5 +1,7 @@
 # PieShare
 
+[![Join the chat at https://gitter.im/vauvenal5/pieShare](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vauvenal5/pieShare?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 ## What is PieShare?
 PieShare is a free tool for syncing and collaborating. It can make your documents, photos and everything else available everywhere you want without giving it to anybody you don’t want to.
 
