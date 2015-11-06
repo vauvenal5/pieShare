@@ -18,7 +18,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author RicLeo00
  */
 public class UdpPortService implements IUdpPortService {
-
+	//todo: merge with the other network service in PieShareApp
     private final int MAX_PORT;
 
     public UdpPortService() {

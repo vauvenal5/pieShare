@@ -8,7 +8,7 @@ package pieShareAppITs.helper.config;
 import java.io.File;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieShareApp.PieShareAppModel;
+import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
