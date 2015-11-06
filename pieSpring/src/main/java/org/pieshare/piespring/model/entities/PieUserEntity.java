@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.entities;
+package org.pieshare.piespring.model.entities;
 
 import java.io.Serializable;
 import javax.persistence.CascadeType;
@@ -11,7 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieshare.piespring.model.entities.api.IBaseEntity;
 
 /**
  *

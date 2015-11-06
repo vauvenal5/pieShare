@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.fileService.fileListenerService;
+package org.pieshare.piespring.service.fileListenerService;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 

@@ -3,18 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.database;
+package org.pieshare.piespring.service.database;
 
 import java.io.File;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieshare.piespring.model.entities.ConfigurationEntity;
+import org.pieshare.piespring.model.entities.FilterEntity;
+import org.pieshare.piespring.model.entities.PieFileEntity;
+import org.pieshare.piespring.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
+import org.pieshare.piespring.service.database.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -106,14 +106,12 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		//ToDo: Spring
 		FilterEntity en = new FilterEntity();
 		en.setPattern(filter.getPattern());
-		filter.setEntity(en);
 		return en;
 	}
 
 	@Override
 	public RegexFileFilter convertFromEntity(FilterEntity entity) {
 		RegexFileFilter filter = beanService.getBean(RegexFileFilter.class);
-		filter.setEntity(entity);
 		filter.setPattern(entity.getPattern());
 		return filter;
 	}

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.database;
+package org.pieshare.piespring.service.database;
 
 import java.util.HashMap;
 import java.util.concurrent.Semaphore;
@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
-import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
+import org.pieshare.piespring.service.database.IPieDatabaseManagerFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
