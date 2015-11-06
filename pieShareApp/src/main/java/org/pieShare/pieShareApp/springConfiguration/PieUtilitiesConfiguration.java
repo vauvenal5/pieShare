@@ -13,7 +13,7 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
-import org.pieShare.pieTools.pieUtilities.service.idService.IDService;
+import org.pieShare.pieTools.pieUtilities.service.idService.SimpleUUIDService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.UdpPortService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -155,8 +155,8 @@ public class PieUtilitiesConfiguration {
 
     @Bean
     @Lazy
-    public IDService idService() {
-        IDService service = new IDService();
+    public SimpleUUIDService idService() {
+        SimpleUUIDService service = new SimpleUUIDService();
         return service;
     }
 
