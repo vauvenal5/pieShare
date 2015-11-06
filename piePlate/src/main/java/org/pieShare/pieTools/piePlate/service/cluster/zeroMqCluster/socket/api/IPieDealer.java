@@ -36,5 +36,5 @@ public interface IPieDealer {
      * If no connection is active message gets dropped.
      * @param message 
      */
-    void send(IPieMessage message);
+    void send(byte[] message);
 }

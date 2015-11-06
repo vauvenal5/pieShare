@@ -6,12 +6,11 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 
 import java.net.InetAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 
 /**
  *
- * @author ragnar
+ * @author Paul
  */
 public class PieDealer implements IPieDealer {
 
@@ -31,7 +30,7 @@ public class PieDealer implements IPieDealer {
     }
 
     @Override
-    public void send(IPieMessage message) {
+    public void send(byte[] message) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
