@@ -17,24 +17,25 @@ import org.zeromq.ZMQException;
  */
 public class PieRouter implements IPieRouter{
     
+    private ZMQ.Context context;
     private ZMQ.Socket router;
     private ZeroMQUtilsService utils;
     
     public PieRouter()
     {
-        ZMQ.Context context = ZMQ.context(1);
+        this.context = ZMQ.context(1);
         this.router = context.socket(ZMQ.ROUTER);
         this.utils = new ZeroMQUtilsService();
     }
     
     @Override
-    public boolean bind(InetAddress address) {
-        PieLogger.trace(PieRouter.class, "Bind router on: {0}", utils.buildConnectionString(address));
+    public boolean bind(InetAddress address, int port) {
+        PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(address, port));
         try{
-            router.bind(utils.buildConnectionString(address));
+            router.bind(utils.buildConnectionString(address, port));
             return true;
         }catch(ZMQException e){
-            PieLogger.error(PieRouter.class, "Bind failed: {0}", e);
+            PieLogger.error(PieRouter.class, "Bind failed: %s", e);
             return false;
         }
     }
@@ -42,10 +43,13 @@ public class PieRouter implements IPieRouter{
     @Override
     public void close() {
         router.close();
+        context.close();
     }
 
     @Override
     public byte[] receive() {
-         return router.recv();
+        //receive dealer identity and discard it
+        router.recv();
+        return router.recv();
     }
 }

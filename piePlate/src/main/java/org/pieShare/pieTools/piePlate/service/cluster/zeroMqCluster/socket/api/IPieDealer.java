@@ -18,13 +18,13 @@ public interface IPieDealer {
      * @param address
      * @return true if connection was established else false.
      */
-    boolean connect(InetAddress address);
+    boolean connect(InetAddress address, int port);
     
     /**
      * Close connection to endpoint.
      * @param address 
      */
-    void disconnect(InetAddress address);
+    void disconnect(InetAddress address, int port);
     
     /**
      * Close socket and terminate all connections.

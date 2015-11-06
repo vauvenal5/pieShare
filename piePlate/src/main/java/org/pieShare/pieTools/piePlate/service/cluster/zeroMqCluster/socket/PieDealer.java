@@ -17,37 +17,39 @@ import org.zeromq.ZMQException;
  */
 public class PieDealer implements IPieDealer {
      
+    private ZMQ.Context context;
     private ZMQ.Socket dealer;
     private ZeroMQUtilsService utils;
     
     public PieDealer()
     {
-        ZMQ.Context context = ZMQ.context(1);
+        this.context = ZMQ.context(1);
         this.dealer = context.socket(ZMQ.DEALER);
         this.utils = new ZeroMQUtilsService();
     }
 
     @Override
-    public boolean connect(InetAddress address) {
+    public boolean connect(InetAddress address, int port) {
         try{
-            PieLogger.trace(PieDealer.class, "Connecting to {0}", utils.buildConnectionString(address));
-            dealer.connect(utils.buildConnectionString(address));
+            PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+            dealer.connect(utils.buildConnectionString(address, port));
             return true;
         }catch(ZMQException e){
-            PieLogger.error(PieDealer.class, "Connection failed {0}", e);
+            PieLogger.error(PieDealer.class, "Connection failed %s", e);
             return false;
         }
     }
 
     @Override
-    public void disconnect(InetAddress address) {
-        PieLogger.trace(PieDealer.class, "Connecting to {0}", utils.buildConnectionString(address));
-        dealer.disconnect(utils.buildConnectionString(address));
+    public void disconnect(InetAddress address, int port) {
+        PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+        dealer.disconnect(utils.buildConnectionString(address, port));
     }
 
     @Override
     public void close() {
         dealer.close();
+        context.term();
     }
 
     @Override
