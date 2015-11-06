@@ -3,13 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.springConfiguration;
+package org.pieShare.pieShareAppFx.springConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
@@ -24,6 +23,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Servic
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.PasswordEncryptionService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.ShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.tempFolderService.TempFolderService;
+import org.pieshare.piespring.service.beanService.BeanService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
