@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.service.fileService.fileListenerService.api;
+package org.pieshare.piespring.service.fileListenerService.api;
 
 import org.apache.commons.vfs2.FileListener;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;

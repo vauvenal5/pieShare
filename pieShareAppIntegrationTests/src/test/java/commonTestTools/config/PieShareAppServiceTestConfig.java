@@ -8,7 +8,7 @@ package commonTestTools.config;
 
 import commonTestTools.overrides.ApplicationConfigurationTestService;
 import loadTest.loadTestLib.LUtil;
-import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
+import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

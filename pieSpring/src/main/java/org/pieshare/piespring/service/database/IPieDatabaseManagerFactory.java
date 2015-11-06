@@ -3,12 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.entities.api;
+package org.pieshare.piespring.service.database;
+
+import javax.persistence.EntityManager;
 
 /**
  *
  * @author Richard
  */
-public interface IBaseEntity {
-	
+public interface IPieDatabaseManagerFactory {
+
+	EntityManager getEntityManger(Class clazz);
+
+	void closeDB();
+
+	void init();
 }

@@ -6,10 +6,8 @@
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
