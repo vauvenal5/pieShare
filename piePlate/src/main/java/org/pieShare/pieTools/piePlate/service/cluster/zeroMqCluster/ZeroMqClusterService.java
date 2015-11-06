@@ -20,7 +20,7 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class ZeroMqClusterService implements IClusterService {
-
+	
 	@Override
 	public void connect(String clusterName) throws ClusterServiceException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
