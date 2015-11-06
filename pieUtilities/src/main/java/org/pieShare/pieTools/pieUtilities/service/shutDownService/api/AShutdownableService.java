@@ -3,17 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieTools.pieUtilities.service.shutDownService.api;
 
 /**
  *
- * @author Svetoslav
+ * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface IShutdownableService {
-	
-	void setShutdownService(IShutdownService service);
-	
-	void shutdown();
-	
+public abstract class AShutdownableService implements IShutdownableService {
+
+	@Override
+	public void setShutdownService(IShutdownService service) {
+		service.registerListener(this);
+	}	
 }

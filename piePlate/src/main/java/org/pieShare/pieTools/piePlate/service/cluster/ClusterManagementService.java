@@ -21,9 +21,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListe
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
-import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
-import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
@@ -81,10 +79,16 @@ public class ClusterManagementService implements IClusterManagementService {
             cluster.connect(id);
             this.clusters.put(id, cluster);
             this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
-            cluster.getClusterRemovedEventBase().addEventListener((IClusterRemovedListener) (ClusterRemovedEvent event) -> {
-                clusters.remove(((IClusterService) event.getSource()).getId());
-                clusterRemovedEventBase.fireEvent(event);
-            });
+			
+			//todo: check if event listener deregistration is handled properly
+			//todo: further check if events are needed at all in future
+			cluster.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
+				@Override
+				public void handleObject(ClusterRemovedEvent event) {
+					clusters.remove(((IClusterService)event.getSource()).getId());
+					clusterRemovedEventBase.fireEvent(event);
+				}
+			});
 
             return cluster;
         } catch (BeanServiceError | ClusterServiceException ex) {

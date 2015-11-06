@@ -8,7 +8,6 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
@@ -17,13 +16,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieCallable;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
@@ -31,12 +30,11 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  * @author Svetoslav
  */
 public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService, IShutdownableService {
-
+	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<>());
+		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
 	
-	//private ExecutorService executor;
 	private IPieExecutorTaskFactory executorFactory;
 
 	public PieExecutorService(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
@@ -96,6 +94,7 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 			PieLogger.error(this.getClass(), "Error in task!", t);
 		}
 		
+		//todo-sv: why?... just why?
 		if(r instanceof Future<?>){
 			try {
 				Future<?> future = (Future<?>) r;
@@ -108,5 +107,10 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 				PieLogger.error(this.getClass(), "Task canceled!", ex);
 			}
 		}
+	}
+
+	@Override
+	public void setShutdownService(IShutdownService service) {
+		service.registerListener(this);
 	}
 }
