@@ -20,7 +20,6 @@ import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutFinished
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdCalback;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;

@@ -8,9 +8,6 @@ package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 
 /**
  *
