@@ -5,10 +5,10 @@
  */
 package org.pieShare.pieShareServer;
 
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
 import org.pieShare.pieShareServer.services.ServerService;
 import org.pieShare.pieShareServer.services.api.IServerService;
 import org.pieShare.pieShareServer.springConfiguration.ServiceConfiguration;
+import org.pieshare.piespring.service.beanService.BeanService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**

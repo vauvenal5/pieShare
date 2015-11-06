@@ -34,21 +34,16 @@ import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
-import org.springframework.beans.factory.DisposableBean;
 
 /**
  *
  * @author Svetoslav
  */
-public class PieShareService implements DisposableBean {
+public class PieShareService {
 
 	private PieExecutorTaskFactory executorFactory;
 	private IClusterManagementService clusterManagementService;
@@ -132,10 +127,5 @@ public class PieShareService implements DisposableBean {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
 		}*/
 		this.shutdownService.fireShutdown();
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		this.stop();
 	}
 }

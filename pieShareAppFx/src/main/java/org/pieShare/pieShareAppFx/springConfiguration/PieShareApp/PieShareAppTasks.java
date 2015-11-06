@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
+package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
-import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.springConfiguration.PieShareApp;
+package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
@@ -31,8 +31,8 @@ import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
-import org.pieShare.pieShareApp.springConfiguration.PiePlateConfiguration;
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
