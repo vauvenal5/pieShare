@@ -10,14 +10,6 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<repositories>
-		<repository>
-			<id>objectdb</id>
-			<name>ObjectDB Repository</name>
-			<url>http://m2.objectdb.com</url>
-		</repository>
-	</repositories>
-
 	<artifactId>pieShareApp</artifactId>
 	<build>
 		<plugins>
@@ -33,19 +25,7 @@
 		</plugins>
 	</build>
 	<dependencies>
-      
-		<dependency>
-			<groupId>com.objectdb</groupId>
-			<artifactId>objectdb</artifactId>
-			<version>2.4.0</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-vfs2</artifactId>
-			<version>2.0</version>
-		</dependency>
-        
+		        
 		<dependency>
 			<groupId>org.pieShare.pieTools</groupId>
 			<artifactId>piePlate</artifactId>

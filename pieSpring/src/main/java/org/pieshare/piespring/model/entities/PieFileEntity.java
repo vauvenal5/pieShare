@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.entities;
+package org.pieshare.piespring.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieshare.piespring.model.entities.api.IBaseEntity;
 
 /**
  *

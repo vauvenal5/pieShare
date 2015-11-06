@@ -6,7 +6,6 @@
 package org.pieShare.pieShareApp.service.fileFilterService.filters.api;
 
 import org.pieShare.pieShareApp.model.api.IBaseModel;
-import org.pieShare.pieShareApp.model.entities.FilterEntity;
 
 /**
  *
@@ -19,8 +18,4 @@ public interface IFilter extends IBaseModel {
 	String getPattern();
 
 	boolean matches(String text);
-
-	FilterEntity getEntity();
-
-	void setEntity(FilterEntity entity);
 }

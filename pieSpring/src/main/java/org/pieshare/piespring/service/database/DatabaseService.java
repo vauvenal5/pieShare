@@ -3,32 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.service.database;
+package org.pieshare.piespring.service.database;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Parameter;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.entities.PieUserEntity;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
-import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
-import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieshare.piespring.model.entities.FilterEntity;
+import org.pieshare.piespring.model.entities.PieFileEntity;
+import org.pieshare.piespring.model.entities.PieUserEntity;
+import org.pieshare.piespring.model.entities.api.IBaseEntity;
 
 public class DatabaseService implements IDatabaseService {
 
