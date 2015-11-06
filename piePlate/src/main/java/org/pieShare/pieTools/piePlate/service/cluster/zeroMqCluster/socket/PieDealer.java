@@ -20,6 +20,7 @@ public class PieDealer implements IPieDealer {
     private ZMQ.Context context;
     private ZMQ.Socket dealer;
     private ZeroMQUtilsService utils;
+    private int endpoints = 0;
     
     public PieDealer()
     {
@@ -33,6 +34,7 @@ public class PieDealer implements IPieDealer {
         try{
             PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
             dealer.connect(utils.buildConnectionString(address, port));
+            endpoints++;
             return true;
         }catch(ZMQException e){
             PieLogger.error(PieDealer.class, "Connection failed %s", e);
@@ -44,6 +46,7 @@ public class PieDealer implements IPieDealer {
     public void disconnect(InetAddress address, int port) {
         PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
         dealer.disconnect(utils.buildConnectionString(address, port));
+        endpoints--;
     }
 
     @Override
@@ -55,7 +58,9 @@ public class PieDealer implements IPieDealer {
     @Override
     public void send(byte[] message) {
         try{
-            dealer.send(message, ZMQ.NOBLOCK);
+            for (int i = 0; i < endpoints; i++) {
+                dealer.send(message, ZMQ.NOBLOCK);
+            }
         }catch(ZMQException e){
             PieLogger.error(PieDealer.class, "Message send error: {0}", e);
         }
