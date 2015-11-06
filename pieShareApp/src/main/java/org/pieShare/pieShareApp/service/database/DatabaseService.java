@@ -81,14 +81,14 @@ public class DatabaseService implements IDatabaseService {
 
 		entities = (ArrayList<PieUserEntity>) query.getResultList();
 
-		entities.forEach((en) -> {
-			try {
+                for(PieUserEntity en : entities) {
+                    try {
 				models.add(modelEntityConverterService.convertFromEntity(en));
 			}
 			catch (Exception ex) {
 				PieLogger.error(this.getClass(), "Error converting Entity", ex);
 			}
-		});
+                }		
 		return models;
 	}
 

@@ -38,7 +38,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	
 	public void init() {
 		this.fileMonitors = new ArrayList();
-		this.modifiedFiles = Collections.synchronizedList(new ArrayList<>());
+		this.modifiedFiles = Collections.synchronizedList(new ArrayList<PieFile>());
 	}
 	
 	@Override
