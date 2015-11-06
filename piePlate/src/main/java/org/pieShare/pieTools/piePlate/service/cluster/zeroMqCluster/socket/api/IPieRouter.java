@@ -6,7 +6,6 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api;
 
 import java.net.InetAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 
 /**
  *
@@ -27,7 +26,7 @@ public interface IPieRouter {
     
     /**
      * Receive messages from connected sockets.
-     * @return IPieMessage
+     * @return byte[]
      */
-    IPieMessage receive();
+    byte[] receive();
 }
