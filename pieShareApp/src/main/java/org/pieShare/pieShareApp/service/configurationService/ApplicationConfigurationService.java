@@ -86,7 +86,8 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 		if (!conf.containsKey(key)) {
 			conf.put(key, value);
 		} else {
-			conf.replace(key, value);
+                        conf.put(key, value);
+			//conf.replace(key, value);
 		}
 		propertiesReader.saveConfig(conf, configFile);
 	}

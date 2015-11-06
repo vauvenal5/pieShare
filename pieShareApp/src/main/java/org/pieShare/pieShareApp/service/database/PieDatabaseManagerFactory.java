@@ -59,9 +59,10 @@ public class PieDatabaseManagerFactory extends AShutdownableService implements I
 				countSemaphore.acquire();
 			}
 
-			entityManagers.entrySet().stream().forEach((entity) -> {
-				entity.getValue().close();
-			});
+                        for(EntityManager e : entityManagers.values()) {
+                            e.close();
+                        }
+			
 			entityManagers.clear();
 			emf.close();
 			
