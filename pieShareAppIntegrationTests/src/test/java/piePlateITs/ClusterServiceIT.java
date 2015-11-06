@@ -49,6 +49,8 @@ public class ClusterServiceIT {
 
 	@Before
 	public void before() throws Exception {
+            
+                System.setProperty("java.net.preferIPv4Stack", "true");
 		JacksonSerializerService serializer = new JacksonSerializerService();
 
 		this.beanService = Mockito.mock(IBeanService.class);
