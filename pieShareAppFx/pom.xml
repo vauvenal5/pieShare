@@ -168,6 +168,27 @@
 		</plugins>
 	</build>
 	<dependencies>
+		
+		<!--todo:not needed if we don't log into lilith-->
+		<dependency>
+			<groupId>de.huxhorn.lilith</groupId>
+			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
+			<version>0.9.44</version>
+		</dependency>
+		
+		<dependency> 
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+		
+		<dependency>                                    
+			<groupId>org.slf4j</groupId>                
+			<artifactId>jcl-over-slf4j</artifactId>    
+			<version>1.7.7</version>  
+		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.pieShare</groupId>
 			<artifactId>pieSpring</artifactId>
