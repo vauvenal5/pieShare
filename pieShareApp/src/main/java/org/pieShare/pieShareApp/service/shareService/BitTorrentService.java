@@ -207,7 +207,10 @@ public class BitTorrentService implements IBitTorrentService {
 
 	@Override
 	public boolean isShareActive(FileMeta file) {
-		return (this.sharedFiles.getOrDefault(file, 0) > 0);
+            if(this.sharedFiles.get(file) == null) {
+                return false;
+            }
+            return (this.sharedFiles.get(file) > 0);
 	}
 
 	public boolean activeTorrents() {
