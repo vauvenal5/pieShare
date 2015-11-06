@@ -7,13 +7,11 @@ package org.pieShare.pieTools.pieUtilities.service.compressor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.compressor.api.ICompressor;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *

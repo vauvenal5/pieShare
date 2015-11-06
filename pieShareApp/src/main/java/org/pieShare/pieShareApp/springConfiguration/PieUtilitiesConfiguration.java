@@ -8,15 +8,12 @@ package org.pieShare.pieShareApp.springConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.TimeUnit;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanService;
-import org.pieShare.pieTools.pieUtilities.service.commandParser.Argparse4jService;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
-import org.pieShare.pieTools.pieUtilities.service.idService.IDService;
+import org.pieShare.pieTools.pieUtilities.service.idService.SimpleUUIDService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.UdpPortService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -82,12 +79,6 @@ public class PieUtilitiesConfiguration {
 		ShutdownService service = new ShutdownService();
 		service.setListener(this.pieExecutorService());
 		return service;
-    }
-
-    @Bean
-    @Lazy
-    public Argparse4jService argparse4jService() {
-        return new Argparse4jService();
     }
 
     @Bean
@@ -164,8 +155,8 @@ public class PieUtilitiesConfiguration {
 
     @Bean
     @Lazy
-    public IDService idService() {
-        IDService service = new IDService();
+    public SimpleUUIDService idService() {
+        SimpleUUIDService service = new SimpleUUIDService();
         return service;
     }
 
