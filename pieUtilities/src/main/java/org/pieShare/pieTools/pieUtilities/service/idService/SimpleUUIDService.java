@@ -12,7 +12,7 @@ import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
  *
  * @author Richard
  */
-public class IDService implements IIDService{
+public class SimpleUUIDService implements IIDService{
 
 	@Override
 	public String getNewID() {

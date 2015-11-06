@@ -7,9 +7,8 @@ package org.pieShare.pieTools.pieUtilities.service.regexService;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.springframework.util.Assert;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
  *
@@ -28,7 +27,7 @@ public class RegexServiceTest {
 		Pattern p = Pattern.compile(".*thumbs\\.db.*");
 		Matcher m = p.matcher("/test/test/test/thumbs.db/");
 		boolean b = m.matches();
-		Assert.isTrue(b);
+		Assert.assertTrue(b);
 	}
 
 }

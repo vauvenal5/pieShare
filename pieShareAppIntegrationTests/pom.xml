@@ -29,6 +29,13 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
+		<dependency>
+            <groupId>org.pieShare</groupId>
+            <artifactId>pieShareAppFx</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>

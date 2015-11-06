@@ -20,21 +20,10 @@
 		<module>pieShareAppFx</module>
 		<module>pieShareAppIntegrationTests</module>
 		<module>pieShareServer</module>
+	 <module>pieSpring</module>
 	</modules>
 
-	<dependencies>		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.0.2.RELEASE</version>
-			<exclusions>
-				<exclusion>
-				  <artifactId>commons-logging</artifactId>
-				  <groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		
+	<dependencies>				
 		<!--todo:not needed if we don't log into lilith-->
 		<dependency>
 			<groupId>de.huxhorn.lilith</groupId>
