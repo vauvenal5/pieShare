@@ -6,13 +6,12 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 
 import java.net.InetAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieRouter;
 
 
 /**
  *
- * @author ragnar
+ * @author Paul
  */
 public class PieRouter implements IPieRouter{
 
@@ -27,7 +26,7 @@ public class PieRouter implements IPieRouter{
     }
 
     @Override
-    public IPieMessage receive() {
+    public byte[] receive() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
