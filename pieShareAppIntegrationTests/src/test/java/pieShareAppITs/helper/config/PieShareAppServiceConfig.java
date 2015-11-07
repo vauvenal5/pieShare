@@ -7,23 +7,11 @@
 package pieShareAppITs.helper.config;
 
 import pieShareAppITs.helper.ITTasksCounter;
-import pieShareAppITs.helper.tasks.TestTask;
-import java.io.File;
-import java.util.Properties;
-import org.mockito.Mockito;
-import org.pieShare.pieShareApp.model.PieUser;
-import org.pieshare.piespring.service.ApplicationConfigurationService;
-import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppService;
-import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTasks;
-import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
-import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
-import pieShareAppITs.helper.ITUtil;
 
 /**
  *
