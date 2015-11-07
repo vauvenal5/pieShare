@@ -55,7 +55,6 @@ public class ZeroMQSocketTest {
             router.close();
             
         } catch (UnknownHostException e) {
-            System.out.println(e.toString());
         }
         
         assertArrayEquals(messageSend, messageRecv);
@@ -104,7 +103,6 @@ public class ZeroMQSocketTest {
             router.close();
             
         } catch (UnknownHostException e) {
-            System.out.println(e.toString());
         }
     }
     
@@ -154,7 +152,6 @@ public class ZeroMQSocketTest {
             router2.close();
             
         } catch (UnknownHostException e) {
-            System.out.println(e.toString());
         }
     }        
 
