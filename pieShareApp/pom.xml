@@ -24,8 +24,8 @@
 			</plugin>
 		</plugins>
 	</build>
+	
 	<dependencies>
-		        
 		<dependency>
 			<groupId>org.pieShare.pieTools</groupId>
 			<artifactId>piePlate</artifactId>
