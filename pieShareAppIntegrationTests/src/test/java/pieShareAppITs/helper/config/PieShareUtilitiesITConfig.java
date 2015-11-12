@@ -9,7 +9,7 @@ package pieShareAppITs.helper.config;
 import java.io.File;
 import java.util.Properties;
 import org.mockito.Mockito;
-import org.pieShare.pieShareApp.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
 import org.springframework.context.annotation.Bean;

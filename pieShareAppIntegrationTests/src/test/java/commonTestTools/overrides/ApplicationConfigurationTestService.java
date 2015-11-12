@@ -6,7 +6,7 @@
 package commonTestTools.overrides;
 
 import java.io.File;
-import org.pieShare.pieShareApp.service.configurationService.ApplicationConfigurationService;
+import org.pieshare.piespring.service.ApplicationConfigurationService;
 
 /**
  *
