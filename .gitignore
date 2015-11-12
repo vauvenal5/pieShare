@@ -10,3 +10,9 @@ workingDir/
 *.lilith
 nbactions-User2.xml
 nbactions-User1.xml
+botDb
+mainDb
+pieTempTest*
+testBotKey
+testMainKey
+workingDirTest*

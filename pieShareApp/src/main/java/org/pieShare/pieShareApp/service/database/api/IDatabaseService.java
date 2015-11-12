@@ -7,11 +7,7 @@ package org.pieShare.pieShareApp.service.database.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.api.IBaseModel;
-import org.pieShare.pieShareApp.model.entities.BaseEntity;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 

@@ -14,8 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
-import org.pieShare.pieShareApp.service.fileService.fileListenerService.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -118,7 +118,10 @@ public class ShareService implements IShareService{
 		File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
 		File localEncTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
 		synchronized(file) {
-			return this.preparedFiles.getOrDefault(file, Boolean.FALSE) && localEncTmpFile.exists();
+                        if(this.preparedFiles.get(file) == null) {
+                            return Boolean.FALSE && localEncTmpFile.exists();
+                        }
+			return this.preparedFiles.get(file) && localEncTmpFile.exists();
 		}
 	}
 }
