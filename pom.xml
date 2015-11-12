@@ -20,39 +20,11 @@
 		<module>pieShareAppFx</module>
 		<module>pieShareAppIntegrationTests</module>
 		<module>pieShareServer</module>
+	 <module>pieSpring</module>
 	</modules>
 
-	<dependencies>		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>4.0.2.RELEASE</version>
-			<exclusions>
-				<exclusion>
-				  <artifactId>commons-logging</artifactId>
-				  <groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+	<dependencies>				
 		
-		<!--todo:not needed if we don't log into lilith-->
-		<dependency>
-			<groupId>de.huxhorn.lilith</groupId>
-			<artifactId>de.huxhorn.lilith.logback.encoder.classic</artifactId>
-			<version>0.9.44</version>
-		</dependency>
-		
-		<dependency> 
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.0.13</version>
-		</dependency>
-		
-		<dependency>                                    
-			<groupId>org.slf4j</groupId>                
-			<artifactId>jcl-over-slf4j</artifactId>    
-			<version>1.7.7</version>  
-		</dependency>
 	</dependencies>
 	
 

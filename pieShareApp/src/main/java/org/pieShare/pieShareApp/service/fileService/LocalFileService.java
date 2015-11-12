@@ -30,7 +30,7 @@ public class LocalFileService extends FileServiceBase {
 	@Override
 	public List<PieFile> getAllFiles() throws IOException {
 		//todo: try first to read DB
-		List<PieFile> pieFiles = new ArrayList();
+		final List<PieFile> pieFiles = new ArrayList();
 
 		//todo: maybe a own service or at least function?
 		Files.walkFileTree(configuration.getWorkingDir().toPath(), new SimpleFileVisitor<Path>() {

@@ -31,6 +31,12 @@
 			<version>1.0-SNAPSHOT</version>
 			<type>jar</type>
 		</dependency>
+	 <dependency>
+	  <groupId>org.pieShare</groupId>
+	  <artifactId>pieSpring</artifactId>
+	  <version>1.0-SNAPSHOT</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
 	
 	<build>		
