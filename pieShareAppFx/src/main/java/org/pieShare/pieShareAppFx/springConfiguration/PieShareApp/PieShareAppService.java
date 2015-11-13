@@ -44,6 +44,8 @@ import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
 import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
+import org.pieShare.pieShareApp.service.userService.IUserService;
+import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
@@ -71,6 +73,8 @@ public class PieShareAppService {
 	protected PiePlateConfiguration plate;
 	@Autowired
 	private ProviderConfiguration providers;
+	@Autowired
+	protected PieShareAppModel model;
 
 	@Bean
 	@Lazy
@@ -101,6 +105,7 @@ public class PieShareAppService {
 		service.setDatabaseService(this.databaseService());
 		service.setConfigurationFactory(this.configurationFactory());
 		service.setBeanService(utilities.beanService());
+		service.setUserService(userService());
 		
 		PieExecutorTaskFactory factory = this.utilities.pieExecutorTaskFactory();
 		factory.registerTaskProvider(MetaMessage.class, this.providers.fileMetaTaskProvider);
@@ -147,6 +152,7 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setMessageFactoryService(this.messageFactoryService());
+		service.setUserService(userService());
 		return service;
 	}
 
@@ -157,6 +163,7 @@ public class PieShareAppService {
 		service.setFileService(this.localFileService());
 		service.setProviderService(this.utilities.providerService());
 		service.setBeanService(this.utilities.beanService());
+		service.setUserService(userService());
 		return service;
 	}
 
@@ -206,6 +213,7 @@ public class PieShareAppService {
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
+		base.setUserService(userService());
 		base.init();
 	}
 
@@ -277,6 +285,7 @@ public class PieShareAppService {
 	public ModelEntityConverterService modelEntityConverterService() {
 		ModelEntityConverterService service = new ModelEntityConverterService();
 		service.setBeanService(utilities.beanService());
+		service.setUserService(userService());
 		return service;
 	}
 
@@ -315,4 +324,11 @@ public class PieShareAppService {
 		return service;
 	}
 
+	@Bean
+	@Lazy
+	public IUserService userService() {
+		UserService service = new UserService();
+		service.setUser(model.pieUser());
+		return service;
+	}
 }
