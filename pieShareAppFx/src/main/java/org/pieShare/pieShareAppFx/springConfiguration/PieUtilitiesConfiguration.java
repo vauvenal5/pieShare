@@ -8,6 +8,7 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import javax.inject.Provider;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.Base64Service;
 import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
@@ -68,7 +69,6 @@ public class PieUtilitiesConfiguration {
     @Lazy
     public PieExecutorTaskFactory pieExecutorTaskFactory() {
         PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
-        factory.setBeanService(this.beanService());
         factory.setTasks(this.javaMap());
         return factory;
 	}

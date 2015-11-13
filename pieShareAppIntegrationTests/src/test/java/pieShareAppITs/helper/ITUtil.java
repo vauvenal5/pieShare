@@ -13,18 +13,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTasks;
-import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
+import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
@@ -191,6 +188,7 @@ public class ITUtil {
 		context.register(PieShareAppModelITConfig.class);
 		context.register(PieShareAppServiceConfig.class);
 		context.register(PieShareAppTasks.class);
+		context.register(ProviderConfiguration.class);
 		context.refresh();
 		return context;
 	}

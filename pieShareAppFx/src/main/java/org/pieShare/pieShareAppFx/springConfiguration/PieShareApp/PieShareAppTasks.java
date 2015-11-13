@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
+import javax.inject.Provider;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
