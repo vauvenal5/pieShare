@@ -5,9 +5,9 @@
  */
 package org.pieShare.pieShareApp.task.commandTasks.logoutTask;
 
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
@@ -22,6 +22,7 @@ public class LogoutTask implements ILogoutTask {
 	private IClusterManagementService clusterManagementService;
 	private LogoutCommand logoutCommand;
 	private IBeanService beanService;
+	private IUserService userService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -30,10 +31,14 @@ public class LogoutTask implements ILogoutTask {
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
 	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	private void logout() {
 
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		user.setPassword(null);
 		user.setIsLoggedIn(false);
 		

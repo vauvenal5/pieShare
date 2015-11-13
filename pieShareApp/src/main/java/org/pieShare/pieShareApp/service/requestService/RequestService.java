@@ -6,13 +6,13 @@
 package org.pieShare.pieShareApp.service.requestService;
 
 import java.util.concurrent.ConcurrentHashMap;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -29,6 +29,7 @@ public class RequestService implements IRequestService {
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IMessageFactoryService messageFactoryService;
 	private ILocalFileCompareService comparerService;
+	private IUserService userService;
 
 	public RequestService() {
 		requestedFiles = new ConcurrentHashMap<>();
@@ -45,6 +46,10 @@ public class RequestService implements IRequestService {
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
@@ -56,7 +61,7 @@ public class RequestService implements IRequestService {
 		//todo: who is responsible for sending the messages? the service or the task?
 		//i belive the task
 		IFileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
-		PieUser user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
 		msg.setPieFile(pieFile);

@@ -11,12 +11,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -29,6 +29,7 @@ public abstract class FileServiceBase implements IFileService {
 	protected IBeanService beanService;
 	protected IPieShareConfiguration configuration;
 	protected IFileWatcherService fileWatcherService;
+	protected IUserService userService;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -37,9 +38,13 @@ public abstract class FileServiceBase implements IFileService {
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
 		this.fileWatcherService = fileWatcherService;
 	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public void init() {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		this.configuration = user.getPieShareConfiguration();
 	}
 
@@ -131,7 +136,7 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public PieFile getPieFile(String relativeFilePath) throws IOException {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
 		return this.getPieFile(localFile);
 	}
