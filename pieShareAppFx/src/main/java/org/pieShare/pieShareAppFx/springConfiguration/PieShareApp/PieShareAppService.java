@@ -54,8 +54,6 @@ public class PieShareAppService {
 	protected PiePlateConfiguration plate;
 	@Autowired
 	protected PieShareAppModel model;
-	@Autowired
-	protected PieShareAppService services;
 
 	@Bean
 	@Lazy
@@ -73,7 +71,7 @@ public class PieShareAppService {
 		service.setDatabaseService(databaseService());
 		service.setConfigurationFactory(this.configurationFactory());
 		service.setBeanService(utilities.beanService());
-		service.setUserService(services.userService());
+		service.setUserService(userService());
 		service.start();
 		return service;
 	}
@@ -115,7 +113,7 @@ public class PieShareAppService {
 		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setMessageFactoryService(this.messageFactoryService());
-		service.setUserService(services.userService());
+		service.setUserService(userService());
 		return service;
 	}
 
@@ -126,7 +124,7 @@ public class PieShareAppService {
 		service.setFileService(this.localFileService());
 		service.setProviderService(this.utilities.providerService());
 		service.setBeanService(this.utilities.beanService());
-		service.setUserService(services.userService());
+		service.setUserService(userService());
 		return service;
 	}
 
@@ -176,7 +174,7 @@ public class PieShareAppService {
 	private void fileServiceBase(FileServiceBase base) {
 		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
-		base.setUserService(services.userService());
+		base.setUserService(userService());
 		base.init();
 	}
 
@@ -248,7 +246,7 @@ public class PieShareAppService {
 	public ModelEntityConverterService modelEntityConverterService() {
 		ModelEntityConverterService service = new ModelEntityConverterService();
 		service.setBeanService(utilities.beanService());
-		service.setUserService(services.userService());
+		service.setUserService(userService());
 		return service;
 	}
 

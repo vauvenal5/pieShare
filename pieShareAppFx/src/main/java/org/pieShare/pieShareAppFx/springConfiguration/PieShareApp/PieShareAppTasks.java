@@ -67,11 +67,9 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileMetaTask fileMetaTask() {
 		FileMetaTask task = new FileMetaTask();
+		aMessageSendingTask(task);
 		task.setRequestService(this.services.requestService());
-		task.setBeanService(this.config.beanService());
 		task.setBitTorrentService(this.services.bitTorrentService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -79,11 +77,9 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileRequestTask fileRequestTask() {
 		FileRequestTask task = new FileRequestTask();
-		task.setBeanService(config.beanService());
+		aMessageSendingTask(task);
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -155,8 +151,6 @@ public class PieShareAppTasks {
 		FileListRequestTask task = new FileListRequestTask();
 		this.aMessageSendingTask(task);
 		task.setFileService(this.services.historyFileService());
-		task.setBeanService(this.config.beanService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
