@@ -6,6 +6,18 @@
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
+import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.command.LogoutCommand;
+import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
+import org.pieShare.pieShareApp.model.message.FileListMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
@@ -31,8 +43,15 @@ import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
+import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
+import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,25 +69,14 @@ public class PieShareAppService {
 	protected PieUtilitiesConfiguration utilities;
 	@Autowired
 	protected PiePlateConfiguration plate;
+	@Autowired
+	private ProviderConfiguration providers;
 
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
 	public PieFile pieFile() {
 		return new PieFile();
-	}
-
-	@Bean
-	public PieShareService pieShareService() {
-		PieShareService service = new PieShareService();
-		service.setExecutorFactory(this.utilities.pieExecutorTaskFactory());
-		service.setClusterManagementService(this.plate.clusterManagementService());
-		service.setShutdownService(this.utilities.shutdownService());
-		service.setDatabaseService(databaseService());
-		service.setConfigurationFactory(this.configurationFactory());
-		service.setBeanService(utilities.beanService());
-		service.start();
-		return service;
 	}
 
 	@Bean
@@ -82,6 +90,37 @@ public class PieShareAppService {
 	@Lazy
 	public NetworkService networkService() {
 		return new NetworkService();
+	}
+	
+	@Bean
+	public PieShareService pieShareService() {
+		PieShareService service = new PieShareService();
+		service.setExecutorFactory(this.utilities.pieExecutorTaskFactory());
+		service.setClusterManagementService(this.plate.clusterManagementService());
+		service.setShutdownService(this.utilities.shutdownService());
+		service.setDatabaseService(this.databaseService());
+		service.setConfigurationFactory(this.configurationFactory());
+		service.setBeanService(utilities.beanService());
+		
+		PieExecutorTaskFactory factory = this.utilities.pieExecutorTaskFactory();
+		factory.registerTaskProvider(MetaMessage.class, this.providers.fileMetaTaskProvider);
+		factory.registerTaskProvider(FileRequestMessage.class, this.providers.fileRequestTaskProvider);
+		factory.registerTaskProvider(FileCreatedMessage.class, this.providers.newFileTaskProvider);
+		factory.registerTaskProvider(FileTransferCompleteMessage.class, this.providers.fileTransferCompleteTaskProvider);
+		factory.registerTaskProvider(FileListRequestMessage.class, this.providers.fileListRequestTaskProvider);
+		factory.registerTaskProvider(FileListMessage.class, this.providers.fileListTaskProvider);
+		factory.registerTaskProvider(FileDeletedMessage.class, this.providers.fileDeletedTaskProvider);
+		factory.registerTaskProvider(FileChangedMessage.class, this.providers.fileChangedTaskProvider);
+		factory.registerTaskProvider(MetaCommitMessage.class, this.providers.metaCommitTaskProvider);
+
+		factory.registerTaskProvider(LoginCommand.class, this.providers.loginTaskProvider);
+		factory.registerTaskProvider(LogoutCommand.class, this.providers.logoutTaskProvider);
+		factory.registerTaskProvider(ResetPwdCommand.class, this.providers.resetPwdTaskProvider);
+		
+		
+		
+		service.start();
+		return service;
 	}
 
 	@Bean

@@ -8,6 +8,7 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import javax.inject.Provider;
 import org.testng.annotations.Test;
 import org.mockito.Mockito;
 import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
@@ -33,16 +34,20 @@ public class PieExecutorTaskFactoryTest {
 	@Test
 	public void testHandlePieEvent() throws Exception {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
-		Map<Class, Class> map = Mockito.mock(Map.class);
-		IPieEventTask task = Mockito.mock(IPieEventTask.class);
+		Map<Class, Provider> map = Mockito.mock(Map.class);
+		final IPieEventTask task = Mockito.mock(IPieEventTask.class);
 		IBeanService beanService = Mockito.mock(IBeanService.class);
 
-		Mockito.when(map.get(event.getClass())).thenReturn(task.getClass());
+		Mockito.when(map.get(event.getClass())).thenReturn(new Provider<IPieEventTask>() {
+			@Override
+			public IPieEventTask get() {
+				return task;
+			}
+		});
 		Class clazz = task.getClass();
 		Mockito.when(beanService.getBean(clazz)).thenReturn(task);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
-		instance.setBeanService(beanService);
 		instance.setTasks(map);
 
 		IPieEventTask res = instance.getTask(event);
@@ -57,14 +62,18 @@ public class PieExecutorTaskFactoryTest {
 	@Test(expectedExceptions = PieExecutorTaskFactoryException.class)
 	public void testHandlePieEventTaskNotCreated() throws Exception {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
-		Map<Class, Class> map = Mockito.mock(Map.class);
+		Map<Class, Provider> map = Mockito.mock(Map.class);
 		IBeanService beanService = Mockito.mock(IBeanService.class);
 
-		Mockito.when(map.get(event.getClass())).thenReturn(IPieEventTask.class);
+		Mockito.when(map.get(event.getClass())).thenReturn(new Provider<IPieEventTask>() {
+			@Override
+			public IPieEventTask get() {
+				return null;
+			}
+		});
 		Mockito.when(beanService.getBean(IPieEventTask.class)).thenThrow(BeanServiceError.class);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
-		instance.setBeanService(beanService);
 		instance.setTasks(map);
 
 		instance.getTask(event);
@@ -76,7 +85,7 @@ public class PieExecutorTaskFactoryTest {
 	@Test(expectedExceptions = PieExecutorTaskFactoryException.class)
 	public void testHandlePieEventNoTaskRegistered() throws Exception {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
-		Map<Class, Class> map = Mockito.mock(Map.class);
+		Map<Class, Provider> map = Mockito.mock(Map.class);
 
 		Mockito.when(map.get(event.getClass())).thenReturn(null);
 
@@ -99,13 +108,22 @@ public class PieExecutorTaskFactoryTest {
 	 */
 	@Test
 	public void testRegisterTask() {
-		Map<Class, Class> map = Mockito.mock(Map.class);
+		Map<Class, Provider> map = Mockito.mock(Map.class);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
 		instance.setTasks(map);
-		instance.registerTask(IPieEvent.class, IPieEventTask.class);
+		
+		Provider<IPieEventTask> provider = new Provider<IPieEventTask>() {
 
-		Mockito.verify(map, Mockito.times(1)).put(IPieEvent.class, IPieEventTask.class);
+			@Override
+			public IPieEventTask get() {
+				return Mockito.mock(IPieEventTask.class);
+			}
+		};
+		
+		instance.registerTaskProvider(IPieEvent.class, provider);
+
+		Mockito.verify(map, Mockito.times(1)).put(IPieEvent.class, provider);
 	}
 
 	/**
@@ -114,7 +132,7 @@ public class PieExecutorTaskFactoryTest {
 	@Test(expectedExceptions = NullPointerException.class)
 	public void testRegisterTaskEventNullValue() {
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
-		instance.registerTask(null, IPieEventTask.class);
+		instance.registerTaskProvider(null, Mockito.mock(Provider.class));
 	}
 
 	/**
@@ -123,12 +141,12 @@ public class PieExecutorTaskFactoryTest {
 	@Test(expectedExceptions = NullPointerException.class)
 	public void testRegisterTaskTaskNullValue() {
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
-		instance.registerTask(IPieEvent.class, null);
+		instance.registerTaskProvider(IPieEvent.class, null);
 	}
 
 	@Test
 	public void testRegisterExtendedTask() {
-		Map<Class, Class> map = Mockito.mock(Map.class);
+		Map<Class, Provider> map = Mockito.mock(Map.class);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
 		instance.setTasks(map);
@@ -152,9 +170,17 @@ public class PieExecutorTaskFactoryTest {
 			}
 
 		}
+		
+		Provider provider = new Provider<SubTask>() {
 
-		instance.registerTask(SubSubEvent.class, SubTask.class);
+			@Override
+			public SubTask get() {
+				return Mockito.mock(SubTask.class);
+			}
+		};
 
-		Mockito.verify(map, Mockito.times(1)).put(SubSubEvent.class, SubTask.class);
+		instance.registerTaskProvider(SubSubEvent.class, provider);
+
+		Mockito.verify(map, Mockito.times(1)).put(SubSubEvent.class, provider);
 	}
 }
