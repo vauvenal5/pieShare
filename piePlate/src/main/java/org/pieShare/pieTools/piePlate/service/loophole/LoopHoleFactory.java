@@ -72,10 +72,6 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     @PostConstruct
     public void init() {
-        this.executorFactory.registerTask(LoopHoleConnectionMessage.class, LoopHoleConnectionTask.class);
-        this.executorFactory.registerTask(LoopHolePunchMessage.class, LoopHolePuncherTask.class);
-        this.executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleAckTask.class);
-        this.executorFactory.registerTask(LoopHoleCompleteMessage.class, LoopHoleCompleteTask.class);
         clientID = idService.getNewID();
     }
 

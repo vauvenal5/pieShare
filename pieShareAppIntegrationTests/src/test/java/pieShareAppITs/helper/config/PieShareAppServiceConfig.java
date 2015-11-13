@@ -31,7 +31,6 @@ public class PieShareAppServiceConfig extends PieShareAppService {
 	@Lazy
 	public PieExecutorTaskFactory testTaskFactory() {
 		PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
-		factory.setBeanService(this.utilities.beanService());
 		factory.setTasks(this.utilities.javaMap());
 		return factory;
 	}

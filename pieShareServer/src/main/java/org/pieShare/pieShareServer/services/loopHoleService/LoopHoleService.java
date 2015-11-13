@@ -75,9 +75,6 @@ public class LoopHoleService implements ILoopHoleService {
 
     @PostConstruct
     public void init() {
-        executorFactory.registerTask(RegisterMessage.class, RegisterTask.class);
-        executorFactory.registerTask(LoopHoleAckMessage.class, LoopHoleServerAckTask.class);
-
         waitForAckQueue = new HashMap<>();
 
         PieLogger.info(this.getClass(), "Set up Loop Hole Service!");
