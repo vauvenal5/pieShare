@@ -12,6 +12,7 @@ import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -57,7 +58,7 @@ public class LoginLogoutRemoveIT {
 
 		String userName = "testUser";
 
-		PieUser user = context.getBean("pieUser", PieUser.class);
+		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
 		LoginTask task = context.getBean(LoginTask.class);
 
@@ -131,7 +132,7 @@ public class LoginLogoutRemoveIT {
 
 		String userName = "testUser";
 
-		PieUser user = context.getBean("pieUser", PieUser.class);
+		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
 		LoginTask task = context.getBean(LoginTask.class);
 
@@ -230,7 +231,7 @@ public class LoginLogoutRemoveIT {
 	public void resetPwdFile() {
 		String userName = "testUser";
 
-		PieUser user = context.getBean("pieUser", PieUser.class);
+		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
 		user.setHasPasswordFile(true);
 		user.setUserName(userName);

@@ -17,6 +17,7 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieshare.piespring.service.database.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
@@ -26,6 +27,11 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 public class ModelEntityConverterService implements IModelEntityConverterService {
 
 	private IBeanService beanService;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -71,7 +77,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 
 	@Override
 	public PieUser convertFromEntity(PieUserEntity entity) {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		user.setHasPasswordFile(entity.isHasPasswordFile());
 		user.setUserName(entity.getUserName());
 		user.setIsLoggedIn(false);
