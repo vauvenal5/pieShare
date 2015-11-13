@@ -7,10 +7,10 @@ package org.pieShare.pieShareApp.task.commandTasks.resetPwd;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdTask;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -24,6 +24,7 @@ public class ResetPwdTask implements IResetPwdTask {
 	private IDatabaseService databaseService;
 	private IBeanService beanService;
 	private ResetPwdCommand command;
+	private IUserService userService;
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -31,6 +32,10 @@ public class ResetPwdTask implements IResetPwdTask {
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
+	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	@Override
@@ -40,7 +45,7 @@ public class ResetPwdTask implements IResetPwdTask {
 
 	@Override
 	public void run() {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		user.setHasPasswordFile(false);
 		databaseService.mergePieUser(user);
 

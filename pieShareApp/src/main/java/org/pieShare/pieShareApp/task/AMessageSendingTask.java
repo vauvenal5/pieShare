@@ -6,9 +6,9 @@
 
 package org.pieShare.pieShareApp.task;
 
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
@@ -22,6 +22,7 @@ public abstract class AMessageSendingTask implements IPieTask {
 	protected IClusterManagementService clusterManagementService;
 	protected IMessageFactoryService messageFactoryService;
 	protected IBeanService beanService;
+	protected IUserService userService;
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
@@ -35,9 +36,13 @@ public abstract class AMessageSendingTask implements IPieTask {
 		this.beanService = beanService;
 	}
 	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+	
 	protected void setDefaultAdresse(IClusterMessage msg) {
 		//todo: need somewhere a match between working dir and belonging cloud
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		msg.getAddress().setChannelId(user.getUserName());
 		msg.getAddress().setClusterName(user.getCloudName());
 	}
