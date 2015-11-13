@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutFinished;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieShareAppFx.controller.api.IController;
@@ -39,6 +40,11 @@ public class ClusterSettingsController implements IController {
 	private PieExecutorService executorService;
 	private ILogoutTask logoutTask;
 	private IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChanged;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> getLoginStateChangedEvent() {
 		return loginStateChanged;
@@ -65,7 +71,7 @@ public class ClusterSettingsController implements IController {
 
 	@FXML
 	private void handleLogoutAction(ActionEvent event) {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		LogoutCommand commnd = new LogoutCommand();
 		commnd.setUserName(user.getCloudName());
 		commnd.setCallback(new ILogoutFinished() {
@@ -90,7 +96,7 @@ public class ClusterSettingsController implements IController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		labelCloudName.setText(user.getCloudName());
 	}
 

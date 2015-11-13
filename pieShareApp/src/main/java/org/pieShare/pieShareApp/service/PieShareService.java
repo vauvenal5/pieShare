@@ -6,7 +6,6 @@
 package org.pieShare.pieShareApp.service;
 
 import java.util.ArrayList;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.LogoutCommand;
@@ -22,6 +21,7 @@ import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMe
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
@@ -51,6 +51,11 @@ public class PieShareService {
 	private IDatabaseService databaseService;
 	private IConfigurationFactory configurationFactory;
 	private IBeanService beanService;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -98,7 +103,7 @@ public class PieShareService {
 		}
 
 		if (user == null) {
-			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			user = userService.getUser();
 		}
 		
 		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), false));

@@ -45,16 +45,17 @@ public class PieShareAppTasks {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieUtilitiesConfiguration config;
-	
+
 	private void aMessageSendingTask(AMessageSendingTask task) {
 		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setMessageFactoryService(this.services.messageFactoryService());
+		task.setUserService(services.userService());
 	}
-			
+
 	private void aLocalFileEventTask(ALocalFileEventTask task) {
 		this.aMessageSendingTask(task);
-		
+
 		task.setFileFilterService(services.fileFilterService());
 		task.setHistoryService(services.historyService());
 		task.setFileEncrypterService(services.fileEncryptionService());
@@ -102,15 +103,15 @@ public class PieShareAppTasks {
 		task.setComparerService(services.fileCompareService());
 		return task;
 	}
-        
-        @Bean
+
+	@Bean
 	@Scope(value = "prototype")
-        public FileChangedTask fileChangedTask() {
-            FileChangedTask task = new FileChangedTask();
-            task.setRequestService(this.services.requestService());
-			task.setComparerService(this.services.fileCompareService());
-            return task;
-        }
+	public FileChangedTask fileChangedTask() {
+		FileChangedTask task = new FileChangedTask();
+		task.setRequestService(this.services.requestService());
+		task.setComparerService(this.services.fileCompareService());
+		return task;
+	}
 
 	@Bean
 	@Scope(value = "prototype")
@@ -182,7 +183,8 @@ public class PieShareAppTasks {
 		service.setHistoryService(services.historyService());
 		service.setFileWatcherService(this.services.apacheFileWatcherService());
 		service.setMessageFactoryService(this.services.messageFactoryService());
-                service.setFileService(this.services.historyFileService());
+		service.setFileService(this.services.historyFileService());
+		service.setUserService(services.userService());
 		return service;
 	}
 
@@ -193,6 +195,7 @@ public class PieShareAppTasks {
 		LogoutTask task = new LogoutTask();
 		task.setBeanService(config.beanService());
 		task.setClusterManagementService(plate.clusterManagementService());
+		task.setUserService(services.userService());
 		return task;
 	}
 
@@ -203,9 +206,10 @@ public class PieShareAppTasks {
 		ResetPwdTask task = new ResetPwdTask();
 		task.setBeanService(config.beanService());
 		task.setDatabaseService(services.databaseService());
+		task.setUserService(services.userService());
 		return task;
 	}
-	
+
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
@@ -220,7 +224,7 @@ public class PieShareAppTasks {
 		task.setRequestService(this.services.requestService());
 		return task;
 	}
-	
+
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
