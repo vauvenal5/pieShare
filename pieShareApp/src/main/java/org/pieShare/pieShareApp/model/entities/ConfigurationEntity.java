@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.model.entities;
+package org.pieShare.pieShareApp.model.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import org.pieshare.piespring.model.entities.api.IBaseEntity;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 
 /**
