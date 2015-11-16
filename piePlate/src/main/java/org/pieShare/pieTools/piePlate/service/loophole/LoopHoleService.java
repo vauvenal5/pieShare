@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import javax.inject.Provider;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
@@ -21,7 +22,6 @@ import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -38,7 +38,6 @@ public class LoopHoleService implements ILoopHoleService {
     private DatagramSocket socket = null;
     private String serverIP;
     private int serverPort;
-    private IBeanService beanService;
     private IIDService idService;
     private PieExecutorTaskFactory executorFactory;
     private ISerializerService serializerService;
@@ -46,6 +45,8 @@ public class LoopHoleService implements ILoopHoleService {
     private String localLoopHoleID;
     private String name;
     private PieExecutorService executorService;
+	private Provider<LoopHoleListenerTask> loopHoleListenerTaskProvider;
+	private Provider<RegisterMessage> registerMessageProvider;
 
     private LoopHoleListenerTask listenerTask;
     private ILoopHoleFactory loopHoleFactory;
@@ -87,7 +88,7 @@ public class LoopHoleService implements ILoopHoleService {
 
         waitForAckQueue = new HashMap<>();
 
-        listenerTask = beanService.getBean(LoopHoleListenerTask.class);
+        listenerTask = this.loopHoleListenerTaskProvider.get();
         listenerTask.setSocket(socket);
         executorService.execute(listenerTask);
 
@@ -134,9 +135,13 @@ public class LoopHoleService implements ILoopHoleService {
         this.idService = idService;
     }
 
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
+	public void setLoopHoleListenerTaskProvider(Provider<LoopHoleListenerTask> loopHoleListenerTaskProvider) {
+		this.loopHoleListenerTaskProvider = loopHoleListenerTaskProvider;
+	}
+
+	public void setRegisterMessageProvider(Provider<RegisterMessage> registerMessageProvider) {
+		this.registerMessageProvider = registerMessageProvider;
+	}
 
     @Override
     public synchronized void ackArrived(String fromid) {
@@ -180,7 +185,7 @@ public class LoopHoleService implements ILoopHoleService {
 
     @Override
     public void register() {
-        RegisterMessage message = beanService.getBean(RegisterMessage.class);
+        RegisterMessage message = this.registerMessageProvider.get();
         message.setPrivateHost(localIP);
         message.setPrivatePort(localPort);
         message.setName(name);

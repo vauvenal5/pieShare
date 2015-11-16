@@ -18,7 +18,7 @@ import org.pieshare.piespring.service.fileListenerService.api.IFileListenerServi
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 

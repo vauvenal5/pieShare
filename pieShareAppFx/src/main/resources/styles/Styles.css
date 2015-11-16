@@ -13,12 +13,12 @@
     -fx-background-radius: 00;
     -fx-padding: 5;
 }
-//Defines the textfield colors when an input is flase.
+/*Defines the textfield colors when an input is flase.*/
 .textfieldWrong
 {
 	-fx-background-color: rgba(214, 0, 0, .7);
 }
-//Defines the textfield colors when an input is OK.
+/*Defines the textfield colors when an input is OK.*/
 .textfieldOK
 {
 	-fx-background-color: rgba(0, 214, 0, .7);

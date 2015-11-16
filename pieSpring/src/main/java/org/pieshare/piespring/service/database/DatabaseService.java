@@ -5,6 +5,7 @@
  */
 package org.pieshare.piespring.service.database;
 
+import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -19,7 +20,7 @@ import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;

@@ -15,7 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEn
  * @author sveto_000
  */
 public class SymmetricEncryptedChannel extends PieChannel<IEncryptedMessage> {
-	
+	//todo-sv: this class quite probably really urgently needs an interface
 	private IEncodeService encoderService;
 	//todo: change this to something like SymetricKey
 	private EncryptedPassword encPwd;

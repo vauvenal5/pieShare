@@ -5,10 +5,10 @@
  */
 package org.pieShare.pieTools.piePlate.task;
 
+import javax.inject.Provider;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 
 /**
@@ -19,16 +19,16 @@ public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> 
 
     private LoopHolePunchMessage msg;
     private LoopHoleFactory factory;
-    private IBeanService beanService;
-
+	private Provider<LoopHoleAckMessage> loopHoleAckMessageProvider;
+	
     @Override
     public void setEvent(LoopHolePunchMessage msg) {
         this.msg = msg;
     }
 
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
+	public void setLoopHoleAckMessageProvider(Provider<LoopHoleAckMessage> loopHoleAckMessageProvider) {
+		this.loopHoleAckMessageProvider = loopHoleAckMessageProvider;
+	}
 
     public void setFactory(LoopHoleFactory factory) {
         this.factory = factory;
@@ -40,7 +40,7 @@ public class LoopHolePuncherTask implements IPieEventTask<LoopHolePunchMessage> 
             return;
         }
         
-        LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+        LoopHoleAckMessage ackMsg = this.loopHoleAckMessageProvider.get();
         ackMsg.setLocalLoopID(msg.getClientLocalLoopID());
         ackMsg.setClientLocalLoopID(msg.getLocalLoopID());
         
