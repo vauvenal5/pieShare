@@ -5,7 +5,11 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.inject.Provider;
 import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -14,10 +18,12 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMes
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
@@ -48,7 +54,8 @@ public class PiePlateConfiguration {
     @Lazy
     public ClusterManagementService clusterManagementService() {
         ClusterManagementService service = new ClusterManagementService();
-        service.setBeanService(this.utilities.beanService());
+		service.setClusterServiceProvider(this.clusterServiceProvider());
+		service.setLoopHoleFactory(this.loopHoleFactory());
         service.setClusterAddedEventBase(this.utilities.eventBase());
         service.setClusterRemovedEventBase(this.utilities.eventBase());
         service.setMap(this.utilities.javaMap());
@@ -66,7 +73,8 @@ public class PiePlateConfiguration {
 	@Scope(value = "prototype")
     public ObjectBasedReceiver objectReceiver() {
         ObjectBasedReceiver receiver = new ObjectBasedReceiver();
-        receiver.setBeanService(this.utilities.beanService());
+		receiver.setAddressProvider(this.jgroupsPieAddressProvider());
+        receiver.setChannelTaskProvider(this.providers.channelTaskProvider);
         receiver.setExecutorService(this.utilities.pieExecutorService());
         return receiver;
     }
@@ -81,20 +89,46 @@ public class PiePlateConfiguration {
     @Bean
     @Lazy
     @Scope(value = "prototype")
-    public JGroupsClusterService clusterService() throws Exception {
-        JGroupsClusterService service = new JGroupsClusterService();
-        service.setReceiver(this.objectReceiver());
-        service.setChannel(this.jChannel());
-        service.setClusterRemovedEventBase(this.utilities.eventBase());
-		service.setShutdownService(this.utilities.shutdownService());
-        return service;
+    public JGroupsClusterService clusterService() {
+		try {
+			JGroupsClusterService service = new JGroupsClusterService();
+			service.setReceiver(this.objectReceiver());
+			service.setChannel(this.jChannel());
+			service.setClusterRemovedEventBase(this.utilities.eventBase());
+			service.setShutdownService(this.utilities.shutdownService());
+			return service;
+		} catch (Exception ex) {
+			throw new Error("Unexpected JGROUPS error!", ex);
+		}
     }
+	
+	@Bean
+	@Lazy
+	public Provider<IClusterService> clusterServiceProvider() {
+		return new Provider<IClusterService>() {
+			@Override
+			public IClusterService get() {
+				return clusterService();
+			}
+		};
+	}
 
     @Bean
     @Lazy
     public JGroupsPieAddress jgroupsPieAddress() {
         return new JGroupsPieAddress();
     }
+	
+	@Bean
+	@Lazy
+	public Provider<IPieAddress> jgroupsPieAddressProvider() {
+		return new Provider<IPieAddress>() {
+			@Override
+			public IPieAddress get() {
+				return jgroupsPieAddress();
+			}
+		};
+	}
 
     @Bean
     @Lazy
@@ -120,26 +154,38 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleService loopHoleService() {
         LoopHoleService service = new LoopHoleService();
-        service.setBeanService(utilities.beanService());
+        service.setLoopHoleListenerTaskProvider(this.providers.loopHoleListenerTaskProvider);
+		service.setRegisterMessageProvider(this.providers.registerMessageProvider);
         service.setIdService(utilities.idService());
         service.setSerializerService(jacksonSerializerService());
         service.setExecutorFactory(utilities.pieExecutorTaskFactory());
         service.setExecutorService(utilities.pieExecutorService());
-        service.setLoopHoleFactory(loopHoleFactory());
+		service.setLoopHoleFactory(this.loopHoleFactory());
 		
 		PieExecutorTaskFactory factory = this.utilities.pieExecutorTaskFactory();
 		factory.registerTaskProvider(LoopHoleConnectionMessage.class, this.providers.loopHoleConnectionTaskProvider);
         factory.registerTaskProvider(LoopHolePunchMessage.class, this.providers.loopHolePuncherTaskProvider);
         factory.registerTaskProvider(LoopHoleAckMessage.class, this.providers.loopHoleAckTaskProvider);
-        factory.registerTaskProvider(LoopHoleCompleteMessage.class, this.providers.loopHoleCompleteTaskProvider);
+        factory.registerTaskProvider(LoopHoleCompleteMessage.class, loopHoleCompleteTaskProvider());
         return service;
     }
+	
+	@Bean
+	@Lazy
+	public Provider<ILoopHoleService> loopHoleServiceProvider() {
+		return new Provider<ILoopHoleService>() {
+			@Override
+			public ILoopHoleService get() {
+				return loopHoleService();
+			}
+		};		
+	} 
 
     @Bean
     @Lazy
     public LoopHoleFactory loopHoleFactory() {
         LoopHoleFactory fac = new LoopHoleFactory();
-        fac.setBeanService(utilities.beanService());
+        fac.setLoopHoleServiceProvider(loopHoleServiceProvider());
         fac.setIdService(utilities.idService());
         fac.setSerializerService(jacksonSerializerService());
         fac.setNewLoopHoleConnectionEvent(utilities.eventBase());
@@ -164,7 +210,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHolePuncherTask holePuncherTask() {
         LoopHolePuncherTask task = new LoopHolePuncherTask();
-        task.setBeanService(utilities.beanService());
+        task.setLoopHoleAckMessageProvider(this.providers.loopHoleAckMessageProvider);
         task.setFactory(loopHoleFactory());
         return task;
     }
@@ -183,8 +229,11 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleConnectionTask loopHoleConnectionTask() {
         LoopHoleConnectionTask task = new LoopHoleConnectionTask();
-        task.setBeanService(utilities.beanService());
+        task.setLoopHoleFactory(this.loopHoleFactory());
         task.setLoopHoleFactory(loopHoleFactory());
+		task.setLoopHoleAckMessageProvider(this.providers.loopHoleAckMessageProvider);
+		task.setLoopHoleCompleteMessageProvider(this.providers.loopHoleCompleteMessageProvider);
+		task.setLoopHolePunchMessageProvider(this.providers.loopHolePunchMessageProvider);
         return task;
     }
 
@@ -196,6 +245,17 @@ public class PiePlateConfiguration {
         task.setLoopholeFactory(loopHoleFactory());
         return task;
     }
+	
+	@Bean
+	@Lazy
+	public Provider<LoopHoleCompleteTask> loopHoleCompleteTaskProvider() {
+		return new Provider<LoopHoleCompleteTask>() {
+			@Override
+			public LoopHoleCompleteTask get() {
+				return loopHoleCompleteTask();
+			}
+		};
+	}
 
     @Bean
     @Lazy

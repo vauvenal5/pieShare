@@ -18,12 +18,22 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
+import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
+import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 /**
  *
@@ -61,6 +71,17 @@ public class ProviderConfiguration {
 	public Provider<LoopHolePuncherTask> loopHolePuncherTaskProvider;
 	@Autowired
 	public Provider<LoopHoleAckTask> loopHoleAckTaskProvider;
+	
 	@Autowired
-	public Provider<LoopHoleCompleteTask> loopHoleCompleteTaskProvider;
+	public Provider<ChannelTask> channelTaskProvider;
+	@Autowired
+	public Provider<LoopHoleListenerTask> loopHoleListenerTaskProvider;
+	@Autowired
+	public Provider<RegisterMessage> registerMessageProvider;
+	@Autowired
+	public Provider<LoopHoleAckMessage> loopHoleAckMessageProvider;
+	@Autowired
+	public Provider<LoopHoleCompleteMessage> loopHoleCompleteMessageProvider;
+	@Autowired
+	public Provider<LoopHolePunchMessage> loopHolePunchMessageProvider;
 }
