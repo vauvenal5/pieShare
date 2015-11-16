@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareServer.services;
 
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieShareServer.services.api.IServerService;
 import org.pieShare.pieShareServer.services.loopHoleService.LoopHoleService;

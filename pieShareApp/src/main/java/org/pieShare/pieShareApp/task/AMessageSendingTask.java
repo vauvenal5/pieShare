@@ -11,7 +11,6 @@ import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
@@ -21,7 +20,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
 public abstract class AMessageSendingTask implements IPieTask {
 	protected IClusterManagementService clusterManagementService;
 	protected IMessageFactoryService messageFactoryService;
-	protected IBeanService beanService;
 	protected IUserService userService;
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
@@ -30,10 +28,6 @@ public abstract class AMessageSendingTask implements IPieTask {
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
 	}
 	
 	public void setUserService(IUserService userService) {

@@ -15,7 +15,6 @@ import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -23,8 +22,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author Richard
  */
 public class RequestService implements IRequestService {
-
-	private IBeanService beanService;
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IMessageFactoryService messageFactoryService;
@@ -41,10 +38,6 @@ public class RequestService implements IRequestService {
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
 	}
 	
 	public void setUserService(IUserService userService) {

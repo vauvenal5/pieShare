@@ -21,7 +21,6 @@ import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 
@@ -33,13 +32,8 @@ public class FileEncryptionService implements IFileEncryptionService {
 	
 	IProviderService providerService;
 	IFileService fileService;
-	IBeanService beanService;
 	private IBase64Service base64Service;
 	private IUserService userService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
 
 	public void setProviderService(IProviderService providerService) {
 		this.providerService = providerService;

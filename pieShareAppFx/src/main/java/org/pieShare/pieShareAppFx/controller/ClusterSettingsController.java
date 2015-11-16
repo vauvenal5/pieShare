@@ -24,7 +24,7 @@ import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
 import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;

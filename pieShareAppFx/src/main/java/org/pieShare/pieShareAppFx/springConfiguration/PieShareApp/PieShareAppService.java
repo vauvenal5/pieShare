@@ -18,7 +18,6 @@ import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.PieShareService;
 import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.FileCompareService;
@@ -43,16 +42,11 @@ import org.pieShare.pieShareApp.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
-import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -77,13 +71,6 @@ public class PieShareAppService {
 	protected PieShareAppModel model;
 
 	@Bean
-	@Lazy
-	@Scope(value = "prototype")
-	public PieFile pieFile() {
-		return new PieFile();
-	}
-
-	@Bean
 	@Scope(value = "prototype")
 	public DefaultFileMonitor defaultFileMonitor() {
 		DefaultFileMonitor filelistener = new DefaultFileMonitor(fileListenerService());
@@ -104,7 +91,6 @@ public class PieShareAppService {
 		service.setShutdownService(this.utilities.shutdownService());
 		service.setDatabaseService(this.databaseService());
 		service.setConfigurationFactory(this.configurationFactory());
-		service.setBeanService(utilities.beanService());
 		service.setUserService(userService());
 		
 		PieExecutorTaskFactory factory = this.utilities.pieExecutorTaskFactory();
@@ -149,7 +135,6 @@ public class PieShareAppService {
 	@Lazy
 	public RequestService requestService() {
 		RequestService service = new RequestService();
-		service.setBeanService(this.utilities.beanService());
 		service.setClusterManagementService(this.plate.clusterManagementService());
 		service.setMessageFactoryService(this.messageFactoryService());
 		service.setUserService(userService());
@@ -162,7 +147,6 @@ public class PieShareAppService {
 		FileEncryptionService service = new FileEncryptionService();
 		service.setFileService(this.localFileService());
 		service.setProviderService(this.utilities.providerService());
-		service.setBeanService(this.utilities.beanService());
 		service.setUserService(userService());
 		return service;
 	}
@@ -211,7 +195,6 @@ public class PieShareAppService {
 	}
 
 	private void fileServiceBase(FileServiceBase base) {
-		base.setBeanService(this.utilities.beanService());
 		base.setFileWatcherService(this.apacheFileWatcherService());
 		base.setUserService(userService());
 		base.init();
@@ -222,6 +205,7 @@ public class PieShareAppService {
 	public LocalFileService localFileService() {
 		LocalFileService service = new LocalFileService();
 		this.fileServiceBase(service);
+		service.setPieFileProvider(this.providers.pieFileProvider);
 		service.setHashService(this.utilities.md5Service());
 		return service;
 	}
@@ -248,7 +232,7 @@ public class PieShareAppService {
 	@Lazy
 	public BitTorrentService bitTorrentService() {
 		BitTorrentService service = new BitTorrentService();
-		service.setBeanService(this.utilities.beanService());
+		service.setTorrentTaskProvider(this.providers.torrentTaskProvider);
 		service.setNetworkService(this.networkService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setBase64Service(this.utilities.base64Service());
@@ -320,7 +304,7 @@ public class PieShareAppService {
 	public ConfigurationFactory configurationFactory() {
 		ConfigurationFactory service = new ConfigurationFactory();
 		service.setApplicationConfiguration(applicationConfigurationService());
-		service.setBeanService(utilities.beanService());
+		service.setPieShareConfigurationProvider(this.providers.pieShareConfigurationProvider);
 		return service;
 	}
 

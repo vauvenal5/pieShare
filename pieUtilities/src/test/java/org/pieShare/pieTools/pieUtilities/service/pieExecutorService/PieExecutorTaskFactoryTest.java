@@ -7,15 +7,11 @@
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import javax.inject.Provider;
 import org.testng.annotations.Test;
 import org.mockito.Mockito;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
 import org.testng.Assert;
 
@@ -36,7 +32,6 @@ public class PieExecutorTaskFactoryTest {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
 		Map<Class, Provider> map = Mockito.mock(Map.class);
 		final IPieEventTask task = Mockito.mock(IPieEventTask.class);
-		IBeanService beanService = Mockito.mock(IBeanService.class);
 
 		Mockito.when(map.get(event.getClass())).thenReturn(new Provider<IPieEventTask>() {
 			@Override
@@ -45,7 +40,6 @@ public class PieExecutorTaskFactoryTest {
 			}
 		});
 		Class clazz = task.getClass();
-		Mockito.when(beanService.getBean(clazz)).thenReturn(task);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
 		instance.setTasks(map);
@@ -63,7 +57,6 @@ public class PieExecutorTaskFactoryTest {
 	public void testHandlePieEventTaskNotCreated() throws Exception {
 		IPieEvent event = Mockito.mock(IPieEvent.class);
 		Map<Class, Provider> map = Mockito.mock(Map.class);
-		IBeanService beanService = Mockito.mock(IBeanService.class);
 
 		Mockito.when(map.get(event.getClass())).thenReturn(new Provider<IPieEventTask>() {
 			@Override
@@ -71,7 +64,6 @@ public class PieExecutorTaskFactoryTest {
 				return null;
 			}
 		});
-		Mockito.when(beanService.getBean(IPieEventTask.class)).thenThrow(BeanServiceError.class);
 
 		PieExecutorTaskFactory instance = new PieExecutorTaskFactory();
 		instance.setTasks(map);

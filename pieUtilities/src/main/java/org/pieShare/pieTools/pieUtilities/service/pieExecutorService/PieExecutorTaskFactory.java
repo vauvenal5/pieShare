@@ -9,7 +9,6 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 import java.util.Map;
 import javax.inject.Provider;
 import org.apache.commons.lang3.Validate;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
