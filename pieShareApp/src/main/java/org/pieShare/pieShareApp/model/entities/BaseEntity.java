@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.model.entities;
+package org.pieShare.pieShareApp.model.entities;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
-import org.pieshare.piespring.model.entities.api.IBaseEntity;
+import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 
 /**
  *
