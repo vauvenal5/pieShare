@@ -1,8 +1,6 @@
 package org.pieshare.piespring.service.beanService;
 
 //todo: here is maybe something rong with the dependencies
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
