@@ -8,17 +8,13 @@ package org.pieShare.pieTools.piePlate.service.loophole;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
-import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
+import javax.inject.Provider;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.api.IUdpMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
@@ -26,11 +22,6 @@ import org.pieShare.pieTools.piePlate.service.loophole.event.NewLoopHoleConnecti
 import org.pieShare.pieTools.piePlate.service.loophole.event.api.INewLoopHoleConnectionEventListener;
 import org.pieShare.pieTools.piePlate.service.serializer.api.ISerializerService;
 import org.pieShare.pieTools.piePlate.service.serializer.exception.SerializerServiceException;
-import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
-import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
-import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
-import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.idService.api.IIDService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.api.IUdpPortService;
@@ -47,7 +38,6 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private final HashMap<String, ILoopHoleService> loopQueue;
     private IUdpPortService udpPortService;
     private int nextUdpPort;
-    private IBeanService beanService;
     private String clientID;
     private IIDService idService;
     private ISerializerService serializerService;
@@ -55,6 +45,7 @@ public class LoopHoleFactory implements ILoopHoleFactory {
     private String name;
     private PieExecutorTaskFactory executorFactory;
     private PieExecutorService executorService;
+	private Provider<ILoopHoleService> loopHoleServiceProvider;
 
     private IEventBase<INewLoopHoleConnectionEventListener, NewLoopHoleConnectionEvent> newLoopHoleConnectionEvent;
     private List<InetSocketAddress> members;
@@ -131,9 +122,9 @@ public class LoopHoleFactory implements ILoopHoleFactory {
         this.idService = idService;
     }
 
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
+	public void setLoopHoleServiceProvider(Provider<ILoopHoleService> loopHoleServiceProvider) {
+		this.loopHoleServiceProvider = loopHoleServiceProvider;
+	}
 
     public void setUdpPortService(IUdpPortService udpPortService) {
         this.udpPortService = udpPortService;
@@ -141,10 +132,10 @@ public class LoopHoleFactory implements ILoopHoleFactory {
 
     @Override
     public void initializeNewLoopHole() {
-        ILoopHoleService loopHoleService = beanService.getBean(LoopHoleService.class);
 
         nextUdpPort = udpPortService.getNewPortFrom(nextUdpPort);
 
+		//todo: why does not the loophole service itself get the next port?!
         int newPort = 0;
         while (newPort != nextUdpPort) {
             newPort = nextUdpPort;
@@ -153,6 +144,8 @@ public class LoopHoleFactory implements ILoopHoleFactory {
             }
         }
 
+		//todo: why is loopHoleService prototyped
+		ILoopHoleService loopHoleService = this.loopHoleServiceProvider.get();
         loopHoleService.setLocalPort(nextUdpPort);
         loopHoleService.setName(name);
 
