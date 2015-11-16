@@ -7,9 +7,9 @@ package org.pieShare.pieShareApp.service.configurationService;
 
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import java.io.File;
+import javax.inject.Provider;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -18,10 +18,10 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 public class ConfigurationFactory implements IConfigurationFactory {
 
 	private IApplicationConfigurationService configurationService;
-	private IBeanService beanService;
+	private Provider<PieShareConfiguration> pieShareConfigurationProvider;
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	public void setPieShareConfigurationProvider(Provider<PieShareConfiguration> pieShareConfigurationProvider) {
+		this.pieShareConfigurationProvider = pieShareConfigurationProvider;
 	}
 
 	public void setApplicationConfiguration(IApplicationConfigurationService configurationService) {
@@ -31,7 +31,7 @@ public class ConfigurationFactory implements IConfigurationFactory {
 	@Override
 	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config, boolean create) {
 		if (config == null) {
-			config = beanService.getBean(PieShareConfiguration.class);
+			config = this.pieShareConfigurationProvider.get();
 		}
 		checkAndCreateFolders(config, create);
 		return config;

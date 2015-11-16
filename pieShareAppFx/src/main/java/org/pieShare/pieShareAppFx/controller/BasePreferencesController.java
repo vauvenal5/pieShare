@@ -33,7 +33,7 @@ import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 
 /**
  *

@@ -17,7 +17,6 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfig
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -25,15 +24,9 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author Svetoslav
  */
 public abstract class FileServiceBase implements IFileService {
-
-	protected IBeanService beanService;
 	protected IPieShareConfiguration configuration;
 	protected IFileWatcherService fileWatcherService;
 	protected IUserService userService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
 
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
 		this.fileWatcherService = fileWatcherService;

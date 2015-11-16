@@ -11,7 +11,6 @@ import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.api.ILogoutTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 
 /**
  *
@@ -21,12 +20,7 @@ public class LogoutTask implements ILogoutTask {
 
 	private IClusterManagementService clusterManagementService;
 	private LogoutCommand logoutCommand;
-	private IBeanService beanService;
 	private IUserService userService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
 
 	public void setClusterManagementService(IClusterManagementService clusterManagementService) {
 		this.clusterManagementService = clusterManagementService;

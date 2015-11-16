@@ -5,8 +5,6 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.jgroups.JChannel;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
@@ -166,7 +164,7 @@ public class PiePlateConfiguration {
 		factory.registerTaskProvider(LoopHoleConnectionMessage.class, this.providers.loopHoleConnectionTaskProvider);
         factory.registerTaskProvider(LoopHolePunchMessage.class, this.providers.loopHolePuncherTaskProvider);
         factory.registerTaskProvider(LoopHoleAckMessage.class, this.providers.loopHoleAckTaskProvider);
-        factory.registerTaskProvider(LoopHoleCompleteMessage.class, loopHoleCompleteTaskProvider());
+        factory.registerTaskProvider(LoopHoleCompleteMessage.class, this.providers.loopHoleCompleteTaskProvider);
         return service;
     }
 	
@@ -245,17 +243,6 @@ public class PiePlateConfiguration {
         task.setLoopholeFactory(loopHoleFactory());
         return task;
     }
-	
-	@Bean
-	@Lazy
-	public Provider<LoopHoleCompleteTask> loopHoleCompleteTaskProvider() {
-		return new Provider<LoopHoleCompleteTask>() {
-			@Override
-			public LoopHoleCompleteTask get() {
-				return loopHoleCompleteTask();
-			}
-		};
-	}
 
     @Bean
     @Lazy

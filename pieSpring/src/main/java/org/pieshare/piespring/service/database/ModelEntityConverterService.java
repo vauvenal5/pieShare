@@ -18,7 +18,7 @@ import org.pieshare.piespring.service.database.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.userService.IUserService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 
 /**
  *

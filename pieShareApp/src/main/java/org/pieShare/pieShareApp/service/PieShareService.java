@@ -11,7 +11,6 @@ import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationF
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 
@@ -26,15 +25,10 @@ public class PieShareService {
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
 	private IConfigurationFactory configurationFactory;
-	private IBeanService beanService;
 	private IUserService userService;
 	
 	public void setUserService(IUserService userService) {
 		this.userService = userService;
-	}
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
 	}
 
 	public void setDatabaseService(IDatabaseService databaseService) {

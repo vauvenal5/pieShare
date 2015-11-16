@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
-import javax.inject.Provider;
 import org.pieShare.pieShareAppFx.springConfiguration.PiePlateConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
@@ -26,6 +25,7 @@ import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTa
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
+import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,9 +46,10 @@ public class PieShareAppTasks {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieUtilitiesConfiguration config;
+	@Autowired
+	private ProviderConfiguration providers;
 
 	private void aMessageSendingTask(AMessageSendingTask task) {
-		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setMessageFactoryService(this.services.messageFactoryService());
 		task.setUserService(services.userService());
@@ -169,7 +170,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LoginTask loginTask() {
 		LoginTask service = new LoginTask();
-		service.setBeanService(config.beanService());
+		service.setSymmetricEncryptedChannelProvider(this.providers.symmetricEncryptedChannelProvider);
 		service.setPasswordEncryptionService(config.passwordEncryptionService());
 		service.setConfigurationFactory(services.configurationFactory());
 		service.setEncodeService(config.encodeService());
@@ -188,7 +189,6 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LogoutTask logoutTask() {
 		LogoutTask task = new LogoutTask();
-		task.setBeanService(config.beanService());
 		task.setClusterManagementService(plate.clusterManagementService());
 		task.setUserService(services.userService());
 		return task;
@@ -199,7 +199,6 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public ResetPwdTask resetPwdTask() {
 		ResetPwdTask task = new ResetPwdTask();
-		task.setBeanService(config.beanService());
 		task.setDatabaseService(services.databaseService());
 		task.setUserService(services.userService());
 		return task;
