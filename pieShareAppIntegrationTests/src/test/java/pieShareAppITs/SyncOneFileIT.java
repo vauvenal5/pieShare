@@ -11,19 +11,14 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import org.testng.annotations.*;
 import pieShareAppITs.helper.ITTasksCounter;
@@ -61,7 +56,7 @@ public class SyncOneFileIT {
 	}
 
 	@Test(timeOut = 120000)
-	public void syncOneFileTest() throws Exception {
+	public void syncOneFileTest() throws Exception {		
 		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
