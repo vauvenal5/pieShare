@@ -7,8 +7,8 @@ package org.pieShare.pieShareApp.task.commandTasks.loginTask;
 
 import java.io.File;
 import java.util.Arrays;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
@@ -26,7 +26,6 @@ import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncryptionService;
@@ -40,7 +39,6 @@ public class LoginTask implements ILoginTask {
 	private final byte[] FILE_TEXT;
 	private IPasswordEncryptionService passwordEncryptionService;
 	private IEncodeService encodeService;
-	private IBeanService beanService;
 	private LoginCommand command;
 	private IDatabaseService databaseService;
 	private IClusterManagementService clusterManagementService;
@@ -50,6 +48,7 @@ public class LoginTask implements ILoginTask {
 	private IMessageFactoryService messageFactoryService;
 	private IFileService fileService;
 	private IUserService userService;
+	private Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
 
 	private File pwdFile;
 
@@ -85,8 +84,8 @@ public class LoginTask implements ILoginTask {
 		this.databaseService = databaseService;
 	}
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	public void setSymmetricEncryptedChannelProvider(Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider) {
+		this.symmetricEncryptedChannelProvider = symmetricEncryptedChannelProvider;
 	}
 
 	public void setPasswordEncryptionService(IPasswordEncryptionService service) {
@@ -145,7 +144,7 @@ public class LoginTask implements ILoginTask {
 		//Check and create folders
 		try {
 			//create symetric channel for this user
-			SymmetricEncryptedChannel channel = this.beanService.getBean(SymmetricEncryptedChannel.class);
+			SymmetricEncryptedChannel channel = this.symmetricEncryptedChannelProvider.get();
 			channel.setChannelId(user.getUserName());
 			channel.setEncPwd(user.getPassword());
 			this.clusterManagementService.registerChannel(user.getCloudName(), channel);

@@ -20,9 +20,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListene
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
-import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
-import org.pieShare.pieTools.pieUtilities.service.beanService.BeanServiceError;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -95,7 +93,7 @@ public class ClusterManagementService implements IClusterManagementService {
 			});
 
 			return cluster;
-		} catch (BeanServiceError | ClusterServiceException ex) {
+		} catch (ClusterServiceException ex) {
 			//should never happen
 			throw new ClusterManagmentServiceException(ex);
 		}

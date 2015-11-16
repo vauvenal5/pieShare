@@ -44,7 +44,7 @@ import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListViewEntry;
 import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
 /**
