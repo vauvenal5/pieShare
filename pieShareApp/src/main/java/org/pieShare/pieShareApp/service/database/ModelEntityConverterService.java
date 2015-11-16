@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.service.database;
+package org.pieShare.pieShareApp.service.database;
 
 import java.io.File;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
@@ -14,10 +14,10 @@ import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieshare.piespring.service.database.IModelEntityConverterService;
+import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 
 /**
  *
@@ -25,15 +25,15 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  */
 public class ModelEntityConverterService implements IModelEntityConverterService {
 
-	private IBeanService beanService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	@Override
 	public PieFileEntity convertToEntity(PieFile file) {
-		PieFileEntity entity = this.beanService.getBean(PieFileEntity.class);
+		PieFileEntity entity = new PieFileEntity();
 		entity.setMd5(file.getMd5());
 		entity.setLastModified(file.getLastModified());
 		entity.setFileName(file.getFileName());
@@ -50,7 +50,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 			return null;
 		}
 		
-		PieFile file = this.beanService.getBean(PieFile.class);
+		PieFile file = new PieFile();
 		file.setFileName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());
 		file.setMd5(entity.getMd5());
@@ -71,7 +71,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 
 	@Override
 	public PieUser convertFromEntity(PieUserEntity entity) {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		user.setHasPasswordFile(entity.isHasPasswordFile());
 		user.setUserName(entity.getUserName());
 		user.setIsLoggedIn(false);
@@ -111,7 +111,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 
 	@Override
 	public RegexFileFilter convertFromEntity(FilterEntity entity) {
-		RegexFileFilter filter = beanService.getBean(RegexFileFilter.class);
+		RegexFileFilter filter = new RegexFileFilter();
 		filter.setPattern(entity.getPattern());
 		return filter;
 	}

@@ -12,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
 import org.pieshare.piespring.service.database.IPieDatabaseManagerFactory;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.exception.NoConfigFoundException;
