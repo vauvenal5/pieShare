@@ -6,12 +6,12 @@
 package org.pieShare.pieShareApp.service.database.api;
 
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
+import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
@@ -21,20 +21,20 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
  */
 public interface IModelEntityConverterService {
 
-	PieFileEntity convertToEntity(PieFile file);
+	IPieFileEntity convertToEntity(PieFile file);
 
-	PieFile convertFromEntity(PieFileEntity entity);
+	PieFile convertFromEntity(IPieFileEntity entity);
 
-	PieUserEntity convertToEntity(PieUser user);
+	IPieUserEntity convertToEntity(PieUser user);
 
-	PieUser convertFromEntity(PieUserEntity entity);
+	PieUser convertFromEntity(IPieUserEntity entity);
 
-	PieShareConfiguration convertFromEntity(ConfigurationEntity entity);
+	PieShareConfiguration convertFromEntity(IConfigurationEntity entity);
 
-	ConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user);
+	IConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user);
 
-	FilterEntity convertToEntity(IFilter filter);
+	IFileFilterEntity convertToEntity(IFilter filter);
 
-	RegexFileFilter convertFromEntity(FilterEntity entity);
+	RegexFileFilter convertFromEntity(IFileFilterEntity entity);
 
 }
