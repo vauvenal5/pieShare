@@ -25,7 +25,7 @@ import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareServic
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
-import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
+import org.pieshare.piespring.service.database.ModelEntityConverterService;
 import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;

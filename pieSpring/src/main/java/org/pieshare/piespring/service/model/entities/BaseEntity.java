@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.entities;
+package org.pieshare.piespring.service.model.entities;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
