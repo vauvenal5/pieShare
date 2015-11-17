@@ -22,10 +22,11 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieshare.piespring.service.model.entities.FilterEntity;
+import org.pieshare.piespring.service.model.entities.PieFileEntity;
+import org.pieshare.piespring.service.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 
 public class DatabaseService implements IDatabaseService {
 
@@ -58,7 +59,7 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void persist(PieUser model) {
-		PieUserEntity entity;
+		IPieUserEntity entity;
 		entity = this.modelEntityConverterService.convertToEntity(model);
 		persist(entity);
 	}
