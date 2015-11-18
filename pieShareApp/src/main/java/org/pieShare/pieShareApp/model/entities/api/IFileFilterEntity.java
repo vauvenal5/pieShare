@@ -9,7 +9,7 @@ package org.pieShare.pieShareApp.model.entities.api;
  *
  * @author richy
  */
-public interface IFileFilterEntity {
+public interface IFileFilterEntity extends IBaseEntity{
 
     String getPattern();
 
