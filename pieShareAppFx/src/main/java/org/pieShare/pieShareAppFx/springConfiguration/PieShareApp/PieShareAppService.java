@@ -262,7 +262,7 @@ public class PieShareAppService {
 		service.setBeanService(utilities.beanService());
 		service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
 		service.setConfigurationFactory(configurationFactory());
-		service.setModelEntityConverterService(modelEntityConverterService());
+		service.setConverterService(modelEntityConverterService());
 		return service;
 	}
 

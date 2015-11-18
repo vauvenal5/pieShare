@@ -17,6 +17,8 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
  */
 public interface IDatabaseService {
 
+        void setConverterService(IModelEntityConverterService converter);
+    
 	void persist(PieUser model);
 
 	public ArrayList<PieUser> findAllPieUser();
