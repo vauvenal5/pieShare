@@ -26,6 +26,8 @@ import org.pieshare.piespring.service.model.entities.FilterEntity;
 import org.pieshare.piespring.service.model.entities.PieFileEntity;
 import org.pieshare.piespring.service.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 
 public class DatabaseService implements IDatabaseService {
@@ -92,28 +94,28 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void removePieUser(PieUser user) {
-		PieUserEntity ent;
+		IPieUserEntity ent;
 		ent = modelEntityConverterService.convertToEntity(user);
 		remove(ent);
 	}
 
 	@Override
 	public void mergePieUser(PieUser user) {
-		PieUserEntity entity;
+		IPieUserEntity entity;
 		entity = modelEntityConverterService.convertToEntity(user);
 		merge(entity);
 	}
 
 	@Override
 	public void persistFileFilter(IFilter filter) {
-		FilterEntity en = null;
+		IFileFilterEntity en = null;
 		en = modelEntityConverterService.convertToEntity(filter);
 		persist(en);
 	}
 
 	@Override
 	public void removeFileFilter(IFilter filter) {
-		FilterEntity f;
+		IFileFilterEntity f;
 		f = modelEntityConverterService.convertToEntity(filter);
 		remove(f);
 	}
@@ -136,7 +138,7 @@ public class DatabaseService implements IDatabaseService {
 	}
 
 	public void persist(PieFile file) {
-		PieFileEntity entity;
+		IPieFileEntity entity;
 		entity = this.modelEntityConverterService.convertToEntity(file);
 		this.persist(entity);
 	}
@@ -171,13 +173,13 @@ public class DatabaseService implements IDatabaseService {
 
 	@Override
 	public void mergePieFile(PieFile file) {
-		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		IPieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
 		merge(entity);
 	}
 
 	@Override
 	public void persistPieFile(PieFile file) {
-		PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+		IPieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
 		persist(entity);
 	}
 
