@@ -8,6 +8,7 @@ package org.pieShare.pieShareServer.springConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import javax.inject.Provider;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMessage;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
@@ -20,7 +21,9 @@ import org.pieShare.pieShareServer.tasks.LoopHoleListenerTask;
 import org.pieShare.pieShareServer.tasks.LoopHoleServerAckTask;
 import org.pieShare.pieShareServer.tasks.RegisterTask;
 import org.pieShare.pieShareServer.tasks.WaitForAckFromClientTask;
+import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieshare.piespring.service.beanService.BeanService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +35,11 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class ServiceConfiguration {
+	
+	@Autowired
+	public Provider<RegisterTask> registerTaskProvider;
+	@Autowired
+	public Provider<LoopHoleServerAckTask> loopHoleServerAckTaskProvider;
 
     @Bean
     @Lazy
@@ -65,7 +73,6 @@ public class ServiceConfiguration {
     @Lazy
     public PieExecutorTaskFactory pieExecutorTaskFactory() {
         PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
-        factory.setBeanService(this.beanService());
         factory.setTasks(this.javaMap());
         return factory;
     }
@@ -101,6 +108,10 @@ public class ServiceConfiguration {
         service.setUserPersistanceService(userPersistanceService());
         service.setSerializerService(jacksonSerializerService());
         service.setExecutorFactory(pieExecutorTaskFactory());
+		
+		PieExecutorTaskFactory factory = pieExecutorTaskFactory();
+		factory.registerTaskProvider(RegisterMessage.class, registerTaskProvider);
+        factory.registerTaskProvider(LoopHoleAckMessage.class, loopHoleServerAckTaskProvider);
         return service;
     }
 

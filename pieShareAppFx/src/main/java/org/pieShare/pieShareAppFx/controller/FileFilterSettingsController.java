@@ -19,7 +19,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -40,11 +39,12 @@ import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.conrolExtensions.TwoColumnListViewEntry;
 import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
 /**
@@ -60,6 +60,11 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 	private IBeanService beanService;
 	private IFileService fileService;
 	private IPieShareConfiguration configuration;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	@FXML
 	private ListView<ITwoColumnListViewItem> listViewFilters;
@@ -83,7 +88,7 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 
 	@PostConstruct
 	public void init() {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		configuration = user.getPieShareConfiguration();
 	}
 

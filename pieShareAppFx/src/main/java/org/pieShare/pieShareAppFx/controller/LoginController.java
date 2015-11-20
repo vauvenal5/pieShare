@@ -20,12 +20,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginFinished;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -35,7 +35,7 @@ import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
 import org.pieShare.pieShareAppFx.events.api.ILoginStateChangedListener;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
@@ -70,6 +70,11 @@ public class LoginController implements IController {
     private IBeanService beanService;
     private IEventBase<ILoginStateChangedListener, LoginStateChangedEvent> loginStateChangedEvent;
     private BasePreferencesController basePreferencesController;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
     public void setBasePreferencesController(BasePreferencesController basePreferencesController) {
 	this.basePreferencesController = basePreferencesController;
@@ -129,7 +134,7 @@ public class LoginController implements IController {
     @FXML
     private void handleLoginAction(ActionEvent event) {
 
-	PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+	PieUser user = userService.getUser();
 
 	if (!user.hasPasswordFile()) {
 	    if (!passwordField.getText().equals(passwordFieldRepeat.getText())) {
@@ -225,7 +230,7 @@ public class LoginController implements IController {
 	labelWaitIcon.setVisible(false);
 	labelWaitIcon.setDisable(true);
 
-	PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+	PieUser user = userService.getUser();
 	if (user.getCloudName() != null) {
 	    userNameField.setText(user.getCloudName());
 	    userNameField.disableProperty().set(true);

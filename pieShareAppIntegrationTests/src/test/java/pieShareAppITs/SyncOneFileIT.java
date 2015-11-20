@@ -7,21 +7,18 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
-import static org.testng.Assert.fail;
 import static org.testng.Assert.fail;
 import org.testng.annotations.*;
 import pieShareAppITs.helper.ITTasksCounter;
@@ -59,7 +56,7 @@ public class SyncOneFileIT {
 	}
 
 	@Test(timeOut = 120000)
-	public void syncOneFileTest() throws Exception {
+	public void syncOneFileTest() throws Exception {		
 		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
@@ -67,10 +64,21 @@ public class SyncOneFileIT {
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
 		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
-		executorFactory.registerTask(FileTransferCompleteMessage.class, TestTask.class);
+		executorFactory.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<TestTask>() {
+			@Override
+			public TestTask get() {
+				return context.getBean(TestTask.class);
+			}
+		});
 
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		testExecutorFacotry.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<FileTransferCompleteTask>() {
+
+			@Override
+			public FileTransferCompleteTask get() {
+				return context.getBean(FileTransferCompleteTask.class);
+			}
+		});
 
 		
 		System.out.println("Starting bot!");
@@ -120,10 +128,21 @@ public class SyncOneFileIT {
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
 		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
-		executorFactory.registerTask(FileTransferCompleteMessage.class, TestTask.class);
+		executorFactory.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<TestTask>() {
+			@Override
+			public TestTask get() {
+				return context.getBean(TestTask.class);
+			}
+		});
 
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		testExecutorFacotry.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<FileTransferCompleteTask>() {
+
+			@Override
+			public FileTransferCompleteTask get() {
+				return context.getBean(FileTransferCompleteTask.class);
+			}
+		});
 
 		ITUtil.executeLoginToTestCloud(context);
 		

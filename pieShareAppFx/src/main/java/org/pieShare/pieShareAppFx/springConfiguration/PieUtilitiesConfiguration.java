@@ -68,7 +68,6 @@ public class PieUtilitiesConfiguration {
     @Lazy
     public PieExecutorTaskFactory pieExecutorTaskFactory() {
         PieExecutorTaskFactory factory = new PieExecutorTaskFactory();
-        factory.setBeanService(this.beanService());
         factory.setTasks(this.javaMap());
         return factory;
 	}

@@ -30,9 +30,10 @@ import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareAppFx.FXMLController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 
 /**
  *
@@ -45,6 +46,7 @@ public class BasePreferencesController implements IController, ITwoColumnListVie
 	private IBeanService beanService;
 	private FXMLController fxmlController;
 	private IDatabaseService databaseService;
+	private IUserService userService;
 	private PieUser user;
 
 	@FXML
@@ -84,6 +86,10 @@ public class BasePreferencesController implements IController, ITwoColumnListVie
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
 	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public void setFXMLController(FXMLController controller) {
 		this.fxmlController = controller;
@@ -91,7 +97,7 @@ public class BasePreferencesController implements IController, ITwoColumnListVie
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		user = userService.getUser();
 		configuration = user.getPieShareConfiguration();
 		textFieldTempPath.setText(configuration.getTmpDir().getAbsolutePath());
 		textFieldWorkingPath.setText(configuration.getWorkingDir().getAbsolutePath());

@@ -6,6 +6,7 @@
 
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 
+import javax.inject.Provider;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
@@ -34,7 +35,7 @@ public interface IPieExecutorTaskFactory {
 	 * @param event
 	 * @param task
 	 */
-	<X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTask(Class<X> event, Class<T> task);
+	<X extends P, P extends IPieEvent, T extends IPieEventTask<P>> void registerTaskProvider(Class<X> event, Provider<T> provider);
 	
 	<P extends IPieEvent> void removeTaskRegistration(Class<P> event);
 }

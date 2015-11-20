@@ -2,8 +2,6 @@ package org.pieShare.pieShareApp.service.fileService;
 
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -12,8 +10,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
@@ -22,9 +20,14 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 public class LocalFileService extends FileServiceBase {
 
 	private IHashService hashService;
+	private Provider<PieFile> pieFileProvider;
 
 	public void setHashService(IHashService hashService) {
 		this.hashService = hashService;
+	}
+
+	public void setPieFileProvider(Provider<PieFile> pieFileProvider) {
+		this.pieFileProvider = pieFileProvider;
 	}
 
 	@Override
@@ -50,7 +53,7 @@ public class LocalFileService extends FileServiceBase {
 
 	@Override
 	public PieFile getPieFile(File file) throws IOException {
-		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
+		PieFile pieFile = this.pieFileProvider.get();
 
 		pieFile.setRelativePath(relitivizeFilePath(file).toString());
 
