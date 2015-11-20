@@ -20,11 +20,13 @@ import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
+import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,16 +47,18 @@ public class PieShareAppTasks {
 	private PiePlateConfiguration plate;
 	@Autowired
 	private PieUtilitiesConfiguration config;
-	
+	@Autowired
+	private ProviderConfiguration providers;
+
 	private void aMessageSendingTask(AMessageSendingTask task) {
-		task.setBeanService(this.config.beanService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		task.setMessageFactoryService(this.services.messageFactoryService());
+		task.setUserService(services.userService());
 	}
-			
+
 	private void aLocalFileEventTask(ALocalFileEventTask task) {
 		this.aMessageSendingTask(task);
-		
+
 		task.setFileFilterService(services.fileFilterService());
 		task.setHistoryService(services.historyService());
 		task.setFileEncrypterService(services.fileEncryptionService());
@@ -66,11 +70,9 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileMetaTask fileMetaTask() {
 		FileMetaTask task = new FileMetaTask();
+		aMessageSendingTask(task);
 		task.setRequestService(this.services.requestService());
-		task.setBeanService(this.config.beanService());
 		task.setBitTorrentService(this.services.bitTorrentService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -78,11 +80,9 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileRequestTask fileRequestTask() {
 		FileRequestTask task = new FileRequestTask();
-		task.setBeanService(config.beanService());
+		aMessageSendingTask(task);
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
-		task.setClusterManagementService(this.plate.clusterManagementService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -102,15 +102,15 @@ public class PieShareAppTasks {
 		task.setComparerService(services.fileCompareService());
 		return task;
 	}
-        
-        @Bean
+
+	@Bean
 	@Scope(value = "prototype")
-        public FileChangedTask fileChangedTask() {
-            FileChangedTask task = new FileChangedTask();
-            task.setRequestService(this.services.requestService());
-			task.setComparerService(this.services.fileCompareService());
-            return task;
-        }
+	public FileChangedTask fileChangedTask() {
+		FileChangedTask task = new FileChangedTask();
+		task.setRequestService(this.services.requestService());
+		task.setComparerService(this.services.fileCompareService());
+		return task;
+	}
 
 	@Bean
 	@Scope(value = "prototype")
@@ -154,8 +154,6 @@ public class PieShareAppTasks {
 		FileListRequestTask task = new FileListRequestTask();
 		this.aMessageSendingTask(task);
 		task.setFileService(this.services.historyFileService());
-		task.setBeanService(this.config.beanService());
-		task.setMessageFactoryService(this.services.messageFactoryService());
 		return task;
 	}
 
@@ -173,7 +171,7 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LoginTask loginTask() {
 		LoginTask service = new LoginTask();
-		service.setBeanService(config.beanService());
+		service.setSymmetricEncryptedChannelProvider(this.providers.symmetricEncryptedChannelProvider);
 		service.setPasswordEncryptionService(config.passwordEncryptionService());
 		service.setConfigurationFactory(services.configurationFactory());
 		service.setEncodeService(config.encodeService());
@@ -182,7 +180,8 @@ public class PieShareAppTasks {
 		service.setHistoryService(services.historyService());
 		service.setFileWatcherService(this.services.apacheFileWatcherService());
 		service.setMessageFactoryService(this.services.messageFactoryService());
-                service.setFileService(this.services.historyFileService());
+		service.setFileService(this.services.historyFileService());
+		service.setUserService(services.userService());
 		return service;
 	}
 
@@ -191,8 +190,8 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public LogoutTask logoutTask() {
 		LogoutTask task = new LogoutTask();
-		task.setBeanService(config.beanService());
 		task.setClusterManagementService(plate.clusterManagementService());
+		task.setUserService(services.userService());
 		return task;
 	}
 
@@ -201,11 +200,11 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public ResetPwdTask resetPwdTask() {
 		ResetPwdTask task = new ResetPwdTask();
-		task.setBeanService(config.beanService());
 		task.setDatabaseService(services.databaseService());
+		task.setUserService(services.userService());
 		return task;
 	}
-	
+
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
@@ -220,7 +219,7 @@ public class PieShareAppTasks {
 		task.setRequestService(this.services.requestService());
 		return task;
 	}
-	
+
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")
@@ -233,4 +232,13 @@ public class PieShareAppTasks {
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		return task;
 	}
+        
+        @Bean
+        @Lazy
+        @Scope(value = "prototype")
+        public FolderCreateTask createFolderTask() {
+                FolderCreateTask task = new FolderCreateTask();
+                task.setFolderService(this.services.folderService());
+                return task;
+        }
 }

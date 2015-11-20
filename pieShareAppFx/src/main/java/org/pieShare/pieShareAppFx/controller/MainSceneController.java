@@ -6,7 +6,6 @@
 package org.pieShare.pieShareAppFx.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
@@ -28,6 +27,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareAppFx.controller.api.IController;
 import org.pieShare.pieShareAppFx.controller.api.ITwoColumnListViewItem;
 import org.pieShare.pieShareAppFx.events.LoginStateChangedEvent;
@@ -37,7 +37,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterAddedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterAddedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -53,7 +53,8 @@ public class MainSceneController implements Initializable {
 	private TwoColumnListViewController cloudsListViewController;
 	private LoginController loginController;
 	private ClusterSettingsController clusterSettingsController;
-
+	private IUserService userService;
+	
 	@FXML
 	private GridPane mainGridPane;
 
@@ -77,6 +78,10 @@ public class MainSceneController implements Initializable {
 
 	@FXML
 	private BorderPane preferencesBorderPane;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
 
 	public void setClusterSettingsController(ClusterSettingsController clusterSettingsController) {
 		this.clusterSettingsController = clusterSettingsController;
@@ -112,7 +117,7 @@ public class MainSceneController implements Initializable {
 		mainGridPane.getStyleClass().add("gridPane");
 		mainBorderPane.setCenter(mainGridPane);
 
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 
 		try {
 			preferencesBorderPane.setCenter(preferencesListViewController.getControl());
@@ -163,7 +168,7 @@ public class MainSceneController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+						PieUser user = userService.getUser();
 						if (user.getCloudName() == null) {
 							return;
 						}
@@ -297,7 +302,7 @@ public class MainSceneController implements Initializable {
 	public void setClusterSettingControl() throws IOException {
 		FXMLLoader loader = beanService.getBean(PieShareAppBeanNames.getGUILoader());
 
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		if (user.isIsLoggedIn()) {
 			setToMainCenter(clusterSettingsController.getControl());
 		}

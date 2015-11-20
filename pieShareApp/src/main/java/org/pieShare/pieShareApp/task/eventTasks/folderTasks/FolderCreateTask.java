@@ -21,6 +21,10 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 public class FolderCreateTask extends PieEventTaskBase<FolderCreateMessage> {
     private IFolderService folderService;
     
+    public void setFolderService (IFolderService folderService) {
+        this.folderService = folderService;
+    }
+    
     @Override
     public void run() {
         try {

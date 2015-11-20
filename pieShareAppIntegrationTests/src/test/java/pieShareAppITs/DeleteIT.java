@@ -10,8 +10,11 @@ import commonTestTools.TestFileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IPieExecutorTaskFactory;
@@ -65,10 +68,22 @@ public class DeleteIT {
 		
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 		executorFactory.removeTaskRegistration(FileDeletedMessage.class);
-		executorFactory.registerTask(FileDeletedMessage.class, TestTask.class);
+		executorFactory.registerTaskProvider(FileDeletedMessage.class, new Provider<TestTask>() {
+
+			@Override
+			public TestTask get() {
+				return context.getBean(TestTask.class);
+			}
+		});
 		
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
+		testExecutorFacotry.registerTaskProvider(FileDeletedMessage.class, new Provider<FileDeletedTask>() {
+
+			@Override
+			public FileDeletedTask get() {
+				return context.getBean(FileDeletedTask.class);
+			}
+		});
 	}
 
 	@AfterMethod
