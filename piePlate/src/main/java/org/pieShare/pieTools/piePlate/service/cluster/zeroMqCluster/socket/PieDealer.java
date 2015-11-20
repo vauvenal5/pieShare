@@ -17,20 +17,23 @@ import org.zeromq.ZMQException;
  */
 public class PieDealer implements IPieDealer {
      
-    private ZMQ.Context context;
+    private ZMQ.Context context; //switch to ZContext?
     private ZMQ.Socket dealer;
     private ZeroMQUtilsService utils;
     private int endpoints = 0;
     
     public PieDealer()
     {
-        this.context = ZMQ.context(1);
-        this.dealer = context.socket(ZMQ.DEALER);
         this.utils = new ZeroMQUtilsService();
     }
 
     @Override
     public boolean connect(InetAddress address, int port) {
+        if(this.context == null){
+            this.context = ZMQ.context(1);
+            this.dealer = context.socket(ZMQ.DEALER);
+        }
+        
         try{
             PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
             dealer.connect(utils.buildConnectionString(address, port));
@@ -52,7 +55,8 @@ public class PieDealer implements IPieDealer {
     @Override
     public void close() {
         dealer.close();
-        context.term();
+        context.close();
+		context.term();
     }
 
     @Override

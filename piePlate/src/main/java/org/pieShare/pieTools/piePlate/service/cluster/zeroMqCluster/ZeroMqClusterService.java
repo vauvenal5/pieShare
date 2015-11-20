@@ -13,6 +13,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
@@ -21,8 +23,14 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  */
 public class ZeroMqClusterService implements IClusterService {
 
+	private IPieDealer dealer;
+
 	@Override
 	public void connect(String clusterName) throws ClusterServiceException {
+		//call discovery for endpoints
+		//foreach endpoint connect&send ZeroMQClusterMessage
+		//dealer = new PieDealer();
+		//
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -38,6 +46,7 @@ public class ZeroMqClusterService implements IClusterService {
 
 	@Override
 	public void disconnect() throws ClusterServiceException {
+		//dealer.destroy();
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -80,5 +89,5 @@ public class ZeroMqClusterService implements IClusterService {
 	public boolean isMaster() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
-	
+
 }
