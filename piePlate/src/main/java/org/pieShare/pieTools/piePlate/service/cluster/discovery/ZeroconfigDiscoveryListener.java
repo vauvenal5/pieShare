@@ -36,6 +36,7 @@ public class ZeroconfigDiscoveryListener implements ServiceListener {
 
 	@Override
 	public void serviceResolved(ServiceEvent event) {
+		PieLogger.trace(this.getClass(), "New Service Resolved-Event with name {} and port {}.", event.getName(), event.getInfo().getPort());
 		for(InetAddress ad: event.getInfo().getInetAddresses()) {
 			DiscoveredMember member = new DiscoveredMember();
 			memberDiscoveredEventBase.fireEvent(new MemberDiscoveredEvent(this, member));

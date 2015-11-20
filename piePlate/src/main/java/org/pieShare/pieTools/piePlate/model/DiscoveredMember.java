@@ -14,5 +14,21 @@ import java.util.EventObject;
  */
 public class DiscoveredMember {
 	private InetAddress inetAdresses;
-	
+	private int port;
+
+	public InetAddress getInetAdresses() {
+		return inetAdresses;
+	}
+
+	public void setInetAdresses(InetAddress inetAdresses) {
+		this.inetAdresses = inetAdresses;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
 }
