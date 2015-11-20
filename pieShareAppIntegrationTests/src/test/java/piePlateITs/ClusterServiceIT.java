@@ -157,15 +157,15 @@ public class ClusterServiceIT {
 		prepareMessageCheckOnMock(tester3, executor3, msg);
 
 		startTester(tester2, true);
-		Assert.assertEquals(1, tester2.getService().getMembersCount());
+		Assert.assertEquals(1, ((JGroupsClusterService)tester2.getService()).getMembersCount());
 
 		startTester(tester3, true);
-		Assert.assertEquals(2, tester3.getService().getMembersCount());
+		Assert.assertEquals(2, ((JGroupsClusterService)tester3.getService()).getMembersCount());
 
 		new Thread(tester1).start();
 		waitUntilDone(tester1);
 
-		Assert.assertEquals(3, tester2.getService().getMembersCount());
+		Assert.assertEquals(3, ((JGroupsClusterService)tester2.getService()).getMembersCount());
 
 		waitUntilDone(tester2);
 		waitUntilDone(tester3);
