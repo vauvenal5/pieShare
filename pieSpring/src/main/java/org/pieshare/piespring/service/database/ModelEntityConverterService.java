@@ -5,19 +5,22 @@
  */
 package org.pieshare.piespring.service.database;
 
+import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import java.io.File;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieshare.piespring.model.entities.ConfigurationEntity;
-import org.pieshare.piespring.model.entities.FilterEntity;
-import org.pieshare.piespring.model.entities.PieFileEntity;
-import org.pieshare.piespring.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieshare.piespring.service.database.IModelEntityConverterService;
+import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
+import org.pieshare.piespring.service.model.entities.ConfigurationEntity;
+import org.pieshare.piespring.service.model.entities.FilterEntity;
+import org.pieshare.piespring.service.model.entities.PieFileEntity;
+import org.pieshare.piespring.service.model.entities.PieUserEntity;
 
 /**
  *
@@ -25,15 +28,15 @@ import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
  */
 public class ModelEntityConverterService implements IModelEntityConverterService {
 
-	private IBeanService beanService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	@Override
-	public PieFileEntity convertToEntity(PieFile file) {
-		PieFileEntity entity = this.beanService.getBean(PieFileEntity.class);
+	public IPieFileEntity convertToEntity(PieFile file) {
+		IPieFileEntity entity = new PieFileEntity();
 		entity.setMd5(file.getMd5());
 		entity.setLastModified(file.getLastModified());
 		entity.setFileName(file.getName());
@@ -45,12 +48,12 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieFile convertFromEntity(PieFileEntity entity) {
+	public PieFile convertFromEntity(IPieFileEntity entity) {
 		if(entity == null) {
 			return null;
 		}
 		
-		PieFile file = this.beanService.getBean(PieFile.class);
+		PieFile file = new PieFile();
 		file.setName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());
 		file.setMd5(entity.getMd5());
@@ -60,8 +63,8 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieUserEntity convertToEntity(PieUser user) {
-		PieUserEntity entity = new PieUserEntity();
+	public IPieUserEntity convertToEntity(PieUser user) {
+		IPieUserEntity entity = new PieUserEntity();
 		entity.setHasPasswordFile(user.hasPasswordFile());
 		entity.setUserName(user.getUserName());
 		entity.setConfigurationEntity(this.convertToEntity(user.getPieShareConfiguration(), user));
@@ -70,8 +73,8 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieUser convertFromEntity(PieUserEntity entity) {
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+	public PieUser convertFromEntity(IPieUserEntity entity) {
+		PieUser user = userService.getUser();
 		user.setHasPasswordFile(entity.isHasPasswordFile());
 		user.setUserName(entity.getUserName());
 		user.setIsLoggedIn(false);
@@ -80,7 +83,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public PieShareConfiguration convertFromEntity(ConfigurationEntity entity) {
+	public PieShareConfiguration convertFromEntity(IConfigurationEntity entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -92,7 +95,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public ConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user) {
+	public IConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user) {
 		ConfigurationEntity entity = new ConfigurationEntity();
 		entity.setPwdFile(conf.getPwdFile().toPath().toString());
 		entity.setTmpDir(conf.getTmpDir().toPath().toString());
@@ -102,7 +105,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public FilterEntity convertToEntity(IFilter filter) {
+	public IFileFilterEntity convertToEntity(IFilter filter) {
 		//ToDo: Spring
 		FilterEntity en = new FilterEntity();
 		en.setPattern(filter.getPattern());
@@ -110,8 +113,8 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 	}
 
 	@Override
-	public RegexFileFilter convertFromEntity(FilterEntity entity) {
-		RegexFileFilter filter = beanService.getBean(RegexFileFilter.class);
+	public RegexFileFilter convertFromEntity(IFileFilterEntity entity) {
+		RegexFileFilter filter = new RegexFileFilter();
 		filter.setPattern(entity.getPattern());
 		return filter;
 	}

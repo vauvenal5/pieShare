@@ -12,6 +12,7 @@ import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppSer
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTasks;
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareAppFx;
+import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -33,6 +34,7 @@ public class MainApp extends Application {
                 context.register(PieShareAppService.class);
                 context.register(PieShareAppTasks.class);
                 context.register(PieShareAppFx.class);
+				context.register(ProviderConfiguration.class);
                 context.refresh();
 		context.registerShutdownHook();
 		FXMLController controller = context.getBean(FXMLController.class);

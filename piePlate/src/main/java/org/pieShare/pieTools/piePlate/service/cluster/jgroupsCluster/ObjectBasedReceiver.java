@@ -1,16 +1,15 @@
 package org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster;
 
+import javax.inject.Provider;
 import org.jgroups.Message;
 import org.jgroups.Receiver;
 import org.jgroups.ReceiverAdapter;
 import org.jgroups.View;
-import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
-import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 
 /**
@@ -19,7 +18,8 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecut
 public class ObjectBasedReceiver extends ReceiverAdapter implements Receiver {
 
 	private IExecutorService executorService;
-	private IBeanService beanService;
+	private Provider<ChannelTask> channelTaskProvider;
+	private Provider<IPieAddress> addressProvider;
 	
 	private IClusterService clusterService;
 
@@ -27,8 +27,12 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements Receiver {
 		this.executorService = service;
 	}
 
-	public void setBeanService(IBeanService service) {
-		this.beanService = service;
+	public void setChannelTaskProvider(Provider<ChannelTask> channelTaskProvider) {
+		this.channelTaskProvider = channelTaskProvider;
+	}
+
+	public void setAddressProvider(Provider<IPieAddress> addressProvider) {
+		this.addressProvider = addressProvider;
 	}
 
 	public void setClusterService(IClusterService clusterService) {
@@ -39,11 +43,11 @@ public class ObjectBasedReceiver extends ReceiverAdapter implements Receiver {
 	public void receive(Message msg) {
 		
 		for(IIncomingChannel channel: this.clusterService.getIncomingChannels()) {
-			ChannelTask task = this.beanService.getBean(ChannelTask.class);
+			ChannelTask task = this.channelTaskProvider.get();
 			task.setChannel(channel);
 			task.setMessage(msg.getBuffer());
 			
-			JGroupsPieAddress ad = (JGroupsPieAddress) this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress());
+			JGroupsPieAddress ad = (JGroupsPieAddress) this.addressProvider.get();
 			ad.setAddress(msg.getSrc());
 			ad.setClusterName(this.clusterService.getId());
 			task.setAddress(ad);
