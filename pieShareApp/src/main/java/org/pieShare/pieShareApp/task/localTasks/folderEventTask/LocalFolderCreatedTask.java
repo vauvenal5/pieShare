@@ -11,26 +11,32 @@ import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author daniela
  */
-public class LocalFolderCreatedTask extends AMessageSendingTask{
+public class LocalFolderCreatedTask extends ALocalFileEventTask{
     PieFolder pieFolder;
     private Provider<FolderCreateMessage> msgProvider;
     
     @Override
     public void run() {
-        try {
-            this.clusterManagementService.sendMessage(msgProvider.get());
-            
-        } catch (ClusterManagmentServiceException ex) {
-            //TODO use right logger
-            Logger.getLogger(LocalFolderCreatedTask.class.getName()).log(Level.SEVERE, null, ex);
+        if(pieFolder == null) {
+            PieLogger.info(this.getClass(), "No Folder set, pieFolder:", pieFolder);
+            return;
         }
+                    
+        //this.clusterManagementService.sendMessage(msgProvider.get());
+        FolderCreateMessage msg = msgProvider.get();
+            
+        //TODO: add history service when ready.
+        
+        super.doWork(msg, pieFolder);
     }
 
     //should be called by OS Listener
