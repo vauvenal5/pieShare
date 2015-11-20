@@ -60,7 +60,7 @@ public class ShareService implements IShareService{
 		
 		File localFile = this.fileService.getAbsolutePath(file).toFile();
 		File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
-		File localEncTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
+		File localEncTmpFile = new File(localTmpFileParent, file.getName()+".enc");
 		
 		synchronized(file) {
 			if(this.isPrepared(file)) {			
@@ -84,7 +84,7 @@ public class ShareService implements IShareService{
 		try {
 			if(!source) {
 				File localTmpFile = this.fileService.getAbsoluteTmpPath(file).toFile();
-				File localEncTmpFile = new File(localTmpFile.getParentFile(), file.getFileName()+".enc");
+				File localEncTmpFile = new File(localTmpFile.getParentFile(), file.getName()+".enc");
 				File localFile = this.fileService.getAbsolutePath(file).toFile();
 				
 				//todo: does this belong into the fileService?
@@ -116,7 +116,7 @@ public class ShareService implements IShareService{
 	@Override
 	public boolean isPrepared(PieFile file) {
 		File localTmpFileParent = this.fileService.getAbsoluteTmpPath(file).toFile().getParentFile();
-		File localEncTmpFile = new File(localTmpFileParent, file.getFileName()+".enc");
+		File localEncTmpFile = new File(localTmpFileParent, file.getName()+".enc");
 		synchronized(file) {
                         if(this.preparedFiles.get(file) == null) {
                             return Boolean.FALSE && localEncTmpFile.exists();

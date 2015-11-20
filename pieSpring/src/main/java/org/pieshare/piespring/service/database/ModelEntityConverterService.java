@@ -36,11 +36,11 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		PieFileEntity entity = this.beanService.getBean(PieFileEntity.class);
 		entity.setMd5(file.getMd5());
 		entity.setLastModified(file.getLastModified());
-		entity.setFileName(file.getFileName());
-		entity.setRelativeFilePath(file.getRelativeFilePath());
+		entity.setFileName(file.getName());
+		entity.setRelativeFilePath(file.getRelativePath());
 		entity.setDeleted(file.isDeleted());
 		
-		entity.setAbsoluteWorkingPath(file.getRelativeFilePath());
+		entity.setAbsoluteWorkingPath(file.getRelativePath());
 		return entity;
 	}
 
@@ -51,10 +51,10 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		}
 		
 		PieFile file = this.beanService.getBean(PieFile.class);
-		file.setFileName(entity.getFileName());
+		file.setName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());
 		file.setMd5(entity.getMd5());
-		file.setRelativeFilePath(entity.getRelativeFilePath());
+		file.setRelativePath(entity.getRelativeFilePath());
 		file.setDeleted(entity.isDeleted());
 		return file;
 	}
