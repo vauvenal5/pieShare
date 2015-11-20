@@ -7,6 +7,7 @@
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.ACheckConflictTask;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
@@ -25,8 +26,8 @@ public class FileDeletedTask extends ACheckConflictTask<IFileDeletedMessage>{
 
 	@Override
 	public void run() {
-		if(!this.isConflictedOrNotNeeded(this.msg.getPieFile())) {
-			this.fileService.deleteRecursive(this.msg.getPieFile());
+		if(!this.isConflictedOrNotNeeded((PieFile)this.msg.getPieFolder())) {
+			this.fileService.deleteRecursive((PieFile) this.msg.getPieFolder());
 		}
 	}
 	

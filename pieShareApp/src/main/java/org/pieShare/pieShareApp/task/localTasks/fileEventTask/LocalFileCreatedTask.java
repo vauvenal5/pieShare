@@ -29,9 +29,9 @@ public class LocalFileCreatedTask extends ALocalFileEventTask {
 				return;
 			}
 			
-			//todo: why do we scip directories?!
+			//todo: why do we skip directories?!
 			if (pieFile == null || this.file.isDirectory()) {
-				PieLogger.info(this.getClass(), "Sciping new file: {}", this.file.getName());
+				PieLogger.info(this.getClass(), "Skipping new file: {}", this.file.getName());
 				return;
 			}
 			

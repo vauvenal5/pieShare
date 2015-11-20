@@ -35,7 +35,7 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 	@Override
 	public void run() {
 		
-		if(!this.requestService.handleRequest(msg.getPieFile())) {
+		if(!this.requestService.handleRequest(msg.getPieFolder())) {
 			return;
 		}
 		
@@ -44,7 +44,7 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 			
 			IMetaCommitMessage metaCommit = this.messageFactoryService.getMetaCommitMessage();
 			metaCommit.setMetaInfo(msg.getMetaInfo());
-			metaCommit.setPieFile(msg.getPieFile());
+			metaCommit.setPieFolder(msg.getPieFolder());
 			this.setDefaultAdresse(metaCommit);
 			this.clusterManagementService.sendMessage(metaCommit);
 		} catch (ClusterManagmentServiceException ex) {

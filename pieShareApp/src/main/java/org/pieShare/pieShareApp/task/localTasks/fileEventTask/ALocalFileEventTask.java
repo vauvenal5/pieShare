@@ -8,7 +8,9 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 import java.io.File;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFolderMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
@@ -85,15 +87,15 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		return pieFile;
 	}
 
-	protected void doWork(IFileMessageBase msg, PieFile file) {
+	protected void doWork(IFolderMessageBase msg, PieFolder fileOrFolder) {
 		try {
-			msg.setPieFile(file);
+			msg.setPieFolder(fileOrFolder);
 			
 			this.setDefaultAdresse(msg);
 
 			this.clusterManagementService.sendMessage(msg);
 		} catch (ClusterManagmentServiceException ex) {
-			PieLogger.info(this.getClass(), "Local file delete messed up!", ex);
+			PieLogger.info(this.getClass(), "Local file or folder delete messed up!", ex);
 		}
 	}
 

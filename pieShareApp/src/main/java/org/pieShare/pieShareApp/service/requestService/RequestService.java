@@ -57,7 +57,7 @@ public class RequestService implements IRequestService {
 		PieUser user = userService.getUser();
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
-		msg.setPieFile(pieFile);
+		msg.setPieFolder(pieFile);
 		try {
 			PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
 			clusterManagementService.sendMessage(msg);
