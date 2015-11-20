@@ -80,7 +80,7 @@ public class ZeroMqClusterService implements IClusterService {
 		}
 	}
 
-	@Override
+	//@Override
 	public int getMembersCount() {
 		//return jmDNS count
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
