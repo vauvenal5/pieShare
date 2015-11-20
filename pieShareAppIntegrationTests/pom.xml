@@ -8,6 +8,14 @@
     </parent>
     <artifactId>pieShareAppIntegrationTests</artifactId>
     <packaging>jar</packaging>
+	
+	<repositories>
+		<repository>
+			<id>jcenter</id>
+			<url>http://jcenter.bintray.com/</url>
+		</repository>
+	</repositories>
+	
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
@@ -49,6 +57,13 @@
 			<version>1.9.5</version>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.openhab.jmdns</groupId>
+            <artifactId>jmdns</artifactId>
+            <version>3.4.2</version>
+            <scope>test</scope>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 	
 	<build>
