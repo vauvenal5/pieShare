@@ -23,13 +23,17 @@ public class PieRouter implements IPieRouter{
     
     public PieRouter()
     {
-        this.context = ZMQ.context(1);
-        this.router = context.socket(ZMQ.ROUTER);
+       
         this.utils = new ZeroMQUtilsService();
     }
     
     @Override
     public boolean bind(InetAddress address, int port) {
+        if(context == null){
+            this.context = ZMQ.context(1);
+            this.router = context.socket(ZMQ.ROUTER);
+        }
+        
         PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(address, port));
         try{
             router.bind(utils.buildConnectionString(address, port));
