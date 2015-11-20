@@ -25,7 +25,7 @@ public class PieUserEntity implements IPieUserEntity {
     private String userName;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pieUserEntity")
-    private IConfigurationEntity configurationEntity;
+    private ConfigurationEntity configurationEntity;
 
     private boolean hasPasswordFile;
 
@@ -41,7 +41,7 @@ public class PieUserEntity implements IPieUserEntity {
 
     @Override
     public void setConfigurationEntity(IConfigurationEntity configurationEntity) {
-        this.configurationEntity = configurationEntity;
+        this.configurationEntity = (ConfigurationEntity)configurationEntity;
     }
 
     @Override
