@@ -24,17 +24,17 @@ public class ModelTests {
 	public void PieFileEqualsTest() throws Exception {
 		PieFile file = new PieFile();
 		file.setDeleted(false);
-		file.setFileName("file1");
+		file.setName("file1");
 		file.setLastModified(1000);
 		file.setMd5("thisAMd5".getBytes());
-		file.setRelativeFilePath("/bla/&blad/blu");
+		file.setRelativePath("/bla/&blad/blu");
 		
 		PieFile file2 = new PieFile();
 		file2.setDeleted(false);
-		file2.setFileName("file1");
+		file2.setName("file1");
 		file2.setLastModified(1000);
 		file2.setMd5("thisAOtherMd5".getBytes());
-		file2.setRelativeFilePath("/bla/&blad/blu");
+		file2.setRelativePath("/bla/&blad/blu");
 		
 		Assert.assertTrue(file.equals(file));
 		Assert.assertFalse(file.equals(file2));
@@ -45,10 +45,10 @@ public class ModelTests {
 		
 		PieFile file = new PieFile();
 		file.setDeleted(false);
-		file.setFileName("file1");
+		file.setName("file1");
 		file.setLastModified(1000);
 		file.setMd5("thisAMd5".getBytes());
-		file.setRelativeFilePath("/bla/&blad/blu");
+		file.setRelativePath("/bla/&blad/blu");
 		
 		FileMeta fileMeta = new FileMeta();
 		fileMeta.setData("thisIsTheData".getBytes());
@@ -61,10 +61,10 @@ public class ModelTests {
 	public void FileMetaInConcurrentHashMapTest() throws Exception {
 		PieFile file = new PieFile();
 		file.setDeleted(false);
-		file.setFileName("file1");
+		file.setName("file1");
 		file.setLastModified(1000);
 		file.setMd5("thisAMd5".getBytes());
-		file.setRelativeFilePath("/bla/&blad/blu");
+		file.setRelativePath("/bla/&blad/blu");
 		
 		FileMeta fileMeta = new FileMeta();
 		fileMeta.setData("thisIsTheData".getBytes());

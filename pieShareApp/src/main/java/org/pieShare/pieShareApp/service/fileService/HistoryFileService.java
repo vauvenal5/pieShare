@@ -33,8 +33,8 @@ public class HistoryFileService extends FileServiceBase {
 	@Override
 	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = new PieFile();
-		pieFile.setFileName(file.getName());
-		pieFile.setRelativeFilePath(this.relitivizeFilePath(file).toString());
+		pieFile.setName(file.getName());
+		pieFile.setRelativePath(this.relitivizeFilePath(file).toString());
 		PieFile foundFile = this.databaseService.findPieFile(pieFile);
 		return foundFile;
 	}

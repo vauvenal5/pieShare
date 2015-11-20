@@ -15,25 +15,14 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  *
  * @author richy
  */
-public class PieFile implements IBaseModel, Comparable<Object> {
+public class PieFile extends PieFolder implements IBaseModel, Comparable<Object> {
 
 	private byte[] md5;
-	private String relativeFilePath;
-	private String fileName;
 	private long lastModified;
-	private boolean deleted;
 
 	public PieFile() {
-		this.deleted = false;
-	}
-
-	public boolean isDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
+            super();
+        }
 
 	public byte[] getMd5() {
 		return md5;
@@ -41,14 +30,6 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 
 	public void setMd5(byte[] md5) {
 		this.md5 = md5;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
 	}
 
 	public long getLastModified() {
@@ -59,15 +40,7 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 		this.lastModified = lastModified;
 	}
 
-	public String getRelativeFilePath() {
-		return relativeFilePath;
-	}
-
-	public void setRelativeFilePath(String relativeFilePath) {
-		this.relativeFilePath = relativeFilePath;
-	}
-	
-	@Override
+        @Override
 	public boolean equals(Object o) {
 		if (!(o instanceof PieFile)) {
 			return false;
@@ -90,23 +63,23 @@ public class PieFile implements IBaseModel, Comparable<Object> {
 	public int hashCode() {
 		int hash = 3;
 		hash = 79 * hash + Arrays.hashCode(this.md5);
-		hash = 79 * hash + Objects.hashCode(this.relativeFilePath);
-		hash = 79 * hash + Objects.hashCode(this.fileName);
+		hash = 79 * hash + Objects.hashCode(super.getRelativePath());
+		hash = 79 * hash + Objects.hashCode(super.getName());
 		hash = 79 * hash + (int) (this.lastModified ^ (this.lastModified >>> 32));
-		hash = 79 * hash + (this.deleted ? 1 : 0);
+		hash = 79 * hash + (super.isDeleted() ? 1 : 0);
 		return hash;
 	}
 	
 	protected boolean equalFilePara(PieFile f) {
-		if(!this.fileName.equals(f.fileName)) {
+		if(!super.getName().equals(f.getName())) {
 			return false;
 		}
 		
-		if(!this.relativeFilePath.equals(f.relativeFilePath)) {
+		if(!super.getRelativePath().equals(f.getRelativePath())) {
 			return false;
 		}
 		
-		if(this.deleted != f.deleted) {
+		if(super.isDeleted() != f.isDeleted()) {
 			return false;
 		} 
 		

@@ -49,7 +49,7 @@ public class RequestService implements IRequestService {
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
 		if (this.isRequested(pieFile)) {
-			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
+			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getName());
 			return;
 		}
 

@@ -51,7 +51,7 @@ public class FileFilterService implements IFileFilterService {
 	@Override
 	public synchronized boolean checkFile(PieFile file) {
 		for (IFilter f : filters) {
-			if (f.matches(file.getRelativeFilePath())) {
+			if (f.matches(file.getRelativePath())) {
 				return false;
 			}
 		}

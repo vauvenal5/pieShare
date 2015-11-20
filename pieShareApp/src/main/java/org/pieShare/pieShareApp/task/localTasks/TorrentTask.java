@@ -130,10 +130,10 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				// Display statistics
 				PieLogger.debug(this.getClass(), "{} %% - state {} - {} bytes downloaded - {} bytes uploaded - peers {} - {}",
 						sharedTorrent.getCompletion(), client.getState(), sharedTorrent.getDownloaded(),
-						sharedTorrent.getUploaded(), client.getPeers().size(), fileMeta.getFile().getFileName());
+						sharedTorrent.getUploaded(), client.getPeers().size(), fileMeta.getFile().getName());
 
 				if (this.shutdown) {
-					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getFileName()));
+					PieLogger.info(this.getClass(), String.format("Shuting down torrent task for %s", fileMeta.getFile().getName()));
 					return;
 				}
 
@@ -158,7 +158,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 				}
 
 				if ((seeder || Client.ClientState.SEEDING.equals(client.getState())) && !this.bitTorrentService.isShareActive(this.fileMeta)) {
-					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getFileName()));
+					PieLogger.debug(this.getClass(), String.format("Stoping client for %s by check done loop!", fileMeta.getFile().getName()));
 					loopDone = true;
 				}
 

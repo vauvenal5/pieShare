@@ -76,10 +76,10 @@ public class BitTorrentService implements IBitTorrentService {
 		synchronized (this.sharedFiles) {
 			boolean isNew = true;
 
-			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getFileName(), file.hashCode());
+			PieLogger.trace(this.getClass(), "Manipulating share state for {} with HashCode {}.", file.getFile().getName(), file.hashCode());
 
 			if (this.sharedFiles.containsKey(file)) {
-				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getFileName());
+				PieLogger.trace(this.getClass(), "Share state for {} exists.", file.getFile().getName());
 				value = this.sharedFiles.get(file) + value;
 
 				if (value <= 0) {
@@ -145,7 +145,7 @@ public class BitTorrentService implements IBitTorrentService {
 
 		//this is important in case we are already sharing that file!
 		if (!this.manipulateShareState(meta, 1)) {
-			PieLogger.trace(this.getClass(), "Allready sharing file {}!", meta.getFile().getFileName());
+			PieLogger.trace(this.getClass(), "Allready sharing file {}!", meta.getFile().getName());
 			return;
 		}
 
@@ -169,7 +169,7 @@ public class BitTorrentService implements IBitTorrentService {
 	public void handleFile(FileMeta meta) {
 		//this is important in case we are already sharing that file!
 		if (!this.manipulateShareState(meta, 1)) {
-			PieLogger.trace(this.getClass(), "Allready handling file {}!", meta.getFile().getFileName());
+			PieLogger.trace(this.getClass(), "Allready handling file {}!", meta.getFile().getName());
 			return;
 		}
 

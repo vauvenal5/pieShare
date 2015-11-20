@@ -57,13 +57,13 @@ public class DataBaseIT {
 		
 		PieFile file = new PieFile();
 		file.setDeleted(false);
-		file.setFileName("testFile");
+		file.setName("testFile");
 		file.setLastModified(0);
 		file.setMd5("test".getBytes());
-		file.setRelativeFilePath("testFolder");
+		file.setRelativePath("testFolder");
 		
 		dbService.mergePieFile(file);
-		file.setFileName("testFile2");
+		file.setName("testFile2");
 		dbService.mergePieFile(file);
 		
 		PieFile fileFromDB = dbService.findPieFile(file);
