@@ -52,9 +52,9 @@ public class LocalFileService extends FileServiceBase {
 	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = beanService.getBean(PieShareAppBeanNames.getPieFileName());
 
-		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
+		pieFile.setRelativePath(relitivizeFilePath(file).toString());
 
-		pieFile.setFileName(file.getName());
+		pieFile.setName(file.getName());
 		pieFile.setLastModified(file.lastModified());
 
 		if (file.exists()) {

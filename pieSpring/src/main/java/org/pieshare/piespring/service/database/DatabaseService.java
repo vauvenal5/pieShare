@@ -163,7 +163,7 @@ public class DatabaseService implements IDatabaseService {
 	@Override
 	public PieFile findPieFile(PieFile file) {
 		EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativeFilePath());
+		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativePath());
 		return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
 	}
 

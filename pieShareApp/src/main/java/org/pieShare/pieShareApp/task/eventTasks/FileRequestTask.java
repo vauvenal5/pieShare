@@ -49,7 +49,7 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 			
 			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {} "
 					+ "including PieFile with HashCode {}.", 
-					metaMsg.getFileMeta().getFile().getFileName(), 
+					metaMsg.getFileMeta().getFile().getName(), 
 					metaMsg.getFileMeta().hashCode(),
 					metaMsg.getFileMeta().getFile().hashCode());
 			
