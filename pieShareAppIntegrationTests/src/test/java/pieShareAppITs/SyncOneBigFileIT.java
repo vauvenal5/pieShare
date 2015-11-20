@@ -110,8 +110,8 @@ public class SyncOneBigFileIT {
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
-			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
-			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 60));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 60));
 			
 			boolean filesAreEqual = FileUtils.contentEquals(fileMain, fileBot);
 
