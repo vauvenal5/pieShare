@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
@@ -41,7 +42,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void setConverterService(IModelEntityConverterService converter) {
-         this.modelEntityConverterService = converter;
+        this.modelEntityConverterService = converter;
     }
 
     public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
@@ -62,8 +63,8 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void persist(PieUser model) {
-        IPieUserEntity entity;
-        entity = this.modelEntityConverterService.convertToEntity(model);
+        PieUserEntity entity;
+        entity = (PieUserEntity) this.modelEntityConverterService.convertToEntity(model);
         persist(entity);
     }
 
@@ -94,29 +95,29 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void removePieUser(PieUser user) {
-        IPieUserEntity ent;
-        ent = modelEntityConverterService.convertToEntity(user);
+        PieUserEntity ent;
+        ent = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
         remove(ent);
     }
 
     @Override
     public void mergePieUser(PieUser user) {
-        IPieUserEntity entity;
-        entity = modelEntityConverterService.convertToEntity(user);
+        PieUserEntity entity;
+        entity = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
         merge(entity);
     }
 
     @Override
     public void persistFileFilter(IFilter filter) {
-        IFileFilterEntity en = null;
-        en = modelEntityConverterService.convertToEntity(filter);
+        FilterEntity en = null;
+        en = (FilterEntity) modelEntityConverterService.convertToEntity(filter);
         persist(en);
     }
 
     @Override
     public void removeFileFilter(IFilter filter) {
-        IFileFilterEntity f;
-        f = modelEntityConverterService.convertToEntity(filter);
+        FilterEntity f;
+        f = (FilterEntity) modelEntityConverterService.convertToEntity(filter);
         remove(f);
     }
 
@@ -138,8 +139,8 @@ public class DatabaseService implements IDatabaseService {
     }
 
     public void persist(PieFile file) {
-        IPieFileEntity entity;
-        entity = this.modelEntityConverterService.convertToEntity(file);
+        PieFileEntity entity;
+        entity = (PieFileEntity)this.modelEntityConverterService.convertToEntity(file);
         this.persist(entity);
     }
 
@@ -173,13 +174,13 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFile(PieFile file) {
-        IPieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+        PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
         merge(entity);
     }
 
     @Override
     public void persistPieFile(PieFile file) {
-        IPieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
+        PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
         persist(entity);
     }
 
