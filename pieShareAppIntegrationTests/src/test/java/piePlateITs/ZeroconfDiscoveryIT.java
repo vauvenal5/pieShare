@@ -5,13 +5,21 @@
  */
 package piePlateITs;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
+import javax.inject.Provider;
+import javax.jmdns.ServiceEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.testng.annotations.Test;
 import javax.jmdns.ServiceListener;
+import org.junit.Assert;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 
 /**
  *
@@ -19,47 +27,157 @@ import javax.jmdns.ServiceListener;
  */
 public class ZeroconfDiscoveryIT {
 
-	private boolean shutdown = false;
-	@Test
-	public void testSimpleDiscovery() throws Exception {
-		NetworkService service = new NetworkService();
-		ZeroconfigDiscoveryService discovery1 = new ZeroconfigDiscoveryService(service, "test1");
-		ZeroconfigDiscoveryListener listener1 = new ZeroconfigDiscoveryListener();
-		discovery1.setListener(listener1);
+	private DiscoveredMember member;
+	ZeroconfigDiscoveryService discovery2;
+	ZeroconfigDiscoveryService discovery1;
 
-		Thread t = new Thread(new Runnable() {
+	private NetworkService service = new NetworkService();
+
+	@BeforeMethod
+	protected void beforeTest() {
+		member = null;
+	}
+
+	@AfterMethod
+	protected void afterTest() {
+		discovery2.shutdown();
+		discovery1.shutdown();
+	}
+
+	@Test(timeOut = 60000)
+	public void testListDiscovery() throws Exception {
+		discovery2 = new ZeroconfigDiscoveryService();
+		discovery2.setNetworkService(service);
+		discovery2.setListener(new ServiceListener() {
 			@Override
-			public void run() {
-				ZeroconfigDiscoveryService discovery2 = new ZeroconfigDiscoveryService(service, "test2");
-				ZeroconfigDiscoveryListener listener2 = new ZeroconfigDiscoveryListener();
-				discovery2.setListener(listener2);
-				while (!shutdown) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException ex) {
-					}
-				}
+			public void serviceAdded(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceRemoved(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceResolved(ServiceEvent event) {
+				//ignore
 			}
 		});
-		t.start();
+		discovery2.registerService("mycloud", service.getAvailablePort());
+
+		ZeroconfigDiscoveryService discovery3 = new ZeroconfigDiscoveryService();
+		discovery3.setNetworkService(service);
+		discovery3.setListener(new ServiceListener() {
+			@Override
+			public void serviceAdded(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceRemoved(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceResolved(ServiceEvent event) {
+				//ignore
+			}
+		});
+		discovery3.registerService("mycloud", service.getAvailablePort());
+
+		discovery1 = new ZeroconfigDiscoveryService();
+		discovery1.setNetworkService(service);
+		discovery1.setListener(new ServiceListener() {
+			@Override
+			public void serviceAdded(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceRemoved(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceResolved(ServiceEvent event) {
+				//ignore
+			}
+		});
 		
-		Thread t2 = new Thread(new Runnable() {
+		discovery1.setDiscoveredMemberProvider(new Provider<DiscoveredMember>() {
 			@Override
-			public void run() {
-				ZeroconfigDiscoveryService discovery3 = new ZeroconfigDiscoveryService(service, "test3");
-				ZeroconfigDiscoveryListener listener3 = new ZeroconfigDiscoveryListener();
-				discovery3.setListener(listener3);
-				while (!shutdown) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException ex) {
-					}
-				}
+			public DiscoveredMember get() {
+				return new DiscoveredMember();
 			}
 		});
-		t2.start();
 
-		discovery1.registerService(service.getAvailablePort());
-		shutdown = true;
+		List<DiscoveredMember> members = discovery1.list("mycloud");
+		Assert.assertEquals(2, members.size());
+
+		discovery1.registerService("mycloud", service.getAvailablePort());
+
+		members = discovery1.list("mycloud");
+		Assert.assertEquals(2, members.size());
+
+		discovery3.shutdown();
+
+		//shutdown needs a little bit time to clean up
+		Thread.sleep(1000);
+
+		members = discovery1.list("mycloud");
+		Assert.assertEquals(1, members.size());
+	}
+
+	@Test(timeOut = 60000)
+	public void testDiscoveryListener() throws Exception {
+
+		discovery2 = new ZeroconfigDiscoveryService();
+		discovery2.setNetworkService(service);
+
+		ZeroconfigDiscoveryListener listener = new ZeroconfigDiscoveryListener();
+		listener.setMemberDiscoveredEventBase(new EventBase<>());
+		listener.getMemberDiscoveredEventBase().addEventListener(new IMemberDiscoveredListener() {
+			@Override
+			public void handleObject(MemberDiscoveredEvent event) {
+				member = event.getMember();
+			}
+		});
+		listener.setDiscoveredMemberProvider(new Provider() {
+			@Override
+			public Object get() {
+				return new DiscoveredMember();
+			}
+		});
+
+		discovery2.setListener(listener);
+		discovery2.registerService("mycloud", service.getAvailablePort());
+
+		discovery1 = new ZeroconfigDiscoveryService();
+		discovery1.setNetworkService(service);
+		discovery1.setListener(new ServiceListener() {
+			@Override
+			public void serviceAdded(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceRemoved(ServiceEvent event) {
+				//ignore
+			}
+
+			@Override
+			public void serviceResolved(ServiceEvent event) {
+				//ignore
+			}
+		});
+		discovery1.registerService("mycloud", 7777);
+
+		while (member == null) {
+			Thread.sleep(500);
+		}
+
+		Assert.assertEquals(7777, member.getPort());
+		Assert.assertEquals(service.getLocalHost().getHostAddress(), member.getInetAdresses().getHostAddress());
 	}
 }

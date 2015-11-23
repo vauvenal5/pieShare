@@ -5,10 +5,15 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.discovery;
 
+import java.util.List;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
+
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface IDiscoveryService {
-	
+public interface IDiscoveryService extends IShutdownableService {
+	void registerService(String clusterName, int port) throws DiscoveryException;
+	List<DiscoveredMember> list(String clusterName) throws DiscoveryException;
 }
