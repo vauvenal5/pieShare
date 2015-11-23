@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
-import org.apache.commons.io.filefilter.FileFileFilter;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
@@ -27,9 +26,6 @@ import org.pieshare.piespring.service.model.entities.FilterEntity;
 import org.pieshare.piespring.service.model.entities.PieFileEntity;
 import org.pieshare.piespring.service.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
-import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 
 public class DatabaseService implements IDatabaseService {
 
