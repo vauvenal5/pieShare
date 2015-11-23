@@ -19,7 +19,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroconfigDiscoveryListener implements IDiscoveryListener, ServiceListener {
+public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	
 	private IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> memberDiscoveredEventBase;
 	private Provider<DiscoveredMember> discoveredMemberProvider;

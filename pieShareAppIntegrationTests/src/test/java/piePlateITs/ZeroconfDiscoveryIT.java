@@ -15,9 +15,11 @@ import org.testng.annotations.Test;
 import javax.jmdns.ServiceListener;
 import org.junit.Assert;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.IJmdnsDiscoveryListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 
@@ -48,7 +50,7 @@ public class ZeroconfDiscoveryIT {
 	public void testListDiscovery() throws Exception {
 		discovery2 = new ZeroconfigDiscoveryService();
 		discovery2.setNetworkService(service);
-		discovery2.setListener(new ServiceListener() {
+		discovery2.setListener(new IJmdnsDiscoveryListener() {
 			@Override
 			public void serviceAdded(ServiceEvent event) {
 				//ignore
@@ -62,13 +64,18 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public void serviceResolved(ServiceEvent event) {
 				//ignore
+			}
+
+			@Override
+			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 		});
 		discovery2.registerService("mycloud", service.getAvailablePort());
 
 		ZeroconfigDiscoveryService discovery3 = new ZeroconfigDiscoveryService();
 		discovery3.setNetworkService(service);
-		discovery3.setListener(new ServiceListener() {
+		discovery3.setListener(new IJmdnsDiscoveryListener() {
 			@Override
 			public void serviceAdded(ServiceEvent event) {
 				//ignore
@@ -82,13 +89,18 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public void serviceResolved(ServiceEvent event) {
 				//ignore
+			}
+			
+			@Override
+			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 		});
 		discovery3.registerService("mycloud", service.getAvailablePort());
 
 		discovery1 = new ZeroconfigDiscoveryService();
 		discovery1.setNetworkService(service);
-		discovery1.setListener(new ServiceListener() {
+		discovery1.setListener(new IJmdnsDiscoveryListener() {
 			@Override
 			public void serviceAdded(ServiceEvent event) {
 				//ignore
@@ -102,6 +114,11 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public void serviceResolved(ServiceEvent event) {
 				//ignore
+			}
+			
+			@Override
+			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 		});
 		
@@ -155,7 +172,7 @@ public class ZeroconfDiscoveryIT {
 
 		discovery1 = new ZeroconfigDiscoveryService();
 		discovery1.setNetworkService(service);
-		discovery1.setListener(new ServiceListener() {
+		discovery1.setListener(new IJmdnsDiscoveryListener() {
 			@Override
 			public void serviceAdded(ServiceEvent event) {
 				//ignore
@@ -169,6 +186,11 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public void serviceResolved(ServiceEvent event) {
 				//ignore
+			}
+			
+			@Override
+			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 		});
 		discovery1.registerService("mycloud", 7777);
