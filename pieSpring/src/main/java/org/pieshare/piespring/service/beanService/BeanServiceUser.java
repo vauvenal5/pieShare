@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieTools.pieUtilities.service.beanService;
+package org.pieshare.piespring.service.beanService;
 
 /**
  * This class is only for avoiding code duplication where possible!!

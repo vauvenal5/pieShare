@@ -6,13 +6,13 @@
 package org.pieShare.pieTools.piePlate.task;
 
 import java.net.InetSocketAddress;
+import javax.inject.Provider;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -28,7 +28,9 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
     private boolean stop = false;
     private String host;
     private int port;
-    private IBeanService beanService;
+    private Provider<LoopHoleAckMessage> loopHoleAckMessageProvider;
+	private Provider<LoopHolePunchMessage> loopHolePunchMessageProvider;
+	private Provider<LoopHoleCompleteMessage> loopHoleCompleteMessageProvider;
     private ILoopHoleFactory loopHoleFactory;
 
     @Override
@@ -40,21 +42,25 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
         this.loopHoleFactory = loopHoleFactory;
     }
 
-    public IBeanService getBeanService() {
-        return beanService;
-    }
-
-    public void setBeanService(IBeanService beanService) {
-        this.beanService = beanService;
-    }
-
     public void setMsg(LoopHoleConnectionMessage msg) {
         this.msg = msg;
     }
 
+	public void setLoopHoleAckMessageProvider(Provider<LoopHoleAckMessage> loopHoleAckMessageProvider) {
+		this.loopHoleAckMessageProvider = loopHoleAckMessageProvider;
+	}
+
+	public void setLoopHolePunchMessageProvider(Provider<LoopHolePunchMessage> loopHolePunchMessageProvider) {
+		this.loopHolePunchMessageProvider = loopHolePunchMessageProvider;
+	}
+
+	public void setLoopHoleCompleteMessageProvider(Provider<LoopHoleCompleteMessage> loopHoleCompleteMessageProvider) {
+		this.loopHoleCompleteMessageProvider = loopHoleCompleteMessageProvider;
+	}
+
     @Override
     public void run() {
-        LoopHoleAckMessage ackMsg = beanService.getBean(LoopHoleAckMessage.class);
+        LoopHoleAckMessage ackMsg = loopHoleAckMessageProvider.get();
         ackMsg.setLocalLoopID(msg.getLocalLoopID());
 
         loopHoleService = loopHoleFactory.getLoopHoleService(msg.getLocalLoopID());
@@ -73,7 +79,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
                 endpoint = 0;
             }
 
-            LoopHolePunchMessage punchMsg = beanService.getBean(LoopHolePunchMessage.class);
+            LoopHolePunchMessage punchMsg = loopHolePunchMessageProvider.get();
             punchMsg.setTo(msg.getFromId());
             punchMsg.setFrom(loopHoleFactory.getClientID());
             punchMsg.setName(loopHoleService.getName());
@@ -99,7 +105,7 @@ public class LoopHoleConnectionTask implements IPieEventTask<LoopHoleConnectionM
             stop = true;
             InetSocketAddress address = new InetSocketAddress(host, port); 
             
-            LoopHoleCompleteMessage completeMessage = beanService.getBean(LoopHoleCompleteMessage.class);
+            LoopHoleCompleteMessage completeMessage = loopHoleCompleteMessageProvider.get();
             completeMessage.setLocalLoopID(msg.getClientLocalLoopID());
             completeMessage.setClientLocalLoopID(msg.getLocalLoopID());
             loopHoleService.send(completeMessage, address);

@@ -22,6 +22,12 @@ public class TestFileUtils {
                 long actualSize = 1024 * 1024 * sizeInMB;
                 pb = new ProcessBuilder("fsutil", "file", "createnew", file.getAbsolutePath(), String.valueOf(actualSize));
         }
+        else if(System.getProperty("os.name").toLowerCase().contains("os")) {
+                //String count = "count=" + String.valueOf(sizeInMB);
+                //pb = new ProcessBuilder("touch",file.getAbsolutePath());
+                String count = "count=" + String.valueOf(sizeInMB*1024);
+                pb = new ProcessBuilder("dd", "if=/dev/zero", "of=" + file.getAbsolutePath(), "bs=1024",  count);
+        }
         else {
                 String count = "count=" + String.valueOf(sizeInMB);
                 pb = new ProcessBuilder("dd", "if=/dev/zero", "of=" + file.getAbsolutePath(), "bs=1MB", count);

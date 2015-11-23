@@ -7,8 +7,8 @@ package org.pieShare.pieShareApp.task.commandTasks.loginTask;
 
 import java.io.File;
 import java.util.Arrays;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
@@ -19,13 +19,13 @@ import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
 import org.pieShare.pieTools.pieUtilities.service.security.pbe.IPasswordEncryptionService;
@@ -39,7 +39,6 @@ public class LoginTask implements ILoginTask {
 	private final byte[] FILE_TEXT;
 	private IPasswordEncryptionService passwordEncryptionService;
 	private IEncodeService encodeService;
-	private IBeanService beanService;
 	private LoginCommand command;
 	private IDatabaseService databaseService;
 	private IClusterManagementService clusterManagementService;
@@ -47,17 +46,19 @@ public class LoginTask implements ILoginTask {
 	private IHistoryService historyService;
 	private IFileWatcherService fileWatcherService;
 	private IMessageFactoryService messageFactoryService;
-        private IFileService fileService;
-	
+	private IFileService fileService;
+	private IUserService userService;
+	private Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
+
 	private File pwdFile;
 
 	public LoginTask() {
 		this.FILE_TEXT = "FILE_TEXT".getBytes();
 	}
 
-        public void setFileService(IFileService fileService) {
-            this.fileService = fileService;
-        }
+	public void setFileService(IFileService fileService) {
+		this.fileService = fileService;
+	}
 
 	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
 		this.messageFactoryService = messageFactoryService;
@@ -83,8 +84,8 @@ public class LoginTask implements ILoginTask {
 		this.databaseService = databaseService;
 	}
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	public void setSymmetricEncryptedChannelProvider(Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider) {
+		this.symmetricEncryptedChannelProvider = symmetricEncryptedChannelProvider;
 	}
 
 	public void setPasswordEncryptionService(IPasswordEncryptionService service) {
@@ -93,6 +94,10 @@ public class LoginTask implements ILoginTask {
 
 	public void setEncodeService(IEncodeService encodeService) {
 		this.encodeService = encodeService;
+	}
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	@Override
@@ -104,7 +109,7 @@ public class LoginTask implements ILoginTask {
 		EncryptedPassword pwd1 = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
 
 		PieUser user;
-		user = this.beanService.getBean(PieShareAppBeanNames.getPieUser());
+		user = userService.getUser();
 
 		//PieShaeService does this now
 		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), true));
@@ -115,14 +120,12 @@ public class LoginTask implements ILoginTask {
 				if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.readFileToByteArray(pwdFile)), FILE_TEXT)) {
 					throw new WrongPasswordException("The given password was wrong.");
 				}
-			}
-			catch (Exception ex) {
+			} catch (Exception ex) {
 				//ToDo: Handle Wrong password
 				PieLogger.info(this.getClass(), "Wrong password, not possible to encrypt file");
 				throw new WrongPasswordException("The given password was wrong.", ex);
 			}
-		}
-		else {
+		} else {
 			createNewPwdFile(pwd1);
 		}
 
@@ -135,35 +138,34 @@ public class LoginTask implements ILoginTask {
 			databaseService.persist(user);
 		}
 		user.setIsLoggedIn(true);
-		
+
 		this.historyService.syncLocalPieFilesWithHistory();
 
 		//Check and create folders
 		try {
 			//create symetric channel for this user
-			SymmetricEncryptedChannel channel = this.beanService.getBean(SymmetricEncryptedChannel.class);
+			SymmetricEncryptedChannel channel = this.symmetricEncryptedChannelProvider.get();
 			channel.setChannelId(user.getUserName());
 			channel.setEncPwd(user.getPassword());
 			this.clusterManagementService.registerChannel(user.getCloudName(), channel);
-			
+
 			//listen to working dir
 			this.fileWatcherService.watchDir(user.getPieShareConfiguration().getWorkingDir());
-			
-                        //todo: change this maybe in future to different aproach
-                        //this is needed to recognize local changes on this node
-                        IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
-                        fileList.getAddress().setClusterName(user.getCloudName());
-                        fileList.getAddress().setChannelId(user.getUserName());
-                        fileList.setFileList(this.fileService.getAllFiles());
-                        this.clusterManagementService.sendMessage(fileList);
-                        
+
+			//todo: change this maybe in future to different aproach
+			//this is needed to recognize local changes on this node
+			IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
+			fileList.getAddress().setClusterName(user.getCloudName());
+			fileList.getAddress().setChannelId(user.getUserName());
+			fileList.setFileList(this.fileService.getAllFiles());
+			this.clusterManagementService.sendMessage(fileList);
+
 			//send file list request message to cluster
 			IFileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
 			msg.getAddress().setClusterName(user.getCloudName());
 			msg.getAddress().setChannelId(user.getUserName());
 			this.clusterManagementService.sendMessage(msg);
-		}
-		catch (ClusterManagmentServiceException ex) {
+		} catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Connect failed!", ex);
 		}
 	}
@@ -184,12 +186,10 @@ public class LoginTask implements ILoginTask {
 		try {
 			login();
 			command.getCallback().OK();
-		}
-		catch (WrongPasswordException ex) {
+		} catch (WrongPasswordException ex) {
 			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().wrongPassword(ex);
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			PieLogger.error(this.getClass(), "Error in login task!", ex);
 			command.getCallback().error(ex);
 		}

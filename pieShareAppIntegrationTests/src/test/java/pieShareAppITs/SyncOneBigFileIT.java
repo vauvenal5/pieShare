@@ -7,6 +7,7 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
@@ -57,7 +58,8 @@ public class SyncOneBigFileIT {
 		ITUtil.performTearDown(context);
 	}
 	
-	@Test(timeOut = 600000)
+	//todo: create maven profile so this test does not run every time
+	//@Test(timeOut = 600000)
 	public void syncOneBigFileTest() throws Exception {
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		PieUser user = context.getBean("pieUser", PieUser.class);
@@ -65,10 +67,21 @@ public class SyncOneBigFileIT {
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
 		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
-		executorFactory.registerTask(FileTransferCompleteMessage.class, TestTask.class);
+		executorFactory.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<TestTask>() {
+			@Override
+			public TestTask get() {
+				return context.getBean(TestTask.class);
+			}
+		});
 
 		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
+		testExecutorFacotry.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<FileTransferCompleteTask>() {
+
+			@Override
+			public FileTransferCompleteTask get() {
+				return context.getBean(FileTransferCompleteTask.class);
+			}
+		});
 
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 
@@ -97,8 +110,8 @@ public class SyncOneBigFileIT {
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
 			
-			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
-			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 60));
+			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 60));
 			
 			boolean filesAreEqual = FileUtils.contentEquals(fileMain, fileBot);
 

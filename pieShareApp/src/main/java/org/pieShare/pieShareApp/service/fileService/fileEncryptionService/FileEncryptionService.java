@@ -6,32 +6,23 @@
 
 package org.pieShare.pieShareApp.service.fileService.fileEncryptionService;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.channels.FileLock;
 import java.security.InvalidKeyException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
-import org.apache.commons.codec.binary.Base64InputStream;
-import org.apache.commons.codec.binary.Base64OutputStream;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
-import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
-import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
  *
@@ -41,12 +32,8 @@ public class FileEncryptionService implements IFileEncryptionService {
 	
 	IProviderService providerService;
 	IFileService fileService;
-	IBeanService beanService;
 	private IBase64Service base64Service;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
-	}
+	private IUserService userService;
 
 	public void setProviderService(IProviderService providerService) {
 		this.providerService = providerService;
@@ -56,9 +43,13 @@ public class FileEncryptionService implements IFileEncryptionService {
 		this.fileService = fileService;
 	}
 	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+	
 	private Cipher getCipher(int mode) throws InvalidKeyException {
 		Cipher cipher = this.providerService.getEnDeCryptCipher();
-		PieUser user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+		PieUser user = userService.getUser();
 		cipher.init(mode, user.getPassword().getSecretKey());
 		return cipher;
 	}

@@ -5,7 +5,9 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import javax.inject.Provider;
 import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleConnectionMessage;
@@ -14,10 +16,12 @@ import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.RegisterMes
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
+import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
+import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleAckTask;
@@ -25,6 +29,7 @@ import org.pieShare.pieTools.piePlate.task.LoopHoleCompleteTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleConnectionTask;
 import org.pieShare.pieTools.piePlate.task.LoopHoleListenerTask;
 import org.pieShare.pieTools.piePlate.task.LoopHolePuncherTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,16 +44,19 @@ import org.springframework.context.annotation.Scope;
 public class PiePlateConfiguration {
 
     @Autowired
-    private PieUtilitiesConfiguration utilitiesConfiguration;
+    private PieUtilitiesConfiguration utilities;
+	@Autowired
+	private ProviderConfiguration providers;
 
     @Bean
     @Lazy
     public ClusterManagementService clusterManagementService() {
         ClusterManagementService service = new ClusterManagementService();
-        service.setBeanService(this.utilitiesConfiguration.beanService());
-        service.setClusterAddedEventBase(this.utilitiesConfiguration.eventBase());
-        service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
-        service.setMap(this.utilitiesConfiguration.javaMap());
+		service.setClusterServiceProvider(this.clusterServiceProvider());
+		service.setLoopHoleFactory(this.loopHoleFactory());
+        service.setClusterAddedEventBase(this.utilities.eventBase());
+        service.setClusterRemovedEventBase(this.utilities.eventBase());
+        service.setMap(this.utilities.javaMap());
         return service;
     }
 
@@ -63,8 +71,9 @@ public class PiePlateConfiguration {
 	@Scope(value = "prototype")
     public ObjectBasedReceiver objectReceiver() {
         ObjectBasedReceiver receiver = new ObjectBasedReceiver();
-        receiver.setBeanService(this.utilitiesConfiguration.beanService());
-        receiver.setExecutorService(this.utilitiesConfiguration.pieExecutorService());
+		receiver.setAddressProvider(this.jgroupsPieAddressProvider());
+        receiver.setChannelTaskProvider(this.providers.channelTaskProvider);
+        receiver.setExecutorService(this.utilities.pieExecutorService());
         return receiver;
     }
 
@@ -78,27 +87,53 @@ public class PiePlateConfiguration {
     @Bean
     @Lazy
     @Scope(value = "prototype")
-    public JGroupsClusterService clusterService() throws Exception {
-        JGroupsClusterService service = new JGroupsClusterService();
-        service.setReceiver(this.objectReceiver());
-        service.setChannel(this.jChannel());
-        service.setClusterRemovedEventBase(this.utilitiesConfiguration.eventBase());
-		service.setShutdownService(this.utilitiesConfiguration.shutdownService());
-        return service;
+    public JGroupsClusterService clusterService() {
+		try {
+			JGroupsClusterService service = new JGroupsClusterService();
+			service.setReceiver(this.objectReceiver());
+			service.setChannel(this.jChannel());
+			service.setClusterRemovedEventBase(this.utilities.eventBase());
+			service.setShutdownService(this.utilities.shutdownService());
+			return service;
+		} catch (Exception ex) {
+			throw new Error("Unexpected JGROUPS error!", ex);
+		}
     }
+	
+	@Bean
+	@Lazy
+	public Provider<IClusterService> clusterServiceProvider() {
+		return new Provider<IClusterService>() {
+			@Override
+			public IClusterService get() {
+				return clusterService();
+			}
+		};
+	}
 
     @Bean
     @Lazy
     public JGroupsPieAddress jgroupsPieAddress() {
         return new JGroupsPieAddress();
     }
+	
+	@Bean
+	@Lazy
+	public Provider<IPieAddress> jgroupsPieAddressProvider() {
+		return new Provider<IPieAddress>() {
+			@Override
+			public IPieAddress get() {
+				return jgroupsPieAddress();
+			}
+		};
+	}
 
     @Bean
     @Lazy
     @Scope(value = "prototype")
     public SymmetricEncryptedChannel symmetricEncryptedChannel() {
         SymmetricEncryptedChannel channel = new SymmetricEncryptedChannel();
-        channel.setEncoderService(this.utilitiesConfiguration.encodeService());
+        channel.setEncoderService(this.utilities.encodeService());
         channel.setSerializerService(this.jacksonSerializerService());
         return channel;
     }
@@ -108,7 +143,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public ChannelTask channelTask() {
         ChannelTask task = new ChannelTask();
-        task.setExecutorService(this.utilitiesConfiguration.pieExecutorService());
+        task.setExecutorService(this.utilities.pieExecutorService());
         return task;
     }
 
@@ -117,27 +152,45 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleService loopHoleService() {
         LoopHoleService service = new LoopHoleService();
-        service.setBeanService(utilitiesConfiguration.beanService());
-        service.setIdService(utilitiesConfiguration.idService());
+        service.setLoopHoleListenerTaskProvider(this.providers.loopHoleListenerTaskProvider);
+		service.setRegisterMessageProvider(this.providers.registerMessageProvider);
+        service.setIdService(utilities.idService());
         service.setSerializerService(jacksonSerializerService());
-        service.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
-        service.setExecutorService(utilitiesConfiguration.pieExecutorService());
-        service.setLoopHoleFactory(loopHoleFactory());
+        service.setExecutorFactory(utilities.pieExecutorTaskFactory());
+        service.setExecutorService(utilities.pieExecutorService());
+		service.setLoopHoleFactory(this.loopHoleFactory());
+		
+		PieExecutorTaskFactory factory = this.utilities.pieExecutorTaskFactory();
+		factory.registerTaskProvider(LoopHoleConnectionMessage.class, this.providers.loopHoleConnectionTaskProvider);
+        factory.registerTaskProvider(LoopHolePunchMessage.class, this.providers.loopHolePuncherTaskProvider);
+        factory.registerTaskProvider(LoopHoleAckMessage.class, this.providers.loopHoleAckTaskProvider);
+        factory.registerTaskProvider(LoopHoleCompleteMessage.class, this.providers.loopHoleCompleteTaskProvider);
         return service;
     }
+	
+	@Bean
+	@Lazy
+	public Provider<ILoopHoleService> loopHoleServiceProvider() {
+		return new Provider<ILoopHoleService>() {
+			@Override
+			public ILoopHoleService get() {
+				return loopHoleService();
+			}
+		};		
+	} 
 
     @Bean
     @Lazy
     public LoopHoleFactory loopHoleFactory() {
         LoopHoleFactory fac = new LoopHoleFactory();
-        fac.setBeanService(utilitiesConfiguration.beanService());
-        fac.setIdService(utilitiesConfiguration.idService());
+        fac.setLoopHoleServiceProvider(loopHoleServiceProvider());
+        fac.setIdService(utilities.idService());
         fac.setSerializerService(jacksonSerializerService());
-        fac.setNewLoopHoleConnectionEvent(utilitiesConfiguration.eventBase());
-        fac.setExecutorFactory(utilitiesConfiguration.pieExecutorTaskFactory());
-        fac.setExecutorService(utilitiesConfiguration.pieExecutorService());
-        fac.setUdpPortService(utilitiesConfiguration.udpPortService());
-        return fac;
+        fac.setNewLoopHoleConnectionEvent(utilities.eventBase());
+        fac.setExecutorFactory(utilities.pieExecutorTaskFactory());
+        fac.setExecutorService(utilities.pieExecutorService());
+        fac.setUdpPortService(utilities.udpPortService());        
+		return fac;
     }
 
     @Bean
@@ -145,7 +198,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleListenerTask loopHoleListenerTask() {
         LoopHoleListenerTask task = new LoopHoleListenerTask();
-        task.setExcuterService(utilitiesConfiguration.pieExecutorService());
+        task.setExcuterService(utilities.pieExecutorService());
         task.setSerializerService(jacksonSerializerService());
         return task;
     }
@@ -155,7 +208,7 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHolePuncherTask holePuncherTask() {
         LoopHolePuncherTask task = new LoopHolePuncherTask();
-        task.setBeanService(utilitiesConfiguration.beanService());
+        task.setLoopHoleAckMessageProvider(this.providers.loopHoleAckMessageProvider);
         task.setFactory(loopHoleFactory());
         return task;
     }
@@ -174,8 +227,11 @@ public class PiePlateConfiguration {
     @Scope(value = "prototype")
     public LoopHoleConnectionTask loopHoleConnectionTask() {
         LoopHoleConnectionTask task = new LoopHoleConnectionTask();
-        task.setBeanService(utilitiesConfiguration.beanService());
+        task.setLoopHoleFactory(this.loopHoleFactory());
         task.setLoopHoleFactory(loopHoleFactory());
+		task.setLoopHoleAckMessageProvider(this.providers.loopHoleAckMessageProvider);
+		task.setLoopHoleCompleteMessageProvider(this.providers.loopHoleCompleteMessageProvider);
+		task.setLoopHolePunchMessageProvider(this.providers.loopHolePunchMessageProvider);
         return task;
     }
 

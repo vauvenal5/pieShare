@@ -1,13 +1,11 @@
 package piePlateITs;
 
 import java.security.Security;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.inject.Provider;
 import junit.framework.Assert;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jgroups.JChannel;
@@ -16,10 +14,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pieShare.pieTools.piePlate.model.PiePlateBeanNames;
+import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;
 import org.pieShare.pieTools.piePlate.service.channel.PlainTextChannel;
-import org.pieShare.pieTools.piePlate.service.channel.api.ITwoWayChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
@@ -27,7 +24,6 @@ import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBased
 import org.pieShare.pieTools.piePlate.service.serializer.jacksonSerializer.JacksonSerializerService;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import piePlateITs.helper.ClusterServiceTestHelper;
 import piePlateITs.helper.TestMessage;
@@ -37,7 +33,7 @@ public class ClusterServiceIT {
 	private JGroupsClusterService service1;
 	private JGroupsClusterService service2;
 	private JGroupsClusterService service3;
-	private IBeanService beanService;
+	private Provider<IPieAddress> provider;
 	private IExecutorService executor1;
 	private IExecutorService executor2;
 	private IExecutorService executor3;
@@ -52,21 +48,22 @@ public class ClusterServiceIT {
                 System.setProperty("java.net.preferIPv4Stack", "true");
 		JacksonSerializerService serializer = new JacksonSerializerService();
 
-		this.beanService = Mockito.mock(IBeanService.class);
 		this.executor1 = Mockito.mock(IExecutorService.class);
 		this.executor2 = Mockito.mock(IExecutorService.class);
 		this.executor3 = Mockito.mock(IExecutorService.class);
+		
+		this.provider = Mockito.mock(Provider.class);
 
 		ObjectBasedReceiver rec1 = new ObjectBasedReceiver();
-		rec1.setBeanService(beanService);
+		rec1.setAddressProvider(provider);
 		rec1.setExecutorService(executor1);
 
 		ObjectBasedReceiver rec2 = new ObjectBasedReceiver();
-		rec2.setBeanService(beanService);
+		rec2.setAddressProvider(provider);
 		rec2.setExecutorService(executor2);
 
 		ObjectBasedReceiver rec3 = new ObjectBasedReceiver();
-		rec3.setBeanService(beanService);
+		rec3.setAddressProvider(provider);
 		rec3.setExecutorService(executor3);
 		
 		this.testChannelId = "testChannel";
@@ -136,7 +133,7 @@ public class ClusterServiceIT {
 		msg.setAddress(new JGroupsPieAddress());
 		msg.getAddress().setChannelId(this.testChannelId);
 
-		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(new JGroupsPieAddress());
+		Mockito.when(this.provider.get()).thenReturn(new JGroupsPieAddress());
 
 		ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper(this.service1) {
 			@Override
@@ -191,7 +188,7 @@ public class ClusterServiceIT {
 		task.setExecutorService(this.executor1);
 		
 		//Mockito.when(this.beanService.getBean(PiePlateBeanNames.())).thenReturn();
-		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(add);
+		Mockito.when(this.provider.get()).thenReturn(add);
 
 		ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper(this.service1) {
 			@Override
@@ -236,7 +233,7 @@ public class ClusterServiceIT {
 		Integer expectedCountPerLetter = 2;
 		final char[] values = value.toCharArray();
 
-		Mockito.when(this.beanService.getBean(PiePlateBeanNames.getJgroupsPieAddress())).thenReturn(new JGroupsPieAddress());
+		Mockito.when(this.provider.get()).thenReturn(new JGroupsPieAddress());
 
 		ClusterServiceTestHelper tester1 = new ClusterServiceTestHelper(this.service1) {
 			@Override
