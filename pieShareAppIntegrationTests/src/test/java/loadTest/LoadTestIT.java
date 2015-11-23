@@ -10,6 +10,7 @@ import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import javax.inject.Provider;
 import loadTest.loadTestLib.LUtil;
 import loadTest.loadTestLib.LoadTestConfigModel;
 import loadTest.loadTestLib.config.LoadTestConfig;
@@ -185,12 +186,36 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 		IPieExecutorTaskFactory executorFactory = this.applicationContext.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
 
 		if (LUtil.IsMaster()) {
-			executorFactory.registerTask(AllFilesCompleteMessage.class, AllFilesCompleteTask.class);
-			executorFactory.registerTask(ClientIsUpMessage.class, ClientIsUpTask.class);
+			executorFactory.registerTaskProvider(AllFilesCompleteMessage.class, new Provider<AllFilesCompleteTask>() {
+
+				@Override
+				public AllFilesCompleteTask get() {
+					return new AllFilesCompleteTask();
+				}
+			});
+			executorFactory.registerTaskProvider(ClientIsUpMessage.class, new Provider<ClientIsUpTask>() {
+
+				@Override
+				public ClientIsUpTask get() {
+					return new ClientIsUpTask();
+				}
+			});
 		}
 		else {
-			executorFactory.registerTask(AllClientsDoneMessage.class, AllClientsDoneTask.class);
-			executorFactory.registerTask(MasterIsReadyMessage.class, MasterIsReadyTask.class);
+			executorFactory.registerTaskProvider(AllClientsDoneMessage.class, new Provider<AllClientsDoneTask>() {
+
+				@Override
+				public AllClientsDoneTask get() {
+					return new AllClientsDoneTask();
+				}
+			});
+			executorFactory.registerTaskProvider(MasterIsReadyMessage.class, new Provider<MasterIsReadyTask>() {
+
+				@Override
+				public MasterIsReadyTask get() {
+					return new MasterIsReadyTask();
+				}
+			});
 		}
 
 		command.setCallback(new ILoginFinished() {

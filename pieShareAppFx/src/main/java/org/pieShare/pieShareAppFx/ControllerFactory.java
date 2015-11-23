@@ -7,7 +7,7 @@
 package org.pieShare.pieShareAppFx;
 
 import javafx.util.Callback;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
+import org.pieshare.piespring.service.beanService.IBeanService;
 
 /**
  *
