@@ -6,36 +6,11 @@
 package org.pieShare.pieShareApp.service;
 
 import java.util.ArrayList;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.model.command.LogoutCommand;
-import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
-import org.pieShare.pieShareApp.model.message.FileListMessage;
-import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
-import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
-import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
-import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
-import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
-import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
-import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
-import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
-import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
-import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
-import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
-import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileListRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
-import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileMetaTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
-import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
-import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
 
@@ -50,10 +25,10 @@ public class PieShareService {
 	private IShutdownService shutdownService;
 	private IDatabaseService databaseService;
 	private IConfigurationFactory configurationFactory;
-	private IBeanService beanService;
-
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	private IUserService userService;
+	
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	public void setDatabaseService(IDatabaseService databaseService) {
@@ -98,24 +73,10 @@ public class PieShareService {
 		}
 
 		if (user == null) {
-			user = beanService.getBean(PieShareAppBeanNames.getPieUser());
+			user = userService.getUser();
 		}
 		
 		user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), false));
-
-		this.executorFactory.registerTask(MetaMessage.class, FileMetaTask.class);
-		this.executorFactory.registerTask(FileRequestMessage.class, FileRequestTask.class);
-		this.executorFactory.registerTask(FileCreatedMessage.class, NewFileTask.class);
-		this.executorFactory.registerTask(FileTransferCompleteMessage.class, FileTransferCompleteTask.class);
-		this.executorFactory.registerTask(FileListRequestMessage.class, FileListRequestTask.class);
-		this.executorFactory.registerTask(FileListMessage.class, FileListTask.class);
-		this.executorFactory.registerTask(FileDeletedMessage.class, FileDeletedTask.class);
-		this.executorFactory.registerTask(FileChangedMessage.class, FileChangedTask.class);
-		this.executorFactory.registerTask(MetaCommitMessage.class, MetaCommitTask.class);
-
-		this.executorFactory.registerTask(LoginCommand.class, LoginTask.class);
-		this.executorFactory.registerTask(LogoutCommand.class, LogoutTask.class);
-		this.executorFactory.registerTask(ResetPwdCommand.class, ResetPwdTask.class);
 	}
 
 	public void stop() {

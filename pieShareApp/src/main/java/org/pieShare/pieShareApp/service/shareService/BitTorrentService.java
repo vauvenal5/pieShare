@@ -7,7 +7,6 @@ package org.pieShare.pieShareApp.service.shareService;
 
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
 import com.turn.ttorrent.common.Torrent;
-import com.turn.ttorrent.tracker.TrackedTorrent;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -15,12 +14,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import javax.inject.Provider;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
-import org.pieShare.pieTools.pieUtilities.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -31,7 +28,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class BitTorrentService implements IBitTorrentService {
 
 	private INetworkService networkService;
-	private IBeanService beanService;
+	private Provider<TorrentTask> torrentTaskProvider;
 	private IExecutorService executorService;
 	private IBase64Service base64Service;
 
@@ -51,8 +48,8 @@ public class BitTorrentService implements IBitTorrentService {
 		this.networkService = networkService;
 	}
 
-	public void setBeanService(IBeanService beanService) {
-		this.beanService = beanService;
+	public void setTorrentTaskProvider(Provider<TorrentTask> torrentTaskProvider) {
+		this.torrentTaskProvider = torrentTaskProvider;
 	}
 
 	public void setExecutorService(IExecutorService executorService) {
@@ -187,7 +184,7 @@ public class BitTorrentService implements IBitTorrentService {
 
 	private void handleSharedTorrent(FileMeta meta, boolean seeder) throws IOException {
 		Torrent torrent = new Torrent(base64Service.decode(meta.getData()), seeder);
-		TorrentTask task = this.beanService.getBean(PieShareAppBeanNames.getTorrentTask());
+		TorrentTask task = this.torrentTaskProvider.get();
 		task.setFile(meta);
 		task.setTorrent(torrent);
 		this.executorService.execute(task);
