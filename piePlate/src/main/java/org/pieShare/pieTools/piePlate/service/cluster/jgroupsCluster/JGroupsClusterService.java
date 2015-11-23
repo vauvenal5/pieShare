@@ -115,7 +115,6 @@ public class JGroupsClusterService extends AShutdownableService implements IClus
 		}
 	}
 
-	@Override
 	public int getMembersCount() {
 		return this.channel.getView().getMembers().size();
 	}
