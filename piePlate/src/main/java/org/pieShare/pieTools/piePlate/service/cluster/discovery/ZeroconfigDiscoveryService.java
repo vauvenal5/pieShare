@@ -16,6 +16,7 @@ import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
@@ -32,7 +33,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	private ServiceInfo myself;
 	private Provider<DiscoveredMember> discoveredMemberProvider;
 
-	private ServiceListener listener;
+	private IJmdnsDiscoveryListener listener;
 
 	public ZeroconfigDiscoveryService() {
 	}
@@ -45,7 +46,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 		this.networkService = networkService;
 	}
 
-	public void setListener(ServiceListener listener) {
+	public void setListener(IJmdnsDiscoveryListener listener) {
 		this.listener = listener;
 	}
 
@@ -111,5 +112,15 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 				//fail silently due to shutdown
 			}
 		}
+	}
+
+	@Override
+	public void addMemberDiscoveredListener(IMemberDiscoveredListener listener) {
+		this.listener.getMemberDiscoveredEventBase().addEventListener(listener);
+	}
+
+	@Override
+	public void removeMemberDiscoveredListener(IMemberDiscoveredListener listener) {
+		this.listener.getMemberDiscoveredEventBase().removeEventListener(listener);
 	}
 }

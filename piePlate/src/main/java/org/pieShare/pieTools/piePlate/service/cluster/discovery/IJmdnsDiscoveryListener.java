@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.discovery;
 
+import javax.jmdns.ServiceListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
@@ -13,6 +14,6 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public interface IDiscoveryListener {
+public interface IJmdnsDiscoveryListener extends ServiceListener{
 	IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase();
 }

@@ -9,26 +9,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.channel.api.IOutgoingChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.DiscoveryException;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.IDiscoveryService;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
+import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroMqClusterService implements IClusterService {
+public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredListener {
 	
 	private IPieDealer dealer;
 	private String id;
+	private IDiscoveryService discovery;
+	private INetworkService networkService;
 	
 	private List<IIncomingChannel> incomingChannels;
 	private Map<String, IOutgoingChannel> outgoingChannels;
@@ -40,11 +50,21 @@ public class ZeroMqClusterService implements IClusterService {
 
 	@Override
 	public void connect(String clusterName) throws ClusterServiceException {
-		//call discovery for endpoints
-		//foreach endpoint connect&send ZeroMQClusterMessage
-		//	dealer = new PieDealer();
-		//
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		try {
+			int routerPort = this.networkService.getAvailablePort();
+			//todo: connect router here to port
+			this.discovery.addMemberDiscoveredListener(this);
+			this.discovery.registerService(clusterName, routerPort);
+			List<DiscoveredMember> members = this.discovery.list(clusterName);
+			//todo: pass discovered members to dealerSocket
+			//call discovery for endpoints
+			//foreach endpoint connect&send ZeroMQClusterMessage
+			//	dealer = new PieDealer();
+			//
+			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		} catch (DiscoveryException ex) {
+			throw new ClusterServiceException(ex);
+		}
 	}
 
 	@Override
@@ -116,4 +136,10 @@ public class ZeroMqClusterService implements IClusterService {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
+	@Override
+	public void handleObject(MemberDiscoveredEvent event) {
+		//todo: pass new member to dealer
+		//todo: think about who is resposible for the peer list management
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 }
