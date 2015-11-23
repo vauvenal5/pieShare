@@ -60,7 +60,11 @@
 			<artifactId>jackson-annotations</artifactId>
 			<version>2.3.2</version>
 		</dependency>
-		
+                <dependency>
+                        <groupId>org.zeromq</groupId>
+                        <artifactId>jeromq</artifactId>
+                        <version>0.3.5</version>
+                </dependency>
 		<dependency>
 			<groupId>org.openhab.jmdns</groupId>
 			<artifactId>jmdns</artifactId>
