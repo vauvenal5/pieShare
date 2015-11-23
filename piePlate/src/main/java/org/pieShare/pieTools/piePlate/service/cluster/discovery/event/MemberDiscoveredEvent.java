@@ -13,10 +13,14 @@ import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class MemberDiscoveredEvent extends EventObject {
-	
+	private DiscoveredMember member;
 
 	public MemberDiscoveredEvent(Object source, DiscoveredMember member) {
 		super(source);
+		this.member = member;
 	}
-	
+
+	public DiscoveredMember getMember() {
+		return member;
+	}
 }
