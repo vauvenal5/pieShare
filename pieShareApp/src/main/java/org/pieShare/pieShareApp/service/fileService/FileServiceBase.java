@@ -63,6 +63,7 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public void deleteRecursive(PieFile file) {
+                PieLogger.trace(this.getClass(), "Recursively deleting {}", file.getRelativePath());
 		File localFile = this.getAbsolutePath(file).toFile();
 		try {
 			if (localFile.isDirectory()) {

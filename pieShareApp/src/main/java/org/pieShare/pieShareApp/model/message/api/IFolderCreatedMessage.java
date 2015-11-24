@@ -9,6 +9,6 @@ package org.pieShare.pieShareApp.model.message.api;
  *
  * @author daniela
  */
-public interface IFolderCreatedMessage extends IFolderMessageBase {
+public interface IFolderCreatedMessage extends IFilderMessageBase {
     
 }

@@ -7,12 +7,13 @@
 package org.pieShare.pieShareApp.model.message.api;
 
 import org.pieShare.pieShareApp.model.pieFile.FileMeta;
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IMetaMessage extends IFileMessageBase {
+public interface IMetaMessage extends IFilderMessageBase<PieFile> {
 	
 	FileMeta getFileMeta();
 	
