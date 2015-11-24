@@ -7,8 +7,7 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.File;
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
-import org.pieShare.pieShareApp.model.message.api.IFolderMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
 import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
@@ -87,7 +86,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		return pieFile;
 	}
 
-	protected void doWork(IFolderMessageBase msg, PieFolder fileOrFolder) {
+	protected<T extends PieFolder> void doWork(IFilderMessageBase<T> msg, T fileOrFolder) {
 		try {
 			msg.setPieFolder(fileOrFolder);
 			

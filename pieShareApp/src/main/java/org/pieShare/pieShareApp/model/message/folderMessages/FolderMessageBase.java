@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.model.message.folderMessages;
 
-import org.pieShare.pieShareApp.model.message.api.IFolderMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 
@@ -13,7 +13,7 @@ import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
  *
  * @author daniela
  */
-public class FolderMessageBase extends AClusterMessage implements IFolderMessageBase{
+public class FolderMessageBase extends AClusterMessage implements IFilderMessageBase<PieFolder>{
     private PieFolder pieFolder;
     
     public PieFolder getPieFolder() {

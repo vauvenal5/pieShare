@@ -12,7 +12,7 @@ import org.pieShare.pieShareApp.model.pieFile.PieFile;
  *
  * @author Svetoslav
  */
-public interface IFileHistoryMessageBase extends IFileMessageBase {
+public interface IFileHistoryMessageBase extends IFilderMessageBase<PieFile> {
 
 	PieFile getPreviousFile();
 

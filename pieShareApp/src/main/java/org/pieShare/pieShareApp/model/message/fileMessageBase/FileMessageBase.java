@@ -6,17 +6,15 @@
 
 package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
-import org.pieShare.pieShareApp.model.message.api.IFileMessageBase;
+import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileMessageBase extends AClusterMessage implements IFileMessageBase {
+public class FileMessageBase extends AClusterMessage implements IFilderMessageBase<PieFile> {
 	protected PieFile file;
 
 	@Override
@@ -25,7 +23,7 @@ public class FileMessageBase extends AClusterMessage implements IFileMessageBase
 	}
 
         @Override
-        public void setPieFolder(PieFolder folderOrFile) {
-		this.file = file;
+        public void setPieFolder(PieFile folderOrFile) {
+		this.file = folderOrFile;
         }
 }
