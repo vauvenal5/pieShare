@@ -9,6 +9,7 @@ package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFile.PieFolder;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**

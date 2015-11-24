@@ -6,10 +6,12 @@
 
 package org.pieShare.pieShareApp.model.message.api;
 
+import org.pieShare.pieShareApp.model.pieFile.PieFile;
+
 /**
  *
  * @author Svetoslav
  */
-public interface IFileRequestMessage extends IFileMessageBase {
+public interface IFileRequestMessage extends IFilderMessageBase<PieFile> {
 	
 }
