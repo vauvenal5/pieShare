@@ -6,6 +6,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api;
 
 import java.net.InetAddress;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 
 /**
  *
@@ -14,10 +15,10 @@ import java.net.InetAddress;
 public interface IPieRouter {
     /**
      * Bind socket to address.
-     * @param address 
+     * @param port 
      * @return true if router was bound else false.
      */
-    boolean bind(InetAddress address, int port);
+    boolean bind(InetAddress inetAddr, int port);
     
     /**
      * Close socket.
@@ -29,4 +30,10 @@ public interface IPieRouter {
      * @return byte[]
      */
     byte[] receive();
+
+	/**
+	 * Register incoming channel.
+	 * @param channel
+	 */
+	public void registerIncomingChannel(IIncomingChannel channel);
 }
