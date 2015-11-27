@@ -7,6 +7,7 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
 import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
@@ -344,5 +345,12 @@ public class PiePlateConfiguration {
 		service.setPieRouter(pieRouterSocket());
 		service.setClusterRemovedEventBase(this.utilities.eventBase());
 		return service;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public DiscoveredMember discoveredMember(){
+		return new DiscoveredMember();
 	}
 }
