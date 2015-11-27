@@ -7,7 +7,6 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
 import org.jgroups.JChannel;
-import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
@@ -18,11 +17,11 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroups
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.discovery.IDiscoveryService;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.ZeroMqClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
@@ -333,5 +332,14 @@ public class PiePlateConfiguration {
 		PieDealer dealer = new PieDealer();
 		dealer.setZeroMQUtilsService(zeroMQUtilsService());
 		return dealer;
+	}
+	
+	@Bean
+	@Lazy
+	public ZeroMqClusterService zeroMqClusterService(){
+		ZeroMqClusterService service = new ZeroMqClusterService();
+		service.setDiscoveryService(discoveryService());
+		service.setNetworkService(this.utilities.networkService());
+		return service;
 	}
 }
