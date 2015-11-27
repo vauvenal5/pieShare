@@ -344,6 +344,7 @@ public class PiePlateConfiguration {
 		service.setPieDealer(pieDealerSocket());
 		service.setPieRouter(pieRouterSocket());
 		service.setClusterRemovedEventBase(this.utilities.eventBase());
+		service.setShutdownService(this.utilities.shutdownService());
 		return service;
 	}
 	
