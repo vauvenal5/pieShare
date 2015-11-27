@@ -10,7 +10,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileHistoryMessageBase;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileMessageBase;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

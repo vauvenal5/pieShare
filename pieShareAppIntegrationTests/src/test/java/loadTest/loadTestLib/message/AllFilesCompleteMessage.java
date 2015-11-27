@@ -6,7 +6,7 @@
 package loadTest.loadTestLib.message;
 
 import java.util.List;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IPiePlainTextMessage;

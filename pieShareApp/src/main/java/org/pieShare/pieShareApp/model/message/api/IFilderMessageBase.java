@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.model.message.api;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
