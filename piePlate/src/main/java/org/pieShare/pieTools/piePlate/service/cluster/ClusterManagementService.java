@@ -68,8 +68,10 @@ public class ClusterManagementService implements IClusterManagementService {
 
 	private IClusterService connect(String id) throws ClusterManagmentServiceException {
 		//todo: think about this if this is the right place for this!
-		loopHoleFactory.setName(id);
-		loopHoleFactory.initializeNewLoopHole();
+		//todo: as already told in the past we have to abstract the loophole server for the integration tests!!!
+		//due to not doing this everything went tits up when they kicked our server... thx for that!!!
+		//loopHoleFactory.setName(id);
+		//loopHoleFactory.initializeNewLoopHole();
 
 		if (this.clusters.containsKey(id)) {
 			return this.clusters.get(id);
