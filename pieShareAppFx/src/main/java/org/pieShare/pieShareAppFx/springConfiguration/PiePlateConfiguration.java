@@ -340,6 +340,8 @@ public class PiePlateConfiguration {
 		ZeroMqClusterService service = new ZeroMqClusterService();
 		service.setDiscoveryService(discoveryService());
 		service.setNetworkService(this.utilities.networkService());
+		service.setPieDealer(pieDealerSocket());
+		service.setPieRouter(pieRouterSocket());
 		return service;
 	}
 }
