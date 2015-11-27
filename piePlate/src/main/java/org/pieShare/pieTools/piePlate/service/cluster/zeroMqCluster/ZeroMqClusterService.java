@@ -26,12 +26,13 @@ import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.I
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredListener {
+public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener {
 	
 	private IPieDealer dealer;
 	private IPieRouter router;
@@ -40,7 +41,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	private INetworkService networkService;
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
-	
+		
 	public ZeroMqClusterService(){
 		this.outgoingChannels = new HashMap<>();
 	}
@@ -157,5 +158,11 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	@Override
 	public void handleObject(MemberDiscoveredEvent event) {
 		dealer.connect(event.getMember().getInetAdresses(), event.getMember().getPort());
+	}
+
+	@Override
+	public void shutdown() {
+		dealer.close();
+		router.close();
 	}
 }
