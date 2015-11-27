@@ -7,12 +7,13 @@ package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api;
 
 import java.net.InetAddress;
 import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 
 /**
  *
  * @author Paul
  */
-public interface IPieRouter {
+public interface IPieRouter extends IPieTask {
     /**
      * Bind socket to address.
      * @param port 

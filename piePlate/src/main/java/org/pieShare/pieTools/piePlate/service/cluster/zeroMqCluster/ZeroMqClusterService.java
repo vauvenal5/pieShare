@@ -51,6 +51,14 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	public void setNetworkService(INetworkService networkService){
 		this.networkService = networkService;
 	}
+	
+	public void setPieRouter(IPieRouter router){
+		this.router = router;
+	}
+	
+	public void setPieDealer(IPieDealer dealer){
+		this.dealer = dealer;
+	}
 
 	@Override
 	public void connect(String clusterName) throws ClusterServiceException {
@@ -60,6 +68,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 			router.bind(networkService.getLocalHost(),routerPort);
 			
 			//start router task
+			router.run();
 			
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
@@ -142,8 +151,6 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 
 	@Override
 	public void handleObject(MemberDiscoveredEvent event) {
-		//todo: pass new member to dealer
-		//todo: dealer holds memberlist
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		dealer.connect(event.getMember().getInetAdresses(), event.getMember().getPort());
 	}
 }

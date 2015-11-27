@@ -23,7 +23,7 @@ import org.zeromq.ZMQException;
  *
  * @author Paul
  */
-public class PieRouter implements IPieRouter, IPieTask {
+public class PieRouter implements IPieRouter {
     
     private ZMQ.Context context;
     private ZMQ.Socket router;
