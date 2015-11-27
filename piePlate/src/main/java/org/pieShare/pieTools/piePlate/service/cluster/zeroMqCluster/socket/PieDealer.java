@@ -22,10 +22,12 @@ public class PieDealer implements IPieDealer {
     private ZeroMQUtilsService utils;
     private int endpoints = 0;
     
-    public PieDealer()
-    {
-        this.utils = new ZeroMQUtilsService();
+    public PieDealer(){		
     }
+	
+	public void setZeroMQUtilsService(ZeroMQUtilsService service){
+		this.utils = service;
+	}
 
     @Override
     public boolean connect(InetAddress address, int port) {
@@ -56,7 +58,6 @@ public class PieDealer implements IPieDealer {
     public void close() {
         dealer.close();
         context.close();
-		context.term();
     }
 
     @Override

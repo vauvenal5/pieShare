@@ -32,10 +32,21 @@ public class PieRouter implements IPieRouter, IPieTask {
 	private Provider<ChannelTask> channelTaskProvider;
 	private List<IIncomingChannel> incomingChannels;
     
-    public PieRouter()
-    {
+    public PieRouter(){
 		this.incomingChannels = new ArrayList<>();
     }
+	
+	public void setExecutorService(IExecutorService service){
+		this.executorService = service;
+	}
+	
+	public void setZeroMQUtilsService(ZeroMQUtilsService service){
+		this.utils = service;
+	}
+	
+	public void setChannelTaskProvider(Provider<ChannelTask> provider){
+		this.channelTaskProvider = provider;
+	}
     
     @Override
     public boolean bind(InetAddress netAddr, int port) {

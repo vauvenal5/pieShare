@@ -21,6 +21,7 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
@@ -98,4 +99,6 @@ public class ProviderConfiguration {
 	public Provider<PieShareConfiguration> pieShareConfigurationProvider;
 	@Autowired
 	public Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
+	@Autowired
+	public Provider<DiscoveredMember> discoveredMemberProvider;
 }

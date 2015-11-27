@@ -38,7 +38,6 @@ import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEn
 import org.pieshare.piespring.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieshare.piespring.service.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
-import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
@@ -75,12 +74,6 @@ public class PieShareAppService {
 	public DefaultFileMonitor defaultFileMonitor() {
 		DefaultFileMonitor filelistener = new DefaultFileMonitor(fileListenerService());
 		return filelistener;
-	}
-
-	@Bean
-	@Lazy
-	public NetworkService networkService() {
-		return new NetworkService();
 	}
 	
 	@Bean
@@ -233,7 +226,7 @@ public class PieShareAppService {
 	public BitTorrentService bitTorrentService() {
 		BitTorrentService service = new BitTorrentService();
 		service.setTorrentTaskProvider(this.providers.torrentTaskProvider);
-		service.setNetworkService(this.networkService());
+		service.setNetworkService(this.utilities.networkService());
 		service.setExecutorService(this.utilities.pieExecutorService());
 		service.setBase64Service(this.utilities.base64Service());
 
