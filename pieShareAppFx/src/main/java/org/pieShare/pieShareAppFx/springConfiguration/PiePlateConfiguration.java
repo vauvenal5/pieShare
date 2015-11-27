@@ -7,6 +7,7 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
 import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
@@ -17,8 +18,14 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroups
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.IDiscoveryService;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryListener;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
 import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
@@ -283,5 +290,48 @@ public class PiePlateConfiguration {
         LoopHoleAckMessage msg = new LoopHoleAckMessage();
         return msg;
     }
-
+	
+	@Bean
+    @Lazy
+    public ZeroMQUtilsService zeroMQUtilsService() {
+        return new ZeroMQUtilsService();
+    }
+	
+	@Bean
+    @Lazy
+    public ZeroconfigDiscoveryService discoveryService() {
+        ZeroconfigDiscoveryService service = new ZeroconfigDiscoveryService();
+		service.setDiscoveredMemberProvider(this.providers.discoveredMemberProvider);
+		service.setListener(discoveryListener());
+		service.setNetworkService(this.utilities.networkService());
+		service.setShutdownService(this.utilities.shutdownService());
+		return service;
+    }
+	
+	@Bean
+	@Lazy
+	public ZeroconfigDiscoveryListener discoveryListener(){
+		ZeroconfigDiscoveryListener listener = new ZeroconfigDiscoveryListener();
+		listener.setDiscoveredMemberProvider(this.providers.discoveredMemberProvider);
+		listener.setMemberDiscoveredEventBase(this.utilities.eventBase());
+		return listener;
+	}
+	
+	@Bean
+	@Lazy
+	public PieRouter pieRouterSocket(){
+		PieRouter router = new PieRouter();
+		router.setZeroMQUtilsService(zeroMQUtilsService());
+		router.setChannelTaskProvider(this.providers.channelTaskProvider);
+		router.setExecutorService(this.utilities.pieExecutorService());
+		return router;
+	}
+	
+	@Bean
+	@Lazy
+	public PieDealer pieDealerSocket(){
+		PieDealer dealer = new PieDealer();
+		dealer.setZeroMQUtilsService(zeroMQUtilsService());
+		return dealer;
+	}
 }
