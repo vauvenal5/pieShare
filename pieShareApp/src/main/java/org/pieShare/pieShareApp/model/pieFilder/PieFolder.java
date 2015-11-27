@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.model.pieFilder;
 import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
- *
+ * PieFolder object
  * @author daniela
  */
 public class PieFolder implements IBaseModel {

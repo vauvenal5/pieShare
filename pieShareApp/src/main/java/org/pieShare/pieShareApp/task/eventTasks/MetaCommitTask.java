@@ -61,14 +61,14 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		//todo: if not prepared don't do anything for the time being
 		//think of this later
 		//todo: we need also to do a isRequested check in case we are not the seeder but want the file!
-		if(this.shareService.isPrepared((PieFile) this.msg.getPieFolder())) {
-			PieLogger.trace(this.getClass(), "Starting to share file {}!", msg.getPieFolder().getName());
+		if(this.shareService.isPrepared((PieFile) this.msg.getPieFilder())) {
+			PieLogger.trace(this.getClass(), "Starting to share file {}!", msg.getPieFilder().getName());
 			this.bitTorrentService.shareFile(this.msg.getFileMeta());
 			return;
 		}
 		
-		if(!this.compareService.isConflictedOrNotNeeded((PieFile) this.msg.getPieFolder()) && this.requestService.handleRequest((PieFile) this.msg.getPieFolder(), true)) {
-			PieLogger.trace(this.getClass(), "Starting to handle file {}!", msg.getPieFolder().getName());
+		if(!this.compareService.isConflictedOrNotNeeded((PieFile) this.msg.getPieFilder()) && this.requestService.handleRequest((PieFile) this.msg.getPieFilder(), true)) {
+			PieLogger.trace(this.getClass(), "Starting to handle file {}!", msg.getPieFilder().getName());
 			this.bitTorrentService.handleFile(this.msg.getFileMeta());
 			try {
 				//we have to pass the message commit forward so the server 
@@ -80,7 +80,7 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 			return;
 		}
 		
-		PieLogger.debug(this.getClass(), "File {} not prepared or not needed!", this.msg.getPieFolder().getName());
+		PieLogger.debug(this.getClass(), "File {} not prepared or not needed!", this.msg.getPieFilder().getName());
 	}
 	
 }

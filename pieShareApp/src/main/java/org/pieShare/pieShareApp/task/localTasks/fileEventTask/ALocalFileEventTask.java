@@ -88,7 +88,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 
 	protected<T extends PieFolder> void doWork(IFilderMessageBase<T> msg, T fileOrFolder) {
 		try {
-			msg.setPieFolder(fileOrFolder);
+			msg.setPieFilder(fileOrFolder);
 			
 			this.setDefaultAdresse(msg);
 
