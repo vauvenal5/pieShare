@@ -39,9 +39,14 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	private IDiscoveryService discovery;
 	private INetworkService networkService;
 	private Map<String, IOutgoingChannel> outgoingChannels;
+	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	
 	public ZeroMqClusterService(){
 		this.outgoingChannels = new HashMap<>();
+	}
+	
+	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+		this.clusterRemovedEventBase = clusterRemovedEventBase;
 	}
 	
 	public void setDiscoveryService(IDiscoveryService discovery){
@@ -68,7 +73,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 			router.bind(networkService.getLocalHost(),routerPort);
 			
 			//start router task
-			router.run();
+			(new Thread(router)).start();
 			
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
@@ -126,7 +131,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 
 	@Override
 	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return this.clusterRemovedEventBase;
 	}
 
 	@Override

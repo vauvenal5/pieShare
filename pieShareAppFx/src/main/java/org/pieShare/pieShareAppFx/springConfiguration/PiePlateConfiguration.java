@@ -112,7 +112,7 @@ public class PiePlateConfiguration {
 		return new Provider<IClusterService>() {
 			@Override
 			public IClusterService get() {
-				return clusterService();
+				return zeroMqClusterService();
 			}
 		};
 	}
@@ -342,6 +342,7 @@ public class PiePlateConfiguration {
 		service.setNetworkService(this.utilities.networkService());
 		service.setPieDealer(pieDealerSocket());
 		service.setPieRouter(pieRouterSocket());
+		service.setClusterRemovedEventBase(this.utilities.eventBase());
 		return service;
 	}
 }
