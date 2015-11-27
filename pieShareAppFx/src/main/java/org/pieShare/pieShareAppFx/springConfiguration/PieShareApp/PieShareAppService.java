@@ -41,7 +41,7 @@ import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieshare.piespring.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieshare.piespring.service.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
-import org.pieShare.pieShareApp.service.networkService.NetworkService;
+import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
