@@ -7,7 +7,7 @@
 package org.pieShare.pieShareApp.model.message.fileMessageBase;
 
 import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 
 /**

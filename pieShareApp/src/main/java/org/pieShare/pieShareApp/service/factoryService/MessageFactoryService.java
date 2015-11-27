@@ -24,7 +24,7 @@ import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMess
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroupsPieAddress;

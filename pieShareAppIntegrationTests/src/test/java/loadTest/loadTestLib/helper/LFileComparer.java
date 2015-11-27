@@ -7,7 +7,7 @@ package loadTest.loadTestLib.helper;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 
 /**

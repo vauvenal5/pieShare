@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.List;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.service.networkService.INetworkService;
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;

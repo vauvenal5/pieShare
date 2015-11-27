@@ -14,7 +14,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;

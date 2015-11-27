@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.*;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

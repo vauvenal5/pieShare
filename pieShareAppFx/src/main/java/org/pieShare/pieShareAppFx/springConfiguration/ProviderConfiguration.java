@@ -8,7 +8,7 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;

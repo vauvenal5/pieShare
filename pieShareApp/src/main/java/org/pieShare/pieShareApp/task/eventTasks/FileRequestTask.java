@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.task.eventTasks;
 import java.io.File;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.shareService.CouldNotCreateMetaDataException;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;

@@ -6,8 +6,8 @@
 
 package org.pieShare.pieShareApp.model.message.api;
 
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

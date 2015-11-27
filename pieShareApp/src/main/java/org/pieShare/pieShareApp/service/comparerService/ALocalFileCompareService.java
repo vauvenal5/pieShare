@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service.comparerService;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 

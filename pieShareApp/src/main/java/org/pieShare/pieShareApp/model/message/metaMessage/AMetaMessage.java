@@ -7,9 +7,9 @@
 package org.pieShare.pieShareApp.model.message.metaMessage;
 
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 
 /**

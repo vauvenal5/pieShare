@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;

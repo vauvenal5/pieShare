@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.model.message.folderMessages;
 
 import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 
 /**
