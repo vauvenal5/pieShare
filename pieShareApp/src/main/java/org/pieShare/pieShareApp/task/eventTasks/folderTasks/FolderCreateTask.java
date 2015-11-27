@@ -28,7 +28,7 @@ public class FolderCreateTask extends PieEventTaskBase<FolderCreateMessage> {
     @Override
     public void run() {
         try {
-            folderService.createFolder(this.msg.getPieFolder());
+            folderService.createFolder(this.msg.getPieFilder());
             
         } catch (FolderServiceException ex) {
             // todo Logger.getLogger(FolderCreateTask.class.getName()).log(Level.SEVERE, null, ex);

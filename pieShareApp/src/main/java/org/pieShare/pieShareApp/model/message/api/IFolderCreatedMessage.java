@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.model.message.api;
 
 /**
- *
+ * Interface for the FolderCreatedMessage extends IFilderMessageBase
  * @author daniela
  */
 public interface IFolderCreatedMessage extends IFilderMessageBase {
