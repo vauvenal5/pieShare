@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,13 +38,18 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	private String id;
 	private IDiscoveryService discovery;
 	private INetworkService networkService;
-	
-	
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	
 	public ZeroMqClusterService(){
-
 		this.outgoingChannels = new HashMap<>();
+	}
+	
+	public void setDiscoveryService(IDiscoveryService discovery){
+		this.discovery = discovery;
+	}
+	
+	public void setNetworkService(INetworkService networkService){
+		this.networkService = networkService;
 	}
 
 	@Override
@@ -54,6 +58,9 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 			int routerPort = this.networkService.getAvailablePort();
 			//todo: connect router here to port
 			router.bind(networkService.getLocalHost(),routerPort);
+			
+			//start router task
+			
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
 			List<DiscoveredMember> members = this.discovery.list(clusterName);
@@ -103,12 +110,6 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 		}
 	}
 
-	//@Override
-	public int getMembersCount() {
-		//return jmDNS count
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-	}
-
 	@Override
 	public boolean isConnectedToCluster() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -142,7 +143,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 	@Override
 	public void handleObject(MemberDiscoveredEvent event) {
 		//todo: pass new member to dealer
-		//todo: think about who is resposible for the peer list management
+		//todo: dealer holds memberlist
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 }

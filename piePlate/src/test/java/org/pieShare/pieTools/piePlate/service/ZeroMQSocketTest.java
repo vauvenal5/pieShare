@@ -8,22 +8,21 @@ package org.pieShare.pieTools.piePlate.service;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import static org.junit.Assert.assertArrayEquals;
+import org.junit.Before;
 import org.junit.Test;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
 
 public class ZeroMQSocketTest {
-
-    //@Test
-    public void testConnectionDealerToRouter() {
-    }
-
+	
     @Test
     public void testSendRecv() {
         Thread n = new Thread(new Runnable() {
             @Override
             public void run() {
                 PieDealer dealer = new PieDealer();
+				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
                 try {
                     InetAddress routerAddress = InetAddress.getLocalHost();
                     
@@ -44,6 +43,7 @@ public class ZeroMQSocketTest {
         byte[] messageRecv = null;
         
         PieRouter router = new PieRouter();
+		router.setZeroMQUtilsService(new ZeroMQUtilsService());
         try {
             InetAddress routerAddress = InetAddress.getLocalHost();
             router.bind(routerAddress, 9000);
@@ -66,6 +66,7 @@ public class ZeroMQSocketTest {
             @Override
             public void run() {
                 PieDealer dealer = new PieDealer();
+				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
                 try {
                     InetAddress routerAddress = InetAddress.getLocalHost();
                     
@@ -86,6 +87,7 @@ public class ZeroMQSocketTest {
         byte[] messageRecv = null;
         
         PieRouter router = new PieRouter();
+		router.setZeroMQUtilsService(new ZeroMQUtilsService());
         try {
             InetAddress routerAddress = InetAddress.getLocalHost();
             router.bind(routerAddress, 9000);
@@ -112,6 +114,7 @@ public class ZeroMQSocketTest {
             @Override
             public void run() {
                 PieDealer dealer = new PieDealer();
+				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
                 try {
                     InetAddress routerAddress = InetAddress.getLocalHost();
                     
@@ -133,7 +136,9 @@ public class ZeroMQSocketTest {
         byte[] messageRecv = null;
         
         PieRouter router = new PieRouter();
+		router.setZeroMQUtilsService(new ZeroMQUtilsService());
         PieRouter router2 = new PieRouter();
+		router2.setZeroMQUtilsService(new ZeroMQUtilsService());
         
         try {
             InetAddress routerAddress = InetAddress.getLocalHost();
