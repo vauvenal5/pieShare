@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import javax.inject.Provider;
-import org.pieShare.pieShareApp.service.networkService.INetworkService;
+import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
