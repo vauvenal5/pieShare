@@ -7,7 +7,7 @@
 package org.pieshare.piespring.service.fileListenerService.api;
 
 import org.apache.commons.vfs2.FileListener;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

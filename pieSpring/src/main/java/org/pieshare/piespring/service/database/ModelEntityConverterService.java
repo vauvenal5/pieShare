@@ -8,7 +8,7 @@ package org.pieshare.piespring.service.database;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import java.io.File;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;

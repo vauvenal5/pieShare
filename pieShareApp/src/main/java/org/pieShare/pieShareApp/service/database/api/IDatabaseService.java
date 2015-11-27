@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.service.database.api;
 import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
 /**

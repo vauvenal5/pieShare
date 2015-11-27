@@ -6,10 +6,9 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
-import org.pieShare.pieShareApp.model.pieFile.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
- *
  * @author daniela
  */
 public class FolderService implements IFolderService{
@@ -18,13 +17,22 @@ public class FolderService implements IFolderService{
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         String relativePath = pieFolder.getRelativePath();
         File newFolder = new File(relativePath);
+        createLocalFolder(newFolder);
         
-        //create folder           
+    }
+
+    @Override
+    public void createFolder(String path) throws FolderServiceException {
+        File newFolder = new File(path);
+        createLocalFolder(newFolder);
+    }
+    
+    
+    //calles by the createFolder methods
+    private void createLocalFolder(File newFolder) {
         if(!newFolder.exists()) {
             newFolder.mkdirs();
             //TODO: what if the folder can't be created?
         }
-    
     }
-    
 }

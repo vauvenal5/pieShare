@@ -9,7 +9,7 @@ package pieShareAppITs;
 import java.io.File;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;

@@ -7,7 +7,7 @@
 package org.pieShare.pieShareApp.service.comparerService.api;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 
 /**

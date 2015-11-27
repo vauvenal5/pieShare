@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 
-package org.pieShare.pieShareApp.model.pieFile;
+package org.pieShare.pieShareApp.model.pieFilder;
 
 import java.util.Arrays;
 import java.util.Objects;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *
