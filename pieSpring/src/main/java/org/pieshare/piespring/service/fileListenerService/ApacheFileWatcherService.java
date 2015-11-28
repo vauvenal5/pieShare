@@ -30,6 +30,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	private List<DefaultFileMonitor> fileMonitors;
 	//todo: does the part with modified files belong in here or maybe even into the listener?
 		//if into the listener: how will changes be propageted to the right listener?
+	//todo-bug: concurrent manipulation of this list!!! handle this!
 	private List<PieFile> modifiedFiles;
 
 	public void setBeanService(IBeanService beanService) {
