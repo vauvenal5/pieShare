@@ -80,11 +80,14 @@ public class SyncOneFileIT {
 			}
 		});
 
-		
 		System.out.println("Starting bot!");
 		this.process = ITUtil.startProcess(FileSyncMain.class);
 
 		ITUtil.executeLoginToTestCloud(context);
+		
+//		Thread.sleep(5000);
+//		System.out.println("Starting bot!");
+//		this.process = ITUtil.startProcess(FileSyncMain.class);
 
 		ITUtil.waitForProcessToStartup(this.process);
 		System.out.println("Bot started!");
@@ -113,84 +116,6 @@ public class SyncOneFileIT {
 			assertTrue(filesAreEqual);
 			assertTrue(ITUtil.waitForFileToBeFreed(fileMain, 30));
 			assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
-		}
-		else {
-			fail("To much file transerfers?!");
-		}
-	}
-	
-	@Test(timeOut = 180000)
-	public void syncFiveFilesTest() throws Exception {
-		PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
-		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
-		PieUser user = context.getBean("pieUser", PieUser.class);
-		PieShareConfiguration config = user.getPieShareConfiguration();
-		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
-
-		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
-		executorFactory.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<TestTask>() {
-			@Override
-			public TestTask get() {
-				return context.getBean(TestTask.class);
-			}
-		});
-
-		IPieExecutorTaskFactory testExecutorFacotry = context.getBean("testTaskFactory", PieExecutorTaskFactory.class);
-		testExecutorFacotry.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<FileTransferCompleteTask>() {
-
-			@Override
-			public FileTransferCompleteTask get() {
-				return context.getBean(FileTransferCompleteTask.class);
-			}
-		});
-
-		ITUtil.executeLoginToTestCloud(context);
-		
-		System.out.println("Creating files!");
-		for (int i = 0; i < 5; i++) {
-			String fileName = String.format("testFile_%s", i);
-			File file = new File(config.getWorkingDir(), fileName);
-			TestFileUtils.createFile(file, 5);
-		}
-		
-		System.out.println("Starting bot!");
-		this.process = ITUtil.startProcess(FileSyncMain.class);
-		ITUtil.waitForProcessToStartup(this.process);
-		System.out.println("Bot started!");
-
-		/*File filex = new File(config.getWorkingDir().getParent(), "test.txt");
-                TestFileUtils.createFile(filex, 2);
-		File fileMain = new File(config.getWorkingDir(), "test.txt");*/
-		
-		PieUser botUser = context.getBean("botPieUser", PieUser.class);
-		PieShareConfiguration botConfig = botUser.getPieShareConfiguration();
-		//File fileBot = new File(botConfig.getWorkingDir(), "test.txt");
-		
-		//FileUtils.moveFile(filex, fileMain);
-		//FileUtils.moveFile(filex, fileBot);
-		
-		System.out.println("Waiting for transfer complete!");
-		while (counter.getCount(FileTransferCompleteTask.class) < 5) {
-			Thread.sleep(5000);
-		}
-		System.out.println("Recived transfer complete!");
-
-		if (counter.getCount(FileTransferCompleteTask.class) == 5) {
-			
-			boolean filesAreEqual = true;
-			
-			for (int i = 0; filesAreEqual && i < 5; i++) {
-				String fileName = String.format("testFile_%s", i);
-				File file = new File(user.getPieShareConfiguration().getWorkingDir(), fileName);
-				File fileBot = new File(botConfig.getWorkingDir(), fileName);
-				assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
-				assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
-				filesAreEqual = FileUtils.contentEquals(file, fileBot);
-				assertTrue(ITUtil.waitForFileToBeFreed(file, 30));
-				assertTrue(ITUtil.waitForFileToBeFreed(fileBot, 30));
-			}
-
-			assertTrue(filesAreEqual);
 		}
 		else {
 			fail("To much file transerfers?!");

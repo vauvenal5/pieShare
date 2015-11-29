@@ -6,7 +6,6 @@
 package org.pieShare.pieTools.piePlate.model;
 
 import java.net.InetAddress;
-import java.util.EventObject;
 
 /**
  *
@@ -15,6 +14,15 @@ import java.util.EventObject;
 public class DiscoveredMember {
 	private InetAddress inetAdresses;
 	private int port;
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 	public InetAddress getInetAdresses() {
 		return inetAdresses;
