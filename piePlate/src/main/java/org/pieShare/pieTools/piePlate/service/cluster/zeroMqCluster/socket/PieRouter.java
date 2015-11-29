@@ -31,9 +31,11 @@ public class PieRouter implements IPieRouter {
 	private IExecutorService executorService;
 	private Provider<ChannelTask> channelTaskProvider;
 	private List<IIncomingChannel> incomingChannels;
+        private boolean shutdown;
     
     public PieRouter(){
 		this.incomingChannels = new ArrayList<>();
+                shutdown = false;
     }
 	
 	public void setExecutorService(IExecutorService service){
@@ -67,6 +69,7 @@ public class PieRouter implements IPieRouter {
 
     @Override
     public void close() {
+        shutdown = true;
         router.close();
         context.close();
     }
@@ -84,7 +87,7 @@ public class PieRouter implements IPieRouter {
 		//zeromq can't block and sleep
 		//https://github.com/zeromq/jeromq/blob/master/src/main/java/zmq/SocketBase.java#L712
 		//https://github.com/thriftzmq/thriftzmq-java/blob/master/thriftzmq/src/main/java/org/thriftzmq/ProxyLoop.java
-		while(true){
+		while(!shutdown){
 			byte[] msg = this.receive();
 			for(IIncomingChannel channel: incomingChannels) {
 				ChannelTask task = this.channelTaskProvider.get();
