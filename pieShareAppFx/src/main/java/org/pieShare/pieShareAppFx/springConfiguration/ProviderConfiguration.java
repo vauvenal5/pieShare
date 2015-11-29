@@ -99,6 +99,4 @@ public class ProviderConfiguration {
 	public Provider<PieShareConfiguration> pieShareConfigurationProvider;
 	@Autowired
 	public Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
-	@Autowired
-	public Provider<DiscoveredMember> discoveredMemberProvider;
 }

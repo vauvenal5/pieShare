@@ -5,9 +5,12 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -41,9 +44,11 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private INetworkService networkService;
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+	private List<String> knownMembers;
 		
 	public ZeroMqClusterService(){
 		this.outgoingChannels = new HashMap<>();
+		this.knownMembers = new ArrayList<>();
 	}
 	
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
@@ -85,7 +90,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			//	dealer = new PieDealer();
 			//
 			for( DiscoveredMember m : members){
-				dealer.connect(m.getInetAdresses(), m.getPort());
+				this.connectMemberToCluster(m);
 			}
 		} catch (DiscoveryException ex) {
 			throw new ClusterServiceException(ex);
@@ -157,7 +162,20 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 	@Override
 	public void handleObject(MemberDiscoveredEvent event) {
-		dealer.connect(event.getMember().getInetAdresses(), event.getMember().getPort());
+		this.connectMemberToCluster(event.getMember());
+	}
+	
+	private void connectMemberToCluster(DiscoveredMember member) {
+		if(this.knownMembers.contains(member.getName())) {
+			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
+			return;
+		}
+		
+		PieLogger.trace(this.getClass(), "Connecting following {} with port {} to dealer.", member.getInetAdresses().getHostAddress(), 
+				member.getPort());
+		if(dealer.connect(member.getInetAdresses(), member.getPort())) {
+			this.knownMembers.add(member.getName());
+		}
 	}
 
 	@Override

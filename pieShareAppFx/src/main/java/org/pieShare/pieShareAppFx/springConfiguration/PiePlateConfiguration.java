@@ -301,7 +301,7 @@ public class PiePlateConfiguration {
     @Lazy
     public ZeroconfigDiscoveryService discoveryService() {
         ZeroconfigDiscoveryService service = new ZeroconfigDiscoveryService();
-		service.setDiscoveredMemberProvider(this.providers.discoveredMemberProvider);
+		service.setDiscoveredMemberProvider(this.discoveredMemberProvider());
 		service.setListener(discoveryListener());
 		service.setNetworkService(this.utilities.networkService());
 		service.setShutdownService(this.utilities.shutdownService());
@@ -312,7 +312,7 @@ public class PiePlateConfiguration {
 	@Lazy
 	public ZeroconfigDiscoveryListener discoveryListener(){
 		ZeroconfigDiscoveryListener listener = new ZeroconfigDiscoveryListener();
-		listener.setDiscoveredMemberProvider(this.providers.discoveredMemberProvider);
+		listener.setDiscoveredMemberProvider(this.discoveredMemberProvider());
 		listener.setMemberDiscoveredEventBase(this.utilities.eventBase());
 		return listener;
 	}
@@ -353,5 +353,16 @@ public class PiePlateConfiguration {
 	@Scope("prototype")
 	public DiscoveredMember discoveredMember(){
 		return new DiscoveredMember();
+	}
+	
+	@Bean
+	@Lazy
+	public Provider<DiscoveredMember> discoveredMemberProvider() {
+		return new Provider<DiscoveredMember>() {
+			@Override
+			public DiscoveredMember get() {
+				return discoveredMember();
+			}
+		};
 	}
 }
