@@ -35,7 +35,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdowna
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener {
-	
+
 	private IPieDealer dealer;
 	private IPieRouter router;
 	private String id;
@@ -45,33 +45,33 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	private List<String> knownMembers;
-		
-	public ZeroMqClusterService(){
+
+	public ZeroMqClusterService() {
 		this.outgoingChannels = new HashMap<>();
 		this.knownMembers = new ArrayList<>();
 	}
-	
+
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
 		this.clusterRemovedEventBase = clusterRemovedEventBase;
 	}
-	
-	public void setDiscoveryService(IDiscoveryService discovery){
+
+	public void setDiscoveryService(IDiscoveryService discovery) {
 		this.discovery = discovery;
 	}
-	
-	public void setNetworkService(INetworkService networkService){
+
+	public void setNetworkService(INetworkService networkService) {
 		this.networkService = networkService;
 	}
-	
-	public void setExecutorService(IExecutorService executor){
+
+	public void setExecutorService(IExecutorService executor) {
 		this.executor = executor;
 	}
-	
-	public void setPieRouter(IPieRouter router){
+
+	public void setPieRouter(IPieRouter router) {
 		this.router = router;
 	}
-	
-	public void setPieDealer(IPieDealer dealer){
+
+	public void setPieDealer(IPieDealer dealer) {
 		this.dealer = dealer;
 	}
 
@@ -80,11 +80,11 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		try {
 			int routerPort = this.networkService.getAvailablePort();
 			//todo: connect router here to port
-			router.bind(networkService.getLocalHost(),routerPort);
-			
+			router.bind(networkService.getLocalHost(), routerPort);
+
 			//start router task
-			(new Thread(router)).start();
-			
+			this.executor.execute(router);
+
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
 			List<DiscoveredMember> members = this.discovery.list(clusterName);
@@ -93,7 +93,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			//foreach endpoint connect&send ZeroMQClusterMessage
 			//	dealer = new PieDealer();
 			//
-			for( DiscoveredMember m : members){
+			for (DiscoveredMember m : members) {
 				this.connectMemberToCluster(m);
 			}
 		} catch (DiscoveryException ex) {
@@ -128,8 +128,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
 			this.dealer.send(message);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
 	}
@@ -156,7 +155,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 	@Override
 	public List<IIncomingChannel> getIncomingChannels() {
-		throw new UnsupportedOperationException("Deprecated, won't be supported"); 
+		throw new UnsupportedOperationException("Deprecated, won't be supported");
 	}
 
 	@Override
@@ -168,16 +167,16 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void handleObject(MemberDiscoveredEvent event) {
 		this.connectMemberToCluster(event.getMember());
 	}
-	
+
 	private void connectMemberToCluster(DiscoveredMember member) {
-		if(this.knownMembers.contains(member.getName())) {
+		if (this.knownMembers.contains(member.getName())) {
 			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
 			return;
 		}
-		
-		PieLogger.trace(this.getClass(), "Connecting following {} with port {} to dealer.", member.getInetAdresses().getHostAddress(), 
+
+		PieLogger.trace(this.getClass(), "Connecting following {} with port {} to dealer.", member.getInetAdresses().getHostAddress(),
 				member.getPort());
-		if(dealer.connect(member.getInetAdresses(), member.getPort())) {
+		if (dealer.connect(member.getInetAdresses(), member.getPort())) {
 			this.knownMembers.add(member.getName());
 		}
 	}
