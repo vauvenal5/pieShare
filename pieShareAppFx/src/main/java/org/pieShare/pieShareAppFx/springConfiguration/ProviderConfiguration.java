@@ -9,6 +9,7 @@ import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
@@ -105,5 +106,7 @@ public class ProviderConfiguration {
         public Provider<FolderCreateMessage> folderCreateMessageProvider;
         @Autowired
         public Provider<FolderCreateTask> folderCreateTaskProvider;
+        @Autowired
+        public Provider<PieFolder> pieFolderProvider;
 
 }

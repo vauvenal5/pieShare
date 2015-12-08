@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
 
 /**
  *
@@ -38,4 +39,7 @@ public interface IMessageFactoryService {
 	IFileCreatedMessage getNewFileMessage();
 	
 	IMetaCommitMessage getMetaCommitMessage();
+        
+        //Folder
+        IFolderCreatedMessage getNewFolderMessage();
 }

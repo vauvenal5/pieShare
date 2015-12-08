@@ -5,6 +5,10 @@
  */
 package org.pieShare.pieShareApp.service.folderService;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
@@ -25,4 +29,5 @@ public interface IFolderService {
      * @throws FolderServiceException 
      */
     void createFolder(String path) throws FolderServiceException;
+
 }
