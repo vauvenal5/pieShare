@@ -15,7 +15,7 @@ import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
  */
 public interface IFilderMessageBase<T extends PieFolder> extends IEncryptedMessage{
         //TODO sinnvoll umbennenen!
-        T getPieFilder();
+        T getPieFolder();
 
-	void setPieFilder(T filder);
+	void setPieFolder(T filder);
 }

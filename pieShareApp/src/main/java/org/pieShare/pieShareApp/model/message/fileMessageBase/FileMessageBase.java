@@ -18,12 +18,12 @@ public class FileMessageBase extends AClusterMessage implements IFilderMessageBa
 	protected PieFile file;
 
 	@Override
-	public PieFile getPieFilder() {
+	public PieFile getPieFolder() {
 		return file;
 	}
 
         @Override
-        public void setPieFilder(PieFile folderOrFile) {
+        public void setPieFolder(PieFile folderOrFile) {
 		this.file = folderOrFile;
         }
 }

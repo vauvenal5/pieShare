@@ -9,9 +9,11 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.folderService.FolderServiceException;
 import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
@@ -24,11 +26,11 @@ public class FolderCreateTask extends PieEventTaskBase<FolderCreateMessage> {
     public void setFolderService (IFolderService folderService) {
         this.folderService = folderService;
     }
-    
+        
     @Override
     public void run() {
         try {
-            folderService.createFolder(this.msg.getPieFilder());
+            folderService.createFolder(this.msg.getPieFolder());
             
         } catch (FolderServiceException ex) {
             // todo Logger.getLogger(FolderCreateTask.class.getName()).log(Level.SEVERE, null, ex);
