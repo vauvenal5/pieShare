@@ -16,6 +16,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  */
 public interface IFileWatcherService extends IShutdownableService {
 	void watchDir(File file) throws IOException;
+        void watchDir(File file, int mask) throws IOException;
 	void addPieFileToModifiedList(PieFile pieFile);
 	boolean removePieFileFromModifiedList(PieFile file);
 	boolean isPieFileModifiedByUs(PieFile file);
