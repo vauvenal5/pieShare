@@ -103,7 +103,7 @@ public class ClusterServiceIT {
 		pwd.setPassword("test".getBytes());
 	}
 
-	@Test(timeout = 50000)
+	//@Test(timeout = 50000)
 	public void testSimpleClustering() throws Exception {
 		String clusterName = "myTestCluster";
 
