@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -28,6 +26,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.I
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieRouter;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 
@@ -42,6 +41,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private String id;
 	private IDiscoveryService discovery;
 	private INetworkService networkService;
+	private IExecutorService executor;
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	private List<String> knownMembers;
@@ -61,6 +61,10 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	
 	public void setNetworkService(INetworkService networkService){
 		this.networkService = networkService;
+	}
+	
+	public void setExecutorService(IExecutorService executor){
+		this.executor = executor;
 	}
 	
 	public void setPieRouter(IPieRouter router){
