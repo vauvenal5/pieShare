@@ -20,6 +20,7 @@ import org.pieShare.pieShareApp.task.eventTasks.FileRequestTask;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -231,4 +232,13 @@ public class PieShareAppTasks {
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		return task;
 	}
+        
+        @Bean
+        @Lazy
+        @Scope(value = "prototype")
+        public FolderCreateTask createFolderTask() {
+                FolderCreateTask task = new FolderCreateTask();
+                task.setFolderService(this.services.folderService());
+                return task;
+        }
 }

@@ -26,7 +26,7 @@ import loadTest.loadTestLib.task.MasterIsReadyTask;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;

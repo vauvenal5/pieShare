@@ -1,6 +1,6 @@
 package org.pieShare.pieShareApp.service.fileService;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -55,9 +55,9 @@ public class LocalFileService extends FileServiceBase {
 	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = this.pieFileProvider.get();
 
-		pieFile.setRelativeFilePath(relitivizeFilePath(file).toString());
+		pieFile.setRelativePath(relitivizeFilePath(file).toString());
 
-		pieFile.setFileName(file.getName());
+		pieFile.setName(file.getName());
 		pieFile.setLastModified(file.lastModified());
 
 		if (file.exists()) {

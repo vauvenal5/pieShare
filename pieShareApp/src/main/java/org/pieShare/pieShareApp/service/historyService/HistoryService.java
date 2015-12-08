@@ -9,7 +9,7 @@ package org.pieShare.pieShareApp.service.historyService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
