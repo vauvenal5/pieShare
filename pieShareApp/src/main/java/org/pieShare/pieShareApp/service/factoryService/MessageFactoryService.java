@@ -19,11 +19,13 @@ import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -90,5 +92,10 @@ public class MessageFactoryService implements IMessageFactoryService {
 	public IMetaCommitMessage getMetaCommitMessage() {
 		return this.prepareMetaMessage(new MetaCommitMessage());
 	}
+
+    @Override
+    public IFolderCreatedMessage getNewFolderMessage() {
+        return this.prepareMessage(new FolderCreateMessage());
+    }
 	
 }
