@@ -7,7 +7,7 @@
 package org.pieShare.pieShareApp.service.historyService;
 
 import java.util.List;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

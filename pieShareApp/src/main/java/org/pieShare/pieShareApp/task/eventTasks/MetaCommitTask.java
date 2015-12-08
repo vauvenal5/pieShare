@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
@@ -60,14 +61,14 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 		//todo: if not prepared don't do anything for the time being
 		//think of this later
 		//todo: we need also to do a isRequested check in case we are not the seeder but want the file!
-		if(this.shareService.isPrepared(this.msg.getPieFile())) {
-			PieLogger.trace(this.getClass(), "Starting to share file {}!", msg.getPieFile().getFileName());
+		if(this.shareService.isPrepared((PieFile) this.msg.getPieFilder())) {
+			PieLogger.trace(this.getClass(), "Starting to share file {}!", msg.getPieFilder().getName());
 			this.bitTorrentService.shareFile(this.msg.getFileMeta());
 			return;
 		}
 		
-		if(!this.compareService.isConflictedOrNotNeeded(this.msg.getPieFile()) && this.requestService.handleRequest(this.msg.getPieFile(), true)) {
-			PieLogger.trace(this.getClass(), "Starting to handle file {}!", msg.getPieFile().getFileName());
+		if(!this.compareService.isConflictedOrNotNeeded((PieFile) this.msg.getPieFilder()) && this.requestService.handleRequest((PieFile) this.msg.getPieFilder(), true)) {
+			PieLogger.trace(this.getClass(), "Starting to handle file {}!", msg.getPieFilder().getName());
 			this.bitTorrentService.handleFile(this.msg.getFileMeta());
 			try {
 				//we have to pass the message commit forward so the server 
@@ -79,7 +80,7 @@ public class MetaCommitTask extends PieEventTaskBase<IMetaCommitMessage> {
 			return;
 		}
 		
-		PieLogger.debug(this.getClass(), "File {} not prepared or not needed!", this.msg.getPieFile().getFileName());
+		PieLogger.debug(this.getClass(), "File {} not prepared or not needed!", this.msg.getPieFilder().getName());
 	}
 	
 }

@@ -7,7 +7,8 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.logoutTask.LogoutTask;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.ResetPwdTask;
@@ -20,6 +21,7 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileChangedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
+import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
@@ -99,4 +101,10 @@ public class ProviderConfiguration {
 	public Provider<PieShareConfiguration> pieShareConfigurationProvider;
 	@Autowired
 	public Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
+        
+        @Autowired
+        public Provider<FolderCreateMessage> folderCreateMessageProvider;
+        @Autowired
+        public Provider<FolderCreateTask> folderCreateTaskProvider;
+
 }

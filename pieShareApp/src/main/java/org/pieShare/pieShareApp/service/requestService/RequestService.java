@@ -8,7 +8,7 @@ package org.pieShare.pieShareApp.service.requestService;
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
@@ -47,7 +47,7 @@ public class RequestService implements IRequestService {
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
 		if (this.isRequested(pieFile)) {
-			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getFileName());
+			PieLogger.info(this.getClass(), "File allready requested {}", pieFile.getName());
 			return;
 		}
 
@@ -57,7 +57,7 @@ public class RequestService implements IRequestService {
 		PieUser user = userService.getUser();
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
-		msg.setPieFile(pieFile);
+		msg.setPieFilder(pieFile);
 		try {
 			PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
 			clusterManagementService.sendMessage(msg);

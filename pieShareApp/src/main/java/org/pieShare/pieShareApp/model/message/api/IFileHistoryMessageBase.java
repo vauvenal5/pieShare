@@ -6,13 +6,13 @@
 
 package org.pieShare.pieShareApp.model.message.api;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IFileHistoryMessageBase extends IFileMessageBase {
+public interface IFileHistoryMessageBase extends IFilderMessageBase<PieFile> {
 
 	PieFile getPreviousFile();
 

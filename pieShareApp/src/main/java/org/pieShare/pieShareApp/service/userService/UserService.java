@@ -5,6 +5,7 @@ import org.pieShare.pieShareApp.model.PieUser;
 public class UserService implements IUserService {
 	private PieUser user;
 	
+	@Override
 	public void setUser(PieUser user) {
 		this.user = user;
 	}

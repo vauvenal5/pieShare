@@ -7,8 +7,9 @@
 package org.pieShare.pieShareApp.model.message.metaMessage;
 
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 
 /**
@@ -39,12 +40,12 @@ public abstract class AMetaMessage extends AClusterMessage implements IMetaMessa
 	}
 
 	@Override
-	public PieFile getPieFile() {
+	public PieFile getPieFilder() {
 		return this.fileMeta.getFile();
 	}
 
 	@Override
-	public void setPieFile(PieFile file) {
+	public void setPieFilder(PieFile file) {
 		this.fileMeta.setFile(file);
 	}
 }

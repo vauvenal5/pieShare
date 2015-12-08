@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.service.requestService.api;
 
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

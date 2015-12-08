@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.*;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *
@@ -51,7 +51,7 @@ public class FileFilterService implements IFileFilterService {
 	@Override
 	public synchronized boolean checkFile(PieFile file) {
 		for (IFilter f : filters) {
-			if (f.matches(file.getRelativeFilePath())) {
+			if (f.matches(file.getRelativePath())) {
 				return false;
 			}
 		}

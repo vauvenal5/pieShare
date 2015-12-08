@@ -14,7 +14,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
@@ -30,6 +30,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	private List<DefaultFileMonitor> fileMonitors;
 	//todo: does the part with modified files belong in here or maybe even into the listener?
 		//if into the listener: how will changes be propageted to the right listener?
+	//todo-bug: concurrent manipulation of this list!!! handle this!
 	private List<PieFile> modifiedFiles;
 
 	public void setBeanService(IBeanService beanService) {
