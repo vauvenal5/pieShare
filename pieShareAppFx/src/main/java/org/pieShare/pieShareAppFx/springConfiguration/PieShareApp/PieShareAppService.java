@@ -15,6 +15,7 @@ import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMess
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
@@ -25,8 +26,8 @@ import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareServic
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
-import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieshare.piespring.service.database.ModelEntityConverterService;
+import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
@@ -35,6 +36,8 @@ import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
 import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
+import org.pieShare.pieShareApp.service.folderService.FolderService;
+import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieshare.piespring.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieshare.piespring.service.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
@@ -101,6 +104,7 @@ public class PieShareAppService {
 		factory.registerTaskProvider(LogoutCommand.class, this.providers.logoutTaskProvider);
 		factory.registerTaskProvider(ResetPwdCommand.class, this.providers.resetPwdTaskProvider);
 		
+                factory.registerTaskProvider(FolderCreateMessage.class, this.providers.folderCreateTaskProvider);
 		
 		
 		service.start();
@@ -255,13 +259,12 @@ public class PieShareAppService {
 		service.setBeanService(utilities.beanService());
 		service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
 		service.setConfigurationFactory(configurationFactory());
-		service.setModelEntityConverterService(modelEntityConverterService());
+		service.setConverterService(modelEntityConverterService());
 		return service;
 	}
 
 	public ModelEntityConverterService modelEntityConverterService() {
 		ModelEntityConverterService service = new ModelEntityConverterService();
-		service.setBeanService(utilities.beanService());
 		service.setUserService(userService());
 		return service;
 	}
@@ -308,4 +311,11 @@ public class PieShareAppService {
 		service.setUser(model.pieUser());
 		return service;
 	}
+
+        @Bean
+        @Lazy
+        public IFolderService folderService() {
+            FolderService folderService = new FolderService();
+            return folderService;
+        }
 }

@@ -62,5 +62,4 @@ public class ConfigurationFactory implements IConfigurationFactory {
 			conf.getWorkingDir().mkdirs();
 		}
 	}
-
 }

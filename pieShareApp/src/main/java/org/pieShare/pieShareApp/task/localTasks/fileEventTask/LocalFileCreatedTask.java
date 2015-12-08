@@ -10,7 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -29,9 +29,9 @@ public class LocalFileCreatedTask extends ALocalFileEventTask {
 				return;
 			}
 			
-			//todo: why do we scip directories?!
+			//todo: why do we skip directories?!
 			if (pieFile == null || this.file.isDirectory()) {
-				PieLogger.info(this.getClass(), "Sciping new file: {}", this.file.getName());
+				PieLogger.info(this.getClass(), "Skipping new file: {}", this.file.getName());
 				return;
 			}
 			

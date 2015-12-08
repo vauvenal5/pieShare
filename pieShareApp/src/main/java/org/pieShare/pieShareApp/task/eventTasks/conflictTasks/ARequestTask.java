@@ -5,7 +5,7 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 

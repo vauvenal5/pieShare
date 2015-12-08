@@ -37,7 +37,7 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
-		<dependency>
+        <dependency>
             <groupId>org.pieShare</groupId>
             <artifactId>pieShareAppFx</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -51,12 +51,17 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>1.9.5</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.openhab.jmdns</groupId>
             <artifactId>jmdns</artifactId>
@@ -73,38 +78,38 @@
         </dependency>
     </dependencies>
 	
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-failsafe-plugin</artifactId>
-				<version>2.17</version>
-				<configuration>
-					<forkCount>1</forkCount>
-					<reuseForks>false</reuseForks>
-                                        <excludes>
-                                            <exclude>*/*LoadTestIT.java</exclude>
-                                            <exclude>*/*LTIT.java</exclude>
-                                        </excludes>
-				</configuration>
-				<executions>
-				  <execution>
-					<phase>integration-test</phase>
-					<goals>
-					  <goal>integration-test</goal>
-					</goals>
-					<configuration>
-						<argLine>${jacoco.agent.arg}</argLine>
-					</configuration>
-				  </execution>
-				  <execution>
-					  <id>verify</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-				  </execution>
-				</executions>
-			  </plugin>
-		</plugins>
-	</build>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                    <excludes>
+                        <exclude>*/*LoadTestIT.java</exclude>
+                        <exclude>*/*LTIT.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>${jacoco.agent.arg}</argLine>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

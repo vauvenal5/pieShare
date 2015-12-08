@@ -6,9 +6,9 @@
 
 package org.pieShare.pieShareApp.service.shareService;
 
-import org.pieShare.pieShareApp.model.pieFile.FileMeta;
+import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import java.io.File;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *

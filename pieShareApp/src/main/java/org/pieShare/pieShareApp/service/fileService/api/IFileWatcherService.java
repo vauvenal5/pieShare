@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.service.fileService.api;
 
 import java.io.File;
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**

@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.pieFile.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
@@ -63,6 +63,7 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public void deleteRecursive(PieFile file) {
+                PieLogger.trace(this.getClass(), "Recursively deleting {}", file.getRelativePath());
 		File localFile = this.getAbsolutePath(file).toFile();
 		try {
 			if (localFile.isDirectory()) {
@@ -93,7 +94,7 @@ public abstract class FileServiceBase implements IFileService {
 	}
 
 	private boolean setCorrectModificationDate(PieFile pieFile, File file) {
-		PieLogger.trace(this.getClass(), "Date modified {} of {}", pieFile.getLastModified(), pieFile.getRelativeFilePath());
+		PieLogger.trace(this.getClass(), "Date modified {} of {}", pieFile.getLastModified(), pieFile.getRelativePath());
 
 		if (!file.setLastModified(pieFile.getLastModified())) {
 			PieLogger.warn(this.getClass(), "Could not set LastModificationDate: {}", file.getAbsolutePath());
@@ -117,13 +118,13 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public Path getAbsolutePath(PieFile file) {
-		File localFile = new File(configuration.getWorkingDir(), file.getRelativeFilePath());
+		File localFile = new File(configuration.getWorkingDir(), file.getRelativePath());
 		return localFile.toPath();
 	}
 
 	@Override
 	public Path getAbsoluteTmpPath(PieFile file) {
-		File localFile = new File(configuration.getTmpDir(), file.getRelativeFilePath());
+		File localFile = new File(configuration.getTmpDir(), file.getRelativePath());
 		return localFile.toPath();
 	}
 
@@ -136,12 +137,12 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public PieFile getTmpPieFile(PieFile file) throws IOException {
-		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativeFilePath());
+		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativePath());
 		return this.getPieFile(tmpFile);
 	}
 
 	@Override
 	public PieFile getWorkingPieFile(PieFile file) throws IOException {
-		return this.getPieFile(file.getRelativeFilePath());
+		return this.getPieFile(file.getRelativePath());
 	}
 }
