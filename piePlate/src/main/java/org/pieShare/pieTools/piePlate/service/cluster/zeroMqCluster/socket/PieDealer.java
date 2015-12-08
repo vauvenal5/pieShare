@@ -20,7 +20,7 @@ public class PieDealer implements IPieDealer {
 	private ZMQ.Context context; //switch to ZContext?
 	private ZMQ.Socket dealer;
 	private ZeroMQUtilsService utils;
-	private int endpoints = 0;
+	private int endpoints=0;
 
 	public PieDealer() {
 	}
@@ -49,7 +49,7 @@ public class PieDealer implements IPieDealer {
 
 	@Override
 	public void disconnect(InetAddress address, int port) {
-		PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+		PieLogger.trace(PieDealer.class, "Connecting to {}", utils.buildConnectionString(address, port));
 		dealer.disconnect(utils.buildConnectionString(address, port));
 		endpoints--;
 	}
@@ -67,7 +67,7 @@ public class PieDealer implements IPieDealer {
 	@Override
 	public void send(byte[] message) {
 		try {
-			PieLogger.trace(this.getClass(), "Sending msg to {} endpoints.", endpoints);
+			PieLogger.trace(this.getClass(), "Sending msg to endpoints.");
 			for (int i = 0; i < endpoints; i++) {
 				dealer.send(message, ZMQ.NOBLOCK);
 			}

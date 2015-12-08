@@ -345,6 +345,7 @@ public class PiePlateConfiguration {
 		service.setPieRouter(pieRouterSocket());
 		service.setClusterRemovedEventBase(this.utilities.eventBase());
 		service.setShutdownService(this.utilities.shutdownService());
+		service.setExecutorService(this.utilities.pieExecutorService());
 		return service;
 	}
 	

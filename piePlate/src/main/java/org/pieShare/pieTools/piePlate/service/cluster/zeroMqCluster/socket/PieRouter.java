@@ -14,7 +14,6 @@ import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieRouter;
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
@@ -70,25 +69,32 @@ public class PieRouter implements IPieRouter {
     @Override
     public void close() {
         shutdown = true;
+		
         router.close();
-        context.close();
+		context.close();
     }
 
     @Override
     public byte[] receive() {
         //receive dealer identity and discard it
         router.recv();
+
         return router.recv();
     }
 
 	@Override
 	public void run() {
+		byte[] msg = null;
 		//clean shutdown, ZMQ poller?
 		//zeromq can't block and sleep
 		//https://github.com/zeromq/jeromq/blob/master/src/main/java/zmq/SocketBase.java#L712
 		//https://github.com/thriftzmq/thriftzmq-java/blob/master/thriftzmq/src/main/java/org/thriftzmq/ProxyLoop.java
 		while(!shutdown){
-			byte[] msg = this.receive();
+			try{
+				msg = this.receive();
+			}catch(ZMQException e){
+				return;
+			}
 			for(IIncomingChannel channel: incomingChannels) {
 				ChannelTask task = this.channelTaskProvider.get();
 				task.setChannel(channel);
