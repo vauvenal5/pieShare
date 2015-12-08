@@ -23,64 +23,64 @@ import org.zeromq.ZMQException;
  * @author Paul
  */
 public class PieRouter implements IPieRouter {
-    
-    private ZMQ.Context context;
-    private ZMQ.Socket router;
-    private ZeroMQUtilsService utils;
+
+	private ZMQ.Context context;
+	private ZMQ.Socket router;
+	private ZeroMQUtilsService utils;
 	private IExecutorService executorService;
 	private Provider<ChannelTask> channelTaskProvider;
 	private List<IIncomingChannel> incomingChannels;
-        private boolean shutdown;
-    
-    public PieRouter(){
+	private boolean shutdown;
+
+	public PieRouter() {
 		this.incomingChannels = new ArrayList<>();
-                shutdown = false;
-    }
-	
-	public void setExecutorService(IExecutorService service){
+		shutdown = false;
+	}
+
+	public void setExecutorService(IExecutorService service) {
 		this.executorService = service;
 	}
-	
-	public void setZeroMQUtilsService(ZeroMQUtilsService service){
+
+	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
 		this.utils = service;
 	}
-	
-	public void setChannelTaskProvider(Provider<ChannelTask> provider){
+
+	public void setChannelTaskProvider(Provider<ChannelTask> provider) {
 		this.channelTaskProvider = provider;
 	}
-    
-    @Override
-    public boolean bind(InetAddress netAddr, int port) {
-        if(context == null){
-            this.context = ZMQ.context(1);
-            this.router = context.socket(ZMQ.ROUTER);
-        }
-        
-        PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(netAddr, port));
-        try{
-            router.bind(utils.buildConnectionString(netAddr, port));
-            return true;
-        }catch(ZMQException e){
-            PieLogger.error(PieRouter.class, "Bind failed: %s", e);
-            return false;
-        }
-    }
 
-    @Override
-    public void close() {
-        shutdown = true;
-		
-        router.close();
+	@Override
+	public boolean bind(InetAddress netAddr, int port) {
+		if (context == null) {
+			this.context = ZMQ.context(1);
+			this.router = context.socket(ZMQ.ROUTER);
+		}
+
+		PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(netAddr, port));
+		try {
+			router.bind(utils.buildConnectionString(netAddr, port));
+			return true;
+		} catch (ZMQException e) {
+			PieLogger.error(PieRouter.class, "Bind failed: %s", e);
+			return false;
+		}
+	}
+
+	@Override
+	public void close() {
+		shutdown = true;
+
+		router.close();
 		context.close();
-    }
+	}
 
-    @Override
-    public byte[] receive() {
-        //receive dealer identity and discard it
-        router.recv();
+	@Override
+	public byte[] receive() {
+		//receive dealer identity and discard it
+		router.recv();
 
-        return router.recv();
-    }
+		return router.recv();
+	}
 
 	@Override
 	public void run() {
@@ -89,13 +89,13 @@ public class PieRouter implements IPieRouter {
 		//zeromq can't block and sleep
 		//https://github.com/zeromq/jeromq/blob/master/src/main/java/zmq/SocketBase.java#L712
 		//https://github.com/thriftzmq/thriftzmq-java/blob/master/thriftzmq/src/main/java/org/thriftzmq/ProxyLoop.java
-		while(!shutdown){
-			try{
+		while (!shutdown) {
+			try {
 				msg = this.receive();
-			}catch(ZMQException e){
+			} catch (ZMQException e) {
 				return;
 			}
-			for(IIncomingChannel channel: incomingChannels) {
+			for (IIncomingChannel channel : incomingChannels) {
 				ChannelTask task = this.channelTaskProvider.get();
 				task.setChannel(channel);
 				task.setMessage(msg);
