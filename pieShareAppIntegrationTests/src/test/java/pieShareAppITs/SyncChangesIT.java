@@ -37,6 +37,7 @@ public class SyncChangesIT {
 	private File file;
 	private File fileBot;
 	private String cloudName;
+	private String password;
 	
 	public SyncChangesIT() {
 	}
@@ -59,7 +60,8 @@ public class SyncChangesIT {
 		FileUtils.copyFile(file, fileBot, true);
 		
 		this.cloudName = UUID.randomUUID().toString();
-		this.process = ITUtil.startProcess(FileSyncMain.class, this.cloudName);
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, this.cloudName, password);
 		
 		context = ITUtil.getContext();
 		
@@ -94,7 +96,7 @@ public class SyncChangesIT {
 		
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 
-		ITUtil.executeLoginToTestCloud(context, this.cloudName);
+		ITUtil.executeLoginToTestCloud(context, this.cloudName, password);
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
 		

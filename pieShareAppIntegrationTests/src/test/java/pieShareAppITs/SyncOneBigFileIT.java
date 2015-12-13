@@ -39,6 +39,7 @@ public class SyncOneBigFileIT {
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private String cloudName;
+	private String password;
 
 	public SyncOneBigFileIT() {
 	}
@@ -86,9 +87,10 @@ public class SyncOneBigFileIT {
 		});
 
 		this.cloudName = UUID.randomUUID().toString();
-		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
 
-		ITUtil.executeLoginToTestCloud(context, cloudName);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 
 		ITUtil.waitForProcessToStartup(this.process);
 

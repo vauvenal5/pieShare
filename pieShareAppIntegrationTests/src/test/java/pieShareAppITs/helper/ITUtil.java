@@ -105,11 +105,15 @@ public class ITUtil {
 		context = null;
 	}
 
-	public static Process startProcess(Class mainClazz, String cloudName) throws IOException {
+	public static Process startProcess(Class mainClazz, String cloudName, String password) throws IOException {
 		String separator = System.getProperty("file.separator");
 		String classpath = System.getProperty("java.class.path");
 		String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-		ProcessBuilder processBuilder = new ProcessBuilder(path, "-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005", "-cp", classpath, mainClazz.getName(), cloudName);
+		ProcessBuilder processBuilder = new ProcessBuilder(path, "-Xdebug", 
+				"-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005", 
+				"-cp", classpath, mainClazz.getName(), 
+				cloudName,
+				password);
 		return processBuilder.start();
 	}
 
@@ -151,10 +155,10 @@ public class ITUtil {
 		return false;
 	}
 
-	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context, String cloudName) throws Exception {
+	public static void executeLoginToTestCloud(AnnotationConfigApplicationContext context, String cloudName, String password) throws Exception {
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".getBytes();
+		pwd.password = password.getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(cloudName);
 

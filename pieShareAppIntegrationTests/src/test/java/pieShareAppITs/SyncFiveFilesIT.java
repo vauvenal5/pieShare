@@ -39,6 +39,7 @@ public class SyncFiveFilesIT {
     private AnnotationConfigApplicationContext context;
     private Process process;
 	private String cloudName;
+	private String password;
 
     public SyncFiveFilesIT() {
     }
@@ -86,7 +87,8 @@ public class SyncFiveFilesIT {
         });
 
 		this.cloudName = UUID.randomUUID().toString();
-        ITUtil.executeLoginToTestCloud(context, cloudName);
+		this.password = UUID.randomUUID().toString();
+        ITUtil.executeLoginToTestCloud(context, cloudName, password);
 
         System.out.println("Creating files!");
         for (int i = 0; i < 5; i++) {
@@ -96,7 +98,7 @@ public class SyncFiveFilesIT {
         }
 
         System.out.println("Starting bot!");
-        this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
+        this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
         ITUtil.waitForProcessToStartup(this.process);
         System.out.println("Bot started!");
 
