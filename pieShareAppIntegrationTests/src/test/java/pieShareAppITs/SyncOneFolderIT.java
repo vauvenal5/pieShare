@@ -123,7 +123,7 @@ public class SyncOneFolderIT {
                         Assert.assertEquals(folderMain.getName(), folderBot.getName());
 		}
 		else {
-			fail("Too much folder transerfers?!");
+			fail("Too much folder transerfers?! should be 1 but is : " + counter.getCount(FolderCreateTask.class));
 		}
 	}
     
