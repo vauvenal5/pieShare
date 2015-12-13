@@ -20,10 +20,6 @@ public class ShutdownService implements IShutdownService {
 	private final List<IShutdownableService> listeners = new ArrayList<>();
 
 	public ShutdownService(){}
-	
-	public void setListener(IShutdownableService service) {
-		this.registerListener(service);
-	}
 
 	@Override
 	public void registerListener(IShutdownableService service) {
