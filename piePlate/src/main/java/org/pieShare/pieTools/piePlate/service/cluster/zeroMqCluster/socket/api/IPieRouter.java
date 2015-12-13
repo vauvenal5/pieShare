@@ -17,7 +17,7 @@ public interface IPieRouter {
      * @param address 
      * @return true if router was bound else false.
      */
-    boolean bind(InetAddress address, int port);
+    boolean bind(int port);
     
     /**
      * Close socket.

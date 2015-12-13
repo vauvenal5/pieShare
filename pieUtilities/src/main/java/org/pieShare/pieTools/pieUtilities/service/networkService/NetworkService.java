@@ -67,6 +67,8 @@ public class NetworkService implements INetworkService {
 		try {
 			ServerSocket tmpSocket = new ServerSocket();
 			tmpSocket.setReuseAddress(true);
+			//network service should also provide testing for a specific port on specific adress
+			//tmpSocket.bind(new InetSocketAddress(this.getLocalHost(), p));
 			tmpSocket.bind(new InetSocketAddress(p));
 			tmpSocket.close();
 		} catch (IOException ex) {
