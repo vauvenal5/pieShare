@@ -12,6 +12,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 /**
  *
  * @author Svetoslav
+ * todo: add folders (filders?) to history service
  */
 public interface IHistoryService {
 	void syncPieFileWithDb(PieFile pieFile);
