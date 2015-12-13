@@ -16,6 +16,7 @@ import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 /**
  *
  * @author Svetoslav
+ * todo: history for folder
  */
 public class HistoryFileService extends FileServiceBase {
 	

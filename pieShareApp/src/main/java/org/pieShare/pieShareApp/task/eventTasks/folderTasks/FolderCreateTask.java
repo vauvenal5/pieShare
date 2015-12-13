@@ -5,15 +5,9 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks.folderTasks;
 
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.folderService.FolderServiceException;
 import org.pieShare.pieShareApp.service.folderService.IFolderService;
-import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
