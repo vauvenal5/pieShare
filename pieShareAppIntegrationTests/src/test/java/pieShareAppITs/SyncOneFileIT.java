@@ -36,6 +36,7 @@ public class SyncOneFileIT {
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private String cloudName;
+	private String password;
 
 	public SyncOneFileIT() {
 	}
@@ -83,10 +84,11 @@ public class SyncOneFileIT {
 		});
 
 		this.cloudName = UUID.randomUUID().toString();
+		this.password = UUID.randomUUID().toString();
 		System.out.println("Starting bot!");
-		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
 
-		ITUtil.executeLoginToTestCloud(context, cloudName);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 		
 //		Thread.sleep(5000);
 //		System.out.println("Starting bot!");

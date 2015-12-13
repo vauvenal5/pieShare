@@ -40,6 +40,7 @@ public class DeleteIT {
 	private Process process;
 	private List<File> files;
 	private String cloudName;
+	String password;
 	
 	public DeleteIT() {
 		files = new ArrayList<>();
@@ -65,7 +66,8 @@ public class DeleteIT {
 		}
 		
 		this.cloudName = UUID.randomUUID().toString();
-		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
 		
 		context = ITUtil.getContext();
 		
@@ -102,7 +104,7 @@ public class DeleteIT {
 		
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 		
-		ITUtil.executeLoginToTestCloud(context, cloudName);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 		
 		Assert.assertTrue(files.get(4).delete());
 		File deletedFile = files.remove(4);

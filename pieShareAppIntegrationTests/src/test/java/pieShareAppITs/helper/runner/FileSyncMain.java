@@ -21,10 +21,11 @@ public class FileSyncMain {
 	 */
 	public static void main(String[] args) throws Exception {
 		String cloudName = args[0];
+		String password = args[1];
 		ITUtil.setUpEnviroment(false);
 		AnnotationConfigApplicationContext context = ITUtil.getContext();
 		
-		ITUtil.executeLoginToTestCloud(context, cloudName);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 		System.out.println("!loggedIn");
 	}
 	
