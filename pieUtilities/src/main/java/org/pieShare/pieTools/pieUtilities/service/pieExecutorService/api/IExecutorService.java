@@ -8,12 +8,13 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IPieTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.exception.PieExecutorTaskFactoryException;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Svetoslav
  */
-public interface IExecutorService {
+public interface IExecutorService extends IShutdownableService{
 
 	public void execute(IPieTask task);
 

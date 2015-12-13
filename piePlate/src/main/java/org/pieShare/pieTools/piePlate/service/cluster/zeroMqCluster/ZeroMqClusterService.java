@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -25,27 +23,56 @@ import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieRouter;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredListener {
-	
+public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener {
+
 	private IPieDealer dealer;
+	private IPieRouter router;
 	private String id;
 	private IDiscoveryService discovery;
 	private INetworkService networkService;
-	
-	private List<IIncomingChannel> incomingChannels;
+	private IExecutorService executor;
 	private Map<String, IOutgoingChannel> outgoingChannels;
-	
-	public ZeroMqClusterService(){
-		this.incomingChannels = new ArrayList<>();
+	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
+	private List<String> knownMembers;
+
+	public ZeroMqClusterService() {
 		this.outgoingChannels = new HashMap<>();
+		this.knownMembers = new ArrayList<>();
+	}
+
+	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
+		this.clusterRemovedEventBase = clusterRemovedEventBase;
+	}
+
+	public void setDiscoveryService(IDiscoveryService discovery) {
+		this.discovery = discovery;
+	}
+
+	public void setNetworkService(INetworkService networkService) {
+		this.networkService = networkService;
+	}
+
+	public void setExecutorService(IExecutorService executor) {
+		this.executor = executor;
+	}
+
+	public void setPieRouter(IPieRouter router) {
+		this.router = router;
+	}
+
+	public void setPieDealer(IPieDealer dealer) {
+		this.dealer = dealer;
 	}
 
 	@Override
@@ -53,6 +80,11 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 		try {
 			int routerPort = this.networkService.getAvailablePort();
 			//todo: connect router here to port
+			router.bind(networkService.getLocalHost(), routerPort);
+
+			//start router task
+			this.executor.execute(router);
+
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
 			List<DiscoveredMember> members = this.discovery.list(clusterName);
@@ -61,7 +93,9 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 			//foreach endpoint connect&send ZeroMQClusterMessage
 			//	dealer = new PieDealer();
 			//
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			for (DiscoveredMember m : members) {
+				this.connectMemberToCluster(m);
+			}
 		} catch (DiscoveryException ex) {
 			throw new ClusterServiceException(ex);
 		}
@@ -94,16 +128,9 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
 			this.dealer.send(message);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
-	}
-
-	//@Override
-	public int getMembersCount() {
-		//return jmDNS count
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
@@ -113,12 +140,12 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 
 	@Override
 	public IEventBase<IClusterRemovedListener, ClusterRemovedEvent> getClusterRemovedEventBase() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return this.clusterRemovedEventBase;
 	}
 
 	@Override
 	public void registerIncomingChannel(IIncomingChannel channel) {
-		incomingChannels.add(channel);
+		router.registerIncomingChannel(channel);
 	}
 
 	@Override
@@ -128,7 +155,7 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 
 	@Override
 	public List<IIncomingChannel> getIncomingChannels() {
-		return incomingChannels;
+		throw new UnsupportedOperationException("Deprecated, won't be supported");
 	}
 
 	@Override
@@ -138,8 +165,25 @@ public class ZeroMqClusterService implements IClusterService, IMemberDiscoveredL
 
 	@Override
 	public void handleObject(MemberDiscoveredEvent event) {
-		//todo: pass new member to dealer
-		//todo: think about who is resposible for the peer list management
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.connectMemberToCluster(event.getMember());
+	}
+
+	private void connectMemberToCluster(DiscoveredMember member) {
+		if (this.knownMembers.contains(member.getName())) {
+			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
+			return;
+		}
+
+		PieLogger.trace(this.getClass(), "Connecting following {} with port {} to dealer.", member.getInetAdresses().getHostAddress(),
+				member.getPort());
+		if (dealer.connect(member.getInetAdresses(), member.getPort())) {
+			this.knownMembers.add(member.getName());
+		}
+	}
+
+	@Override
+	public void shutdown() {
+		dealer.close();
+		router.close();
 	}
 }
