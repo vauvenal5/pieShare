@@ -23,6 +23,7 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
