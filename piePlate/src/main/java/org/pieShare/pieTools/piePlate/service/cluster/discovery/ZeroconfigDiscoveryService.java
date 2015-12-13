@@ -50,7 +50,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 		this.listener = listener;
 	}
 
-	private void initJmdns() throws DiscoveryException {
+	private synchronized void initJmdns() throws DiscoveryException {
 		if (this.jmDns != null) {
 			return;
 		}
@@ -66,13 +66,23 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	public void registerService(String clusterName, int port) throws DiscoveryException {
 		try {
 			this.initJmdns();
-			this.myself = ServiceInfo.create(this.type, UUID.randomUUID().toString(), clusterName, port, "");
+			String me = UUID.randomUUID().toString();
+			PieLogger.trace(this.getClass(), "Registering myself with id {}", me);
+			this.myself = ServiceInfo.create(this.type, me, clusterName, port, "");
 			this.jmDns.registerService(this.myself);
+			
+			//todo-sv: resolve circular dependecy
+			listener.setDiscoveryService(this);
+			listener.setMyself(me);
 			this.jmDns.addServiceListener(this.type, listener);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Could not create zeroconfig discovery.", ex);
 			throw new DiscoveryException("Could not register service!", ex);
 		}
+	}
+	
+	public ServiceInfo resolveService(ServiceInfo info) {
+		return this.jmDns.getServiceInfo(info.getType(), info.getName());
 	}
 
 	@Override
@@ -81,7 +91,18 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 		Map<String, ServiceInfo[]> map = this.jmDns.listBySubtype(this.type);
 		List<DiscoveredMember> members = new ArrayList<DiscoveredMember>();
 
+		PieLogger.trace(this.getClass(), "Found the following amount of items {}.", map.size());
+
 		if (!map.containsKey(clusterName)) {
+			int arrayLength = map.values().size();
+			PieLogger.trace(this.getClass(), "Found item size {}.", arrayLength);
+			for(ServiceInfo[] infos: map.values()) {
+				PieLogger.trace(this.getClass(), "Amount of items {}.", infos.length);
+				for(ServiceInfo info: infos) {
+					PieLogger.trace(this.getClass(), "Item: {}.", info.getSubtype());
+				}
+			}
+			PieLogger.warn(this.getClass(), "No members found for {}", clusterName);
 			return members;
 		}
 
@@ -94,10 +115,14 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 					DiscoveredMember member = discoveredMemberProvider.get();
 					member.setInetAdresses(ad);
 					member.setPort(info.getPort());
+					member.setName(info.getName());
 					members.add(member);
 				}
 			}
 		}
+
+		PieLogger.trace(this.getClass(), "We discovered {} members!", members.size());
+
 		return members;
 	}
 

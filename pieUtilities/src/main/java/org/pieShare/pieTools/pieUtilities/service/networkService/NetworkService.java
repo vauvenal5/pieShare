@@ -110,7 +110,7 @@ public class NetworkService implements INetworkService {
 				socket.socket().setSoTimeout(5000);
 
 				int freePort = this.getAvailablePort();
-
+				//TODO-SV: check if connect is better option than bind, once bound connect won't change address so try connect from beginning
 				socket.bind(new InetSocketAddress(ad, freePort));
 				//this has to become way better
 				//socket.connect(new InetSocketAddress("google.com", 80));
