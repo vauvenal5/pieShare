@@ -28,15 +28,21 @@ public class PieRouter implements IPieRouter{
     }
     
     @Override
-    public boolean bind(InetAddress address, int port) {
+    public boolean bind(int port) {
         if(context == null){
             this.context = ZMQ.context(1);
             this.router = context.socket(ZMQ.ROUTER);
         }
+		
+		//When not bound to 0.0.0.0 MAC will not see the port as bound but only
+		//in combination with the specific address which leads to wrong behaviour.
+		//More clear explanation:
+		//router.bind(utils.buildConnectionString(address, port));
+		String connectionString = utils.buildConnectionString("0.0.0.0", port);
         
-        PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(address, port));
+        PieLogger.trace(PieRouter.class, "Bind router on: %s", connectionString);
         try{
-            router.bind(utils.buildConnectionString(address, port));
+			router.bind(connectionString);
             return true;
         }catch(ZMQException e){
             PieLogger.error(PieRouter.class, "Bind failed: %s", e);
