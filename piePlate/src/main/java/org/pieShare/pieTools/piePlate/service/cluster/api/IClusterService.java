@@ -32,6 +32,7 @@ public interface IClusterService {
 	
 	void registerOutgoingChannel(IOutgoingChannel channel);
 	
+	@Deprecated
 	List<IIncomingChannel> getIncomingChannels();
 	
 	boolean isMaster();

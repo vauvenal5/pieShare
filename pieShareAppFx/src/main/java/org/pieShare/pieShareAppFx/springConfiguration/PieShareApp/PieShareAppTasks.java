@@ -46,7 +46,7 @@ public class PieShareAppTasks {
 	@Autowired
 	private PiePlateConfiguration plate;
 	@Autowired
-	private PieUtilitiesConfiguration config;
+	private PieUtilitiesConfiguration utilities;
 	@Autowired
 	private ProviderConfiguration providers;
 
@@ -174,9 +174,9 @@ public class PieShareAppTasks {
 	public LoginTask loginTask() {
 		LoginTask service = new LoginTask();
 		service.setSymmetricEncryptedChannelProvider(this.providers.symmetricEncryptedChannelProvider);
-		service.setPasswordEncryptionService(config.passwordEncryptionService());
+		service.setPasswordEncryptionService(utilities.passwordEncryptionService());
 		service.setConfigurationFactory(services.configurationFactory());
-		service.setEncodeService(config.encodeService());
+		service.setEncodeService(utilities.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
 		service.setHistoryService(services.historyService());
@@ -213,9 +213,9 @@ public class PieShareAppTasks {
 	public TorrentTask torrentTask() {
 		TorrentTask task = new TorrentTask();
 		this.aMessageSendingTask(task);
-		task.setNetworkService(this.services.networkService());
+		task.setNetworkService(this.utilities.networkService());
 		task.setShareService(this.services.shareService());
-		task.setShutdownService(this.config.shutdownService());
+		task.setShutdownService(this.utilities.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setFileService(this.services.historyFileService());
 		task.setRequestService(this.services.requestService());

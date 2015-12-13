@@ -16,57 +16,63 @@ import org.zeromq.ZMQException;
  * @author Paul
  */
 public class PieDealer implements IPieDealer {
-     
-    private ZMQ.Context context; //switch to ZContext?
-    private ZMQ.Socket dealer;
-    private ZeroMQUtilsService utils;
-    private int endpoints = 0;
-    
-    public PieDealer()
-    {
-        this.utils = new ZeroMQUtilsService();
-    }
 
-    @Override
-    public boolean connect(InetAddress address, int port) {
-        if(this.context == null){
-            this.context = ZMQ.context(1);
-            this.dealer = context.socket(ZMQ.DEALER);
-        }
-        
-        try{
-            PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
-            dealer.connect(utils.buildConnectionString(address, port));
-            endpoints++;
-            return true;
-        }catch(ZMQException e){
-            PieLogger.error(PieDealer.class, "Connection failed %s", e);
-            return false;
-        }
-    }
+	private ZMQ.Context context; //switch to ZContext?
+	private ZMQ.Socket dealer;
+	private ZeroMQUtilsService utils;
+	private int endpoints=0;
 
-    @Override
-    public void disconnect(InetAddress address, int port) {
-        PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
-        dealer.disconnect(utils.buildConnectionString(address, port));
-        endpoints--;
-    }
+	public PieDealer() {
+	}
 
-    @Override
-    public void close() {
-        dealer.close();
-        context.close();
-		context.term();
-    }
+	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
+		this.utils = service;
+	}
 
-    @Override
-    public void send(byte[] message) {
-        try{
-            for (int i = 0; i < endpoints; i++) {
-                dealer.send(message, ZMQ.NOBLOCK);
-            }
-        }catch(ZMQException e){
-            PieLogger.error(PieDealer.class, "Message send error: {0}", e);
-        }
-    }
- }
+	@Override
+	public boolean connect(InetAddress address, int port) {
+		if (this.context == null) {
+			this.context = ZMQ.context(1);
+			this.dealer = context.socket(ZMQ.DEALER);
+		}
+
+		try {
+			PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+			dealer.connect(utils.buildConnectionString(address, port));
+			endpoints++;
+			return true;
+		} catch (ZMQException e) {
+			PieLogger.error(PieDealer.class, "Connection failed %s", e);
+			return false;
+		}
+	}
+
+	@Override
+	public void disconnect(InetAddress address, int port) {
+		PieLogger.trace(PieDealer.class, "Connecting to {}", utils.buildConnectionString(address, port));
+		dealer.disconnect(utils.buildConnectionString(address, port));
+		endpoints--;
+	}
+
+	@Override
+	public void close() {
+		if (dealer != null) {
+			dealer.close();
+		}
+		if (context != null) {
+			context.close();
+		}
+	}
+
+	@Override
+	public void send(byte[] message) {
+		try {
+			PieLogger.trace(this.getClass(), "Sending msg to endpoints.");
+			for (int i = 0; i < endpoints; i++) {
+				dealer.send(message, ZMQ.NOBLOCK);
+			}
+		} catch (ZMQException e) {
+			PieLogger.error(PieDealer.class, "Message send error: {0}", e);
+		}
+	}
+}

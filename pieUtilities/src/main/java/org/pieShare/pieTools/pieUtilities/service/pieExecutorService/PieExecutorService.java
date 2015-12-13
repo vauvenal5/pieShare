@@ -29,7 +29,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  *
  * @author Svetoslav
  */
-public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService, IShutdownableService {
+public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService {
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
 		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
