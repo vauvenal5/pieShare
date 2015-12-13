@@ -70,6 +70,16 @@ public class ZeroconfDiscoveryIT {
 			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
+
+			@Override
+			public void setMyself(String myself) {
+				//ignore
+			}
+
+			@Override
+			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
+			}
 		});
 		discovery2.registerService("mycloud", service.getAvailablePort());
 
@@ -95,6 +105,16 @@ public class ZeroconfDiscoveryIT {
 			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
+
+			@Override
+			public void setMyself(String myself) {
+				//ignore
+			}
+
+			@Override
+			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
+			}
 		});
 		discovery3.registerService("mycloud", service.getAvailablePort());
 
@@ -119,6 +139,16 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
+			}
+
+			@Override
+			public void setMyself(String myself) {
+				//ignore
+			}
+
+			@Override
+			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
 			}
 		});
 		
@@ -191,6 +221,16 @@ public class ZeroconfDiscoveryIT {
 			@Override
 			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
+			}
+
+			@Override
+			public void setMyself(String myself) {
+				//ignore
+			}
+
+			@Override
+			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
 			}
 		});
 		discovery1.registerService("mycloud", 7777);

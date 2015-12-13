@@ -6,7 +6,14 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Provider;
+import org.pieShare.pieTools.piePlate.model.PieAddress;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieRouter;
+import org.pieShare.pieTools.piePlate.task.ChannelTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
@@ -15,45 +22,94 @@ import org.zeromq.ZMQException;
  *
  * @author Paul
  */
-public class PieRouter implements IPieRouter{
-    
-    private ZMQ.Context context;
-    private ZMQ.Socket router;
-    private ZeroMQUtilsService utils;
-    
-    public PieRouter()
-    {
-       
-        this.utils = new ZeroMQUtilsService();
-    }
-    
-    @Override
-    public boolean bind(InetAddress address, int port) {
-        if(context == null){
-            this.context = ZMQ.context(1);
-            this.router = context.socket(ZMQ.ROUTER);
-        }
-        
-        PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(address, port));
-        try{
-            router.bind(utils.buildConnectionString(address, port));
-            return true;
-        }catch(ZMQException e){
-            PieLogger.error(PieRouter.class, "Bind failed: %s", e);
-            return false;
-        }
-    }
+public class PieRouter implements IPieRouter {
 
-    @Override
-    public void close() {
-        router.close();
-        context.close();
-    }
+	private ZMQ.Context context;
+	private ZMQ.Socket router;
+	private ZeroMQUtilsService utils;
+	private IExecutorService executorService;
+	private Provider<ChannelTask> channelTaskProvider;
+	private List<IIncomingChannel> incomingChannels;
+	private boolean shutdown;
 
-    @Override
-    public byte[] receive() {
-        //receive dealer identity and discard it
-        router.recv();
-        return router.recv();
-    }
+	public PieRouter() {
+		this.incomingChannels = new ArrayList<>();
+		shutdown = false;
+	}
+
+	public void setExecutorService(IExecutorService service) {
+		this.executorService = service;
+	}
+
+	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
+		this.utils = service;
+	}
+
+	public void setChannelTaskProvider(Provider<ChannelTask> provider) {
+		this.channelTaskProvider = provider;
+	}
+
+	@Override
+	public boolean bind(InetAddress netAddr, int port) {
+		if (context == null) {
+			this.context = ZMQ.context(1);
+			this.router = context.socket(ZMQ.ROUTER);
+		}
+
+		PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(netAddr, port));
+		try {
+			router.bind(utils.buildConnectionString(netAddr, port));
+			return true;
+		} catch (ZMQException e) {
+			PieLogger.error(PieRouter.class, "Bind failed: %s", e);
+			return false;
+		}
+	}
+
+	@Override
+	public void close() {
+		shutdown = true;
+
+		router.close();
+		context.close();
+	}
+
+	@Override
+	public byte[] receive() {
+		//receive dealer identity and discard it
+		router.recv();
+
+		return router.recv();
+	}
+
+	@Override
+	public void run() {
+		byte[] msg = null;
+		//clean shutdown, ZMQ poller?
+		//zeromq can't block and sleep
+		//https://github.com/zeromq/jeromq/blob/master/src/main/java/zmq/SocketBase.java#L712
+		//https://github.com/thriftzmq/thriftzmq-java/blob/master/thriftzmq/src/main/java/org/thriftzmq/ProxyLoop.java
+		while (!shutdown) {
+			try {
+				msg = this.receive();
+			} catch (ZMQException e) {
+				return;
+			}
+			for (IIncomingChannel channel : incomingChannels) {
+				ChannelTask task = this.channelTaskProvider.get();
+				task.setChannel(channel);
+				task.setMessage(msg);
+				PieAddress addr = new PieAddress();
+				task.setAddress(addr);
+
+				this.executorService.execute(task);
+			}
+		}
+
+	}
+
+	@Override
+	public void registerIncomingChannel(IIncomingChannel channel) {
+		this.incomingChannels.add(channel);
+	}
 }

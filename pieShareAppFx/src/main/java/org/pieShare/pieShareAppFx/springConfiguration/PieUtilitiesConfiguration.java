@@ -13,6 +13,7 @@ import org.pieShare.pieTools.pieUtilities.service.compressor.Compressor;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.PropertiesReader;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
 import org.pieShare.pieTools.pieUtilities.service.idService.SimpleUUIDService;
+import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.UdpPortService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -51,16 +52,10 @@ public class PieUtilitiesConfiguration {
 
     @Bean
     @Lazy
-    public ExecutorService javaExecutorService() {
-        return java.util.concurrent.Executors.newCachedThreadPool();
-    }
-
-    @Bean
-    @Lazy
     public PieExecutorService pieExecutorService() {
         PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
-        //service.setExecutor(this.javaExecutorService());
         service.setExecutorFactory(this.pieExecutorTaskFactory());
+		service.setShutdownService(this.shutdownService());
         return service;
     }
 
@@ -76,7 +71,6 @@ public class PieUtilitiesConfiguration {
 	@Lazy
 	public ShutdownService shutdownService() {
 		ShutdownService service = new ShutdownService();
-		service.setListener(this.pieExecutorService());
 		return service;
     }
 
@@ -165,4 +159,10 @@ public class PieUtilitiesConfiguration {
         UdpPortService service = new UdpPortService();
         return service;
     }
+	
+	@Bean
+	@Lazy
+	public NetworkService networkService() {
+		return new NetworkService();
+	}
 }

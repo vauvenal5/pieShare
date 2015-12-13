@@ -8,6 +8,7 @@ package org.pieShare.pieTools.piePlate.service.cluster.discovery;
 import java.net.InetAddress;
 import javax.inject.Provider;
 import javax.jmdns.ServiceEvent;
+import javax.jmdns.ServiceInfo;
 import javax.jmdns.ServiceListener;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
@@ -20,9 +21,11 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
-	
+
 	private IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> memberDiscoveredEventBase;
 	private Provider<DiscoveredMember> discoveredMemberProvider;
+	private String myself;
+	private ZeroconfigDiscoveryService discoveryService;
 
 	@Override
 	public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
@@ -38,8 +41,29 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	}
 
 	@Override
+	public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+		this.discoveryService = discoveryService;
+	}
+
+	@Override
+	public void setMyself(String myself) {
+		this.myself = myself;
+	}
+
+	@Override
 	public void serviceAdded(ServiceEvent event) {
-		PieLogger.trace(this.getClass(), "New Service Added-Event with name {}.", event.getName());
+		PieLogger.trace(this.getClass(), "New Service Added-Event with name {} and port {}.", event.getName(), event.getInfo().getPort());
+		
+		ServiceInfo info = event.getInfo();
+		
+		if(info.getPort() == 0) {
+			PieLogger.trace(this.getClass(), "Discarding 0 port! {}", info.getName());
+			return;
+		}
+		
+		ServiceInfo i = this.discoveryService.resolveService(info);
+		this.discovered(i);
+		//discovered(this.discoveryService.resolveService(info));
 	}
 
 	@Override
@@ -50,13 +74,25 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	@Override
 	public void serviceResolved(ServiceEvent event) {
 		PieLogger.trace(this.getClass(), "New Service Resolved-Event with name {} and port {}.", event.getName(), event.getInfo().getPort());
-		for(InetAddress ad: event.getInfo().getInetAddresses()) {
-			DiscoveredMember member = discoveredMemberProvider.get();
+		
+		discovered(event.getInfo());
+	}
+	
+	private void discovered(ServiceInfo info) {
+		if(myself.equals(info.getName())) {
+			PieLogger.trace(this.getClass(), "Discarding myself! {}", info.getName());
+			return;
+		}
+		
+		for (InetAddress ad : info.getInetAddresses()) {
+			DiscoveredMember member = this.discoveredMemberProvider.get();
 			member.setInetAdresses(ad);
-			member.setPort(event.getInfo().getPort());
+			member.setPort(info.getPort());
+			member.setName(info.getName());
+			PieLogger.trace(this.getClass(), "Triggering event for {} {}", member.getInetAdresses().getHostAddress(), member.getPort());
 			//todo: DI think about how we could properly inject prototyped objects which need constructor parameters
 			memberDiscoveredEventBase.fireEvent(new MemberDiscoveredEvent(this, member));
 		}
 	}
-	
+
 }

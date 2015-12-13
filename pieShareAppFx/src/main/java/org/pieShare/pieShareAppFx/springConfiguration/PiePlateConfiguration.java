@@ -6,7 +6,7 @@
 package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
-import org.jgroups.JChannel;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
@@ -17,8 +17,12 @@ import org.pieShare.pieTools.piePlate.model.serializer.jacksonSerializer.JGroups
 import org.pieShare.pieTools.piePlate.service.channel.SymmetricEncryptedChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.ClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.JGroupsClusterService;
-import org.pieShare.pieTools.piePlate.service.cluster.jgroupsCluster.ObjectBasedReceiver;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryListener;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryService;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.ZeroMqClusterService;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleFactory;
 import org.pieShare.pieTools.piePlate.service.loophole.LoopHoleService;
 import org.pieShare.pieTools.piePlate.service.loophole.api.ILoopHoleService;
@@ -65,40 +69,6 @@ public class PiePlateConfiguration {
     public JacksonSerializerService jacksonSerializerService() {
         return new JacksonSerializerService();
     }
-
-    @Bean
-    @Lazy
-	@Scope(value = "prototype")
-    public ObjectBasedReceiver objectReceiver() {
-        ObjectBasedReceiver receiver = new ObjectBasedReceiver();
-		receiver.setAddressProvider(this.jgroupsPieAddressProvider());
-        receiver.setChannelTaskProvider(this.providers.channelTaskProvider);
-        receiver.setExecutorService(this.utilities.pieExecutorService());
-        return receiver;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public JChannel jChannel() throws Exception {
-        return new JChannel();
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public JGroupsClusterService clusterService() {
-		try {
-			JGroupsClusterService service = new JGroupsClusterService();
-			service.setReceiver(this.objectReceiver());
-			service.setChannel(this.jChannel());
-			service.setClusterRemovedEventBase(this.utilities.eventBase());
-			service.setShutdownService(this.utilities.shutdownService());
-			return service;
-		} catch (Exception ex) {
-			throw new Error("Unexpected JGROUPS error!", ex);
-		}
-    }
 	
 	@Bean
 	@Lazy
@@ -106,7 +76,7 @@ public class PiePlateConfiguration {
 		return new Provider<IClusterService>() {
 			@Override
 			public IClusterService get() {
-				return clusterService();
+				return zeroMqClusterService();
 			}
 		};
 	}
@@ -283,5 +253,80 @@ public class PiePlateConfiguration {
         LoopHoleAckMessage msg = new LoopHoleAckMessage();
         return msg;
     }
-
+	
+	@Bean
+    @Lazy
+    public ZeroMQUtilsService zeroMQUtilsService() {
+        return new ZeroMQUtilsService();
+    }
+	
+	@Bean
+    @Lazy
+    public ZeroconfigDiscoveryService discoveryService() {
+        ZeroconfigDiscoveryService service = new ZeroconfigDiscoveryService();
+		service.setDiscoveredMemberProvider(this.discoveredMemberProvider());
+		service.setListener(discoveryListener());
+		service.setNetworkService(this.utilities.networkService());
+		service.setShutdownService(this.utilities.shutdownService());
+		return service;
+    }
+	
+	@Bean
+	@Lazy
+	public ZeroconfigDiscoveryListener discoveryListener(){
+		ZeroconfigDiscoveryListener listener = new ZeroconfigDiscoveryListener();
+		listener.setDiscoveredMemberProvider(this.discoveredMemberProvider());
+		listener.setMemberDiscoveredEventBase(this.utilities.eventBase());
+		return listener;
+	}
+	
+	@Bean
+	@Lazy
+	public PieRouter pieRouterSocket(){
+		PieRouter router = new PieRouter();
+		router.setZeroMQUtilsService(zeroMQUtilsService());
+		router.setChannelTaskProvider(this.providers.channelTaskProvider);
+		router.setExecutorService(this.utilities.pieExecutorService());
+		return router;
+	}
+	
+	@Bean
+	@Lazy
+	public PieDealer pieDealerSocket(){
+		PieDealer dealer = new PieDealer();
+		dealer.setZeroMQUtilsService(zeroMQUtilsService());
+		return dealer;
+	}
+	
+	@Bean
+	@Lazy
+	public ZeroMqClusterService zeroMqClusterService(){
+		ZeroMqClusterService service = new ZeroMqClusterService();
+		service.setDiscoveryService(discoveryService());
+		service.setNetworkService(this.utilities.networkService());
+		service.setPieDealer(pieDealerSocket());
+		service.setPieRouter(pieRouterSocket());
+		service.setClusterRemovedEventBase(this.utilities.eventBase());
+		service.setShutdownService(this.utilities.shutdownService());
+		service.setExecutorService(this.utilities.pieExecutorService());
+		return service;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope("prototype")
+	public DiscoveredMember discoveredMember(){
+		return new DiscoveredMember();
+	}
+	
+	@Bean
+	@Lazy
+	public Provider<DiscoveredMember> discoveredMemberProvider() {
+		return new Provider<DiscoveredMember>() {
+			@Override
+			public DiscoveredMember get() {
+				return discoveredMember();
+			}
+		};
+	}
 }
