@@ -7,6 +7,7 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -27,6 +28,7 @@ import pieShareAppITs.helper.ITTasksCounter;
 import pieShareAppITs.helper.ITUtil;
 import pieShareAppITs.helper.runner.FileSyncMain;
 import pieShareAppITs.helper.tasks.TestTask;
+import sun.misc.UUDecoder;
 
 /**
  *
@@ -36,6 +38,7 @@ public class SyncFiveFilesIT {
 
     private AnnotationConfigApplicationContext context;
     private Process process;
+	private String cloudName;
 
     public SyncFiveFilesIT() {
     }
@@ -82,7 +85,8 @@ public class SyncFiveFilesIT {
             }
         });
 
-        ITUtil.executeLoginToTestCloud(context);
+		this.cloudName = UUID.randomUUID().toString();
+        ITUtil.executeLoginToTestCloud(context, cloudName);
 
         System.out.println("Creating files!");
         for (int i = 0; i < 5; i++) {
@@ -92,7 +96,7 @@ public class SyncFiveFilesIT {
         }
 
         System.out.println("Starting bot!");
-        this.process = ITUtil.startProcess(FileSyncMain.class);
+        this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
         ITUtil.waitForProcessToStartup(this.process);
         System.out.println("Bot started!");
 

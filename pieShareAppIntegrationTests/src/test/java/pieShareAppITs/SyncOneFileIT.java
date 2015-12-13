@@ -7,6 +7,7 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -34,6 +35,7 @@ public class SyncOneFileIT {
 
 	private AnnotationConfigApplicationContext context;
 	private Process process;
+	private String cloudName;
 
 	public SyncOneFileIT() {
 	}
@@ -80,10 +82,11 @@ public class SyncOneFileIT {
 			}
 		});
 
+		this.cloudName = UUID.randomUUID().toString();
 		System.out.println("Starting bot!");
-		this.process = ITUtil.startProcess(FileSyncMain.class);
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName);
 
-		ITUtil.executeLoginToTestCloud(context);
+		ITUtil.executeLoginToTestCloud(context, cloudName);
 		
 //		Thread.sleep(5000);
 //		System.out.println("Starting bot!");
