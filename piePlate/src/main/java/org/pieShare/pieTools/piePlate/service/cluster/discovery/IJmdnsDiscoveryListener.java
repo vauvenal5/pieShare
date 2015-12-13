@@ -15,5 +15,7 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public interface IJmdnsDiscoveryListener extends ServiceListener{
+	void setDiscoveryService(ZeroconfigDiscoveryService discoveryService);
+	void setMyself(String myself);
 	IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase();
 }
