@@ -80,6 +80,11 @@ public class ZeroconfDiscoveryIT {
 			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
 				//ignore
 			}
+
+			@Override
+			public void setCloudName(String cloudName) {
+				//ignore
+			}
 		});
 		discovery2.registerService("mycloud", service.getAvailablePort());
 
@@ -115,6 +120,11 @@ public class ZeroconfDiscoveryIT {
 			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
 				//ignore
 			}
+			
+			@Override
+			public void setCloudName(String cloudName) {
+				//ignore
+			}
 		});
 		discovery3.registerService("mycloud", service.getAvailablePort());
 
@@ -148,6 +158,11 @@ public class ZeroconfDiscoveryIT {
 
 			@Override
 			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
+			}
+			
+			@Override
+			public void setCloudName(String cloudName) {
 				//ignore
 			}
 		});
@@ -230,6 +245,11 @@ public class ZeroconfDiscoveryIT {
 
 			@Override
 			public void setDiscoveryService(ZeroconfigDiscoveryService discoveryService) {
+				//ignore
+			}
+			
+			@Override
+			public void setCloudName(String cloudName) {
 				//ignore
 			}
 		});

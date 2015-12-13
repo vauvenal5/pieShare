@@ -74,6 +74,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 			//todo-sv: resolve circular dependecy
 			listener.setDiscoveryService(this);
 			listener.setMyself(me);
+			listener.setCloudName(clusterName);
 			this.jmDns.addServiceListener(this.type, listener);
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Could not create zeroconfig discovery.", ex);
