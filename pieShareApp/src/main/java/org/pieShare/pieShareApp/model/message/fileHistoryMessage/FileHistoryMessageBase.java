@@ -6,8 +6,6 @@
 
 package org.pieShare.pieShareApp.model.message.fileHistoryMessage;
 
-import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileHistoryMessageBase;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileMessageBase;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
@@ -15,6 +13,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 /**
  *
  * @author Svetoslav
+ * TODO: same needed for Folders - common base Filder
  */
 public class FileHistoryMessageBase extends FileMessageBase implements IFileHistoryMessageBase {
 	protected PieFile previousFile;

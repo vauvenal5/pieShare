@@ -19,7 +19,7 @@ public interface IPieRouter extends IPieTask {
      * @param port 
      * @return true if router was bound else false.
      */
-    boolean bind(InetAddress inetAddr, int port);
+    boolean bind(int port);
     
     /**
      * Close socket.

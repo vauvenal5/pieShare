@@ -16,11 +16,13 @@ import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
 public class FolderMessageBase extends AClusterMessage implements IFilderMessageBase<PieFolder>{
     private PieFolder pieFolder;
     
-    public PieFolder getPieFilder() {
+    @Override
+    public PieFolder getPieFolder() {
         return pieFolder;
     }
     
-    public void setPieFilder(PieFolder pieFolder) {
+    @Override
+    public void setPieFolder(PieFolder pieFolder) {
         this.pieFolder = pieFolder;
     }
 }

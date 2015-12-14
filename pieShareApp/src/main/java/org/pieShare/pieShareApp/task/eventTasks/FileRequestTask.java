@@ -41,12 +41,12 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 		//todo: if i am currently receiving the file I need to forwared the MetaMessage of the sharing instance!
 		
 		try {				
-			File localTmpFile = this.shareService.prepareFile((PieFile) this.msg.getPieFilder());
+			File localTmpFile = this.shareService.prepareFile((PieFile) this.msg.getPieFolder());
 			byte[] meta = this.bitTorrentService.createMetaInformation(localTmpFile);
 
 			IMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
 			metaMsg.setMetaInfo(meta);
-			metaMsg.setPieFilder(this.msg.getPieFilder());
+			metaMsg.setPieFolder(this.msg.getPieFolder());
 			
 			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {} "
 					+ "including PieFile with HashCode {}.", 
