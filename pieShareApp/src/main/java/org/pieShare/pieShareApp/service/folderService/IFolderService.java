@@ -5,10 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.folderService;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Path;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
@@ -29,5 +25,20 @@ public interface IFolderService {
      * @throws FolderServiceException 
      */
     void createFolder(String path) throws FolderServiceException;
+    
+    /**
+     * Delete the folder at the given path (string) and all it's content
+     * @param path of the folder including its name
+     * @throws FolderServiceException 
+     */
+    void deleteFolder(String path) throws FolderServiceException;
+    
+    /**
+     * Delete the folder at the PieFolders path and all it's content
+     * @param pieFolder the relative path + name of the folder to be deleted
+     * @throws FolderServiceException 
+     */
+    void deleteFolder(PieFolder pieFolder) throws FolderServiceException;
+    
 
 }
