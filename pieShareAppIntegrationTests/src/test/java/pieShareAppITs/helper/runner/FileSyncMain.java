@@ -20,11 +20,7 @@ public class FileSyncMain {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws Exception {
-		ITUtil.setUpEnviroment(false);
-		AnnotationConfigApplicationContext context = ITUtil.getContext();
-		
-		ITUtil.executeLoginToTestCloud(context);
-		System.out.println("!loggedIn");
+		BotUtil.login(args);
 	}
 	
 }
