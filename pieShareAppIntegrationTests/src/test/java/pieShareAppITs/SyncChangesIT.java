@@ -8,6 +8,7 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
@@ -35,6 +36,8 @@ public class SyncChangesIT {
 	private Process process;
 	private File file;
 	private File fileBot;
+	private String cloudName;
+	private String password;
 	
 	public SyncChangesIT() {
 	}
@@ -56,7 +59,9 @@ public class SyncChangesIT {
                 fileBot.getParentFile().mkdirs();
 		FileUtils.copyFile(file, fileBot, true);
 		
-		this.process = ITUtil.startProcess(FileSyncMain.class);
+		this.cloudName = UUID.randomUUID().toString();
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, this.cloudName, password);
 		
 		context = ITUtil.getContext();
 		
@@ -91,7 +96,7 @@ public class SyncChangesIT {
 		
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
 
-		ITUtil.executeLoginToTestCloud(context);
+		ITUtil.executeLoginToTestCloud(context, this.cloudName, password);
 		
 		FileUtils.writeByteArrayToFile(file, "hello world".getBytes(), true);
 		

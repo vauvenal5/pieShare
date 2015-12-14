@@ -25,6 +25,7 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	private IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> memberDiscoveredEventBase;
 	private Provider<DiscoveredMember> discoveredMemberProvider;
 	private String myself;
+	private String cloudName;
 	private ZeroconfigDiscoveryService discoveryService;
 
 	@Override
@@ -51,16 +52,21 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	}
 
 	@Override
+	public void setCloudName(String cloudName) {
+		this.cloudName = cloudName;
+	}
+
+	@Override
 	public void serviceAdded(ServiceEvent event) {
 		PieLogger.trace(this.getClass(), "New Service Added-Event with name {} and port {}.", event.getName(), event.getInfo().getPort());
-		
+
 		ServiceInfo info = event.getInfo();
-		
-		if(info.getPort() == 0) {
+
+		if (info.getPort() == 0) {
 			PieLogger.trace(this.getClass(), "Discarding 0 port! {}", info.getName());
 			return;
 		}
-		
+
 		ServiceInfo i = this.discoveryService.resolveService(info);
 		this.discovered(i);
 		//discovered(this.discoveryService.resolveService(info));
@@ -74,16 +80,23 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	@Override
 	public void serviceResolved(ServiceEvent event) {
 		PieLogger.trace(this.getClass(), "New Service Resolved-Event with name {} and port {}.", event.getName(), event.getInfo().getPort());
-		
+
 		discovered(event.getInfo());
 	}
-	
+
 	private void discovered(ServiceInfo info) {
-		if(myself.equals(info.getName())) {
+		if (myself.equals(info.getName())) {
 			PieLogger.trace(this.getClass(), "Discarding myself! {}", info.getName());
 			return;
 		}
-		
+
+		//todo: this really needs to be added otherwise all pieShare instances 
+		//in the network are added to our cluster and not only the one of our user
+		//however there is some kind issue with resolving the subtype
+//		if(!info.getSubtype().equals(this.cloudName)) {
+//			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
+//			return;
+//		}
 		for (InetAddress ad : info.getInetAddresses()) {
 			DiscoveredMember member = this.discoveredMemberProvider.get();
 			member.setInetAdresses(ad);

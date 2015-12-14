@@ -10,6 +10,7 @@ import commonTestTools.TestFileUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
@@ -38,6 +39,8 @@ public class DeleteIT {
 	private AnnotationConfigApplicationContext context;
 	private Process process;
 	private List<File> files;
+	private String cloudName;
+	String password;
 	
 	public DeleteIT() {
 		files = new ArrayList<>();
@@ -62,7 +65,9 @@ public class DeleteIT {
 			FileUtils.copyFile(file, new File(ITUtil.getBotWorkingDir(), fileName), true);
 		}
 		
-		this.process = ITUtil.startProcess(FileSyncMain.class);
+		this.cloudName = UUID.randomUUID().toString();
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
 		
 		context = ITUtil.getContext();
 		
@@ -98,8 +103,8 @@ public class DeleteIT {
 		ITUtil.waitForProcessToStartup(this.process);
 		
 		ITTasksCounter counter = context.getBean(ITTasksCounter.class);
-
-		ITUtil.executeLoginToTestCloud(context);
+		
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 		
 		Assert.assertTrue(files.get(4).delete());
 		File deletedFile = files.remove(4);

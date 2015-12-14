@@ -37,7 +37,7 @@ public class PieDealer implements IPieDealer {
 		}
 
 		try {
-			PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+			PieLogger.debug(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
 			dealer.connect(utils.buildConnectionString(address, port));
 			endpoints++;
 			return true;
