@@ -33,8 +33,15 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	protected IFileWatcherService fileWatcherService;
 	protected IFileService historyFileService;
         protected IFolderService folderService;
+        
+        //TODO fix as soon there is a file-history-service
+        protected boolean isFolder;
 	
 	protected File file;
+        
+        public ALocalFileEventTask() {
+            isFolder = false;
+        }
 
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
 		this.fileWatcherService = fileWatcherService;
@@ -75,7 +82,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 			return null;
 		}
                 
-                if(this.file.isDirectory()) {
+                if(this.file.isDirectory() || isFolder) {
                     PieFolder pieFolder = new PieFolder();
                     pieFolder.setName(this.file.getName());
                     pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());

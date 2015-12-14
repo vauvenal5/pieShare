@@ -8,6 +8,7 @@ package org.pieShare.pieShareAppFx.springConfiguration;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.LoginTask;
@@ -23,8 +24,8 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileDeletedTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
+import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
-import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
@@ -109,5 +110,9 @@ public class ProviderConfiguration {
         public Provider<FolderCreateTask> folderCreateTaskProvider;
         @Autowired
         public Provider<PieFolder> pieFolderProvider;
-
+        @Autowired
+        public Provider<FolderDeleteMessage> folderDeleteMessageProvider;
+        @Autowired
+        public Provider<FolderDeleteTask> folderDeleteTaskProvider;
+        
 }
