@@ -20,10 +20,12 @@ public class FileSyncMain {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) throws Exception {
+		String cloudName = args[0];
+		String password = args[1];
 		ITUtil.setUpEnviroment(false);
 		AnnotationConfigApplicationContext context = ITUtil.getContext();
 		
-		ITUtil.executeLoginToTestCloud(context);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 		System.out.println("!loggedIn");
 	}
 	
