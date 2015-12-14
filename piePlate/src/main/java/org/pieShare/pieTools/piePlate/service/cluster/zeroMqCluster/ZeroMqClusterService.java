@@ -78,6 +78,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	@Override
 	public void connect(String clusterName) throws ClusterServiceException {
 		try {
+			PieLogger.debug(this.getClass(), "Connecting to cluster {}!", clusterName);
 			int routerPort = this.networkService.getAvailablePort();
 			//todo: connect router here to port
 			router.bind(routerPort);

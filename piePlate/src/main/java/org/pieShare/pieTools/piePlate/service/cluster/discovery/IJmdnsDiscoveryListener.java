@@ -17,5 +17,6 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 public interface IJmdnsDiscoveryListener extends ServiceListener{
 	void setDiscoveryService(ZeroconfigDiscoveryService discoveryService);
 	void setMyself(String myself);
+	void setCloudName(String cloudName);
 	IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase();
 }
