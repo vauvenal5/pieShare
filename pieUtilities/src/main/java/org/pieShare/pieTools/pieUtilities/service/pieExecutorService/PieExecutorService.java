@@ -9,6 +9,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -29,12 +30,14 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  *
  * @author Svetoslav
  */
+//todo: read up why extending was the better move and document; check also git comments for hints
 public class PieExecutorService extends ThreadPoolExecutor implements IExecutorService, IShutdownableService {
+
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
 		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
-	
+
 	private IPieExecutorTaskFactory executorFactory;
 
 	public PieExecutorService(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
@@ -56,7 +59,6 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 	/*public void setExecutor(ExecutorService executor) {
 		this.executor = executor;
 	}*/
-
 	public void setExecutorFactory(IPieExecutorTaskFactory executorFactory) {
 		this.executorFactory = executorFactory;
 	}
@@ -64,13 +66,20 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 	@Override
 	public void execute(IPieTask task) {
 		Validate.notNull(task);
-		try{
-			PieLogger.trace(this.getClass(), "Executing {}", task);
-			super.execute(task);
-			//this.executor.execute(task);
-		}
-		catch(NullPointerException ex) {
+		try {
+			if (!this.isShutdown()) {
+				PieLogger.trace(this.getClass(), "Executing {}", task);
+				super.execute(task);
+				//this.executor.execute(task);
+			}
+		} catch (NullPointerException ex) {
 			PieLogger.info(this.getClass(), "Exception in PieExecutorService!", ex);
+		} catch (RejectedExecutionException ex) {
+			if (this.isShutdown()) {
+				PieLogger.trace(this.getClass(), "Rejected task {} due to shutdown!", task.getClass().toString());
+			} else {
+				PieLogger.warn(this.getClass(), "Executor rejected task!", ex);
+			}
 		}
 	}
 
@@ -85,17 +94,17 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 		super.shutdown();
 		//this.executor.shutdown();
 	}
-	
+
 	@Override
 	protected void afterExecute(Runnable r, Throwable t) {
 		super.afterExecute(r, t);
-		
-		if(t != null) {
+
+		if (t != null) {
 			PieLogger.error(this.getClass(), "Error in task!", t);
 		}
-		
+
 		//todo-sv: why?... just why?
-		if(r instanceof Future<?>){
+		if (r instanceof Future<?>) {
 			try {
 				Future<?> future = (Future<?>) r;
 				future.get();
