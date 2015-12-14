@@ -13,6 +13,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
 /**
  *
  * @author Richard
+ * todo: watch folders also?
  */
 public interface IFileWatcherService extends IShutdownableService {
 	void watchDir(File file) throws IOException;

@@ -5,10 +5,12 @@
  */
 package org.pieShare.pieShareApp.model.message.api;
 
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+
 /**
  * Interface for the FolderCreatedMessage extends IFilderMessageBase
  * @author daniela
  */
-public interface IFolderCreatedMessage extends IFilderMessageBase {
+public interface IFolderCreatedMessage extends IFilderMessageBase<PieFolder> {
     
 }

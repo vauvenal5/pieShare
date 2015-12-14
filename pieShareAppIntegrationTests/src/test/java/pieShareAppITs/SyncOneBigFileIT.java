@@ -7,6 +7,7 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -37,6 +38,8 @@ public class SyncOneBigFileIT {
 
 	private AnnotationConfigApplicationContext context;
 	private Process process;
+	private String cloudName;
+	private String password;
 
 	public SyncOneBigFileIT() {
 	}
@@ -83,9 +86,11 @@ public class SyncOneBigFileIT {
 			}
 		});
 
-		this.process = ITUtil.startProcess(FileSyncMain.class);
+		this.cloudName = UUID.randomUUID().toString();
+		this.password = UUID.randomUUID().toString();
+		this.process = ITUtil.startProcess(FileSyncMain.class, cloudName, password);
 
-		ITUtil.executeLoginToTestCloud(context);
+		ITUtil.executeLoginToTestCloud(context, cloudName, password);
 
 		ITUtil.waitForProcessToStartup(this.process);
 

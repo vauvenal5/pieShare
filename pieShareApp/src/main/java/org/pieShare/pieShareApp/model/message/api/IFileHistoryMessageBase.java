@@ -11,6 +11,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 /**
  *
  * @author Svetoslav
+ * todo: make general?
  */
 public interface IFileHistoryMessageBase extends IFilderMessageBase<PieFile> {
 

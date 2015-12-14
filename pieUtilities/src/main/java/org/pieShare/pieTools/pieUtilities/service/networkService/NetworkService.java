@@ -67,6 +67,22 @@ public class NetworkService implements INetworkService {
 		try {
 			ServerSocket tmpSocket = new ServerSocket();
 			tmpSocket.setReuseAddress(true);
+			//todo: network service should also provide testing for a 
+			//specific port on a specific address because of MAC 
+			//something like this:
+			//tmpSocket.bind(new InetSocketAddress(this.getLocalHost(), p));
+			//because
+			//When not bound to 0.0.0.0 MAC will not see the port as bound but only
+			//in combination with the specific address which leads to wrong behaviour.
+			//More clear explanation:
+			//When you bind to a specific adress for example 192.168.0.15:PORT
+			//ServerSocket.bind(PORT) will be a valid operation on MAC
+			//and because of this the same port would be returned by our 
+			//NetworkService as free again.
+			//Further it is better if we listen to all addresse:
+			//1) to be more compatible with devices working with multiple Nets
+			//2) to have the same behaviour like in linux and windows
+			//see also PieRouter
 			tmpSocket.bind(new InetSocketAddress(p));
 			tmpSocket.close();
 		} catch (IOException ex) {
@@ -178,14 +194,12 @@ public class NetworkService implements INetworkService {
 							return ads.get(0);
 						}
 					}
-				} else {
-					if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
-						List<InetAddress> ads = this.checkAddresses(nic);
-						if (ads.size() == 1) {
-							return ads.get(0);
-						} else {
-							possibleAds.addAll(ads);
-						}
+				} else if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
+					List<InetAddress> ads = this.checkAddresses(nic);
+					if (ads.size() == 1) {
+						return ads.get(0);
+					} else {
+						possibleAds.addAll(ads);
 					}
 				}
 			}

@@ -21,7 +21,9 @@ public class LocalFileDeletedTask extends ALocalFileEventTask {
 	@Override
 	public void run() {
 		try {
-			PieFile pieFile = this.prepareWork();
+                    //TODO Delete Folder
+                    
+			PieFile pieFile = (PieFile)this.prepareWork();
 			
 			if(pieFile == null) {
 				return;
