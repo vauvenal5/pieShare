@@ -44,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class ProviderConfiguration {
+
 	//only providers that provide against an interface need a function returning the provider with a fixed type
 	//all others can be auto generated like in here
 	//todo: however we need to check if some of those need interfaces!!!!
@@ -79,7 +80,7 @@ public class ProviderConfiguration {
 	public Provider<LoopHoleAckTask> loopHoleAckTaskProvider;
 	@Autowired
 	public Provider<LoopHoleCompleteTask> loopHoleCompleteTaskProvider;
-	
+
 	@Autowired
 	public Provider<ChannelTask> channelTaskProvider;
 	@Autowired
@@ -92,7 +93,7 @@ public class ProviderConfiguration {
 	public Provider<LoopHoleCompleteMessage> loopHoleCompleteMessageProvider;
 	@Autowired
 	public Provider<LoopHolePunchMessage> loopHolePunchMessageProvider;
-	
+
 	@Autowired
 	public Provider<PieFile> pieFileProvider;
 	@Autowired
@@ -101,10 +102,10 @@ public class ProviderConfiguration {
 	public Provider<PieShareConfiguration> pieShareConfigurationProvider;
 	@Autowired
 	public Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
-        
-        @Autowired
-        public Provider<FolderCreateMessage> folderCreateMessageProvider;
-        @Autowired
-        public Provider<FolderCreateTask> folderCreateTaskProvider;
+
+	@Autowired
+	public Provider<FolderCreateMessage> folderCreateMessageProvider;
+	@Autowired
+	public Provider<FolderCreateTask> folderCreateTaskProvider;
 
 }
