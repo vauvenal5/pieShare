@@ -16,6 +16,7 @@ import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFolderDeletedMessage;
 
 /**
  *
@@ -42,4 +43,6 @@ public interface IMessageFactoryService {
         
         //Folder
         IFolderCreatedMessage getNewFolderMessage();
+        
+        IFolderDeletedMessage getFolderDeletedMessage();
 }
