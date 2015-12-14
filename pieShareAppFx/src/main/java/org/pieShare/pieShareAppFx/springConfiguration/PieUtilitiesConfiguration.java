@@ -52,16 +52,10 @@ public class PieUtilitiesConfiguration {
 
     @Bean
     @Lazy
-    public ExecutorService javaExecutorService() {
-        return java.util.concurrent.Executors.newCachedThreadPool();
-    }
-
-    @Bean
-    @Lazy
     public PieExecutorService pieExecutorService() {
         PieExecutorService service = PieExecutorService.newCachedPieExecutorService();
-        //service.setExecutor(this.javaExecutorService());
         service.setExecutorFactory(this.pieExecutorTaskFactory());
+		service.setShutdownService(this.shutdownService());
         return service;
     }
 
@@ -77,7 +71,6 @@ public class PieUtilitiesConfiguration {
 	@Lazy
 	public ShutdownService shutdownService() {
 		ShutdownService service = new ShutdownService();
-		service.setListener(this.pieExecutorService());
 		return service;
     }
 

@@ -5,10 +5,12 @@
  */
 package org.pieShare.pieShareApp.model.message.folderMessages;
 
+import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
+
 /**
  *
  * @author daniela
  */
-public class FolderCreateMessage extends FolderMessageBase {
+public class FolderCreateMessage extends FolderMessageBase implements IFolderCreatedMessage {
     
 }

@@ -50,15 +50,30 @@ public class PieRouter implements IPieRouter {
 	}
 
 	@Override
-	public boolean bind(InetAddress netAddr, int port) {
+    public boolean bind(int port) {
 		if (context == null) {
 			this.context = ZMQ.context(1);
 			this.router = context.socket(ZMQ.ROUTER);
 		}
-
-		PieLogger.trace(PieRouter.class, "Bind router on: %s", utils.buildConnectionString(netAddr, port));
+		
+		//When not bound to 0.0.0.0 MAC will not see the port as bound but only
+		//in combination with the specific address which leads to wrong behaviour.
+		//More clear explanation:
+		//When you bind to a specific adress for example 192.168.0.15:PORT
+		//ServerSocket.bind(PORT) will be a valid operation on MAC
+		//and because of this the same port would be returned by our 
+		//NetworkService as free again.
+		//Further it is better if we listen to all addresse:
+		//1) to be more compatible with devices working with multiple Nets
+		//2) to have the same behaviour like in linux and windows
+		//The old command was:
+		//router.bind(utils.buildConnectionString(address, port));
+		//see also NetworkService
+		String connectionString = utils.buildConnectionString("0.0.0.0", port);
+        
+        PieLogger.trace(PieRouter.class, "Bind router on: %s", connectionString);
 		try {
-			router.bind(utils.buildConnectionString(netAddr, port));
+			router.bind(connectionString);
 			return true;
 		} catch (ZMQException e) {
 			PieLogger.error(PieRouter.class, "Bind failed: %s", e);

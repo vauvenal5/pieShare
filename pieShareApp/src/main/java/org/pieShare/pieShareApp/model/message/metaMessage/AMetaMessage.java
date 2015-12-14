@@ -40,12 +40,12 @@ public abstract class AMetaMessage extends AClusterMessage implements IMetaMessa
 	}
 
 	@Override
-	public PieFile getPieFilder() {
+	public PieFile getPieFolder() {
 		return this.fileMeta.getFile();
 	}
 
 	@Override
-	public void setPieFilder(PieFile file) {
+	public void setPieFolder(PieFile file) {
 		this.fileMeta.setFile(file);
 	}
 }

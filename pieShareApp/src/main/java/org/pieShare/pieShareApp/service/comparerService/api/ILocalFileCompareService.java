@@ -11,8 +11,9 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 
 /**
- *
+ * 
  * @author Svetoslav
+ * todo make general for Filder?
  */
 public interface ILocalFileCompareService {
 	/**
