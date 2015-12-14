@@ -18,7 +18,7 @@ public class LocalFileChangedTask extends ALocalFileEventTask {
 	@Override
 	public void run() {
 		try {
-			PieFile file = this.prepareWork();
+			PieFile file = (PieFile)this.prepareWork();
 			
 			if(file == null) {
 				PieLogger.info(this.getClass(), "Ignoring local file change because change was ours: {}", this.file.getAbsolutePath());

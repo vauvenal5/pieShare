@@ -21,8 +21,10 @@ public class PieDealer implements IPieDealer {
 	private ZMQ.Socket dealer;
 	private ZeroMQUtilsService utils;
 	private int endpoints=0;
+	private boolean shutdown;
 
 	public PieDealer() {
+		this.shutdown = false;
 	}
 
 	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
@@ -37,7 +39,7 @@ public class PieDealer implements IPieDealer {
 		}
 
 		try {
-			PieLogger.trace(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
+			PieLogger.debug(PieDealer.class, "Connecting to %s", utils.buildConnectionString(address, port));
 			dealer.connect(utils.buildConnectionString(address, port));
 			endpoints++;
 			return true;
@@ -66,6 +68,9 @@ public class PieDealer implements IPieDealer {
 
 	@Override
 	public void send(byte[] message) {
+		if(this.shutdown) {
+			return;
+		}
 		try {
 			PieLogger.trace(this.getClass(), "Sending msg to endpoints.");
 			for (int i = 0; i < endpoints; i++) {
