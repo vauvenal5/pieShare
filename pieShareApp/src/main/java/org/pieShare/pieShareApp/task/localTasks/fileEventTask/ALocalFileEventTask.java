@@ -81,7 +81,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
                     pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());
                     return pieFolder;
                     
-                } else if(this.file.isFile()) {
+                } else {// if(this.file.isFile()) { file = null for delete
 		this.fileService.waitUntilCopyFinished(this.file);
 		
 		PieFile pieFile = this.fileService.getPieFile(file);
@@ -100,7 +100,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		return pieFile;
                 }
                
-                return null;
+                //return null;
 	}
 
 	protected<T extends PieFolder> void doWork(IFilderMessageBase<T> msg, T fileOrFolder) {
