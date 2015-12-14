@@ -14,6 +14,7 @@ import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
+import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
@@ -31,6 +32,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	protected IFileEncryptionService fileEncrypterService;
 	protected IFileWatcherService fileWatcherService;
 	protected IFileService historyFileService;
+        protected IFolderService folderService;
 	
 	protected File file;
 
@@ -54,6 +56,11 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		PieLogger.info(this.getClass(), "Setting FileService!");
 		this.fileService = fileService;
 	}
+        
+        public void setFolderService(IFolderService folderService) {
+                PieLogger.info(this.getClass(), "Setting FolderService!");
+                this.folderService = folderService;
+        }
 
 	public void setHistoryFileService(IFileService historyFileService) {
 		this.historyFileService = historyFileService;
@@ -63,32 +70,42 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		this.file = file;
 	}
 	
-	protected PieFile prepareWork() throws IOException {		
+	protected PieFolder prepareWork() throws IOException {		
 		if(!this.fileFilterService.checkFile(this.file)) {
 			return null;
 		}
-		
+                
+                if(this.file.isDirectory()) {
+                    PieFolder pieFolder = new PieFolder();
+                    pieFolder.setName(this.file.getName());
+                    pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());
+                    return pieFolder;
+                    
+                } else {// if(this.file.isFile()) { file = null for delete
 		this.fileService.waitUntilCopyFinished(this.file);
 		
 		PieFile pieFile = this.fileService.getPieFile(file);
 		
 		PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
 		
-		if(oldPieFile != null && oldPieFile.equals(pieFile)) {
+                    if(oldPieFile != null && oldPieFile.equals(pieFile)) {
 			return null;
-		}
+                    }
 		
-		if(this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
+                    if(this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
 			this.fileWatcherService.removePieFileFromModifiedList(pieFile);
 			return null;
-		}
+                    }
 		
 		return pieFile;
+                }
+               
+                //return null;
 	}
 
 	protected<T extends PieFolder> void doWork(IFilderMessageBase<T> msg, T fileOrFolder) {
 		try {
-			msg.setPieFilder(fileOrFolder);
+			msg.setPieFolder(fileOrFolder);
 			
 			this.setDefaultAdresse(msg);
 

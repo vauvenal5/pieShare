@@ -6,19 +6,42 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
+import java.nio.file.Path;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
+import org.pieShare.pieShareApp.service.userService.IUserService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * @author daniela
  */
 public class FolderService implements IFolderService{
+    
+    //TODO: refactor to utility functions
+    protected IPieShareConfiguration configuration;
+    protected IUserService userService;
+
+    
+    public void setUserService(IUserService userService) {
+	this.userService = userService;
+    }
+    
+    public void init() {
+	PieUser user = userService.getUser();
+	this.configuration = user.getPieShareConfiguration();
+    }
+    
+    public Path getAbsolutePath(PieFolder pieFolder) {
+        File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
+        return localFolder.toPath();
+    }
+
 
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
-        String relativePath = pieFolder.getRelativePath();
-        File newFolder = new File(relativePath);
+        File newFolder = new File(getAbsolutePath(pieFolder).toString());
         createLocalFolder(newFolder);
-        
     }
 
     @Override
@@ -30,9 +53,14 @@ public class FolderService implements IFolderService{
     
     //calles by the createFolder methods
     private void createLocalFolder(File newFolder) {
+        
         if(!newFolder.exists()) {
             newFolder.mkdirs();
             //TODO: what if the folder can't be created?
+            PieLogger.trace(this.getClass(), "Folder created!");
+        } else {
+            PieLogger.debug(this.getClass(), "Folder exits already?!");
         }
     }
+
 }
