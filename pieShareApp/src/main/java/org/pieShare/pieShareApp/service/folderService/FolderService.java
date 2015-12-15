@@ -27,12 +27,11 @@ public class FolderService implements IFolderService{
 	this.userService = userService;
     }
     
-    public void init() {
-	PieUser user = userService.getUser();
-	this.configuration = user.getPieShareConfiguration();
-    }
-    
     public Path getAbsolutePath(PieFolder pieFolder) {
+        if(configuration == null) {
+            PieUser user = userService.getUser();
+            this.configuration = user.getPieShareConfiguration();
+        }
         File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
         return localFolder.toPath();
     }
