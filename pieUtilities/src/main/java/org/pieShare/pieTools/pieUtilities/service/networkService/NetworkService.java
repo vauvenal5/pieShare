@@ -13,7 +13,7 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -122,12 +122,12 @@ public class NetworkService implements INetworkService {
 			return ad;
 		} else {
 			//test internet connection
-			try (SocketChannel socket = SocketChannel.open()) {
+			try (ServerSocketChannel socket = ServerSocketChannel.open()) {
 				socket.socket().setSoTimeout(5000);
 
 				int freePort = this.getAvailablePort();
 				//TODO-SV: check if connect is better option than bind, once bound connect won't change address so try connect from beginning
-				socket.bind(new InetSocketAddress(ad, freePort));
+				socket.socket().bind(new InetSocketAddress(ad, freePort));
 				//this has to become way better
 				//socket.connect(new InetSocketAddress("google.com", 80));
 				//if everything passes the InetAddress should be okay.

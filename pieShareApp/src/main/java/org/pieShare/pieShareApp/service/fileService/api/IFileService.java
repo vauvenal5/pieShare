@@ -40,8 +40,8 @@ public interface IFileService {
 	
 	void setCorrectModificationDateOnTmpFile(PieFile file);
 	
-	Path relitivizeFilePath(File file);
+	String relitivizeFilePath(File file);
 	
-	Path getAbsolutePath(PieFile file);
-	Path getAbsoluteTmpPath(PieFile file);
+	File getAbsolutePath(PieFile file);
+	File getAbsoluteTmpPath(PieFile file);
 }
