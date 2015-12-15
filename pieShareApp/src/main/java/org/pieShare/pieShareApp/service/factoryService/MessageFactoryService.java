@@ -20,12 +20,14 @@ import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFolderDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
 import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -96,6 +98,11 @@ public class MessageFactoryService implements IMessageFactoryService {
     @Override
     public IFolderCreatedMessage getNewFolderMessage() {
         return this.prepareMessage(new FolderCreateMessage());
+    }
+
+    @Override
+    public IFolderDeletedMessage getFolderDeletedMessage() {
+        return this.prepareMessage(new FolderDeleteMessage());
     }
 	
 }
