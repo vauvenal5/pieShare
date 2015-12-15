@@ -318,7 +318,6 @@ public class PieShareAppService {
         public IFolderService folderService() {
             FolderService folderService = new FolderService();
             folderService.setUserService(userService());
-            folderService.init();
             return folderService;
         }
 }
