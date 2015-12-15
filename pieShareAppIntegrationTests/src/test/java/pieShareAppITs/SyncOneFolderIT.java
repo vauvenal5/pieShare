@@ -8,7 +8,6 @@ package pieShareAppITs;
 import java.io.File;
 import java.util.UUID;
 import javax.inject.Provider;
-import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;

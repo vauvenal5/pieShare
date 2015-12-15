@@ -98,7 +98,8 @@ public class DeleteIT {
 		ITUtil.performTearDown(context);
 	}
 	
-	@Test(timeOut = 120000)
+	//todo: enable after MR2
+	//@Test(timeOut = 120000)
 	public void deleteOneFile() throws Exception {
 		ITUtil.waitForProcessToStartup(this.process);
 		
