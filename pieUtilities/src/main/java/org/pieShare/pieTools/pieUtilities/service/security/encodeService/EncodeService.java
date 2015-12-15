@@ -49,9 +49,11 @@ public class EncodeService implements IEncodeService {
         SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
         Cipher cipher = providerService.getEnDeCryptCipher();
-        cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivValue.getBytes()));
-        //cipher.init(Cipher.ENCRYPT_MODE, key);
-
+        try {
+            cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(ivValue.getBytes()));
+        } catch (Exception ex) {
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+        }
         return cipher.doFinal(plaintext);
     }
 
@@ -60,7 +62,12 @@ public class EncodeService implements IEncodeService {
         SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
         Cipher cipher = providerService.getEnDeCryptCipher();
-        cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(ivValue.getBytes()));
+       
+         try {
+            cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(ivValue.getBytes()));
+        } catch (Exception ex) {
+            cipher.init(Cipher.DECRYPT_MODE, key);
+        }
         
         //cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(ciphertext);
