@@ -196,4 +196,16 @@ public class ITUtil {
 		context.refresh();
 		return context;
 	}
+	
+	public static AnnotationConfigApplicationContext getContextWithSpecialPiePlateContext(Class piePlateContext) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		context.register(PieShareUtilitiesITConfig.class);
+		context.register(piePlateContext);
+		context.register(PieShareAppModelITConfig.class);
+		context.register(PieShareAppServiceConfig.class);
+		context.register(PieShareAppTasks.class);
+		context.register(ProviderConfiguration.class);
+		context.refresh();
+		return context;
+	}
 }
