@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
@@ -64,7 +63,7 @@ public abstract class FileServiceBase implements IFileService {
 	@Override
 	public void deleteRecursive(PieFile file) {
                 PieLogger.trace(this.getClass(), "Recursively deleting {}", file.getRelativePath());
-		File localFile = this.getAbsolutePath(file).toFile();
+		File localFile = this.getAbsolutePath(file);
 		try {
 			if (localFile.isDirectory()) {
 				FileUtils.deleteDirectory(localFile);
@@ -78,7 +77,7 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
-		File targetFile = this.getAbsolutePath(file).toFile();
+		File targetFile = this.getAbsolutePath(file);
 
 		this.fileWatcherService.addPieFileToModifiedList(file);
 		if (setCorrectModificationDate(file, targetFile)) {
@@ -88,7 +87,7 @@ public abstract class FileServiceBase implements IFileService {
 
 	@Override
 	public void setCorrectModificationDateOnTmpFile(PieFile file) {
-		File tmpFile = this.getAbsoluteTmpPath(file).toFile();
+		File tmpFile = this.getAbsoluteTmpPath(file);
 
 		setCorrectModificationDate(file, tmpFile);
 	}
@@ -105,11 +104,12 @@ public abstract class FileServiceBase implements IFileService {
 	}
 
 	@Override
-	public Path relitivizeFilePath(File file) {
+	public String relitivizeFilePath(File file) {
 		try {
-			Path pathBase = configuration.getWorkingDir().getCanonicalFile().toPath();
-			Path pathAbsolute = file.getCanonicalFile().toPath();
-			return pathBase.relativize(pathAbsolute);
+			String pathBase = configuration.getWorkingDir().getCanonicalFile().toString();
+			String pathAbsolute = file.getCanonicalFile().toString();
+                        String relative = new File(pathBase).toURI().relativize(new File(pathAbsolute).toURI()).getPath();
+			return relative;
 		} catch (IOException ex) {
 			PieLogger.error(this.getClass(), "Error in creating relativ file path!", ex);
 		}
@@ -117,15 +117,15 @@ public abstract class FileServiceBase implements IFileService {
 	}
 
 	@Override
-	public Path getAbsolutePath(PieFile file) {
-		File localFile = new File(configuration.getWorkingDir(), file.getRelativePath());
-		return localFile.toPath();
+	public File getAbsolutePath(PieFile file) {
+		return new File(configuration.getWorkingDir(), file.getRelativePath());
+
 	}
 
 	@Override
-	public Path getAbsoluteTmpPath(PieFile file) {
-		File localFile = new File(configuration.getTmpDir(), file.getRelativePath());
-		return localFile.toPath();
+	public File getAbsoluteTmpPath(PieFile file) {
+		return new File(configuration.getTmpDir(), file.getRelativePath());
+		
 	}
 
 	@Override
