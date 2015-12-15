@@ -68,6 +68,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 		
 		this.fileMonitors.add(fileMonitor);
 	}
+        
 
 	@Override
 	public void shutdown() {
@@ -81,4 +82,9 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	public boolean isPieFileModifiedByUs(PieFile file) {
 		return this.modifiedFiles.contains(file);
 	}
+
+    @Override
+    public void watchDir(File file, int mask) throws IOException {
+        throw new UnsupportedOperationException("watchDir method to support only a certain mask (e.g. create)"); 
+    }
 }

@@ -81,7 +81,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 		PieLogger.trace(this.getClass(), "Starting torrent task for {}.", this.fileMeta.getFile());
 		try {
 			boolean seeder = this.torrent.isSeeder();
-			File destDir = this.fileService.getAbsoluteTmpPath(this.fileMeta.getFile()).toFile().getParentFile();
+			File destDir = this.fileService.getAbsoluteTmpPath(this.fileMeta.getFile()).getParentFile();
 
 			//todo: ther is a bug when triing to share 0 byte files
 			//start a tracker for each file seperately
