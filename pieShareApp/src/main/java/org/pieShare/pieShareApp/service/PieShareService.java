@@ -87,6 +87,7 @@ public class PieShareService {
 		catch (ClusterManagmentServiceException ex) {
 			PieLogger.error(this.getClass(), "Stop all failed!", ex);
 		}*/
+		System.exit(0);
 		this.shutdownService.fireShutdown();
 	}
 }
