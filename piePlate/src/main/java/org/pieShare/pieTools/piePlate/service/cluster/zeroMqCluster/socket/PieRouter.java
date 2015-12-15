@@ -108,6 +108,9 @@ public class PieRouter implements IPieRouter {
 			try {
 				msg = this.receive();
 			} catch (ZMQException e) {
+				//todo: can this really only happen when shutding down or 
+				//also in other scenarios?
+				PieLogger.warn(this.getClass(), "Exception in PieRouter! Shuting router down!", e);
 				return;
 			}
 			for (IIncomingChannel channel : incomingChannels) {
