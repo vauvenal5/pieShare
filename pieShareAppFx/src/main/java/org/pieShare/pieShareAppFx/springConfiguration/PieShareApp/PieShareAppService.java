@@ -16,6 +16,7 @@ import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMess
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
@@ -105,7 +106,7 @@ public class PieShareAppService {
 		factory.registerTaskProvider(ResetPwdCommand.class, this.providers.resetPwdTaskProvider);
 		
                 factory.registerTaskProvider(FolderCreateMessage.class, this.providers.folderCreateTaskProvider);
-		
+		factory.registerTaskProvider(FolderDeleteMessage.class, this.providers.folderDeleteTaskProvider);
 		
 		service.start();
 		return service;
