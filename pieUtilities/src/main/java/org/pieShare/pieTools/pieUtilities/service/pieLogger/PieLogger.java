@@ -55,6 +55,11 @@ public class PieLogger {
 		log.warn(message, o);
 	}
 	
+	public static void warn(Class clazz, String message, Throwable thr) {
+		Logger log = getLogger(clazz);
+		log.warn(message, thr);
+	}
+	
 	public static void trace(Class clazz, String message, Object o) {
 		Logger log = getLogger(clazz);
 		log.trace(message, o);
