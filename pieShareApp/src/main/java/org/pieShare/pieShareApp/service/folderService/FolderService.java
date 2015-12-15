@@ -26,19 +26,22 @@ public class FolderService implements IFolderService {
         this.userService = userService;
     }
 
-    public void init() {
-        PieUser user = userService.getUser();
-        this.configuration = user.getPieShareConfiguration();
-    }
-
-    public Path getAbsolutePath(PieFolder pieFolder) {
+	//todo: redundant code!!! use fileService
+    public String getAbsolutePath(PieFolder pieFolder) {
+        if(configuration == null) {
+            PieUser user = userService.getUser();
+            this.configuration = user.getPieShareConfiguration();
+        }
         File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
-        return localFolder.toPath();
+        return localFolder.getPath();
     }
 
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
-        File newFolder = new File(getAbsolutePath(pieFolder).toString());
+        File newFolder = new File(getAbsolutePath(pieFolder));
+		if(newFolder.exists()) {
+			return;
+		}
         createLocalFolder(newFolder);
     }
 
