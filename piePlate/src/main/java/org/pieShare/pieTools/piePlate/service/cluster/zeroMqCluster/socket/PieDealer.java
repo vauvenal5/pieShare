@@ -77,7 +77,7 @@ public class PieDealer implements IPieDealer {
 				dealer.send(message, ZMQ.NOBLOCK);
 			}
 		} catch (ZMQException e) {
-			PieLogger.error(PieDealer.class, "Message send error: {0}", e);
+			PieLogger.error(PieDealer.class, "Message send error: {}", e);
 		}
 	}
 }
