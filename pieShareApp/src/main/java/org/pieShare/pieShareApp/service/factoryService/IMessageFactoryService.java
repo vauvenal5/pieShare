@@ -6,43 +6,44 @@
 
 package org.pieShare.pieShareApp.service.factoryService;
 
-import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFolderDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
+
 
 /**
  *
  * @author Svetoslav
  */
 public interface IMessageFactoryService {
-	IFileChangedMessage getFileChangedMessage();
+	FileChangedMessage getFileChangedMessage();
 	
-	IFileDeletedMessage getFileDeletedMessage();
+	FileDeletedMessage getFileDeletedMessage();
 	
 	IFileListMessage getFileListMessage();
 	
-	IFileListRequestMessage getFileListRequestMessage();
+	FileListRequestMessage getFileListRequestMessage();
 	
-	IFileRequestMessage getFileRequestMessage();
+	FileRequestMessage getFileRequestMessage();
 	
-	IFileTransferCompleteMessage getFileTransferCompleteMessage();
+	FileTransferCompleteMessage getFileTransferCompleteMessage();
 	
 	IMetaMessage getFileTransferMetaMessage();
 	
-	IFileCreatedMessage getNewFileMessage();
+	FileCreatedMessage getNewFileMessage();
 	
-	IMetaCommitMessage getMetaCommitMessage();
+	MetaCommitMessage getMetaCommitMessage();
         
         //Folder
-        IFolderCreatedMessage getNewFolderMessage();
+    FolderCreateMessage getNewFolderMessage();
         
-        IFolderDeletedMessage getFolderDeletedMessage();
+    FolderDeleteMessage getFolderDeletedMessage();
 }

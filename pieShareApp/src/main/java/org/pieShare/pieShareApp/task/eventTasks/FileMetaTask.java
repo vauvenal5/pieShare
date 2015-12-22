@@ -5,10 +5,8 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import java.io.File;
+import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
-import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
-import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.task.AMessageSendingEventTask;
@@ -42,7 +40,7 @@ public class FileMetaTask extends AMessageSendingEventTask<MetaMessage> {
 		try {
 			this.bitTorrentService.handleFile(msg.getFileMeta());
 			
-			IMetaCommitMessage metaCommit = this.messageFactoryService.getMetaCommitMessage();
+			MetaCommitMessage metaCommit = this.messageFactoryService.getMetaCommitMessage();
 			metaCommit.setMetaInfo(msg.getMetaInfo());
 			metaCommit.setPieFolder(msg.getPieFolder());
 			this.setDefaultAdresse(metaCommit);

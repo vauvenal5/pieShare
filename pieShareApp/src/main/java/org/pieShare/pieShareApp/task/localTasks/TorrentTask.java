@@ -14,7 +14,7 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.List;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -151,7 +151,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					//it is important that this message gets send as soon as possible so the different clients don't block each other
 					//for example on server instance and two clients
 					//each client will keep sharing until the error timeout if this message doesn't get send here
-					IFileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
+					FileTransferCompleteMessage msgComplete = this.messageFactoryService.getFileTransferCompleteMessage();
 					msgComplete.setFileMeta(fileMeta);
 					this.setDefaultAdresse(msgComplete);
 					this.clusterManagementService.sendMessage(msgComplete);
