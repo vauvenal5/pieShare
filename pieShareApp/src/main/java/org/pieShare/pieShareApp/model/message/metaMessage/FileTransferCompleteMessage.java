@@ -6,11 +6,11 @@
 
 package org.pieShare.pieShareApp.model.message.metaMessage;
 
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileTransferCompleteMessage extends AMetaMessage implements IFileTransferCompleteMessage {
+public class FileTransferCompleteMessage extends AMetaMessage implements IMetaMessage {
 }
