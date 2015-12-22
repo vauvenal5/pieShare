@@ -6,18 +6,16 @@
 
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
-import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
-import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.ACheckConflictTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
-import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileDeletedTask extends ACheckConflictTask<IFileDeletedMessage>{
+public class FileDeletedTask extends ACheckConflictTask<FileDeletedMessage>{
 	
 	private IFileService fileService;
 

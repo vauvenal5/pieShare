@@ -5,9 +5,8 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks;
 
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
+import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
-import org.pieShare.pieShareApp.service.shareService.IShareService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
 
@@ -15,7 +14,7 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  *
  * @author Svetoslav
  */
-public class FileTransferCompleteTask extends PieEventTaskBase<IFileTransferCompleteMessage> {
+public class FileTransferCompleteTask extends PieEventTaskBase<FileTransferCompleteMessage> {
 
 	private IBitTorrentService bitTorentService;
 

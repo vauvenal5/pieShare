@@ -5,11 +5,11 @@
  */
 package org.pieShare.pieShareApp.model.message.metaMessage;
 
-import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
+import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 
 /**
  *
  * @author sveto_000
  */
-public class MetaCommitMessage extends AMetaMessage implements IMetaCommitMessage {
+public class MetaCommitMessage extends AMetaMessage implements IMetaMessage {
 }
