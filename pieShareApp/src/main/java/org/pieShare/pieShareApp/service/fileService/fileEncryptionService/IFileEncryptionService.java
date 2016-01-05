@@ -13,6 +13,6 @@ import java.io.File;
  * @author Svetoslav
  */
 public interface IFileEncryptionService {
-	public void encryptFile(File source, File target);
-	public void decryptFile(File source, File target);
+	public void encryptFile(File source, File target, boolean append);
+	public void decryptFile(File source, File target, boolean append);
 }
