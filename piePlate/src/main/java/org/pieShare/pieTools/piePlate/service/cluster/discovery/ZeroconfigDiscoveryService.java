@@ -6,6 +6,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.discovery;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,9 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 		}
 
 		try {
-			this.jmDns = JmDNS.create(this.networkService.getLocalHost());
+			//this.jmDns = JmDNS.create(this.networkService.getLocalHost());
+			InetAddress addr = InetAddress.getByName("0.0.0.0");
+			this.jmDns = JmDNS.create(addr);
 		} catch (IOException ex) {
 			throw new DiscoveryException("Init of jmdns failed!", ex);
 		}
