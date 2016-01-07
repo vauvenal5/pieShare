@@ -17,8 +17,9 @@ import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
 @Entity
 public class PieFileEntity implements IPieFileEntity{
 	private byte[] md5;
-	@Id
-	private String absoluteWorkingPath;
+	//@Id
+	//private String absoluteWorkingPath;
+        @Id
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
@@ -39,6 +40,7 @@ public class PieFileEntity implements IPieFileEntity{
 		this.synched = synched;
 	}
 	
+        /*
         @Override
 	public String getAbsoluteWorkingPath() {
 		return absoluteWorkingPath;
@@ -48,7 +50,7 @@ public class PieFileEntity implements IPieFileEntity{
 	public void setAbsoluteWorkingPath(String absoluteWorkingPath) {
 		this.absoluteWorkingPath = absoluteWorkingPath;
 	}
-	
+	*/
         @Override
 	public byte[] getMd5() {
 		return md5;

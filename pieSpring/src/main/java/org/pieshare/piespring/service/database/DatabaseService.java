@@ -26,6 +26,8 @@ import org.pieshare.piespring.service.model.entities.FilterEntity;
 import org.pieshare.piespring.service.model.entities.PieFileEntity;
 import org.pieshare.piespring.service.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieshare.piespring.service.model.entities.PieFolderEntity;
 
 public class DatabaseService implements IDatabaseService {
 
@@ -222,5 +224,37 @@ public class DatabaseService implements IDatabaseService {
         }
 
         return files;
+    }
+
+    @Override
+    public void persistPieFolder(PieFolder folder) {
+        PieFolderEntity entity;
+        entity = (PieFolderEntity)this.modelEntityConverterService.convertToEntity(folder);
+        this.persist(entity);
+    }
+
+    @Override
+    public void mergePieFolder(PieFolder folder) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public PieFolder findPieFolder(PieFolder folder) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<PieFolder> findAllUnsyncedPieFolders() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<PieFolder> getAllPieFolders() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void resetAllPieFolderSyncedFlags() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
