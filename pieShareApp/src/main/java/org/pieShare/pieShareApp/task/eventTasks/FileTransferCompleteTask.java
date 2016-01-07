@@ -24,7 +24,7 @@ public class FileTransferCompleteTask extends PieEventTaskBase<FileTransferCompl
 
 	@Override
 	public void run() {
-		PieLogger.trace(this.getClass(), "Starting transfer complete for {}.", msg.getPieFolder().getName());
+		PieLogger.trace(this.getClass(), "Starting transfer complete for {}.", msg.getPieFilder().getName());
 		//todo: this message does not need to work with a Meta Object... PieFile is enough!!!
 		this.bitTorentService.clientDone(this.msg.getFileMeta());
 	}

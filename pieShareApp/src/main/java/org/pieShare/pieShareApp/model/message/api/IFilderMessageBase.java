@@ -5,17 +5,16 @@
  */
 package org.pieShare.pieShareApp.model.message.api;
 
-import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
  * Interface for File and Folder Messages
- * T defines whether a file or a folder is expected (File extends Folder)
+ * T defines whether a file or a folder is expected (File, Folder extends Filder)
  * @author daniela
  */
-public interface IFilderMessageBase<T extends PieFolder> extends IEncryptedMessage{
-        //TODO sinnvoll umbennenen!
-        T getPieFolder();
+public interface IFilderMessageBase<T extends PieFilder> extends IEncryptedMessage{
+        T getPieFilder();
 
-	void setPieFolder(T filder);
+	void setPieFilder(T filder);
 }
