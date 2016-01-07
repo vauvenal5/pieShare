@@ -25,7 +25,7 @@ public class FolderDeleteTask extends PieEventTaskBase<FolderDeleteMessage> {
     @Override
     public void run() {
         try {
-            folderService.deleteFolder(this.msg.getPieFolder());
+            folderService.deleteFolder(this.msg.getPieFilder());
         } catch (FolderServiceException ex) {
             PieLogger.debug(this.getClass(), "Folder couldn't be deleted from task. {}" + ex);
         }
