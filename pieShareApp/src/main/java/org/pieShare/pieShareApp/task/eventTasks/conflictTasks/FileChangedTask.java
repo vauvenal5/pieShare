@@ -16,6 +16,6 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 public class FileChangedTask extends ARequestTask<FileChangedMessage> {
 	@Override
 	public void run() {
-		this.doWork((PieFile)this.msg.getPieFolder());
+		this.doWork((PieFile)this.msg.getPieFilder());
 	}
 }

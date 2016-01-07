@@ -17,12 +17,12 @@ public class FolderMessageBase extends AClusterMessage implements IFilderMessage
     private PieFolder pieFolder;
     
     @Override
-    public PieFolder getPieFolder() {
+    public PieFolder getPieFilder() {
         return pieFolder;
     }
     
     @Override
-    public void setPieFolder(PieFolder pieFolder) {
+    public void setPieFilder(PieFolder pieFolder) {
         this.pieFolder = pieFolder;
     }
 }
