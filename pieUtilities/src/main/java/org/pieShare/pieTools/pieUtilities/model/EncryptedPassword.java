@@ -16,7 +16,21 @@ public class EncryptedPassword {
     private byte[] password;
     private SecretKey secretKey;
     private byte[] iv;
+    private boolean useIv; 
 
+    public EncryptedPassword()
+    {
+        useIv = false;
+    }
+    
+    public boolean isUseIv() {
+        return useIv;
+    }
+
+    public void setUseIv(boolean useIv) {
+        this.useIv = useIv;
+    }
+    
     public void setPassword(byte[] pwd) {
         this.password = pwd;
     }
