@@ -13,13 +13,16 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
+import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieshare.piespring.service.model.entities.ConfigurationEntity;
 import org.pieshare.piespring.service.model.entities.FilterEntity;
 import org.pieshare.piespring.service.model.entities.PieFileEntity;
+import org.pieshare.piespring.service.model.entities.PieFolderEntity;
 import org.pieshare.piespring.service.model.entities.PieUserEntity;
 
 /**
@@ -43,7 +46,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		entity.setRelativeFilePath(file.getRelativePath());
 		entity.setDeleted(file.isDeleted());
 		
-		entity.setAbsoluteWorkingPath(file.getRelativePath());
+		//entity.setAbsoluteWorkingPath(file.getRelativePath());
 		return entity;
 	}
 
@@ -118,4 +121,28 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		filter.setPattern(entity.getPattern());
 		return filter;
 	}
+
+    @Override
+    public IPieFolderEntity convertToEntity(PieFolder folder) {
+        IPieFolderEntity entity = new PieFolderEntity();
+        entity.setDeleted(folder.isDeleted());
+        entity.setFolderName(folder.getName());
+        entity.setRelativeFolderPath(folder.getRelativePath());
+        
+        return entity;
+    }
+
+    @Override
+    public PieFolder convertFromEntity(IPieFolderEntity entity) {
+        if(entity == null) {
+            return null;
+        }
+        
+        PieFolder folder = new PieFolder();
+        folder.setDeleted(entity.isDeleted());
+        folder.setName(entity.getFolderName());
+        folder.setRelativePath(entity.getRelativeFolderPath());
+        return folder;
+    }
 }
+

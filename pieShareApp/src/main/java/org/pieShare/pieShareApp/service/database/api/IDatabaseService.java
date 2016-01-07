@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 
 /**
@@ -45,4 +46,21 @@ public interface IDatabaseService {
 	void mergePieFile(PieFile file);
 	
 	void persistPieFile(PieFile file);
+        
+        //when a folder is added the first time
+        void persistPieFolder(PieFolder folder);
+        
+        //update an already added folder
+        void mergePieFolder(PieFolder folder);
+        
+        PieFolder findPieFolder(PieFolder folder);
+        
+        List<PieFolder> findAllUnsyncedPieFolders();
+        
+        List<PieFolder> getAllPieFolders();
+        
+        void resetAllPieFolderSyncedFlags();
+        
+        
+        
 }
