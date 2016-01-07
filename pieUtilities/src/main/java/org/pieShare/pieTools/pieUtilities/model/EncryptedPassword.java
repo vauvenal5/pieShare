@@ -13,22 +13,31 @@ import javax.crypto.SecretKey;
  */
 public class EncryptedPassword {
 
-	private byte[] password;
-	private SecretKey secretKey;
-	
-	public void setPassword(byte[] pwd) {
-		this.password = pwd;
-	}
+    private byte[] password;
+    private SecretKey secretKey;
+    private byte[] iv;
 
-	public byte[] getPassword() {
-		return this.password;
-	}
+    public void setPassword(byte[] pwd) {
+        this.password = pwd;
+    }
 
-	public SecretKey getSecretKey() {
-		return secretKey;
-	}
+    public byte[] getPassword() {
+        return this.password;
+    }
 
-	public void setSecretKey(SecretKey secretKey) {
-		this.secretKey = secretKey;
-	}
+    public SecretKey getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(SecretKey secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
 }
