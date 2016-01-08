@@ -28,7 +28,7 @@ public class PieDealer implements IPieDealer {
 	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
 		this.utils = service;
 	}
-
+	
 	@Override
 	public void send(List<DiscoveredMember> members, byte[] message, IEndpointCallback callback) {
 		ZMQ.Context ctx = ZMQ.context(1);
