@@ -9,6 +9,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
@@ -46,18 +49,40 @@ public abstract class FileServiceBase implements IFileService {
 		boolean isCopying = true;
 
 		while (isCopying) {
-
-			try {
-				Thread.sleep(2000);
-				st = new FileInputStream(file);
-				st.close();
+			if(isBeingUsed(file)) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
+					//nothing needed to do here
+					isCopying = false;
+				}
+			} else {
 				isCopying = false;
-			} catch (FileNotFoundException ex) {
-				isCopying = false;
-			} catch (Exception ex) {
-				//nothing needed to do here
 			}
+
+//			try {
+//				Thread.sleep(2000);
+//				st = new FileInputStream(file);
+//				st.close();
+//				isCopying = false;
+//			} catch (FileNotFoundException ex) {
+//				isCopying = false;
+//			} catch (Exception ex) {
+//				//nothing needed to do here
+//			}
 		}
+	}
+	
+	@Override
+	public boolean isBeingUsed(File file) {
+		try {
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
+			raf.close();
+			return false;
+		} catch (IOException ex) {
+			PieLogger.trace(this.getClass(), "File {} still in use!", file.getName());
+		}
+		return true;
 	}
 
 	@Override
