@@ -15,4 +15,5 @@ import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 public interface IPasswordEncryptionService {
 
 	EncryptedPassword encryptPassword(PlainTextPassword plainTextPassword);
+         EncryptedPassword getEncryptedPasswordFromExistingSecretKey(byte[] encodedKey);
 }
