@@ -72,7 +72,7 @@ public class ShareService implements IShareService{
 				throw new NoLocalFileException("Local file doesn't exist!");
 			}*/
 			//TODO: create dirs???!!!
-			this.fileEncryptionService.encryptFile(localFile, localEncTmpFile);
+			this.fileEncryptionService.encryptFile(localFile, localEncTmpFile, false);
 			this.preparedFiles.put(file, Boolean.TRUE);
 		}
 		
@@ -81,7 +81,7 @@ public class ShareService implements IShareService{
 
 	@Override
 	public void localFileTransferComplete(PieFile file, boolean source) {
-		try {
+//		try {
 			if(!source) {
 				File localTmpFile = this.fileService.getAbsoluteTmpPath(file);
 				File localEncTmpFile = new File(localTmpFile.getParentFile(), file.getName()+".enc");
@@ -92,18 +92,26 @@ public class ShareService implements IShareService{
 					localFile.getParentFile().mkdirs();
 				}
 				
-				this.fileEncryptionService.decryptFile(localEncTmpFile, localTmpFile);
-				
-				this.fileService.setCorrectModificationDateOnTmpFile(file);
-				
+				//todo-android: do the decryption directly into the working dir
+					//further there is a check nesseccary if there is a conflict 
+					//between the recived file and the one in the working dir
+				//this.fileEncryptionService.decryptFile(localEncTmpFile, localTmpFile, false);
 				this.fileWatcherService.addPieFileToModifiedList(file);
-				Files.move(localTmpFile.toPath(), localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				this.fileEncryptionService.decryptFile(localEncTmpFile, localFile, false);
+				
+				//this.fileService.setCorrectModificationDateOnTmpFile(file);
+				//todo: check if 2nd modified event is thrown!!
+				this.fileService.setCorrectModificationDate(file);
+				
+				//this.fileWatcherService.addPieFileToModifiedList(file);
+				//todo-android: this needs to be removed because android does not support this class
+				//Files.move(localTmpFile.toPath(), localFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				
 				//todo: is it better to delete the enc file or not?
 			}
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error!", ex);
-		}
+//		} catch (IOException ex) {
+//			PieLogger.error(this.getClass(), "Error!", ex);
+//		}
 	}
 	
 	@Override

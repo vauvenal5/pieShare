@@ -6,20 +6,16 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
-import java.nio.file.Path;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * @author daniela
  */
-public class FolderService implements IFolderService {
+public class FolderService extends FilderServiceBase implements IFolderService {
 
     //TODO: refactor to utility functions
-    protected IPieShareConfiguration configuration;
+   /* protected IPieShareConfiguration configuration;
     protected IUserService userService;
 
     public void setUserService(IUserService userService) {
@@ -34,14 +30,11 @@ public class FolderService implements IFolderService {
         }
         File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
         return localFolder.getPath();
-    }
+    }*/
 
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
-        File newFolder = new File(getAbsolutePath(pieFolder));
-		if(newFolder.exists()) {
-			return;
-		}
+        File newFolder = getAbsolutePath(pieFolder);
         createLocalFolder(newFolder);
     }
 
@@ -63,19 +56,23 @@ public class FolderService implements IFolderService {
         }
     }
 
-    @Override
+   /* @Override
     public void deleteFolder(String path) throws FolderServiceException {
+        deleteRecursive();
         File folderToDelete = new File(path);
         deleteLocalFolder(folderToDelete);
+        
        
-    }
+    }*/
 
     @Override
     public void deleteFolder(PieFolder pieFolder) throws FolderServiceException {
-        File foldertoDelete = new File(getAbsolutePath(pieFolder).toString());
-        deleteLocalFolder(foldertoDelete);
+        deleteRecursive(pieFolder);
+        //File foldertoDelete = getAbsolutePath(pieFolder);
+        //deleteLocalFolder(foldertoDelete);
     }
 
+    /*
     private void deleteLocalFolder(File folderToDelete) {
         boolean deleted = false;
         
@@ -83,10 +80,11 @@ public class FolderService implements IFolderService {
             deleted = folderToDelete.delete();
             PieLogger.trace(this.getClass(), "Folder deleted! " + folderToDelete.getPath());
         }
-        
+      
         if (!deleted) {
             PieLogger.debug(this.getClass(), "Folder couldn't be deleted: " + folderToDelete.getPath());
         }
     }
+    */
 
 }
