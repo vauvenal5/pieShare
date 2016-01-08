@@ -93,14 +93,20 @@ public class DatabaseService implements IDatabaseService {
     public void removePieUser(PieUser user) {
         PieUserEntity ent;
         ent = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
-        remove(ent);
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(ent.getClass());
+        em.getTransaction().begin();
+        em.remove(em.merge(ent));
+        em.getTransaction().commit();
     }
 
     @Override
     public void mergePieUser(PieUser user) {
         PieUserEntity entity;
         entity = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
-        merge(entity);
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+        em.getTransaction().begin();
+        em.merge(entity);
+        em.getTransaction().commit();
     }
 
     @Override
@@ -136,7 +142,7 @@ public class DatabaseService implements IDatabaseService {
 
     public void persist(PieFile file) {
         PieFileEntity entity;
-        entity = (PieFileEntity)this.modelEntityConverterService.convertToEntity(file);
+        entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
         this.persist(entity);
     }
 
@@ -164,7 +170,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public PieFile findPieFile(PieFile file) {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-		PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativePath());
+        PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativePath());
         return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
     }
 
