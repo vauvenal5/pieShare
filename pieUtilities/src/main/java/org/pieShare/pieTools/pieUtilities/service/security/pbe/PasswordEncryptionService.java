@@ -13,6 +13,7 @@ import java.util.Arrays;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -38,6 +39,18 @@ public class PasswordEncryptionService implements IPasswordEncryptionService {
 		this.providerService = service;
 	}
 
+        @Override
+    public EncryptedPassword getEncryptedPasswordFromExistingSecretKey(byte[] encodedKey) {
+                
+        SecretKeyFactory keyFactory = providerService.getSecretKeyFactory();
+        SecretKey originalKey = new SecretKeySpec(encodedKey, 0, encodedKey.length, keyFactory.getAlgorithm());
+        
+        EncryptedPassword encPwd = new EncryptedPassword();
+        encPwd.setPassword(originalKey.getEncoded());
+        encPwd.setSecretKey(originalKey);
+        return encPwd;
+    }
+        
 	@Override
 	public EncryptedPassword encryptPassword(PlainTextPassword plainTextPassword) {
 		try {
