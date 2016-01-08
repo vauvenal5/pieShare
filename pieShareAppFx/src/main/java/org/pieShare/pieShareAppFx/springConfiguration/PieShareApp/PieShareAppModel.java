@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareAppFx.springConfiguration.PieShareApp;
 
+import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -58,5 +59,11 @@ public class PieShareAppModel {
 	@Scope(value = "prototype")
 	public PieFileEntity pieFileEntity() {
 		return new PieFileEntity();
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileEvent localFileEvent() {
+		return new LocalFileEvent();
 	}
 }

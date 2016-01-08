@@ -27,6 +27,7 @@ import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareServic
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
+import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
 import org.pieshare.piespring.service.database.ModelEntityConverterService;
 import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
@@ -177,9 +178,21 @@ public class PieShareAppService {
 	@Scope(value = "prototype")
 	public ApacheDefaultFileListener fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
-		listener.setBeanService(this.utilities.beanService());
-		listener.setExecutorService(this.utilities.pieExecutorService());
+//		listener.setBeanService(this.utilities.beanService());
+//		listener.setExecutorService(this.utilities.pieExecutorService());
+		listener.setEventFoldingService(this.eventFoldingService());
+		listener.setLocalFileEventProvider(this.providers.localFileEventProvider);
 		return listener;
+	}
+	
+	@Bean
+	@Lazy
+	public EventFoldingService eventFoldingService() {
+		EventFoldingService service = new EventFoldingService();
+		service.setEventFoldingTimerTaskProvider(this.providers.eventFoldingTimerTaskProvider);
+		service.setFileService(this.localFileService());
+		service.init();
+		return service;
 	}
 
 	@Bean
