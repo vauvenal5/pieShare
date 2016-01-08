@@ -22,6 +22,7 @@ import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
+import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -253,4 +254,16 @@ public class PieShareAppTasks {
             task.setFolderService(this.services.folderService());
             return task;
         }
+		
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public EventFoldingTimerTask eventFoldingTimerTask() {
+		EventFoldingTimerTask task = new EventFoldingTimerTask();
+		task.setExecutorService(this.utilities.pieExecutorService());
+		task.setLocalFileChangedProvider(this.providers.localFileChangedProvider);
+		task.setLocalFileCreatedProvider(this.providers.localFileCreateProvider);
+		task.setLocalFileDeletedProvider(this.providers.localFileDeletedProvider);
+		return task;
+	}
 }
