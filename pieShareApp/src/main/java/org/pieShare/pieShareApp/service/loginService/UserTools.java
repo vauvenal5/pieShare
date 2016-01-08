@@ -174,18 +174,18 @@ public class UserTools {
                 ivF.delete();
             }
 
+            user.setPassword(null);
+            user.setIsLoggedIn(false);
+
             this.clusterManagementService.disconnect(user.getCloudName());
 
         } catch (IOException e) {
-            //ToDo: Error handling
+            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: ", e.getMessage()));
             return false;
         } catch (ClusterServiceException e) {
-            //ToDo: Error handling
+            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: ", e.getMessage()));
             return false;
         }
-
-        user.setPassword(null);
-        user.setIsLoggedIn(false);
 
         return true;
     }
