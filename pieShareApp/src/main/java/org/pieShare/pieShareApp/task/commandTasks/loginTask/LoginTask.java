@@ -111,7 +111,6 @@ public class LoginTask implements ILoginTask {
     }
 
     private void login() throws Exception {
-
         userService.getUser().setPieShareConfiguration(configurationFactory.checkAndCreateConfig(userService.getUser().getPieShareConfiguration(), true));
         pwdFile = userService.getUser().getPieShareConfiguration().getPwdFile();
 
