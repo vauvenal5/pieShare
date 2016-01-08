@@ -67,6 +67,10 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public ArrayList<PieUser> findAllPieUser() {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieUserEntity.class);
+		
+		if(!em.isOpen()) {
+			return null;
+		}
 
         Query query = em.createQuery(String.format("SELECT e FROM %s e", PieUserEntity.class.getSimpleName()), PieUserEntity.class);
         PieUser user = null;
@@ -94,6 +98,9 @@ public class DatabaseService implements IDatabaseService {
         PieUserEntity ent;
         ent = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(ent.getClass());
+		if(!em.isOpen()) {
+			return;
+		}
         em.getTransaction().begin();
         em.remove(em.merge(ent));
         em.getTransaction().commit();
@@ -104,6 +111,9 @@ public class DatabaseService implements IDatabaseService {
         PieUserEntity entity;
         entity = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		if(!em.isOpen()) {
+			return;
+		}
         em.getTransaction().begin();
         em.merge(entity);
         em.getTransaction().commit();
@@ -126,6 +136,9 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public ArrayList<IFilter> findAllFilters() {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(FilterEntity.class);
+		if(!em.isOpen()) {
+			return null;
+		}
         Query query = em.createQuery(String.format("SELECT e FROM %s e", FilterEntity.class.getSimpleName()), FilterEntity.class);
         ArrayList<IFilter> list = new ArrayList<>();
 
@@ -148,6 +161,9 @@ public class DatabaseService implements IDatabaseService {
 
     private void persist(IBaseEntity entity) {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		if(!em.isOpen()) {
+			return;
+		}
         em.getTransaction().begin();
         em.persist(entity);
         em.getTransaction().commit();
@@ -155,6 +171,9 @@ public class DatabaseService implements IDatabaseService {
 
     private synchronized void merge(IBaseEntity entity) {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		if(!em.isOpen()) {
+			return;
+		}
         em.getTransaction().begin();
         em.merge(entity);
         em.getTransaction().commit();
@@ -162,6 +181,9 @@ public class DatabaseService implements IDatabaseService {
 
     private void remove(IBaseEntity entity) {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(entity.getClass());
+		if(!em.isOpen()) {
+			return;
+		}
         em.getTransaction().begin();
         em.remove(entity);
         em.getTransaction().commit();
@@ -170,6 +192,9 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public PieFile findPieFile(PieFile file) {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		if(!em.isOpen()) {
+			return null;
+		}
         PieFileEntity historyFileEntity = em.find(PieFileEntity.class, file.getRelativePath());
         return this.modelEntityConverterService.convertFromEntity(historyFileEntity);
     }
@@ -189,6 +214,9 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public List<PieFile> findAllUnsyncedPieFiles() {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		if(!em.isOpen()) {
+			return null;
+		}
         String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched=TRUE", PieFileEntity.class.getSimpleName());
         TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
 
@@ -206,6 +234,9 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void resetAllPieFileSynchedFlags() {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		if(!em.isOpen()) {
+			return;
+		}
         String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFileEntity.class.getSimpleName());
         TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
         em.getTransaction().begin();
@@ -216,6 +247,9 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public List<PieFile> findAllPieFiles() {
         EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+		if(!em.isOpen()) {
+			return null;
+		}
         String sqlQuery = String.format("SELECT f FROM %s f", PieFileEntity.class.getSimpleName());
         TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
 
