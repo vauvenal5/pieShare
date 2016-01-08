@@ -6,6 +6,8 @@
 
 package pieShareAppITs;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieshare.piespring.service.database.DatabaseService;
@@ -68,9 +70,13 @@ public class DataBaseIT {
 
 		Assert.assertEquals(file, fileFromDB);
 	}
-        
-        @Test
-        public void persistPieFolder() {
+       
+        /**
+         * This test tries to persist a newly created PieFolder to the DB.
+         * When retrieved again it should be the same.
+         */
+        @Test //Should_ExpectedBehavior_When_StateUnderTest
+        public void Should_PersistFolderInDB_When_FolderAddedToDB() {
             DatabaseService dbService = this.context.getBean(DatabaseService.class);
             
             PieFolder folder = new PieFolder();
@@ -78,20 +84,78 @@ public class DataBaseIT {
             folder.setRelativePath("testFolder");
             dbService.persistPieFolder(folder);
             
-            folder.setName("testFolder2");
-            folder.setRelativePath("testFolder2");
+            PieFolder folderFromDB = dbService.findPieFolder(folder);
+            
+            Assert.assertEquals(folder.getRelativePath(), folderFromDB.getRelativePath());
+            
+            dbService.removePieFolder(folder);
+            
+            Assert.assertNull(dbService.findPieFolder(folder));
+        }
+        
+        /**
+         * A newly created PieFolder is persisted to the DB,
+         * then changed and the changes are also merged into the DB.
+         * When retrieved the PieFolders relative path (including the name)
+         * should equal the updated ones.
+         */
+        @Test
+        public void Should_UpdateFolderInDB_When_ChangedFolderMergedInDB() {
+            DatabaseService dbService = this.context.getBean(DatabaseService.class);
+            
+            PieFolder folder = new PieFolder();
+            folder.setName("oldFolder");
+            folder.setRelativePath("oldFolder");
+            dbService.persistPieFolder(folder);
+            
+            folder.setName("newFolder");
+            folder.setRelativePath("newFolder");
             dbService.mergePieFolder(folder);
             
             PieFolder folderFromDB = dbService.findPieFolder(folder);
             
             Assert.assertEquals(folder.getRelativePath(), folderFromDB.getRelativePath());
             
-            try{
-                dbService.removePieFolder(folder);
-            } catch (Exception e) {
-                System.out.println(e);
-            }
+            dbService.removePieFolder(folder);
             
-            //Assert.assertNull(dbService.findPieFolder(folder));
+            Assert.assertNull(dbService.findPieFolder(folder));
+        }
+        
+        
+        /**
+         * Different PieFolders are persisted in the DB.
+         * All Folders should be returned with the method findAllPieFolders
+         * and equal the persisted ones.
+         */
+        @Test
+        public void Should_FindAllPieFoldersInDB_When_FoldersPersistedInDB() {
+            DatabaseService dbService = this.context.getBean(DatabaseService.class);
+            
+            PieFolder folder1 = new PieFolder();
+            folder1.setName("folder1");
+            folder1.setRelativePath("folder1");
+            dbService.persistPieFolder(folder1);
+            
+            PieFolder folder2 = new PieFolder();
+            folder2.setName("folder2");
+            folder2.setRelativePath("folder2");
+            dbService.persistPieFolder(folder2);
+            
+            PieFolder folder3 = new PieFolder();
+            folder3.setName("folder3");
+            folder3.setRelativePath("folder3");
+            dbService.persistPieFolder(folder3);
+            
+            List<PieFolder> folders = dbService.findAllPieFolders();
+            
+            Assert.assertTrue(folders.contains(folder1));
+            Assert.assertTrue(folders.contains(folder2));
+            Assert.assertTrue(folders.contains(folder3));
+            
+            Assert.assertTrue(folders.size() == 3);
+            
+            for(PieFolder f: folders) {
+                dbService.removePieFolder(f);
+            }
         }
 }

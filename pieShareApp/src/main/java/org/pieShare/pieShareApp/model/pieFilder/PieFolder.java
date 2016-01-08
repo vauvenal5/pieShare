@@ -19,4 +19,23 @@ public class PieFolder extends PieFilder implements IBaseModel{
             super();
         }
     
+    
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof PieFolder)) {
+            //not even a PieFolder object
+            return false;
+        }
+        
+        PieFolder f = (PieFolder)o;
+        
+        if(this.getName().equalsIgnoreCase(f.getName()) &&
+                this.getRelativePath().equalsIgnoreCase(f.getRelativePath()) &&
+                this.isDeleted() == f.isDeleted()) {
+            return true;
+        }
+        
+        return false;
+    }
+    
 }
