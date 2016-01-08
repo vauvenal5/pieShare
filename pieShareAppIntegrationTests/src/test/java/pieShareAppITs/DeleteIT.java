@@ -98,8 +98,8 @@ public class DeleteIT {
 		ITUtil.performTearDown(context);
 	}
 	
-	//todo: enable after MR2
-	//@Test(timeOut = 120000)
+        //Todo: Enable when FolderHistory works
+	//@Test(timeOut = 60000)
 	public void deleteOneFile() throws Exception {
 		ITUtil.waitForProcessToStartup(this.process);
 		
