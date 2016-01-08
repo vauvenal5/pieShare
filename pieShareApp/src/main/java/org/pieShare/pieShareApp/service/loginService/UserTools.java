@@ -114,6 +114,7 @@ public class UserTools {
                     pwd1.setIv(FileUtils.readFileToByteArray(ivF));
                 }
             } catch (IOException e) {
+                PieLogger.error(this.getClass(), String.format("error during auto login! Message: %s", e.getMessage()));
                 return false;
             }
         }
@@ -133,10 +134,11 @@ public class UserTools {
                 }
 
             } catch (Exception ex) {
-                PieLogger.info(this.getClass(), "Wrong password, not possible to encrypt file");
+                PieLogger.info(this.getClass(), String.format("Wrong password, not possible to encrypt file! Messgae %s", ex.getMessage()));
                 return false;
             }
         } else {
+            PieLogger.info(this.getClass(), "Tried to login but no passwordFile was avaliable!");
             return false;
         }
 
@@ -153,13 +155,15 @@ public class UserTools {
         SymmetricEncryptedChannel channel = this.symmetricEncryptedChannelProvider.get();
         channel.setChannelId(user.getUserName());
         channel.setEncPwd(user.getPassword());
+        
         try {
             this.clusterManagementService.registerChannel(user.getCloudName(), channel);
 
         } catch (ClusterManagmentServiceException e) {
-            e.printStackTrace();
+            PieLogger.error(this.getClass(), String.format("Error in Register Channel. Message:  %s", e.getMessage()));
         }
 
+        PieLogger.info(this.getClass(), "Login Successful");
         return true;
     }
 
@@ -180,10 +184,10 @@ public class UserTools {
             this.clusterManagementService.disconnect(user.getCloudName());
 
         } catch (IOException e) {
-            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: ", e.getMessage()));
+            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: %s", e.getMessage()));
             return false;
         } catch (ClusterServiceException e) {
-            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: ", e.getMessage()));
+            PieLogger.error(this.getClass(), String.format("Error in Logout. Message: %s", e.getMessage()));
             return false;
         }
 
