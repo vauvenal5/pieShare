@@ -43,6 +43,7 @@ import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieshare.piespring.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieshare.piespring.service.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
+import org.pieShare.pieShareApp.service.loginService.UserTools;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
@@ -332,5 +333,19 @@ public class PieShareAppService {
             FolderService folderService = new FolderService();
             folderService.setUserService(userService());
             return folderService;
+        }
+        
+        @Bean
+        @Lazy
+        public UserTools userToolsService()
+        {
+            UserTools userTools = new UserTools();
+            userTools.setClusterManagementService(plate.clusterManagementService());
+            userTools.setDatabaseService(databaseService());
+            userTools.setEncodeService(utilities.encodeService());
+            userTools.setPasswordEncryptionService(utilities.passwordEncryptionService());
+            userTools.setSymmetricEncryptedChannelProvider(providers.symmetricEncryptedChannelProvider);
+            userTools.setUserService(userService());
+            return userTools;
         }
 }
