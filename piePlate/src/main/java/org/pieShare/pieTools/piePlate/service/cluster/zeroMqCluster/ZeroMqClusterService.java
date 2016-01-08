@@ -88,7 +88,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
-			List<DiscoveredMember> members = this.discovery.list(clusterName);
+			List<DiscoveredMember> members = this.discovery.list();
 			//todo: pass discovered members to dealerSocket
 			//call discovery for endpoints
 			//foreach endpoint connect&send ZeroMQClusterMessage

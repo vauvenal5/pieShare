@@ -6,6 +6,7 @@
 package piePlateITs;
 
 import java.util.List;
+import java.util.UUID;
 import javax.inject.Provider;
 import javax.jmdns.ServiceEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.ZeroconfigDiscoveryListener;
@@ -48,6 +49,7 @@ public class ZeroconfDiscoveryIT {
 
 	@Test(timeOut = 60000)
 	public void testListDiscovery() throws Exception {
+		String clusterName = UUID.randomUUID().toString();
 		discovery2 = new ZeroconfigDiscoveryService();
 		discovery2.setNetworkService(service);
 		discovery2.setListener(new IJmdnsDiscoveryListener() {
@@ -86,7 +88,7 @@ public class ZeroconfDiscoveryIT {
 				//ignore
 			}
 		});
-		discovery2.registerService("mycloud", service.getAvailablePort());
+		discovery2.registerService(clusterName, service.getAvailablePort());
 
 		ZeroconfigDiscoveryService discovery3 = new ZeroconfigDiscoveryService();
 		discovery3.setNetworkService(service);
@@ -126,7 +128,7 @@ public class ZeroconfDiscoveryIT {
 				//ignore
 			}
 		});
-		discovery3.registerService("mycloud", service.getAvailablePort());
+		discovery3.registerService(clusterName, service.getAvailablePort());
 
 		discovery1 = new ZeroconfigDiscoveryService();
 		discovery1.setNetworkService(service);
@@ -174,12 +176,9 @@ public class ZeroconfDiscoveryIT {
 			}
 		});
 
-		List<DiscoveredMember> members = discovery1.list("mycloud");
-		Assert.assertEquals(2, members.size());
+		discovery1.registerService(clusterName, service.getAvailablePort());
 
-		discovery1.registerService("mycloud", service.getAvailablePort());
-
-		members = discovery1.list("mycloud");
+		List<DiscoveredMember> members = discovery1.list();
 		Assert.assertEquals(2, members.size());
 
 		discovery3.shutdown();
@@ -187,13 +186,13 @@ public class ZeroconfDiscoveryIT {
 		//shutdown needs a little bit time to clean up
 		Thread.sleep(1000);
 
-		members = discovery1.list("mycloud");
+		members = discovery1.list();
 		Assert.assertEquals(1, members.size());
 	}
 
 	@Test(timeOut = 60000)
 	public void testDiscoveryListener() throws Exception {
-
+		String clusterName = UUID.randomUUID().toString();
 		discovery2 = new ZeroconfigDiscoveryService();
 		discovery2.setNetworkService(service);
 
@@ -213,7 +212,7 @@ public class ZeroconfDiscoveryIT {
 		});
 
 		discovery2.setListener(listener);
-		discovery2.registerService("mycloud", service.getAvailablePort());
+		discovery2.registerService(clusterName, service.getAvailablePort());
 
 		discovery1 = new ZeroconfigDiscoveryService();
 		discovery1.setNetworkService(service);
@@ -253,7 +252,7 @@ public class ZeroconfDiscoveryIT {
 				//ignore
 			}
 		});
-		discovery1.registerService("mycloud", 7777);
+		discovery1.registerService(clusterName, 7777);
 
 		while (member == null) {
 			Thread.sleep(500);
