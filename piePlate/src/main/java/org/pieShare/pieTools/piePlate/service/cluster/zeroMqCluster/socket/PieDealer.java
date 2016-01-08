@@ -8,6 +8,7 @@ package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 import java.net.InetAddress;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
@@ -17,7 +18,7 @@ import org.zeromq.ZMQException;
  */
 public class PieDealer implements IPieDealer {
 
-	private ZMQ.Context context; //switch to ZContext?
+	private ZContext context; //switch to ZContext?
 	private ZMQ.Socket dealer;
 	private ZeroMQUtilsService utils;
 	private int endpoints=0;
@@ -34,8 +35,8 @@ public class PieDealer implements IPieDealer {
 	@Override
 	public boolean connect(InetAddress address, int port) {
 		if (this.context == null) {
-			this.context = ZMQ.context(1);
-			this.dealer = context.socket(ZMQ.DEALER);
+			this.context = new ZContext(1);
+			this.dealer = context.createSocket(ZMQ.DEALER);
 		}
 
 		try {
@@ -58,11 +59,8 @@ public class PieDealer implements IPieDealer {
 
 	@Override
 	public void close() {
-		if (dealer != null) {
-			dealer.close();
-		}
 		if (context != null) {
-			context.close();
+			context.destroy();
 		}
 	}
 

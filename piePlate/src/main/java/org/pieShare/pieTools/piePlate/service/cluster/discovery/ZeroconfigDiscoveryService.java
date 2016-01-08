@@ -90,34 +90,18 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	}
 
 	@Override
-	public List<DiscoveredMember> list(String clusterName) throws DiscoveryException {
-		this.initJmdns();
-		//Map<String, ServiceInfo[]> map = this.jmDns.listBySubtype(this.type);
+	public List<DiscoveredMember> list() throws DiscoveryException {
+		
+		if(this.myself == null) {
+			throw new DiscoveryException("Jmdns not yet registered!!!");
+		}
+		
 		ServiceInfo[] list = this.jmDns.list(this.type);
 		List<DiscoveredMember> members = new ArrayList<DiscoveredMember>();
 
-		/*PieLogger.trace(this.getClass(), "Found the following amount of items {}.", map.size());
-
-		if (!map.containsKey(clusterName)) {
-			int arrayLength = map.values().size();
-			PieLogger.trace(this.getClass(), "Found item size {}.", arrayLength);
-			for(ServiceInfo[] infos: map.values()) {
-				PieLogger.trace(this.getClass(), "Amount of items {}.", infos.length);
-				for(ServiceInfo info: infos) {
-					PieLogger.trace(this.getClass(), "Item: {}.", info.getSubtype());
-				}
-			}
-			PieLogger.warn(this.getClass(), "No members found for {}", clusterName);
-			return members;
-		}*/
-
-		//ServiceInfo[] infos = map.get(clusterName);
-
-		//for (ServiceInfo info : infos) {
 		for (ServiceInfo info : list) {
-			if ((this.myself == null) 
-					|| (!info.getName().equals(this.myself.getName())
-					&& info.getName().startsWith(this.cloudName))) {
+			if (!info.getName().equals(this.myself.getName())
+					&& info.getName().startsWith(this.cloudName)) {
 				//todo-discovery: it could lead to problems if it retunrs multiple inetAdresses
 				for (InetAddress ad : info.getInetAddresses()) {
 					DiscoveredMember member = discoveredMemberProvider.get();
