@@ -19,6 +19,7 @@ import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
+import org.pieShare.pieShareApp.service.loginService.UserTools;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.api.ILoginTask;
 import org.pieShare.pieShareApp.task.commandTasks.loginTask.exceptions.WrongPasswordException;
@@ -49,7 +50,7 @@ public class LoginTask implements ILoginTask {
     private IFileService fileService;
     private IUserService userService;
     private Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
-
+    private UserTools userTools;
     private File pwdFile;
 
     public LoginTask() {
@@ -100,88 +101,50 @@ public class LoginTask implements ILoginTask {
         this.userService = userService;
     }
 
+    public void setUserTools(UserTools userTools) {
+        this.userTools = userTools;
+    }
+
     @Override
     public void setEvent(LoginCommand command) {
         this.command = command;
     }
 
     private void login() throws Exception {
-        EncryptedPassword pwd1 = this.passwordEncryptionService.encryptPassword(command.getPlainTextPassword());
-       
-        PieUser user;
-        user = userService.getUser();
+        userService.getUser().setPieShareConfiguration(configurationFactory.checkAndCreateConfig(userService.getUser().getPieShareConfiguration(), true));
+        pwdFile = userService.getUser().getPieShareConfiguration().getPwdFile();
 
-        //PieShaeService does this now
-        user.setPieShareConfiguration(configurationFactory.checkAndCreateConfig(user.getPieShareConfiguration(), true));
-        pwdFile = user.getPieShareConfiguration().getPwdFile();
-
-        if (pwdFile.exists()) {
-            try {
-                if (!Arrays.equals(encodeService.decrypt(pwd1, FileUtils.readFileToByteArray(pwdFile)), FILE_TEXT)) {
-                    throw new WrongPasswordException("The given password was wrong.");
-                }
-
-            } catch (Exception ex) {
-                //ToDo: Handle Wrong password
-                PieLogger.info(this.getClass(), "Wrong password, not possible to encrypt file");
-                throw new WrongPasswordException("The given password was wrong.", ex);
-            }
-        } else {
-            createNewPwdFile(pwd1);
+        if (!pwdFile.exists()) {
+            userTools.createUser(command.getPlainTextPassword());
         }
 
-         pwd1.setIv(null);
-        user.setPassword(pwd1);
-        user.setHasPasswordFile(true);
-
-        if (user.getUserName() == null) {
-            user.setUserName(command.getUserName());
-            //databaseService.persistPieUser(user);
-            databaseService.persist(user);
+        if (!userTools.Login(command.getPlainTextPassword(), command.getUserName())) {
+            throw new WrongPasswordException("Login Error");
         }
-
-        user.setIsLoggedIn(true);
 
         this.historyService.syncLocalPieFilesWithHistory();
 
-        //Check and create folders
         try {
-            //create symetric channel for this user
-            SymmetricEncryptedChannel channel = this.symmetricEncryptedChannelProvider.get();
-            channel.setChannelId(user.getUserName());
-            channel.setEncPwd(user.getPassword());
-            this.clusterManagementService.registerChannel(user.getCloudName(), channel);
 
             //listen to working dir
-            this.fileWatcherService.watchDir(user.getPieShareConfiguration().getWorkingDir());
+            this.fileWatcherService.watchDir(userService.getUser().getPieShareConfiguration().getWorkingDir());
 
             //todo: change this maybe in future to different aproach
             //this is needed to recognize local changes on this node
             IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
-            fileList.getAddress().setClusterName(user.getCloudName());
-            fileList.getAddress().setChannelId(user.getUserName());
+            fileList.getAddress().setClusterName(userService.getUser().getCloudName());
+            fileList.getAddress().setChannelId(userService.getUser().getUserName());
             fileList.setFileList(this.fileService.getAllFiles());
             this.clusterManagementService.sendMessage(fileList);
 
             //send file list request message to cluster
             IFileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
-            msg.getAddress().setClusterName(user.getCloudName());
-            msg.getAddress().setChannelId(user.getUserName());
+            msg.getAddress().setClusterName(userService.getUser().getCloudName());
+            msg.getAddress().setChannelId(userService.getUser().getUserName());
             this.clusterManagementService.sendMessage(msg);
         } catch (ClusterManagmentServiceException ex) {
             PieLogger.error(this.getClass(), "Connect failed!", ex);
         }
-    }
-
-    private void createNewPwdFile(EncryptedPassword passwordForEncoding) throws Exception {
-
-        if (pwdFile.exists()) {
-            pwdFile.delete();
-        }
-
-        byte[] encr = encodeService.encrypt(passwordForEncoding, FILE_TEXT);
-
-        FileUtils.writeByteArrayToFile(pwdFile, encr, true);
     }
 
     @Override
@@ -197,5 +160,4 @@ public class LoginTask implements ILoginTask {
             command.getCallback().error(ex);
         }
     }
-
 }
