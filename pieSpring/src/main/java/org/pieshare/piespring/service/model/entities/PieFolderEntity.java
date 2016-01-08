@@ -5,6 +5,7 @@
  */
 package org.pieshare.piespring.service.model.entities;
 
+import javax.persistence.Entity;
 import javax.persistence.Id;
 import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
 
@@ -13,6 +14,7 @@ import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
  *
  * @author daniela
  */
+@Entity
 public class PieFolderEntity implements IPieFolderEntity{
     private boolean synced;
     private boolean deleted;

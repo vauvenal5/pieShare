@@ -42,6 +42,7 @@ public abstract class PieFilder implements IBaseModel {
         return relativePath;
     }
     
+    //relative path + name
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
     }
