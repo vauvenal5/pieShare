@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -34,7 +35,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdowna
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener {
+public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener, IEndpointCallback {
 
 	private IPieDealer dealer;
 	private IPieRouter router;
@@ -44,11 +45,25 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private IExecutorService executor;
 	private Map<String, IOutgoingChannel> outgoingChannels;
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
-	private List<String> knownMembers;
+	private List<DiscoveredMember> members;
+	private List<DiscoveredMember> brokenEndpoints;
+	private Semaphore lowPriority;
+	private Semaphore highPriority;
+	private Semaphore sendLimit;
+	private boolean removeEndpoints;
+	
+	private final int maxDealers = 100;
 
 	public ZeroMqClusterService() {
 		this.outgoingChannels = new HashMap<>();
-		this.knownMembers = new ArrayList<>();
+		this.members = new ArrayList<>();
+		this.brokenEndpoints = new ArrayList<>();
+		
+		lowPriority = new Semaphore(maxDealers);
+		highPriority = new Semaphore(1);
+		sendLimit = new Semaphore(maxDealers);
+		
+		removeEndpoints = false;
 	}
 
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
@@ -80,7 +95,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		try {
 			PieLogger.debug(this.getClass(), "Connecting to cluster {}!", clusterName);
 			int routerPort = this.networkService.getAvailablePort();
-			//todo: connect router here to port
+			
 			router.bind(routerPort);
 
 			//start router task
@@ -88,12 +103,8 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
-			List<DiscoveredMember> members = this.discovery.list(clusterName);
-			//todo: pass discovered members to dealerSocket
-			//call discovery for endpoints
-			//foreach endpoint connect&send ZeroMQClusterMessage
-			//	dealer = new PieDealer();
-			//
+			members = this.discovery.list(clusterName);
+			
 			for (DiscoveredMember m : members) {
 				this.connectMemberToCluster(m);
 			}
@@ -114,7 +125,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 	@Override
 	public void disconnect() throws ClusterServiceException {
-		dealer.close();
+		
 	}
 
 	@Override
@@ -122,13 +133,22 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		IPieAddress address = msg.getAddress();
 
 		if (!this.outgoingChannels.containsKey(address.getChannelId())) {
-			throw new ClusterServiceException(String.format("This outgoing channel doesn't exists: %s", address.getChannelId()));
+			throw new ClusterServiceException(String.format("This outgoing channel doesn't exists: {}", address.getChannelId()));
 		}
 
 		try {
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
-			this.dealer.send(message);
+			
+			lowPriority.acquire();
+			highPriority.acquire();
+			sendLimit.acquire();
+			highPriority.release();
+			this.dealer.send(members, message, this);
+			sendLimit.release();
+			lowPriority.release();
+			
+			//Sem2 rel
 		} catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
@@ -170,21 +190,45 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	}
 
 	private void connectMemberToCluster(DiscoveredMember member) {
-		if (this.knownMembers.contains(member.getName())) {
+		if (this.members.contains(member)) {
 			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
 			return;
 		}
-
-		PieLogger.trace(this.getClass(), "Connecting following {} with port {} to dealer.", member.getInetAdresses().getHostAddress(),
-				member.getPort());
-		if (dealer.connect(member.getInetAdresses(), member.getPort())) {
-			this.knownMembers.add(member.getName());
-		}
+		
+		PieLogger.trace(this.getClass(), "Member {} registered", member);
+		members.add(member);
 	}
 
 	@Override
 	public void shutdown() {
-		dealer.close();
 		router.close();
+	}
+
+	@Override
+	public void NonRespondingEndpoint(DiscoveredMember member) {
+		if(!brokenEndpoints.contains(member)){
+			brokenEndpoints.add(member);
+						
+			if(!removeEndpoints){
+				removeEndpoints = true;
+				try{
+					highPriority.acquire();
+					sendLimit.acquire(maxDealers);
+				}catch(Exception e) {
+				}
+				//finally
+				
+				highPriority.release();
+				
+				RemoveBrokenEndpoints();
+				
+				sendLimit.release(maxDealers);
+			}
+		}
+	}
+	
+	private void RemoveBrokenEndpoints(){
+		members.removeAll(brokenEndpoints);
+		brokenEndpoints.clear();
 	}
 }
