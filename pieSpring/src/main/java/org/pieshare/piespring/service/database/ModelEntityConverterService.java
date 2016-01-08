@@ -55,7 +55,6 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		if(entity == null) {
 			return null;
 		}
-		
 		PieFile file = new PieFile();
 		file.setName(entity.getFileName());
 		file.setLastModified(entity.getLastModified());

@@ -228,33 +228,77 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void persistPieFolder(PieFolder folder) {
-        PieFolderEntity entity;
-        entity = (PieFolderEntity)this.modelEntityConverterService.convertToEntity(folder);
-        this.persist(entity);
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+        PieFolderEntity entity = (PieFolderEntity)this.modelEntityConverterService.convertToEntity(folder);
+        em.getTransaction().begin();
+        em.persist(entity);
+        em.getTransaction().commit();
+        
     }
 
     @Override
     public void mergePieFolder(PieFolder folder) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        PieFolderEntity entity = (PieFolderEntity) this.modelEntityConverterService.convertToEntity(folder);
+        merge(entity);
     }
 
     @Override
     public PieFolder findPieFolder(PieFolder folder) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+	PieFolderEntity historyFolderEntity = em.find(PieFolderEntity.class, folder.getRelativePath());
+        return this.modelEntityConverterService.convertFromEntity(historyFolderEntity);
+      }
 
     @Override
     public List<PieFolder> findAllUnsyncedPieFolders() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+        String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched=TRUE", PieFolderEntity.class.getSimpleName());
+        TypedQuery<PieFolderEntity> query = em.createQuery(sqlQuery, PieFolderEntity.class);
+
+        ArrayList<PieFolder> folders = new ArrayList<>();
+
+        List<PieFolderEntity> entities = query.getResultList();
+
+        for (PieFolderEntity entity : entities) {
+            folders.add(this.modelEntityConverterService.convertFromEntity(entity));
+        }
+
+        return folders;
+        
     }
 
     @Override
-    public List<PieFolder> getAllPieFolders() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public List<PieFolder> findAllPieFolders() {
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+        String sqlQuery = String.format("SELECT f FROM %s f", PieFolderEntity.class.getSimpleName());
+        TypedQuery<PieFolderEntity> query = em.createQuery(sqlQuery, PieFolderEntity.class);
+
+        ArrayList<PieFolder> folders = new ArrayList<>();
+
+        List<PieFolderEntity> entities = query.getResultList();
+
+        for (PieFolderEntity entity : entities) {
+            folders.add(this.modelEntityConverterService.convertFromEntity(entity));
+        }
+
+        return folders;    }
 
     @Override
     public void resetAllPieFolderSyncedFlags() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+        String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFolderEntity.class.getSimpleName());
+        TypedQuery<PieFolderEntity> query = em.createQuery(sqlQuery, PieFolderEntity.class);
+        em.getTransaction().begin();
+        query.executeUpdate();
+        em.getTransaction().commit();
+    }
+
+    @Override
+    public void removePieFolder(PieFolder folder) {
+        EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFolderEntity.class);
+        PieFolderEntity entity = (PieFolderEntity)this.modelEntityConverterService.convertToEntity(folder);
+        em.getTransaction().begin();
+        em.remove(em.merge(entity));
+        em.getTransaction().commit();
     }
 }
