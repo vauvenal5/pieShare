@@ -8,7 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.junit.Assert;
 import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import static org.testng.Assert.*;
 import org.testng.annotations.Test;
 
 /**

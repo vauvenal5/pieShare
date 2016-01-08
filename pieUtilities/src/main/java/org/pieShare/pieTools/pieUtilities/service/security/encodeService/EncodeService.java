@@ -50,7 +50,7 @@ public class EncodeService implements IEncodeService {
 
         Cipher cipher = providerService.getEnDeCryptCipher();
 
-        if (passphrase.getIv() != null) {
+        if (passphrase.getIv() != null && passphrase.isUseIv()) {
             cipher.init(Cipher.ENCRYPT_MODE, key, new IvParameterSpec(passphrase.getIv()));
         } else {
             cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -69,7 +69,7 @@ public class EncodeService implements IEncodeService {
 
         Cipher cipher = providerService.getEnDeCryptCipher();
 
-        if (passphrase.getIv() != null) {
+        if (passphrase.getIv() != null && passphrase.isUseIv()) {
             cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(passphrase.getIv()));
         } else {
             cipher.init(Cipher.DECRYPT_MODE, key);
