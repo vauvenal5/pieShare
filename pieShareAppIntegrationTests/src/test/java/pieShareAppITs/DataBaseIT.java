@@ -121,7 +121,6 @@ public class DataBaseIT {
             Assert.assertNull(dbService.findPieFolder(folder));
         }
         
-        
         /**
          * Different PieFolders are persisted in the DB.
          * All Folders should be returned with the method findAllPieFolders

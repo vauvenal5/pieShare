@@ -90,6 +90,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
                     return pieFolder;
                     
                 } else {// if(this.file.isFile()) { file = null for delete
+					this.fileService.isBeingUsed(file);
 		this.fileService.waitUntilCopyFinished(this.file);
 		
 		PieFile pieFile = this.fileService.getPieFile(file);

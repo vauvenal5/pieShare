@@ -11,7 +11,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
  * Provides all services regarding a PieFolder
  * @author daniela
  */
-public interface IFolderService {
+public interface IFolderService extends IFilderService{
     /**
      * Create a local folder at the PieFolder local path
      * @param pieFolder the relative path is where the folder will be created.
@@ -30,8 +30,9 @@ public interface IFolderService {
      * Delete the folder at the given path (string) and all it's content
      * @param path of the folder including its name
      * @throws FolderServiceException 
-     */
+     *
     void deleteFolder(String path) throws FolderServiceException;
+    */
     
     /**
      * Delete the folder at the PieFolders path and all it's content

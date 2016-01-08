@@ -7,14 +7,14 @@ package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
+import java.io.RandomAccessFile;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
+import org.pieShare.pieShareApp.service.folderService.FilderServiceBase;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -22,16 +22,17 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav
  */
-public abstract class FileServiceBase implements IFileService {
-	protected IPieShareConfiguration configuration;
+public abstract class FileServiceBase extends FilderServiceBase implements IFileService {
+	//protected IPieShareConfiguration configuration;
 	protected IFileWatcherService fileWatcherService;
-	protected IUserService userService;
+	//protected IUserService userService;
 
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
 		this.fileWatcherService = fileWatcherService;
 	}
 	
-	public void setUserService(IUserService userService) {
+	/*
+        public void setUserService(IUserService userService) {
 		this.userService = userService;
 	}
 
@@ -39,6 +40,7 @@ public abstract class FileServiceBase implements IFileService {
 		PieUser user = userService.getUser();
 		this.configuration = user.getPieShareConfiguration();
 	}
+        */
 
 	@Override
 	public void waitUntilCopyFinished(File file) {
@@ -46,20 +48,42 @@ public abstract class FileServiceBase implements IFileService {
 		boolean isCopying = true;
 
 		while (isCopying) {
-
-			try {
-				Thread.sleep(2000);
-				st = new FileInputStream(file);
-				st.close();
+			if(isBeingUsed(file)) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
+					//nothing needed to do here
+					isCopying = false;
+				}
+			} else {
 				isCopying = false;
-			} catch (FileNotFoundException ex) {
-				isCopying = false;
-			} catch (Exception ex) {
-				//nothing needed to do here
 			}
+
+//			try {
+//				Thread.sleep(2000);
+//				st = new FileInputStream(file);
+//				st.close();
+//				isCopying = false;
+//			} catch (FileNotFoundException ex) {
+//				isCopying = false;
+//			} catch (Exception ex) {
+//				//nothing needed to do here
+//			}
 		}
 	}
-
+	
+	@Override
+	public boolean isBeingUsed(File file) {
+		try {
+			RandomAccessFile raf = new RandomAccessFile(file, "rw");
+			raf.close();
+			return false;
+		} catch (IOException ex) {
+			PieLogger.trace(this.getClass(), "File {} still in use!", file.getName());
+		}
+		return true;
+	}
+/*
 	@Override
 	public void deleteRecursive(PieFile file) {
                 PieLogger.trace(this.getClass(), "Recursively deleting {}", file.getRelativePath());
@@ -74,7 +98,7 @@ public abstract class FileServiceBase implements IFileService {
 			PieLogger.error(this.getClass(), "Deleting failed!", ex);
 		}
 	}
-
+*/
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
 		File targetFile = this.getAbsolutePath(file);
@@ -102,7 +126,7 @@ public abstract class FileServiceBase implements IFileService {
 
 		return true;
 	}
-
+/*
 	@Override
 	public String relitivizeFilePath(File file) {
 		try {
@@ -127,6 +151,7 @@ public abstract class FileServiceBase implements IFileService {
 		return new File(configuration.getTmpDir(), file.getRelativePath());
 		
 	}
+        */
 
 	@Override
 	public PieFile getPieFile(String relativeFilePath) throws IOException {

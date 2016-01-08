@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.historyService;
 
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
  *
@@ -18,4 +19,21 @@ public interface IHistoryService {
 	void syncPieFileWithDb(PieFile pieFile);
 	PieFile syncDeleteToHistory(PieFile file);
 	List<PieFile> syncLocalPieFilesWithHistory();
+        
+        /**
+         * @param pieFolder 
+         */
+        void syncPieFolderWithDb(PieFolder pieFolder);
+        
+        /**
+         * @param pieFolder
+         * @return 
+         */
+        PieFolder syncDeletePieFolderToHistory(PieFolder pieFolder);
+        
+        /**
+         * 
+         * @return 
+         */
+        List<PieFolder> syncLocalPieFolderWithHistory();
 }

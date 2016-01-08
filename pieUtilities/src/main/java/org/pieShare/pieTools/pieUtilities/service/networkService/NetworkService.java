@@ -12,12 +12,16 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -121,23 +125,37 @@ public class NetworkService implements INetworkService {
 		if (this.useFixedNic()) {
 			return ad;
 		} else {
-			//test internet connection
-			try (ServerSocketChannel socket = ServerSocketChannel.open()) {
-				socket.socket().setSoTimeout(5000);
-
-				int freePort = this.getAvailablePort();
-				//TODO-SV: check if connect is better option than bind, once bound connect won't change address so try connect from beginning
-				socket.socket().bind(new InetSocketAddress(ad, freePort));
-				//this has to become way better
-				//socket.connect(new InetSocketAddress("google.com", 80));
-				//if everything passes the InetAddress should be okay.
-				socket.close();
+			
+			try(Socket s = new Socket()) {
+				s.setSoTimeout(5000);
+				s.connect(new InetSocketAddress("www.google.com", 80));
+				s.getOutputStream();
+				s.close();
+				PieLogger.info(this.getClass(), "Found internet! {}", ad.getCanonicalHostName());
 				this.address = ad;
-				PieLogger.info(this.getClass(), "Found internet!");
 				return this.address;
 			} catch (IOException ex) {
 				PieLogger.info(this.getClass(), "No internet here!", ex);
 			}
+			
+			//test internet connection
+//			try (ServerSocketChannel socket = ServerSocketChannel.open()) {
+//				socket.socket().setSoTimeout(5000);
+//
+//				int freePort = this.getAvailablePort();
+//				//TODO-SV: check if connect is better option than bind, once bound connect won't change address so try connect from beginning
+//				socket.socket().bind(new InetSocketAddress(ad, freePort));
+//				//this has to become way better
+//				//socket.connect(new InetSocketAddress("google.com", 80));
+//				//if everything passes the InetAddress should be okay.
+//				socket.close();
+//				this.address = ad;
+//				PieLogger.info(this.getClass(), "Found internet! {}", ad.getCanonicalHostName());
+//				
+//				return this.address;
+//			} catch (IOException ex) {
+//				PieLogger.info(this.getClass(), "No internet here!", ex);
+//			}
 		}
 
 		return null;
@@ -194,7 +212,8 @@ public class NetworkService implements INetworkService {
 							return ads.get(0);
 						}
 					}
-				} else if (!nic.isLoopback() && !nic.isVirtual() && nic.isUp()) {
+				} else if (!nic.isLoopback() && !nic.isVirtual() 
+						&& nic.isUp() && !nic.getName().contains("vbox")) {
 					List<InetAddress> ads = this.checkAddresses(nic);
 					if (ads.size() == 1) {
 						return ads.get(0);
@@ -214,6 +233,7 @@ public class NetworkService implements INetworkService {
 
 		//todo-sv: checkout 0.0.0.0 adress for adressing all adapters
 		this.address = possibleAds.get(0);
+		PieLogger.info(this.getClass(), "Choose this address: {}", this.address.getCanonicalHostName());
 		return this.address;
 	}
 

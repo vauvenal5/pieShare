@@ -25,6 +25,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav
  */
+//todo: this service mixes service an task code! has to be properly fixed
 public class BitTorrentService implements IBitTorrentService {
 
 	private INetworkService networkService;
@@ -187,6 +188,8 @@ public class BitTorrentService implements IBitTorrentService {
 		TorrentTask task = this.torrentTaskProvider.get();
 		task.setFile(meta);
 		task.setTorrent(torrent);
+		//todo: check if this dependency cycle can be refactored
+		task.setBitTorrentService(this);
 		this.executorService.execute(task);
 	}
 
