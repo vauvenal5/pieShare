@@ -93,10 +93,11 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 		//todo: this really needs to be added otherwise all pieShare instances 
 		//in the network are added to our cluster and not only the one of our user
 		//however there is some kind issue with resolving the subtype
-//		if(!info.getSubtype().equals(this.cloudName)) {
-//			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
-//			return;
-//		}
+		if(!info.getSubtype().equals(this.cloudName)) {
+			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
+			return;
+		}
+		
 		for (InetAddress ad : info.getInetAddresses()) {
 			DiscoveredMember member = this.discoveredMemberProvider.get();
 			member.setInetAdresses(ad);
