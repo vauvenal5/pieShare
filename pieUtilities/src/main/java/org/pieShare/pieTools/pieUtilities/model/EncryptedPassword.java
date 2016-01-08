@@ -13,22 +13,45 @@ import javax.crypto.SecretKey;
  */
 public class EncryptedPassword {
 
-	private byte[] password;
-	private SecretKey secretKey;
-	
-	public void setPassword(byte[] pwd) {
-		this.password = pwd;
-	}
+    private byte[] password;
+    private SecretKey secretKey;
+    private byte[] iv;
+    private boolean useIv; 
 
-	public byte[] getPassword() {
-		return this.password;
-	}
+    public EncryptedPassword()
+    {
+        useIv = false;
+    }
+    
+    public boolean isUseIv() {
+        return useIv;
+    }
 
-	public SecretKey getSecretKey() {
-		return secretKey;
-	}
+    public void setUseIv(boolean useIv) {
+        this.useIv = useIv;
+    }
+    
+    public void setPassword(byte[] pwd) {
+        this.password = pwd;
+    }
 
-	public void setSecretKey(SecretKey secretKey) {
-		this.secretKey = secretKey;
-	}
+    public byte[] getPassword() {
+        return this.password;
+    }
+
+    public SecretKey getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(SecretKey secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    public byte[] getIv() {
+        return iv;
+    }
+
+    public void setIv(byte[] iv) {
+        this.iv = iv;
+    }
 }
