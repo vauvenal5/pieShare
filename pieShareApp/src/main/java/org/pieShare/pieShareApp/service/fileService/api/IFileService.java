@@ -24,6 +24,8 @@ public interface IFileService {
 	
 	void waitUntilCopyFinished(File file);
 	
+	boolean isBeingUsed(File file);
+	
 	//todo-FileServie: which is the best way to handle not existing files:
 			//return null
 			//throw Exception
