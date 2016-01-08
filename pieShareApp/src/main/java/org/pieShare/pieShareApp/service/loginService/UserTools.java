@@ -155,7 +155,7 @@ public class UserTools {
         SymmetricEncryptedChannel channel = this.symmetricEncryptedChannelProvider.get();
         channel.setChannelId(user.getUserName());
         channel.setEncPwd(user.getPassword());
-        
+
         try {
             this.clusterManagementService.registerChannel(user.getCloudName(), channel);
 
@@ -190,7 +190,7 @@ public class UserTools {
             PieLogger.error(this.getClass(), String.format("Error in Logout. Message: %s", e.getMessage()));
             return false;
         }
-
+        PieLogger.info(this.getClass(), "Logout Successful!");
         return true;
     }
 
@@ -200,6 +200,7 @@ public class UserTools {
         user.getPieShareConfiguration().getPwdFile().delete();
         databaseService.removePieUser(user);
         user.setHasPasswordFile(false);
+        PieLogger.info(this.getClass(), "Reset Password Successful!");
     }
 
     private void createNewPwdFile(EncryptedPassword passwordForEncoding, File pwdFile) throws Exception {
