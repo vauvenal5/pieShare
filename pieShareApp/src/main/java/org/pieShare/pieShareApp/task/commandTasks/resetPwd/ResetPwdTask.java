@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.ResetPwdCommand;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.loginService.UserTools;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareApp.task.commandTasks.resetPwd.api.IResetPwdTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -20,38 +21,38 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ResetPwdTask implements IResetPwdTask {
 
-	private IDatabaseService databaseService;
-	private ResetPwdCommand command;
-	private IUserService userService;
+    private IDatabaseService databaseService;
+    private ResetPwdCommand command;
+    private IUserService userService;
 
-	public void setDatabaseService(IDatabaseService databaseService) {
-		this.databaseService = databaseService;
-	}
-	
-	public void setUserService(IUserService userService) {
-		this.userService = userService;
-	}
+    private UserTools userTools;
 
-	@Override
-	public void setEvent(ResetPwdCommand msg) {
-		this.command = msg;
-	}
+    public void setUserTools(UserTools userTools) {
+        this.userTools = userTools;
+    }
 
-	@Override
-	public void run() {
-		PieUser user = userService.getUser();
-		user.setHasPasswordFile(false);
-		databaseService.mergePieUser(user);
+    public void setDatabaseService(IDatabaseService databaseService) {
+        this.databaseService = databaseService;
+    }
 
-		if (user.getPieShareConfiguration().getPwdFile().exists()) {
-			try {
-				Files.delete(user.getPieShareConfiguration().getPwdFile().toPath());
-			}
-			catch (IOException ex) {
-				//ToDo: Add error callback.
-				PieLogger.error(this.getClass(), "Error deleting password file. Maybe this is ok", ex);
-			}
-		}
-		command.getCallback().pwdResetOK();
-	}
+    public void setUserService(IUserService userService) {
+        this.userService = userService;
+    }
+
+    @Override
+    public void setEvent(ResetPwdCommand msg) {
+        this.command = msg;
+    }
+
+    @Override
+    public void run() {
+        try {
+            userTools.resetPassword();
+        } catch (Exception ex) {
+            PieLogger.error(this.getClass(), String.format("Error in Reset Password Task. Message: %s", ex.getMessage()));
+        }
+        
+        command.getCallback().pwdResetOK();
+        
+    }
 }
