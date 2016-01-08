@@ -59,6 +59,7 @@ public class FileEncryptionService implements IFileEncryptionService {
 		int length = 0;		
 		while((length = inStream.read(bytes)) != -1) {
 			outStream.write(bytes, 0, length);
+			//todo: this flush hast probably to be moved outside the while so java can manage the amount of buffered data
 			outStream.flush();
 		}
 		outStream.close();
@@ -66,11 +67,11 @@ public class FileEncryptionService implements IFileEncryptionService {
 	}
 	
 	@Override
-	public void encryptFile(File source, File target) {
+	public void encryptFile(File source, File target, boolean append) {
 		
 		try {
 			FileInputStream stream = new FileInputStream(source);
-			FileOutputStream fileStream = new FileOutputStream(target);
+			FileOutputStream fileStream = new FileOutputStream(target, append);
 			CipherOutputStream outputStream = new CipherOutputStream(fileStream, this.getCipher(Cipher.ENCRYPT_MODE));		
 			//Base64OutputStream base64OutStream = new Base64OutputStream(fileStream);
 			this.rewriteFile(stream, outputStream);
@@ -84,14 +85,14 @@ public class FileEncryptionService implements IFileEncryptionService {
 	}
 
 	@Override
-	public void decryptFile(File source, File target) {		
+	public void decryptFile(File source, File target, boolean append) {		
 		try {
 			//CipherInputStream stream = new CipherInputStream(new FileInputStream(this.fileService.getAbsolutePath(file).toFile()), this.getCipher(Cipher.DECRYPT_MODE));
 			FileInputStream fileStream = new FileInputStream(source);
 			CipherInputStream stream = new CipherInputStream(fileStream, this.getCipher(Cipher.DECRYPT_MODE));
 			//Base64InputStream base64Input = new Base64InputStream(fileStream);
 			//FileOutputStream outputStream = new FileOutputStream(this.fileService.getAbsolutePath(workingFile).toFile());
-			FileOutputStream outputStream = new FileOutputStream(target);
+			FileOutputStream outputStream = new FileOutputStream(target, append);
 			this.rewriteFile(stream, outputStream);
 		} catch (FileNotFoundException ex) {
 			PieLogger.error(this.getClass(), "Error!", ex);
