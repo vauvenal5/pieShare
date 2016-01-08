@@ -57,9 +57,11 @@ public interface IDatabaseService {
         
         List<PieFolder> findAllUnsyncedPieFolders();
         
-        List<PieFolder> getAllPieFolders();
+        List<PieFolder> findAllPieFolders();
         
         void resetAllPieFolderSyncedFlags();
+        
+        void removePieFolder(PieFolder folder);
         
         
         

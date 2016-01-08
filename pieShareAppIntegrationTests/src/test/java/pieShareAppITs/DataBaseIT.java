@@ -6,12 +6,9 @@
 
 package pieShareAppITs;
 
-import java.io.File;
-import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieshare.piespring.service.database.DatabaseService;
-import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -34,7 +31,8 @@ public class DataBaseIT {
 
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		ITUtil.setUpEnviroment(true);
+            ITUtil.performTearDownDelete();
+            ITUtil.setUpEnviroment(true);
 	}
 
 	@AfterClass
@@ -70,4 +68,30 @@ public class DataBaseIT {
 
 		Assert.assertEquals(file, fileFromDB);
 	}
+        
+        @Test
+        public void persistPieFolder() {
+            DatabaseService dbService = this.context.getBean(DatabaseService.class);
+            
+            PieFolder folder = new PieFolder();
+            folder.setName("testFolder");
+            folder.setRelativePath("testFolder");
+            dbService.persistPieFolder(folder);
+            
+            folder.setName("testFolder2");
+            folder.setRelativePath("testFolder2");
+            dbService.mergePieFolder(folder);
+            
+            PieFolder folderFromDB = dbService.findPieFolder(folder);
+            
+            Assert.assertEquals(folder.getRelativePath(), folderFromDB.getRelativePath());
+            
+            try{
+                dbService.removePieFolder(folder);
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            
+            //Assert.assertNull(dbService.findPieFolder(folder));
+        }
 }
