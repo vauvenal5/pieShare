@@ -84,7 +84,7 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 		discovered(event.getInfo());
 	}
 
-	private void discovered(ServiceInfo info) {
+	private void discovered(ServiceInfo info) {		
 		if (myself.equals(info.getName())) {
 			PieLogger.trace(this.getClass(), "Discarding myself! {}", info.getName());
 			return;
@@ -93,7 +93,12 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 		//todo: this really needs to be added otherwise all pieShare instances 
 		//in the network are added to our cluster and not only the one of our user
 		//however there is some kind issue with resolving the subtype
-		if(!info.getSubtype().equals(this.cloudName)) {
+//		if(!info.getSubtype().equals(this.cloudName)) {
+//			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
+//			return;
+//		}
+
+		if(!info.getName().startsWith(this.cloudName)) {
 			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
 			return;
 		}
