@@ -5,36 +5,21 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api;
 
-import java.net.InetAddress;
-import org.pieShare.pieTools.piePlate.model.message.api.IPieMessage;
+import java.util.List;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
 
 /**
  *
  * @author Paul
  */
-public interface IPieDealer {
-    /**
-     * Connect dealer to socket on address.
-     * @param address
-     * @return true if connection was established else false.
-     */
-    boolean connect(InetAddress address, int port);
-    
-    /**
-     * Close connection to endpoint.
-     * @param address 
-     */
-    void disconnect(InetAddress address, int port);
-    
-    /**
-     * Close socket and terminate all connections.
-     */
-    void close();
-    
+public interface IPieDealer { 
     /**
      * Send message to to all sockets this dealer is connected to.
      * If no connection is active message gets dropped.
+	 * @param endpoints
      * @param message 
+	 * @param callback object for unresponsive endpoints
      */
-    void send(byte[] message);
+    void send(List<DiscoveredMember> endpoints, byte[] message, IEndpointCallback callback);
 }
