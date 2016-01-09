@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareApp.service.historyService;
 
+import java.io.File;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
@@ -36,4 +37,7 @@ public interface IHistoryService {
          * @return 
          */
         List<PieFolder> syncLocalPieFolderWithHistory();
+		
+	PieFile getPieFileFromHistory(File file);
+	PieFolder getPieFolderFromHistory(File file);
 }

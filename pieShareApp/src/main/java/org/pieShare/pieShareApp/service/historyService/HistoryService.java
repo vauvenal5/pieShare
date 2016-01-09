@@ -6,6 +6,7 @@
 
 package org.pieShare.pieShareApp.service.historyService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -97,5 +98,19 @@ public class HistoryService implements IHistoryService {
     public List<PieFolder> syncLocalPieFolderWithHistory() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+	@Override
+	public PieFile getPieFileFromHistory(File file) {
+		PieFile searchFile = new PieFile();
+		searchFile.setRelativePath(this.fileService.relativizeFilePath(file));
+		return this.databaseService.findPieFile(searchFile);
+	}
+
+	@Override
+	public PieFolder getPieFolderFromHistory(File file) {
+		PieFolder searchFolder = new PieFolder();
+		searchFolder.setRelativePath(this.fileService.relativizeFilePath(file));
+		return this.databaseService.findPieFolder(searchFolder);
+	}
 	
 }
