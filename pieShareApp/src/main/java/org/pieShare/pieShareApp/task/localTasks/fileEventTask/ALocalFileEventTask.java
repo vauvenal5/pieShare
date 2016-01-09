@@ -33,16 +33,16 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	protected IFileEncryptionService fileEncrypterService;
 	protected IFileWatcherService fileWatcherService;
 	protected IFileService historyFileService;
-        protected IFolderService folderService;
-        
-        //TODO fix as soon there is a file-history-service
-        protected boolean isFolder;
-	
+	protected IFolderService folderService;
+
+	//TODO fix as soon there is a file-history-service
+	protected boolean isFolder;
+
 	protected File file;
-        
-        public ALocalFileEventTask() {
-            isFolder = false;
-        }
+
+	public ALocalFileEventTask() {
+		isFolder = false;
+	}
 
 	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
 		this.fileWatcherService = fileWatcherService;
@@ -55,7 +55,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
 	}
-	
+
 	public void setFileFilterService(IFileFilterService fileFilterService) {
 		this.fileFilterService = fileFilterService;
 	}
@@ -64,11 +64,11 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		PieLogger.info(this.getClass(), "Setting FileService!");
 		this.fileService = fileService;
 	}
-        
-        public void setFolderService(IFolderService folderService) {
-                PieLogger.info(this.getClass(), "Setting FolderService!");
-                this.folderService = folderService;
-        }
+
+	public void setFolderService(IFolderService folderService) {
+		PieLogger.info(this.getClass(), "Setting FolderService!");
+		this.folderService = folderService;
+	}
 
 	public void setHistoryFileService(IFileService historyFileService) {
 		this.historyFileService = historyFileService;
@@ -77,45 +77,44 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 	public void setFile(File file) {
 		this.file = file;
 	}
-	
+
 	protected PieFilder prepareWork() throws IOException {		
-		if(!this.fileFilterService.checkFile(this.file)) {
+		if (!this.fileFilterService.checkFile(this.file)) {
 			return null;
 		}
-                
-                if(this.file.isDirectory() || isFolder) {
-                    PieFolder pieFolder = new PieFolder();
-                    pieFolder.setName(this.file.getName());
-                    pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());
-                    return pieFolder;
-                    
-                } else {// if(this.file.isFile()) { file = null for delete
-					this.fileService.isBeingUsed(file);
-		this.fileService.waitUntilCopyFinished(this.file);
-		
-		PieFile pieFile = this.fileService.getPieFile(file);
-		
-		PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
-		
-                    if(oldPieFile != null && oldPieFile.equals(pieFile)) {
-			return null;
-                    }
-		
-                    if(this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
-			this.fileWatcherService.removePieFileFromModifiedList(pieFile);
-			return null;
-                    }
-		
-		return pieFile;
-                }
-               
-                //return null;
+
+		if (this.file.isDirectory() || isFolder) {
+			PieFolder pieFolder = new PieFolder();
+			pieFolder.setName(this.file.getName());
+			pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());
+			return pieFolder;
+
+		} else {// if(this.file.isFile()) { file = null for delete
+			this.fileService.waitUntilCopyFinished(this.file);
+
+			PieFile pieFile = this.fileService.getPieFile(file);
+
+			PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
+
+			if (oldPieFile != null && oldPieFile.equals(pieFile)) {
+				return null;
+			}
+
+			if (this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
+				this.fileWatcherService.removePieFileFromModifiedList(pieFile);
+				return null;
+			}
+
+			return pieFile;
+		}
+
+		//return null;
 	}
 
 	protected<T extends PieFilder> void doWork(IFilderMessageBase<T> msg, T filder) {
 		try {
 			msg.setPieFilder(filder);
-			
+
 			this.setDefaultAdresse(msg);
 
 			this.clusterManagementService.sendMessage(msg);

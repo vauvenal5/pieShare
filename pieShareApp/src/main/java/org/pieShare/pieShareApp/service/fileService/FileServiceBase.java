@@ -103,7 +103,8 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	public void setCorrectModificationDate(PieFile file) {
 		File targetFile = this.getAbsolutePath(file);
 
-		this.fileWatcherService.addPieFileToModifiedList(file);
+		//this is no more neccessary due to the event folding service
+		//this.fileWatcherService.addPieFileToModifiedList(file);
 		if (setCorrectModificationDate(file, targetFile)) {
 			this.fileWatcherService.removePieFileFromModifiedList(file);
 		}

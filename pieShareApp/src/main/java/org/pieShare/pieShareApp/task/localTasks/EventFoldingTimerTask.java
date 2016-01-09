@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
@@ -113,7 +114,4 @@ public class EventFoldingTimerTask extends TimerTask {
 	public void setLocalFileDeletedProvider(Provider<LocalFileDeletedTask> localFileDeletedProvider) {
 		this.localFileDeletedProvider = localFileDeletedProvider;
 	}
-	
-	
-
 }

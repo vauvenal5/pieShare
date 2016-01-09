@@ -84,7 +84,7 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 		discovered(event.getInfo());
 	}
 
-	private void discovered(ServiceInfo info) {
+	private void discovered(ServiceInfo info) {		
 		if (myself.equals(info.getName())) {
 			PieLogger.trace(this.getClass(), "Discarding myself! {}", info.getName());
 			return;
@@ -97,6 +97,12 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 //			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
 //			return;
 //		}
+
+		if(!info.getName().startsWith(this.cloudName)) {
+			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
+			return;
+		}
+		
 		for (InetAddress ad : info.getInetAddresses()) {
 			DiscoveredMember member = this.discoveredMemberProvider.get();
 			member.setInetAdresses(ad);
