@@ -124,6 +124,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 			this.jmDns.unregisterAllServices();
 			try {
 				this.jmDns.close();
+				this.jmDns = null;
 			} catch (IOException ex) {
 				PieLogger.error(this.getClass(), "Could not close jmdns.", ex);
 				//fail silently due to shutdown
