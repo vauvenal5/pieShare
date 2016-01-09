@@ -56,6 +56,12 @@ public class DatabaseFactory extends AShutdownableService implements IPieDatabas
     @Override
     public void init() {
         try {
+            
+            if(databseConnection != null && !databseConnection.isClosed())
+            {
+                closeDB();
+            }
+            
             File dbFolder = applicationConfigurationService.getDatabaseFolder();
             if(dbFolder != null )
                 DB_Path = dbFolder.getCanonicalPath();
@@ -69,8 +75,9 @@ public class DatabaseFactory extends AShutdownableService implements IPieDatabas
                 createFirst = true;
             }
 
-            Class.forName("org.sqlite.JDBC");
-            databseConnection = DriverManager.getConnection(String.format("jdbc:sqlite:/%s/%s", DB_Path, DB_NAME));
+            ///Class.forName("org.sqlite.JDBC");
+             Class.forName("org.hsqldb.jdbcDriver");
+            databseConnection = DriverManager.getConnection(String.format("jdbc:hsqldb:/%s/%s", DB_Path, DB_NAME));
 
             if (createFirst) {
                 creator.Create(this);

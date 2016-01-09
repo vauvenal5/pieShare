@@ -167,9 +167,16 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFile(PieFile file) {
-        PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
         try {
-            pieFileDAO.updatePieFile(entity);
+            PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
+
+            if (pieFileDAO.findPieFileById(file.getRelativePath()) != null) {
+                pieFileDAO.updatePieFile(entity);
+            }
+            else
+            {
+                pieFileDAO.savePieFile(entity);
+            }
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Updating PieFile", ex);
         }
