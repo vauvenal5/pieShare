@@ -6,12 +6,9 @@
 package org.pieShare.pieTools.piePlate.service;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import static org.junit.Assert.assertArrayEquals;
-import org.junit.Before;
 import org.junit.Test;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;

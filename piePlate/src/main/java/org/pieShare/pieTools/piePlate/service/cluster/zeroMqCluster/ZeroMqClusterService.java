@@ -60,7 +60,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		
 		sendLimit = new Semaphore(maxDealers, true);
 		
-		removeEndpoints.set(false);
+		removeEndpoints = new AtomicBoolean(false);
 	}
 
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
