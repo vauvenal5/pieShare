@@ -11,8 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.LocalFileEventType;
+import org.pieShare.pieShareApp.service.eventFolding.event.ILocalFilderEventListener;
+import org.pieShare.pieShareApp.service.eventFolding.event.LocalFilderEvent;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
  *
@@ -20,6 +23,7 @@ import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
  */
 public class EventFoldingService implements IEventFoldingService {
 	
+	private IEventBase<ILocalFilderEventListener, LocalFilderEvent> localFilderEventBase;
 	private ConcurrentHashMap<String, LocalFileEvent> localEvents;
 	private IFileService fileService;
 	private Timer timer;
@@ -73,5 +77,13 @@ public class EventFoldingService implements IEventFoldingService {
 
 	public void setEventFoldingTimerTaskProvider(Provider<EventFoldingTimerTask> eventFoldingTimerTaskProvider) {
 		this.eventFoldingTimerTaskProvider = eventFoldingTimerTaskProvider;
+	}
+
+	public IEventBase<ILocalFilderEventListener, LocalFilderEvent> getLocalFilderEventBase() {
+		return localFilderEventBase;
+	}
+
+	public void setLocalFilderEventBase(IEventBase<ILocalFilderEventListener, LocalFilderEvent> localFilderEventBase) {
+		this.localFilderEventBase = localFilderEventBase;
 	}
 }
