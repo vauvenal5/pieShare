@@ -19,31 +19,30 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DatabaseCreator {
 
     private final String createUserSql = "CREATE TABLE User ( "
-            + "	ID TEXT PRIMARY KEY,"
-            + "	UserName TEXT,"
-            + "	ConfigurationID INTEGER,"
+            + "	ID VARCHAR PRIMARY KEY,"
+            + "	UserName VARCHAR,"
+            + "	ConfigurationID VARCHAR,"
             + "	HasPasswordFile INTEGER"
             + ");";
 
     private final String createConfigurationSql = "CREATE TABLE Configuration ( "
-            + "	ID TEXT PRIMARY KEY,"
-            + "	WorkingDir TEXT,"
-            + "	TempDir TEXT,"
-            + "	PwdFile TEXT"
+            + "	ID VARCHAR PRIMARY KEY,"
+            + "	WorkingDir VARCHAR,"
+            + "	TempDir VARCHAR,"
+            + "	PwdFile VARCHAR"
             + ");";
 
     private final String createFilterSql = "CREATE TABLE Filter ( "
-            + "	Pattern TEXT PRIMARY KEY"
+            + "	Pattern VARCHAR PRIMARY KEY"
             + ");";
 
     private final String createPieFile = "CREATE TABLE PieFile ( "
-            + "	AbsoluteWorkingPath TEXT PRIMARY KEY,"
-            + "	RelativeFilePath TEXT,"
-            + "	FileName TEXT,"
+            + "	RelativeFilePath VARCHAR PRIMARY KEY,"
+            + "	FileName VARCHAR,"
             + "	LastModified REAL,"
             + "	Deleted INTEGER,"
             + "	Synched INTEGER,"
-            + "	MD5 BLOB"
+            + "	MD5 BINARY"
             + ");";
 
     public void Create(DatabaseFactory fac) {
