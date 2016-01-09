@@ -31,6 +31,8 @@ public interface IClusterManagementService {
 
 	void sendMessage(IClusterMessage message) throws ClusterManagmentServiceException;
 
+	void reconnectAll() throws ClusterManagmentServiceException;
+	
 	void disconnect(String id) throws ClusterServiceException;
 
 	void diconnectAll() throws ClusterManagmentServiceException;
