@@ -11,5 +11,5 @@ import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 
 
 public interface IEndpointCallback {
-	public void NonRespondingEndpoint(List<DiscoveredMember> brokenMembers);
+	public void nonRespondingEndpoint(List<DiscoveredMember> brokenMembers);
 }
