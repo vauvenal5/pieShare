@@ -6,17 +6,38 @@
 package org.pieShare.pieTools.piePlate.service;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.Assert.assertArrayEquals;
-import org.junit.Before;
 import org.junit.Test;
+import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
 
 public class ZeroMQSocketTest {
+	
+	protected class CallbackMock implements IEndpointCallback{
+		@Override
+		public void nonRespondingEndpoint(List<DiscoveredMember> brokenMembers) {
+		}
+	}
+	
+	private void addMember(ArrayList<DiscoveredMember> members, int port){
+		try {
+			InetAddress routerAddress = InetAddress.getLocalHost();
+			DiscoveredMember local = new DiscoveredMember();
+			local.setInetAdresses(routerAddress);
+			local.setPort(port);
+			local.setName("member");
+			members.add(local);
+			//return members;
+		} catch (Exception e){
+		}
+		
+		//return members;
+	} 
 
 	@Test
 	public void testSendRecv() {
@@ -25,24 +46,18 @@ public class ZeroMQSocketTest {
 			public void run() {
 				PieDealer dealer = new PieDealer();
 				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
-				try {
-					InetAddress routerAddress = InetAddress.getLocalHost();
-
-					dealer.connect(routerAddress, 9000);
-
-				} catch (UnknownHostException e) {
-
-				}
-
+				
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ex) {
 				}
 				
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				dealer.send(messageSend);
+				
+				ArrayList<DiscoveredMember> members = new ArrayList<>();
+				addMember(members, 9000);
 
-				dealer.close();
+				dealer.send(members, messageSend, new CallbackMock());
 			}
 		});
 
@@ -69,15 +84,7 @@ public class ZeroMQSocketTest {
 			@Override
 			public void run() {
 				PieDealer dealer = new PieDealer();
-				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
-				try {
-					InetAddress routerAddress = InetAddress.getLocalHost();
-
-					dealer.connect(routerAddress, 9000);
-
-				} catch (UnknownHostException e) {
-
-				}
+				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());								
 				
 				try {
 					Thread.sleep(1000);
@@ -85,9 +92,11 @@ public class ZeroMQSocketTest {
 				}
 
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				dealer.send(messageSend);
-
-				dealer.close();
+				
+				ArrayList<DiscoveredMember> members = new ArrayList<>();
+				addMember(members, 9000);
+				
+				dealer.send(members, messageSend, new CallbackMock());
 			}
 		};
 
@@ -119,25 +128,19 @@ public class ZeroMQSocketTest {
 			public void run() {
 				PieDealer dealer = new PieDealer();
 				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
-				try {
-					InetAddress routerAddress = InetAddress.getLocalHost();
-
-					dealer.connect(routerAddress, 9000);
-					dealer.connect(routerAddress, 9001);
-
-				} catch (UnknownHostException e) {
-
-				}
 				
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException ex) {
 				}
-
+				
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				dealer.send(messageSend);
-
-				dealer.close();
+				
+				ArrayList<DiscoveredMember> members = new ArrayList<>();
+				addMember(members, 9000);
+				addMember(members, 9001);
+				
+				dealer.send(members, messageSend, new CallbackMock());
 			}
 		});
 
@@ -162,7 +165,6 @@ public class ZeroMQSocketTest {
 
 		router.close();
 		router2.close();
-
 	}
 
 }
