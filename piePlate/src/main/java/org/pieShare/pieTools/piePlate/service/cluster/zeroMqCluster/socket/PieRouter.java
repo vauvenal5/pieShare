@@ -72,12 +72,12 @@ public class PieRouter implements IPieRouter {
 		//see also NetworkService
 		String connectionString = utils.buildConnectionString("0.0.0.0", port);
         
-        PieLogger.trace(PieRouter.class, "Bind router on: %s", connectionString);
+        PieLogger.trace(PieRouter.class, "Bind router on: {}", connectionString);
 		try {
 			router.bind(connectionString);
 			return true;
 		} catch (ZMQException e) {
-			PieLogger.error(PieRouter.class, "Bind failed: %s", e);
+			PieLogger.error(PieRouter.class, "Bind failed: {}", e);
 			return false;
 		}
 	}
