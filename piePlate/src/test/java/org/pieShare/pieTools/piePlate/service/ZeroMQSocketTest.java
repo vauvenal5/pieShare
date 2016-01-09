@@ -8,6 +8,7 @@ package org.pieShare.pieTools.piePlate.service;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
@@ -22,7 +23,7 @@ public class ZeroMQSocketTest {
 	
 	protected class CallbackMock implements IEndpointCallback{
 		@Override
-		public void NonRespondingEndpoint(DiscoveredMember member) {
+		public void NonRespondingEndpoint(List<DiscoveredMember> brokenMembers) {
 		}
 	}
 	

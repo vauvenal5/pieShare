@@ -6,6 +6,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
@@ -34,10 +35,13 @@ public class PieDealer implements IPieDealer {
 	public void send(List<DiscoveredMember> members, byte[] message, IEndpointCallback callback) {
 		ZContext ctx = new ZContext(1);
 		ZMQ.Socket sock = ctx.createSocket(ZMQ.DEALER);
+		int endpoints = 0;
+		List<DiscoveredMember> brokenMembers = new ArrayList<>();
 
 		for (DiscoveredMember member : members) {
 			try{
 				sock.connect(utils.buildConnectionString(member.getInetAdresses(), member.getPort()));
+				endpoints++;
 			} catch(ZMQException e){
 				//http://api.zeromq.org/2-1:zmq-connect
 				if((e.getErrorCode() == ZError.EINVAL)
@@ -46,7 +50,7 @@ public class PieDealer implements IPieDealer {
 						|| (e.getErrorCode() == ZError.ETERM)
 						|| (e.getErrorCode() == ZError.ENOTSOCK)
 						|| (e.getErrorCode() == ZError.EMTHREAD)){
-					callback.NonRespondingEndpoint(member);
+					brokenMembers.add(member);
 				}else{
 					PieLogger.error(this.getClass(), "Connection error: {}", e);	
 				}
@@ -54,7 +58,7 @@ public class PieDealer implements IPieDealer {
 		}
 						
 		PieLogger.trace(this.getClass(), "Sending msg to endpoints.");
-		for (int i = 0; i < members.size(); i++) {
+		for (int i = 0; i < endpoints; i++) {
 			try {
 				sock.send(message, ZMQ.NOBLOCK);
 			} catch (ZMQException e) {
@@ -63,5 +67,6 @@ public class PieDealer implements IPieDealer {
 		}
 		
 		ctx.destroy();
+		callback.NonRespondingEndpoint(brokenMembers);
 	}
 }
