@@ -12,39 +12,48 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfig
  *
  * @author Richard
  */
-public class PieShareConfiguration implements IPieShareConfiguration{
+public class PieShareConfiguration implements IPieShareConfiguration {
 
-	private File workingDir;
-	private File tmpDir;
-	private File pwdFile;
-	
-	@Override
-	public File getWorkingDir() {
-		return workingDir;
-	}
+    private File workingDir;
+    private File tmpDir;
+    private File pwdFile;
 
-	@Override
-	public void setWorkingDir(File workingDir) {
-		this.workingDir = workingDir;
-	}
+    @Override
+    public File getWorkingDir() {
+        return getAndCreateFirst(workingDir);
+    }
 
-	@Override
-	public File getTmpDir() {
-		return tmpDir;
-	}
+    @Override
+    public void setWorkingDir(File workingDir) {
+        this.workingDir = workingDir;
+    }
 
-	@Override
-	public void setTmpDir(File tmpDir) {
-		this.tmpDir = tmpDir;
-	}
+    @Override
+    public File getTmpDir() {
+        return getAndCreateFirst(tmpDir);
+    }
 
-	@Override
-	public File getPwdFile() {
-		return pwdFile;
-	}
+    @Override
+    public void setTmpDir(File tmpDir) {
+        this.tmpDir = tmpDir;
+    }
 
-	@Override
-	public void setPwdFile(File pwdFile) {
-		this.pwdFile = pwdFile;
-	}
+    @Override
+    public File getPwdFile() {
+        return getAndCreateFirst(pwdFile);
+    }
+
+    @Override
+    public void setPwdFile(File pwdFile) {
+        this.pwdFile = pwdFile;
+    }
+
+    private File getAndCreateFirst(File file) {
+        if (file.isDirectory()) {
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+        return file;
+    }
 }
