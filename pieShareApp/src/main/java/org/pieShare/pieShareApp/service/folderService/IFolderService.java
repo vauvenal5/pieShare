@@ -35,9 +35,9 @@ public interface IFolderService extends IFilderService{
      * Delete the folder at the given path (string) and all it's content
      * @param path of the folder including its name
      * @throws FolderServiceException 
-     *
-    void deleteFolder(String path) throws FolderServiceException;
-    */
+     */
+    void deleteFolder(File file) throws FolderServiceException;
+    
     
     /**
      * Delete the folder at the PieFolders path and all it's content
