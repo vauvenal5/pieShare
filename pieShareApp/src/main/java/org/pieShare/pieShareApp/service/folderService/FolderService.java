@@ -13,25 +13,8 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author daniela
  */
 public class FolderService extends FilderServiceBase implements IFolderService {
-
-    //TODO: refactor to utility functions
-   /* protected IPieShareConfiguration configuration;
-    protected IUserService userService;
-
-    public void setUserService(IUserService userService) {
-        this.userService = userService;
-    }
-
-	//todo: redundant code!!! use fileService
-    public String getAbsolutePath(PieFolder pieFolder) {
-        if(configuration == null) {
-            PieUser user = userService.getUser();
-            this.configuration = user.getPieShareConfiguration();
-        }
-        File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
-        return localFolder.getPath();
-    }*/
-
+    
+        
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         File newFolder = getAbsolutePath(pieFolder);
@@ -56,35 +39,9 @@ public class FolderService extends FilderServiceBase implements IFolderService {
         }
     }
 
-   /* @Override
-    public void deleteFolder(String path) throws FolderServiceException {
-        deleteRecursive();
-        File folderToDelete = new File(path);
-        deleteLocalFolder(folderToDelete);
-        
-       
-    }*/
-
     @Override
     public void deleteFolder(PieFolder pieFolder) throws FolderServiceException {
         deleteRecursive(pieFolder);
-        //File foldertoDelete = getAbsolutePath(pieFolder);
-        //deleteLocalFolder(foldertoDelete);
     }
-
-    /*
-    private void deleteLocalFolder(File folderToDelete) {
-        boolean deleted = false;
-        
-        if (folderToDelete.exists()) {
-            deleted = folderToDelete.delete();
-            PieLogger.trace(this.getClass(), "Folder deleted! " + folderToDelete.getPath());
-        }
-      
-        if (!deleted) {
-            PieLogger.debug(this.getClass(), "Folder couldn't be deleted: " + folderToDelete.getPath());
-        }
-    }
-    */
 
 }

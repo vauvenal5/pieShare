@@ -15,7 +15,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 public interface IFilderService {
     
     
-    String relitivizeFilePath(File file);
+    String relativizeFilePath(File file);
     
     File getAbsolutePath(PieFilder filder);
     

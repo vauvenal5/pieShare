@@ -8,7 +8,6 @@ package org.pieShare.pieShareApp.service.fileService.api;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.folderService.IFilderService;
@@ -18,9 +17,7 @@ import org.pieShare.pieShareApp.service.folderService.IFilderService;
  * @author richy
  */
 public interface IFileService extends IFilderService {
-	
-	List<PieFile> getAllFiles() throws IOException;
-	
+		
 	void waitUntilCopyFinished(File file);
 	
 	boolean isBeingUsed(File file);
@@ -29,9 +26,11 @@ public interface IFileService extends IFilderService {
 			//return null
 			//throw Exception
 			//pieFile.exists()
-	PieFile getPieFile(File file) throws FileNotFoundException, IOException;
-	
-    PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
+        List<PieFile> getAllFiles() throws IOException;	
+        
+        PieFile getPieFile(File file) throws FileNotFoundException, IOException;
+        
+        PieFile getPieFile(String fileName) throws FileNotFoundException, IOException;
 	
 	void setCorrectModificationDate(PieFile file);
 	
