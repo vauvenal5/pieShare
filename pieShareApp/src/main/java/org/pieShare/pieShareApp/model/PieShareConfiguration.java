@@ -48,12 +48,23 @@ public class PieShareConfiguration implements IPieShareConfiguration {
         this.pwdFile = pwdFile;
     }
 
+	//TODO remove again because it is not needed anymore and didn't work as intended anyways
     private File getAndCreateFirst(File file) {
+		if(file == null) {
+			return file;
+		}
+		
         if (file.isDirectory()) {
             if (!file.exists()) {
                 file.mkdirs();
             }
         }
+		else {
+			File parentFile = file.getParentFile();
+			if(parentFile != null && !parentFile.exists()) {
+				parentFile.mkdirs();
+			}
+		}
         return file;
     }
 }
