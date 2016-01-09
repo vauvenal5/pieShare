@@ -86,7 +86,7 @@ public abstract class ALocalFileEventTask extends AMessageSendingTask {
 		if (this.file.isDirectory() || isFolder) {
 			PieFolder pieFolder = new PieFolder();
 			pieFolder.setName(this.file.getName());
-			pieFolder.setRelativePath(this.fileService.relitivizeFilePath(this.file).toString());
+			pieFolder.setRelativePath(this.fileService.relativizeFilePath(this.file).toString());
 			return pieFolder;
 
 		} else {// if(this.file.isFile()) { file = null for delete

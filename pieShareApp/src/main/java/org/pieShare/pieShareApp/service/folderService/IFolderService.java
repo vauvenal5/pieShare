@@ -5,6 +5,11 @@
  */
 package org.pieShare.pieShareApp.service.folderService;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
@@ -40,6 +45,6 @@ public interface IFolderService extends IFilderService{
      * @throws FolderServiceException 
      */
     void deleteFolder(PieFolder pieFolder) throws FolderServiceException;
-    
+        
 
 }

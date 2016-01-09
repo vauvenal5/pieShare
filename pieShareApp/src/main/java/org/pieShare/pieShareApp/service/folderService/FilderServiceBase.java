@@ -7,13 +7,16 @@ package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
 import java.io.IOException;
+import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
  *
@@ -22,11 +25,26 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public abstract class FilderServiceBase implements IFilderService{
     	protected IPieShareConfiguration configuration;
 	protected IUserService userService;
-	
-	public void setUserService(IUserService userService) {
+        //private Provider<PieFile> pieFileProvider;
+        //private Provider<PieFolder> pieFolderProvider;
+        //private IHashService hashService;
+
+	/*public void setHashService(IHashService hashService) {
+		this.hashService = hashService;
+	}
+        
+        public void setPieFileProvider(Provider<PieFile> pieFileProvider) {
+		this.pieFileProvider = pieFileProvider;
+	}*/
+        
+	/*public void setPieFolderProvider(Provider<PieFolder> pieFolderProvider) {
+		this.pieFolderProvider = pieFolderProvider;
+	}*/
+        
+        public void setUserService(IUserService userService) {
 		this.userService = userService;
 	}
-
+        
 	public void init() {
 		PieUser user = userService.getUser();
 		this.configuration = user.getPieShareConfiguration();
@@ -48,7 +66,7 @@ public abstract class FilderServiceBase implements IFilderService{
 	}
         
         @Override
-	public String relitivizeFilePath(File file) {
+	public String relativizeFilePath(File file) {
 		try {
 			String pathBase = configuration.getWorkingDir().getCanonicalFile().toString();
 			String pathAbsolute = file.getCanonicalFile().toString();

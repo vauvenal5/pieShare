@@ -33,7 +33,7 @@ public class EventFoldingService implements IEventFoldingService {
 
 	@Override
 	public void handleLocalEvent(LocalFileEvent event) {
-		String relativePath = fileService.relitivizeFilePath(event.getFile());
+		String relativePath = fileService.relativizeFilePath(event.getFile());
 		long currentTime = (new Date()).getTime();
 		
 		synchronized(localEvents) {
