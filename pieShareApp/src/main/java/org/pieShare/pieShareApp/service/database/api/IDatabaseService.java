@@ -19,9 +19,9 @@ public interface IDatabaseService {
 
         void setConverterService(IModelEntityConverterService converter);
     
-	void persist(PieUser model);
+	void persistPieUser(PieUser model);
 
-	public ArrayList<PieUser> findAllPieUser();
+	public List<PieUser> findAllPieUser();
 
 	void removePieUser(PieUser user);
 
@@ -32,7 +32,7 @@ public interface IDatabaseService {
 //	void persist(PieFile file);
 	void removeFileFilter(IFilter filter);
 
-	ArrayList<IFilter> findAllFilters();
+	List<IFilter> findAllFilters();
 	
 	PieFile findPieFile(PieFile file);
 	

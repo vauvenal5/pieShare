@@ -3,14 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.service.model.entities;
+package org.pieShare.pieShareApp.model.model.entities;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
 
@@ -18,13 +12,10 @@ import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
  *
  * @author Richy
  */
-@Entity
 public class PieUserEntity implements IPieUserEntity {
 
-    @Id
     private String userName;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "pieUserEntity")
     private ConfigurationEntity configurationEntity;
 
     private boolean hasPasswordFile;
@@ -57,5 +48,16 @@ public class PieUserEntity implements IPieUserEntity {
     @Override
     public void setUserName(String userName) {
         this.userName = userName;
+        
+        
+    String sql = "CREATE TABLE Person ( "
+                + "	PersonID int,"
+                + "	LastName varchar(255),"
+                + "	FirstName varchar(255),"
+                + "	Address varchar(255),"
+                + "	City varchar(255)"
+                + ");";
+        
+        
     }
 }

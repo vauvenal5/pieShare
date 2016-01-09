@@ -3,43 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.service.model.entities;
+package org.pieShare.pieShareApp.model.model.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import org.pieShare.pieShareApp.model.entities.api.IBaseEntity;
 import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
-import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 
 /**
  *
  * @author Richard
  */
-@Entity
 public class ConfigurationEntity implements IConfigurationEntity {
 
-	@Id
 	private String user;
 	private String workingDir;
 	private String tmpDir;
 	private String pwdFile;
-
-	@JoinColumn(name = "configuration", unique = true)
-	@OneToOne
-	private IPieUserEntity pieUserEntity;
-
-        @Override
-	public IPieUserEntity getPieUserEntity() {
-		return pieUserEntity;
-	}
-
-        @Override
-	public void setPieUserEntity(IPieUserEntity pieUserEntity) {
-		this.pieUserEntity = pieUserEntity;
-	}
 
         @Override
 	public String getWorkingDir() {

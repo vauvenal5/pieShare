@@ -11,10 +11,6 @@ package org.pieShare.pieShareApp.model.entities.api;
  */
 public interface IConfigurationEntity {
 
-    IPieUserEntity getPieUserEntity();
-
-    void setPieUserEntity(IPieUserEntity pieUserEntity);
-
     String getWorkingDir();
 
     void setWorkingDir(String workingDir);

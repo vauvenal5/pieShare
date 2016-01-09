@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.service.database;
+package org.pieShare.pieShareApp.service.database;
 
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import java.io.File;
@@ -14,13 +14,13 @@ import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
 import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
 import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
+import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
+import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieShareApp.service.userService.IUserService;
-import org.pieshare.piespring.service.model.entities.ConfigurationEntity;
-import org.pieshare.piespring.service.model.entities.FilterEntity;
-import org.pieshare.piespring.service.model.entities.PieFileEntity;
-import org.pieshare.piespring.service.model.entities.PieUserEntity;
 
 /**
  *
@@ -42,8 +42,6 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		entity.setFileName(file.getName());
 		entity.setRelativeFilePath(file.getRelativePath());
 		entity.setDeleted(file.isDeleted());
-		
-		entity.setAbsoluteWorkingPath(file.getRelativePath());
 		return entity;
 	}
 
@@ -68,7 +66,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
 		entity.setHasPasswordFile(user.hasPasswordFile());
 		entity.setUserName(user.getUserName());
 		entity.setConfigurationEntity(this.convertToEntity(user.getPieShareConfiguration(), user));
-		entity.getConfigurationEntity().setPieUserEntity(entity);
+		//entity.getConfigurationEntity().setPieUserEntity(entity);
 		return entity;
 	}
 

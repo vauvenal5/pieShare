@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
-import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
-import org.pieshare.piespring.service.database.IPieDatabaseManagerFactory;
+import org.pieShare.pieShareApp.service.database.DatabaseFactory;
+import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.propertiesReader.api.IPropertiesReader;
@@ -59,7 +59,7 @@ public class ApplicationConfigurationService implements IApplicationConfiguratio
 		File db = getDatabaseFolder();
 		addProperty("databaseDir", folder.toPath().toString());
 		//todo-sv: i thing this does not belong here!! if we move this then the class can go back to the pieShareApp package
-		IPieDatabaseManagerFactory fact = beanService.getBean(PieDatabaseManagerFactory.class);
+		IPieDatabaseManagerFactory fact = beanService.getBean(DatabaseFactory.class);
 		fact.closeDB();
 		try {
 			for (File file : db.listFiles()) {

@@ -28,7 +28,7 @@ import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieshare.piespring.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieShareAppFx.FXMLController;
