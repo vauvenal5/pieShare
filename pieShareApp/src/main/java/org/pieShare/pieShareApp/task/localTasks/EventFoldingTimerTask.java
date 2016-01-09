@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
+import org.pieShare.pieShareApp.service.eventFolding.event.LocalFilderEvent;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
@@ -50,6 +51,8 @@ public class EventFoldingTimerTask extends TimerTask {
 				Map.Entry<String, LocalFileEvent> entry = iterator.next();
 
 				if ((currentTime - entry.getValue().getTimestamp()) > 2000) {
+					LocalFilderEvent filderEvent = new LocalFilderEvent(this, entry.getValue());
+					this.eventFoldingService.getLocalFilderEventBase().fireEvent(filderEvent);
 					ALocalFileEventTask task = null;
 					switch (entry.getValue().getType()) {
 						case CREATED:
