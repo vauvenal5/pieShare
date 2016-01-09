@@ -56,9 +56,13 @@ public class DatabaseFactory extends AShutdownableService implements IPieDatabas
     @Override
     public void init() {
         try {
-            DB_Path = applicationConfigurationService.getDatabaseFolder().getCanonicalPath();
-
-            File dbFile = new File(applicationConfigurationService.getDatabaseFolder(), DB_NAME);
+            File dbFolder = applicationConfigurationService.getDatabaseFolder();
+            if(dbFolder != null )
+                DB_Path = dbFolder.getCanonicalPath();
+            else
+                DB_Path = "";
+            
+            File dbFile = new File(String.format("%s%s%s", DB_Path, File.separator, DB_NAME));
 
             boolean createFirst = false;
             if (!dbFile.exists()) {
