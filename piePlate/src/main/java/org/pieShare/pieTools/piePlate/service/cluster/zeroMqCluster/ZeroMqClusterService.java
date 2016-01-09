@@ -103,7 +103,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, routerPort);
-			members = this.discovery.list(clusterName);
+			members = this.discovery.list();
 			
 			for (DiscoveredMember m : members) {
 				this.connectMemberToCluster(m);

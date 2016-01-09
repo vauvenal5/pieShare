@@ -16,7 +16,7 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdowna
  */
 public interface IDiscoveryService extends IShutdownableService {
 	void registerService(String clusterName, int port) throws DiscoveryException;
-	List<DiscoveredMember> list(String clusterName) throws DiscoveryException;
+	List<DiscoveredMember> list() throws DiscoveryException;
 	void addMemberDiscoveredListener(IMemberDiscoveredListener listener);
 	void removeMemberDiscoveredListener(IMemberDiscoveredListener listener);
 }
