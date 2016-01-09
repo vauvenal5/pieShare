@@ -40,7 +40,8 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 	private IPieDealer dealer;
 	private IPieRouter router;
-	private String id;
+	private int routerPort;
+	private String clustername;
 	private IDiscoveryService discovery;
 	private INetworkService networkService;
 	private IExecutorService executor;
@@ -50,6 +51,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private List<DiscoveredMember> brokenEndpoints;
 	private Semaphore sendLimit;
 	private AtomicBoolean removeEndpoints;
+	private AtomicBoolean connected;
 	
 	private final int maxDealers = 100;
 
@@ -61,6 +63,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		sendLimit = new Semaphore(maxDealers, true);
 		
 		removeEndpoints = new AtomicBoolean(false);
+		connected = new AtomicBoolean(false);
 	}
 
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
@@ -86,69 +89,92 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void setPieDealer(IPieDealer dealer) {
 		this.dealer = dealer;
 	}
-
-	@Override
-	public void connect(String clusterName) throws ClusterServiceException {
-		try {
-			PieLogger.debug(this.getClass(), "Connecting to cluster {}!", clusterName);
-			int routerPort = this.networkService.getAvailablePort();
-			
-			router.bind(routerPort);
-
-			//start router task
-			this.executor.execute(router);
-
+	
+	private void discover(String clusterName, int port) throws ClusterServiceException{
+		try{
 			this.discovery.addMemberDiscoveredListener(this);
-			this.discovery.registerService(clusterName, routerPort);
+			this.discovery.registerService(clusterName, port);
 			members = this.discovery.list();
 			
 			for (DiscoveredMember m : members) {
 				this.connectMemberToCluster(m);
 			}
-		} catch (DiscoveryException ex) {
+		} catch (DiscoveryException ex){
 			throw new ClusterServiceException(ex);
 		}
 	}
 
 	@Override
-	public String getId() {
-		return id;
+	public void connect(String clusterName) throws ClusterServiceException {
+		PieLogger.debug(this.getClass(), "Connecting to cluster {}!", clusterName);
+		this.clustername = clusterName;
+		this.routerPort = this.networkService.getAvailablePort();
+
+		router.bind(routerPort);
+
+		//start router task
+		this.executor.execute(router);
+
+		discover(clusterName, routerPort);
+
+		connected.set(true);
 	}
 
 	@Override
-	public void setId(String id) {
-		this.id = id;
+	public String getClustername() {
+		return clustername;
+	}
+
+	@Override
+	public void setClustername(String clusterName) {
+		this.clustername = clusterName;
+	}
+	
+	@Override
+	public void reconnect() throws ClusterServiceException {
+		disconnect();
+		discover(clustername, routerPort);
+		connected.set(true);
 	}
 
 	@Override
 	public void disconnect() throws ClusterServiceException {
-		
+		connected.set(false);
+		try{
+			sendLimit.acquire(maxDealers);
+			members.clear();
+			sendLimit.release(maxDealers);
+		}catch(InterruptedException e){
+			PieLogger.warn(this.getClass(), "Disconnect interrupted {}", e);
+		}
 	}
 
 	@Override
 	public void sendMessage(IClusterMessage msg) throws ClusterServiceException {
-		IPieAddress address = msg.getAddress();
+		if(connected.get()){
+			IPieAddress address = msg.getAddress();
 
-		if (!this.outgoingChannels.containsKey(address.getChannelId())) {
-			throw new ClusterServiceException(String.format("This outgoing channel doesn't exists: {}", address.getChannelId()));
-		}
+			if (!this.outgoingChannels.containsKey(address.getChannelId())) {
+				throw new ClusterServiceException(String.format("This outgoing channel doesn't exists: {}", address.getChannelId()));
+			}
 
-		try {
-			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
-			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
-			
-			sendLimit.acquire();
-			this.dealer.send(members, message, this);
-			sendLimit.release();
-			
-		} catch (Exception e) {
-			throw new ClusterServiceException(e);
+			try {
+				PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
+				byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
+
+				sendLimit.acquire();
+				this.dealer.send(members, message, this);
+				sendLimit.release();
+
+			} catch (Exception e) {
+				throw new ClusterServiceException(e);
+			}
 		}
 	}
 
 	@Override
 	public boolean isConnectedToCluster() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		return connected.get();
 	}
 
 	@Override

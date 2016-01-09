@@ -79,7 +79,7 @@ public class ClusterManagementService implements IClusterManagementService {
 
 		try {
 			IClusterService cluster = this.clusterServiceProvider.get();
-			cluster.setId(id);
+			cluster.setClustername(id);
 			cluster.connect(id);
 			this.clusters.put(id, cluster);
 			this.clusterAddedEventBase.fireEvent(new ClusterAddedEvent(this, cluster));
@@ -89,7 +89,7 @@ public class ClusterManagementService implements IClusterManagementService {
 			cluster.getClusterRemovedEventBase().addEventListener(new IClusterRemovedListener() {
 				@Override
 				public void handleObject(ClusterRemovedEvent event) {
-					clusters.remove(((IClusterService) event.getSource()).getId());
+					clusters.remove(((IClusterService) event.getSource()).getClustername());
 					clusterRemovedEventBase.fireEvent(event);
 				}
 			});
@@ -131,6 +131,18 @@ public class ClusterManagementService implements IClusterManagementService {
 		IClusterService cluster = this.connect(clusterId);
 		cluster.registerIncomingChannel(channel);
 		cluster.registerOutgoingChannel(channel);
+	}
+	
+	@Override
+	public void reconnectAll() throws ClusterManagmentServiceException {
+		for (Entry<String, IClusterService> entry : this.clusters.entrySet()) {
+			try {
+				entry.getValue().reconnect();
+			} catch (ClusterServiceException ex) {
+				//todo: error handling
+				PieLogger.error(this.getClass(), "Reconnect all failed!", ex);
+			}
+		}
 	}
 
 	@Override
