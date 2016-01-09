@@ -120,7 +120,6 @@ public class PieShareAppTasks {
         LocalFileCreatedTask task = new LocalFileCreatedTask();
         this.aLocalFileEventTask(task);
         task.setFileService(this.services.localFileService());
-        task.setFolderService(this.services.folderService());
         return task;
     }
     //TODO: Folder Service needed in more methods?
