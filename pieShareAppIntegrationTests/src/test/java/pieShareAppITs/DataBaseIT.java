@@ -10,7 +10,7 @@ import java.io.File;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieshare.piespring.service.database.DatabaseService;
+import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.testng.Assert;
@@ -62,7 +62,7 @@ public class DataBaseIT {
 		file.setMd5("test".getBytes());
 		file.setRelativePath("testFolder");
 		
-		dbService.mergePieFile(file);
+		dbService.persistPieFile(file);
 		file.setName("testFile2");
 		dbService.mergePieFile(file);
 		

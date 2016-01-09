@@ -15,10 +15,6 @@ public interface IPieFileEntity extends IBaseEntity{
 
     void setSynched(boolean synched);
 
-    String getAbsoluteWorkingPath();
-
-    void setAbsoluteWorkingPath(String absoluteWorkingPath);
-
     byte[] getMd5();
 
     boolean isDeleted();

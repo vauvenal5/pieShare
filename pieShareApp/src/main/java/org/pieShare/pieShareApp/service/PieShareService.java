@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service;
 
 import java.util.ArrayList;
+import java.util.List;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
@@ -67,7 +68,7 @@ public class PieShareService {
 		 ex.printStackTrace();
 		 }*/
 		PieUser user = null;
-		ArrayList<PieUser> users = databaseService.findAllPieUser();
+		List<PieUser> users = databaseService.findAllPieUser();
 		if (users != null && users.size() > 0) {
 			user = users.get(0);
 		}
