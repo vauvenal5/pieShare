@@ -67,6 +67,6 @@ public class PieDealer implements IPieDealer {
 		}
 		
 		ctx.destroy();
-		callback.NonRespondingEndpoint(brokenMembers);
+		callback.nonRespondingEndpoint(brokenMembers);
 	}
 }
