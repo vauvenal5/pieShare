@@ -148,6 +148,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		} catch (InterruptedException e) {
 			PieLogger.warn(this.getClass(), "Disconnect interrupted {}", e);
 		}
+		discovery.shutdown();
 	}
 
 	@Override
