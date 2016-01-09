@@ -59,16 +59,15 @@ public class PieDatabaseManagerFactory extends AShutdownableService implements I
 				countSemaphore.acquire();
 			}
 
-                        for(EntityManager e : entityManagers.values()) {
-                            e.close();
-                        }
-			
+			for (EntityManager e : entityManagers.values()) {
+				e.close();
+			}
+
 			entityManagers.clear();
 			emf.close();
-			
+
 			countSemaphore.release();
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Error with database lock.", ex);
 		}
 	}
@@ -92,8 +91,7 @@ public class PieDatabaseManagerFactory extends AShutdownableService implements I
 			//countSemaphore.release();
 			count--;
 			return manager;
-		}
-		catch (InterruptedException ex) {
+		} catch (InterruptedException ex) {
 			PieLogger.error(this.getClass(), "Error with database lock.", ex);
 			return null;
 		}

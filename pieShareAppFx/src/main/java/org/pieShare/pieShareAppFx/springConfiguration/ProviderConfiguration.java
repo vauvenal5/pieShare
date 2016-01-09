@@ -6,6 +6,7 @@
 package org.pieShare.pieShareAppFx.springConfiguration;
 
 import javax.inject.Provider;
+import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
@@ -25,7 +26,11 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
+import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
@@ -109,11 +114,22 @@ public class ProviderConfiguration {
 	public Provider<FolderCreateMessage> folderCreateMessageProvider;
 	@Autowired
 	public Provider<FolderCreateTask> folderCreateTaskProvider;
-        @Autowired
-        public Provider<PieFolder> pieFolderProvider;
-        @Autowired
-        public Provider<FolderDeleteMessage> folderDeleteMessageProvider;
-        @Autowired
-        public Provider<FolderDeleteTask> folderDeleteTaskProvider;
-        
+	@Autowired
+	public Provider<PieFolder> pieFolderProvider;
+	@Autowired
+	public Provider<FolderDeleteMessage> folderDeleteMessageProvider;
+	@Autowired
+	public Provider<FolderDeleteTask> folderDeleteTaskProvider;
+
+	@Autowired
+	public Provider<LocalFileEvent> localFileEventProvider;
+	
+	@Autowired
+	public Provider<LocalFileCreatedTask> localFileCreateProvider;
+	@Autowired
+	public Provider<LocalFileChangedTask> localFileChangedProvider;
+	@Autowired
+	public Provider<LocalFileDeletedTask> localFileDeletedProvider;
+	@Autowired
+	public Provider<EventFoldingTimerTask> eventFoldingTimerTaskProvider;
 }

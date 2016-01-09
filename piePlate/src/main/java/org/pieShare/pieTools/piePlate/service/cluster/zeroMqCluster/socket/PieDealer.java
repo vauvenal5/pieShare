@@ -11,6 +11,7 @@ import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 import zmq.ZError;
@@ -31,8 +32,8 @@ public class PieDealer implements IPieDealer {
 	
 	@Override
 	public void send(List<DiscoveredMember> members, byte[] message, IEndpointCallback callback) {
-		ZMQ.Context ctx = ZMQ.context(1);
-		ZMQ.Socket sock = ctx.socket(ZMQ.DEALER);
+		ZContext ctx = new ZContext(1);
+		ZMQ.Socket sock = ctx.createSocket(ZMQ.DEALER);
 
 		for (DiscoveredMember member : members) {
 			try{
@@ -61,6 +62,6 @@ public class PieDealer implements IPieDealer {
 			}
 		}
 		
-		sock.close();
+		ctx.destroy();
 	}
 }
