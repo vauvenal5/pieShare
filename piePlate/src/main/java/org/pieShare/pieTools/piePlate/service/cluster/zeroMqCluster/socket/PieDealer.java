@@ -33,8 +33,9 @@ public class PieDealer implements IPieDealer {
 	
 	@Override
 	public void send(List<DiscoveredMember> members, byte[] message, IEndpointCallback callback) {
-		ZContext ctx = new ZContext(1);
-		ZMQ.Socket sock = ctx.createSocket(ZMQ.DEALER);
+		ZMQ.Context ctx = ZMQ.context(1);
+        ZMQ.Socket sock = ctx.socket(ZMQ.DEALER);
+		
 		int endpoints = 0;
 		List<DiscoveredMember> brokenMembers = new ArrayList<>();
 
@@ -66,7 +67,7 @@ public class PieDealer implements IPieDealer {
 			}
 		}
 		
-		ctx.destroy();
+		sock.close();
 		callback.nonRespondingEndpoint(brokenMembers);
 	}
 }
