@@ -181,8 +181,7 @@ public class UserTools {
             user.setPassword(null);
             user.setIsLoggedIn(false);
 
-            this.clusterManagementService.disconnect(user.getCloudName());
-
+           this.clusterManagementService.disconnect(user.getCloudName());
         } catch (IOException e) {
             PieLogger.error(this.getClass(), String.format("Error in Logout. Message: %s", e.getMessage()));
             return false;
