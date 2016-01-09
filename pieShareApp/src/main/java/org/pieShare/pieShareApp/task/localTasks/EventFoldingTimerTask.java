@@ -5,18 +5,23 @@
  */
 package org.pieShare.pieShareApp.task.localTasks;
 
+import java.io.File;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 
 /**
@@ -27,10 +32,14 @@ public class EventFoldingTimerTask extends TimerTask {
 	
 	private IExecutorService executorService;
 	private EventFoldingService eventFoldingService;
+	private IHistoryService historyService;
 	
 	private Provider<LocalFileChangedTask> localFileChangedProvider;
 	private Provider<LocalFileCreatedTask> localFileCreatedProvider;
 	private Provider<LocalFileDeletedTask> localFileDeletedProvider;
+	
+	private Provider<LocalFolderCreatedTask> localFolderCreatedProvider;
+	private Provider<LocalFolderDeletedTask> localFolderDeletedProvider;
 
 	@Override
 	public void run() {
@@ -51,19 +60,46 @@ public class EventFoldingTimerTask extends TimerTask {
 
 				if ((currentTime - entry.getValue().getTimestamp()) > 2000) {
 					ALocalFileEventTask task = null;
+					
+					boolean dir = false;
+					File file = entry.getValue().getFile();
+					
+					if(file.exists()) {
+						dir = file.isDirectory();
+					} else {
+						PieFile res = this.historyService.getPieFileFromHistory(file);
+						if(res == null) {
+							dir = true;
+						}
+					}
+					
 					switch (entry.getValue().getType()) {
 						case CREATED:
+							if(dir) {
+								task = localFolderCreatedProvider.get();
+								break;
+							}
+							
 							task = localFileCreatedProvider.get();
 							break;
 						case DELETED:
+							if(dir) {
+								task = localFolderDeletedProvider.get();
+								break;
+							}
+							
 							task = localFileDeletedProvider.get();
 							break;
 						default:
+							if(dir) {
+								//not yet implemented
+								break;
+							}
 							task = localFileChangedProvider.get();
 							break;
 					}
 
-					task.setFile(entry.getValue().getFile());
+					task.setFile(file);
 					executorService.execute(task);
 					iterator.remove();
 				}
