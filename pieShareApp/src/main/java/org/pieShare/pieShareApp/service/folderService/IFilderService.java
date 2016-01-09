@@ -23,5 +23,7 @@ public interface IFilderService {
 
     void deleteRecursive(PieFilder filder);
 
+    void deleteRecursive(File file);
+    
     
 }

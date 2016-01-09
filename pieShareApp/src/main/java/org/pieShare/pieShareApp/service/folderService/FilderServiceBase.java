@@ -25,21 +25,6 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
 public abstract class FilderServiceBase implements IFilderService{
     	protected IPieShareConfiguration configuration;
 	protected IUserService userService;
-        //private Provider<PieFile> pieFileProvider;
-        //private Provider<PieFolder> pieFolderProvider;
-        //private IHashService hashService;
-
-	/*public void setHashService(IHashService hashService) {
-		this.hashService = hashService;
-	}
-        
-        public void setPieFileProvider(Provider<PieFile> pieFileProvider) {
-		this.pieFileProvider = pieFileProvider;
-	}*/
-        
-	/*public void setPieFolderProvider(Provider<PieFolder> pieFolderProvider) {
-		this.pieFolderProvider = pieFolderProvider;
-	}*/
         
         public void setUserService(IUserService userService) {
 		this.userService = userService;
@@ -53,7 +38,11 @@ public abstract class FilderServiceBase implements IFilderService{
         @Override
 	public void deleteRecursive(PieFilder filder) {
             PieLogger.trace(this.getClass(), "Recursively deleting {}", filder.getRelativePath());
-            File localFile = this.getAbsolutePath(filder);
+            deleteRecursive(this.getAbsolutePath(filder));
+	}
+        
+        @Override
+        public void deleteRecursive(File localFile) {
             try {
 		if (localFile.isDirectory()) {
 			FileUtils.deleteDirectory(localFile);
@@ -63,7 +52,7 @@ public abstract class FilderServiceBase implements IFilderService{
             } catch (IOException ex) {
 		PieLogger.error(this.getClass(), "Deleting failed!", ex);
             }
-	}
+        }
         
         @Override
 	public String relativizeFilePath(File file) {
