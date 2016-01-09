@@ -33,6 +33,7 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	private String type = "_pieShare._pie.local.";
 	private ServiceInfo myself;
 	private Provider<DiscoveredMember> discoveredMemberProvider;
+	private String cloudName;
 
 	private IJmdnsDiscoveryListener listener;
 
@@ -66,10 +67,11 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	@Override
 	public void registerService(String clusterName, int port) throws DiscoveryException {
 		try {
+			this.cloudName = clusterName;
 			this.initJmdns();
-			String me = UUID.randomUUID().toString();
+			String me = String.format("%s.%s", clusterName, UUID.randomUUID().toString());
 			PieLogger.trace(this.getClass(), "Registering myself with id {}", me);
-			this.myself = ServiceInfo.create(this.type, me, clusterName, port, "");
+			this.myself = ServiceInfo.create(this.type, me, port, "");
 			this.jmDns.registerService(this.myself);
 			
 			//todo-sv: resolve circular dependecy
@@ -88,30 +90,18 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 	}
 
 	@Override
-	public List<DiscoveredMember> list(String clusterName) throws DiscoveryException {
-		this.initJmdns();
-		Map<String, ServiceInfo[]> map = this.jmDns.listBySubtype(this.type);
+	public List<DiscoveredMember> list() throws DiscoveryException {
+		
+		if(this.myself == null) {
+			throw new DiscoveryException("Jmdns not yet registered!!!");
+		}
+		
+		ServiceInfo[] list = this.jmDns.list(this.type);
 		List<DiscoveredMember> members = new ArrayList<DiscoveredMember>();
 
-		PieLogger.trace(this.getClass(), "Found the following amount of items {}.", map.size());
-
-		if (!map.containsKey(clusterName)) {
-			int arrayLength = map.values().size();
-			PieLogger.trace(this.getClass(), "Found item size {}.", arrayLength);
-			for(ServiceInfo[] infos: map.values()) {
-				PieLogger.trace(this.getClass(), "Amount of items {}.", infos.length);
-				for(ServiceInfo info: infos) {
-					PieLogger.trace(this.getClass(), "Item: {}.", info.getSubtype());
-				}
-			}
-			PieLogger.warn(this.getClass(), "No members found for {}", clusterName);
-			return members;
-		}
-
-		ServiceInfo[] infos = map.get(clusterName);
-
-		for (ServiceInfo info : infos) {
-			if ((this.myself == null) || !info.getName().equals(this.myself.getName())) {
+		for (ServiceInfo info : list) {
+			if (!info.getName().equals(this.myself.getName())
+					&& info.getName().startsWith(this.cloudName)) {
 				//todo-discovery: it could lead to problems if it retunrs multiple inetAdresses
 				for (InetAddress ad : info.getInetAddresses()) {
 					DiscoveredMember member = discoveredMemberProvider.get();

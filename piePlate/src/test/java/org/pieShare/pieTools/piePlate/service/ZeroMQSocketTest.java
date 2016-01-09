@@ -7,6 +7,8 @@ package org.pieShare.pieTools.piePlate.service;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +34,11 @@ public class ZeroMQSocketTest {
 
 				}
 
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
+				}
+				
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 				dealer.send(messageSend);
 
@@ -70,6 +77,11 @@ public class ZeroMQSocketTest {
 
 				} catch (UnknownHostException e) {
 
+				}
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
 				}
 
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -115,6 +127,11 @@ public class ZeroMQSocketTest {
 
 				} catch (UnknownHostException e) {
 
+				}
+				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException ex) {
 				}
 
 				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};

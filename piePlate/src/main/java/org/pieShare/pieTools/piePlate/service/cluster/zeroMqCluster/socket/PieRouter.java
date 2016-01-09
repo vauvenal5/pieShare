@@ -15,6 +15,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.I
 import org.pieShare.pieTools.piePlate.task.ChannelTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
 
@@ -24,7 +25,7 @@ import org.zeromq.ZMQException;
  */
 public class PieRouter implements IPieRouter {
 
-	private ZMQ.Context context;
+	private ZContext context;
 	private ZMQ.Socket router;
 	private ZeroMQUtilsService utils;
 	private IExecutorService executorService;
@@ -52,8 +53,8 @@ public class PieRouter implements IPieRouter {
 	@Override
     public boolean bind(int port) {
 		if (context == null) {
-			this.context = ZMQ.context(1);
-			this.router = context.socket(ZMQ.ROUTER);
+			this.context = new ZContext(1);
+			this.router = context.createSocket(ZMQ.ROUTER);
 		}
 		
 		//When not bound to 0.0.0.0 MAC will not see the port as bound but only
@@ -85,8 +86,7 @@ public class PieRouter implements IPieRouter {
 	public void close() {
 		shutdown = true;
 
-		router.close();
-		context.close();
+		context.destroy();
 	}
 
 	@Override
@@ -113,6 +113,7 @@ public class PieRouter implements IPieRouter {
 				PieLogger.warn(this.getClass(), "Exception in PieRouter! Shuting router down!", e);
 				return;
 			}
+			
 			for (IIncomingChannel channel : incomingChannels) {
 				ChannelTask task = this.channelTaskProvider.get();
 				task.setChannel(channel);
