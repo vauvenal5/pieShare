@@ -5,122 +5,81 @@
  */
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
-import java.io.File;
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
 import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
-import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieShare.pieShareApp.service.historyService.IHistoryService;
-import org.pieShare.pieShareApp.task.AMessageSendingTask;
-import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
+import org.pieShare.pieShareApp.task.localTasks.ALocalEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author Svetoslav
  */
-public abstract class ALocalFileEventTask extends AMessageSendingTask {
+public abstract class ALocalFileEventTask extends ALocalEventTask {
 
-	protected IFileService fileService;
-	protected IHistoryService historyService;
-	protected IFileFilterService fileFilterService;
-	protected IFileEncryptionService fileEncrypterService;
-	protected IFileWatcherService fileWatcherService;
-	protected IFileService historyFileService;
-	protected IFolderService folderService;
+    protected IFileService fileService;
+    protected IHistoryService historyService;
+    protected IFileEncryptionService fileEncrypterService;
+    protected IFileWatcherService fileWatcherService;
+    protected IFileService historyFileService;
 
-	//TODO fix as soon there is a file-history-service
-	protected boolean isFolder;
+    public ALocalFileEventTask() {
+    }
 
-	protected File file;
+    public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+        this.fileWatcherService = fileWatcherService;
+    }
 
-	public ALocalFileEventTask() {
-		isFolder = false;
-	}
+    public void setFileEncrypterService(IFileEncryptionService fileEncrypterService) {
+        this.fileEncrypterService = fileEncrypterService;
+    }
 
-	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
-		this.fileWatcherService = fileWatcherService;
-	}
+    public void setHistoryService(IHistoryService historyService) {
+        this.historyService = historyService;
+    }
 
-	public void setFileEncrypterService(IFileEncryptionService fileEncrypterService) {
-		this.fileEncrypterService = fileEncrypterService;
-	}
+    public void setFileService(IFileService fileService) {
+        PieLogger.info(this.getClass(), "Setting FileService!");
+        this.fileService = fileService;
+    }
 
-	public void setHistoryService(IHistoryService historyService) {
-		this.historyService = historyService;
-	}
+    public void setHistoryFileService(IFileService historyFileService) {
+        this.historyFileService = historyFileService;
+    }
 
-	public void setFileFilterService(IFileFilterService fileFilterService) {
-		this.fileFilterService = fileFilterService;
-	}
+    protected PieFile prepareWork() throws IOException {
+        if (!syncAllowed()) {
+            return null;
+        }
 
-	public void setFileService(IFileService fileService) {
-		PieLogger.info(this.getClass(), "Setting FileService!");
-		this.fileService = fileService;
-	}
+        if (this.file.isDirectory()) {
+            PieLogger.error(this.getClass(), "It's a folder! Why is it here? - Should be FolderEventTask");
+            return null;
+        }
+        
+        PieLogger.info(this.getClass(), "It's a File!");
 
-	public void setFolderService(IFolderService folderService) {
-		PieLogger.info(this.getClass(), "Setting FolderService!");
-		this.folderService = folderService;
-	}
+        this.fileService.waitUntilCopyFinished(this.file);
 
-	public void setHistoryFileService(IFileService historyFileService) {
-		this.historyFileService = historyFileService;
-	}
+        PieFile pieFile = this.fileService.getPieFile(file);
 
-	public void setFile(File file) {
-		this.file = file;
-	}
+        PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
 
-	protected PieFilder prepareWork() throws IOException {		
-		if (!this.fileFilterService.checkFile(this.file)) {
-			return null;
-		}
+        if (oldPieFile != null && oldPieFile.equals(pieFile)) {
+            return null;
+        }
 
-		if (this.file.isDirectory() || isFolder) {
-			PieFolder pieFolder = new PieFolder();
-			pieFolder.setName(this.file.getName());
-			pieFolder.setRelativePath(this.fileService.relativizeFilePath(this.file).toString());
-			return pieFolder;
+        if (this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
+            this.fileWatcherService.removePieFileFromModifiedList(pieFile);
+            return null;
+        }
 
-		} else {// if(this.file.isFile()) { file = null for delete
-			this.fileService.waitUntilCopyFinished(this.file);
-
-			PieFile pieFile = this.fileService.getPieFile(file);
-
-			PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
-
-			if (oldPieFile != null && oldPieFile.equals(pieFile)) {
-				return null;
-			}
-
-			if (this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
-				this.fileWatcherService.removePieFileFromModifiedList(pieFile);
-				return null;
-			}
-
-			return pieFile;
-		}
-
-		//return null;
-	}
-
-	protected<T extends PieFilder> void doWork(IFilderMessageBase<T> msg, T filder) {
-		try {
-			msg.setPieFilder(filder);
-
-			this.setDefaultAdresse(msg);
-
-			this.clusterManagementService.sendMessage(msg);
-		} catch (ClusterManagmentServiceException ex) {
-			PieLogger.info(this.getClass(), "Local file or folder delete messed up!", ex);
-		}
-	}
+        return pieFile;
+    }
 
 }
