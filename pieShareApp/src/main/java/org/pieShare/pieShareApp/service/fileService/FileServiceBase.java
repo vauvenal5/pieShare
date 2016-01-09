@@ -11,11 +11,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.folderService.FilderServiceBase;
-import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -31,17 +29,6 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 		this.fileWatcherService = fileWatcherService;
 	}
 	
-	/*
-        public void setUserService(IUserService userService) {
-		this.userService = userService;
-	}
-
-	public void init() {
-		PieUser user = userService.getUser();
-		this.configuration = user.getPieShareConfiguration();
-	}
-        */
-
 	@Override
 	public void waitUntilCopyFinished(File file) {
 		FileInputStream st;
@@ -83,22 +70,7 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 		}
 		return true;
 	}
-/*
-	@Override
-	public void deleteRecursive(PieFile file) {
-                PieLogger.trace(this.getClass(), "Recursively deleting {}", file.getRelativePath());
-		File localFile = this.getAbsolutePath(file);
-		try {
-			if (localFile.isDirectory()) {
-				FileUtils.deleteDirectory(localFile);
-			} else {
-				localFile.delete();
-			}
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Deleting failed!", ex);
-		}
-	}
-*/
+
 	@Override
 	public void setCorrectModificationDate(PieFile file) {
 		File targetFile = this.getAbsolutePath(file);
@@ -127,32 +99,6 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 
 		return true;
 	}
-/*
-	@Override
-	public String relitivizeFilePath(File file) {
-		try {
-			String pathBase = configuration.getWorkingDir().getCanonicalFile().toString();
-			String pathAbsolute = file.getCanonicalFile().toString();
-                        String relative = new File(pathBase).toURI().relativize(new File(pathAbsolute).toURI()).getPath();
-			return relative;
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "Error in creating relativ file path!", ex);
-		}
-		return null;
-	}
-
-	@Override
-	public File getAbsolutePath(PieFile file) {
-		return new File(configuration.getWorkingDir(), file.getRelativePath());
-
-	}
-
-	@Override
-	public File getAbsoluteTmpPath(PieFile file) {
-		return new File(configuration.getTmpDir(), file.getRelativePath());
-		
-	}
-        */
 
 	@Override
 	public PieFile getPieFile(String relativeFilePath) throws IOException {

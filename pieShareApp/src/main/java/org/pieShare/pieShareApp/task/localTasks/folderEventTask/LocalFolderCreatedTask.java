@@ -25,6 +25,7 @@ public class LocalFolderCreatedTask extends ALocalFileEventTask{
             PieLogger.info(this.getClass(), "No Folder set, pieFolder:", pieFolder);
             return;
         }
+        //add prepare work
                     
         //this.clusterManagementService.sendMessage(msgProvider.get());
         FolderCreateMessage msg = msgProvider.get();
