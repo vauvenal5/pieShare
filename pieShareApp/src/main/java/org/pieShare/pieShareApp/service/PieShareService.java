@@ -89,6 +89,6 @@ public class PieShareService {
 		}*/
 		
 		this.shutdownService.fireShutdown();
-		System.exit(0);
+		//System.exit(0);
 	}
 }

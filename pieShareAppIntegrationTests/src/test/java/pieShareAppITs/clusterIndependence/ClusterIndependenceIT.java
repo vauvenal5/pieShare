@@ -90,10 +90,10 @@ public class ClusterIndependenceIT {
 		//needed?
 		//Thread.sleep(5000);
 
-		String cloudNameBot = UUID.randomUUID().toString();
+		//String cloudNameBot = UUID.randomUUID().toString();
 		String passwordBot = UUID.randomUUID().toString();
 		System.out.println("Starting bot!");
-		this.process = ITUtil.startProcess(FileCreatingBot.class, cloudNameBot, passwordBot);
+		this.process = ITUtil.startProcess(FileCreatingBot.class, cloudName, passwordBot);
 		ITUtil.waitForProcessToStartup(this.process);
 		System.out.println("Bot started!");
 		
