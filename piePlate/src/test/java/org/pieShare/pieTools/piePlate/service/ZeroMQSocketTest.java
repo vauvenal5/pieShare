@@ -23,7 +23,7 @@ public class ZeroMQSocketTest {
 	
 	protected class CallbackMock implements IEndpointCallback{
 		@Override
-		public void NonRespondingEndpoint(List<DiscoveredMember> brokenMembers) {
+		public void nonRespondingEndpoint(List<DiscoveredMember> brokenMembers) {
 		}
 	}
 	

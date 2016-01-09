@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -47,10 +48,8 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase;
 	private List<DiscoveredMember> members;
 	private List<DiscoveredMember> brokenEndpoints;
-	private Semaphore lowPriority;
-	private Semaphore highPriority;
 	private Semaphore sendLimit;
-	private boolean removeEndpoints;
+	private AtomicBoolean removeEndpoints;
 	
 	private final int maxDealers = 100;
 
@@ -59,11 +58,9 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		this.members = new ArrayList<>();
 		this.brokenEndpoints = new ArrayList<>();
 		
-		lowPriority = new Semaphore(maxDealers);
-		highPriority = new Semaphore(1);
-		sendLimit = new Semaphore(maxDealers);
+		sendLimit = new Semaphore(maxDealers, true);
 		
-		removeEndpoints = false;
+		removeEndpoints.set(false);
 	}
 
 	public void setClusterRemovedEventBase(IEventBase<IClusterRemovedListener, ClusterRemovedEvent> clusterRemovedEventBase) {
@@ -140,15 +137,10 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 			byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
 			
-			lowPriority.acquire();
-			highPriority.acquire();
 			sendLimit.acquire();
-			highPriority.release();
 			this.dealer.send(members, message, this);
 			sendLimit.release();
-			lowPriority.release();
 			
-			//Sem2 rel
 		} catch (Exception e) {
 			throw new ClusterServiceException(e);
 		}
@@ -205,30 +197,36 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	}
 
 	@Override
-	public void NonRespondingEndpoint(DiscoveredMember member) {
-		if(!brokenEndpoints.contains(member)){
-			brokenEndpoints.add(member);
-						
-			if(!removeEndpoints){
-				removeEndpoints = true;
-				try{
-					highPriority.acquire();
-					sendLimit.acquire(maxDealers);
-				}catch(Exception e) {
+	public void nonRespondingEndpoint(List<DiscoveredMember> members) {
+		synchronized (brokenEndpoints) {
+			for (DiscoveredMember member : members) {
+				if(!brokenEndpoints.contains(member)){
+					brokenEndpoints.add(member);
 				}
-				//finally
-				
-				highPriority.release();
-				
-				RemoveBrokenEndpoints();
-				
-				sendLimit.release(maxDealers);
 			}
+		}
+		
+		if(removeEndpoints.compareAndSet(false, true)){
+			try{
+				sendLimit.acquire(maxDealers-1);
+			}catch(InterruptedException e) {
+				PieLogger.warn(this.getClass(), "Non responding endpoint semaphore acquisation failed {}", e);
+				return;
+			}
+
+			removeBrokenEndpoints();
+
+			removeEndpoints.set(false);
+			sendLimit.release(maxDealers-1);
 		}
 	}
 	
-	private void RemoveBrokenEndpoints(){
-		members.removeAll(brokenEndpoints);
-		brokenEndpoints.clear();
+	private void removeBrokenEndpoints(){
+		synchronized (brokenEndpoints) {
+			synchronized (members) {
+				members.removeAll(brokenEndpoints);
+			}
+			brokenEndpoints.clear();
+		}
 	}
 }
