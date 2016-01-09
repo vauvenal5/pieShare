@@ -22,7 +22,6 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
 
     protected File file;
     protected IFileFilterService fileFilterService;
-    protected IFilderService filderService;
 
     public ALocalEventTask() {
     }
@@ -35,12 +34,9 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
         this.fileFilterService = fileFilterService;
     }
 
-    public void setFileService(IFilderService filderService) {
-        PieLogger.info(this.getClass(), "Setting FilderService!");
-        this.filderService = filderService;
-    }
-
     protected boolean syncAllowed() {
+		//todo: dani is unhappy with the name checkFile so 
+			//she wrapped it into this one.. think about renaming the function
         if (this.fileFilterService.checkFile(this.file)) {
             return true;
         }

@@ -15,7 +15,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author Svetoslav
  */
 public class LocalFileDeletedTask extends ALocalFileEventTask {
-
     @Override
     public void run() {
         try {

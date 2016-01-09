@@ -22,12 +22,16 @@ import org.pieShare.pieShareApp.task.eventTasks.MetaCommitTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
+import org.pieShare.pieShareApp.task.localTasks.ALocalEventTask;
 import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.ALocalFolderEventTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
 import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -57,16 +61,24 @@ public class PieShareAppTasks {
         task.setMessageFactoryService(this.services.messageFactoryService());
         task.setUserService(services.userService());
     }
+	
+	private void aLocalEventTask(ALocalEventTask task) {
+		this.aMessageSendingTask(task);
+		task.setFileFilterService(this.services.fileFilterService());
+	}
 
     private void aLocalFileEventTask(ALocalFileEventTask task) {
-        this.aMessageSendingTask(task);
-
-        task.setFileFilterService(services.fileFilterService());
+        this.aLocalEventTask(task);
         task.setHistoryService(services.historyService());
-        task.setFileEncrypterService(services.fileEncryptionService());
         task.setFileWatcherService(this.services.apacheFileWatcherService());
         task.setHistoryFileService(this.services.historyFileService());
+		task.setFileService(this.services.localFileService());
     }
+	
+	private void aLocalFolderEventTask(ALocalFolderEventTask task) {
+		this.aLocalEventTask(task);
+		task.setFolderService(this.services.folderService());
+	}
 
     @Bean
     @Scope(value = "prototype")
@@ -119,7 +131,6 @@ public class PieShareAppTasks {
     public LocalFileCreatedTask localFileCreatedTask() {
         LocalFileCreatedTask task = new LocalFileCreatedTask();
         this.aLocalFileEventTask(task);
-        task.setFileService(this.services.localFileService());
         return task;
     }
     //TODO: Folder Service needed in more methods?
@@ -129,7 +140,6 @@ public class PieShareAppTasks {
     public LocalFileChangedTask localFileChangedTask() {
         LocalFileChangedTask task = new LocalFileChangedTask();
         this.aLocalFileEventTask(task);
-        task.setFileService(this.services.localFileService());
         return task;
     }
 
@@ -138,9 +148,24 @@ public class PieShareAppTasks {
     public LocalFileDeletedTask localFileDeletedTask() {
         LocalFileDeletedTask task = new LocalFileDeletedTask();
         this.aLocalFileEventTask(task);
-        task.setFileService(this.services.localFileService());
         return task;
     }
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFolderCreatedTask localFolderCreatedTask() {
+		LocalFolderCreatedTask task = new LocalFolderCreatedTask();
+		this.aLocalFolderEventTask(task);
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFolderDeletedTask localFolderDeletedTask() {
+		LocalFolderDeletedTask task = new LocalFolderDeletedTask();
+		this.aLocalFolderEventTask(task);
+		return task;
+	}
 
     @Bean
     @Scope(value = "prototype")
@@ -263,9 +288,13 @@ public class PieShareAppTasks {
 	public EventFoldingTimerTask eventFoldingTimerTask() {
 		EventFoldingTimerTask task = new EventFoldingTimerTask();
 		task.setExecutorService(this.utilities.pieExecutorService());
+		task.setHistoryService(this.services.historyService());
+		
 		task.setLocalFileChangedProvider(this.providers.localFileChangedProvider);
 		task.setLocalFileCreatedProvider(this.providers.localFileCreateProvider);
 		task.setLocalFileDeletedProvider(this.providers.localFileDeletedProvider);
+		task.setLocalFolderCreatedProvider(this.providers.localFolderCreatedProvider);
+		task.setLocalFolderDeletedProvider(this.providers.localFolderDeletedProvider);
 		return task;
 	}
 }
