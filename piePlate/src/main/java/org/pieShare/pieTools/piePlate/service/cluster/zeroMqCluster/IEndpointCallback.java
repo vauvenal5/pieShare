@@ -6,9 +6,10 @@
 
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster;
 
+import java.util.List;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 
 
 public interface IEndpointCallback {
-	public void NonRespondingEndpoint(DiscoveredMember member);
+	public void NonRespondingEndpoint(List<DiscoveredMember> brokenMembers);
 }
