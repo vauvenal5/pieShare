@@ -88,6 +88,7 @@ public class ITUtil {
 	public static void performTearDown(AnnotationConfigApplicationContext context) throws Exception {
 		//shutdown application
 		PieShareService service = context.getBean(PieShareService.class);
+		context.close();
 		service.stop();
 
 		//get dirs to delete
@@ -101,7 +102,7 @@ public class ITUtil {
 		File configBot = config.getPwdFile();*/
 		
 		//stop context
-		context.close();
+//		context.close();
 		context = null;
 	}
 

@@ -27,6 +27,7 @@ import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareServic
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
+import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
 import org.pieshare.piespring.service.database.ModelEntityConverterService;
 import org.pieshare.piespring.service.database.DatabaseService;
 import org.pieshare.piespring.service.database.PieDatabaseManagerFactory;
@@ -42,6 +43,7 @@ import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieshare.piespring.service.fileListenerService.ApacheDefaultFileListener;
 import org.pieshare.piespring.service.fileListenerService.ApacheFileWatcherService;
 import org.pieShare.pieShareApp.service.historyService.HistoryService;
+import org.pieShare.pieShareApp.service.loginService.UserTools;
 import org.pieShare.pieShareApp.service.requestService.RequestService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.ShareService;
@@ -177,9 +179,21 @@ public class PieShareAppService {
 	@Scope(value = "prototype")
 	public ApacheDefaultFileListener fileListenerService() {
 		ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
-		listener.setBeanService(this.utilities.beanService());
-		listener.setExecutorService(this.utilities.pieExecutorService());
+//		listener.setBeanService(this.utilities.beanService());
+//		listener.setExecutorService(this.utilities.pieExecutorService());
+		listener.setEventFoldingService(this.eventFoldingService());
+		listener.setLocalFileEventProvider(this.providers.localFileEventProvider);
 		return listener;
+	}
+	
+	@Bean
+	@Lazy
+	public EventFoldingService eventFoldingService() {
+		EventFoldingService service = new EventFoldingService();
+		service.setEventFoldingTimerTaskProvider(this.providers.eventFoldingTimerTaskProvider);
+		service.setFileService(this.localFileService());
+		service.init();
+		return service;
 	}
 
 	@Bean
@@ -320,5 +334,19 @@ public class PieShareAppService {
             folderService.setUserService(userService());
             folderService.init();
             return folderService;
+        }
+        
+        @Bean
+        @Lazy
+        public UserTools userToolsService()
+        {
+            UserTools userTools = new UserTools();
+            userTools.setClusterManagementService(plate.clusterManagementService());
+            userTools.setDatabaseService(databaseService());
+            userTools.setEncodeService(utilities.encodeService());
+            userTools.setPasswordEncryptionService(utilities.passwordEncryptionService());
+            userTools.setSymmetricEncryptedChannelProvider(providers.symmetricEncryptedChannelProvider);
+            userTools.setUserService(userService());
+            return userTools;
         }
 }

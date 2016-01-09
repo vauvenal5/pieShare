@@ -22,29 +22,29 @@ public class LocalFileCreatedTask extends ALocalFileEventTask {
 	public void run() {
 		try {
 			PieFilder pieFilder = this.prepareWork();
-                        IFilderMessageBase msg = null;
+			IFilderMessageBase msg = null;
 
 			if(pieFilder == null || this.file == null) {
-                            PieLogger.info(this.getClass(), "Skipping new file: null");
-                            return;
+				PieLogger.info(this.getClass(), "Skipping new file: null");
+				return;
 			}
-			
-                        if(this.file.isDirectory()) {
-                            msg = this.messageFactoryService.getNewFolderMessage();
+
+			if (this.file.isDirectory()) {
+                            msg = this.messageFactoryService.getNewFolderMessage();  
                             //TODO History Service for folder!
-                            PieLogger.info(this.getClass(), "It's a Folder!");
-                            
-                        } else if (this.file.isFile()) {
-                            msg = this.messageFactoryService.getNewFileMessage();
+				PieLogger.info(this.getClass(), "It's a Folder!");
+
+			} else if (this.file.isFile()) {
+				msg = this.messageFactoryService.getNewFileMessage();
                             this.historyService.syncPieFileWithDb(((PieFile)pieFilder));
-                            PieLogger.info(this.getClass(), "It's a File!");
-                            //TODO: History Service for folder?
-                        } else {
-                            PieLogger.info(this.getClass(), "Skipping new file: unknown type (neither file nor folder)");
-                        }
-			
+				PieLogger.info(this.getClass(), "It's a File!");
+				//TODO: History Service for folder?
+			} else {
+				PieLogger.info(this.getClass(), "Skipping new file: unknown type (neither file nor folder)");
+			}
+
 			super.doWork(msg, pieFilder);
-                        
+
 		} catch (IOException ex) {
 			//todo: ex handling
 		}
