@@ -44,4 +44,9 @@ public class FolderService extends FilderServiceBase implements IFolderService {
         deleteRecursive(pieFolder);
     }
 
+    @Override
+    public void deleteFolder(File file) throws FolderServiceException {
+        deleteRecursive(file);
+    }
+
 }
