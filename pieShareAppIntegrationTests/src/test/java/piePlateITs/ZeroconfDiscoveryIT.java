@@ -203,6 +203,11 @@ public class ZeroconfDiscoveryIT {
 			public void handleObject(MemberDiscoveredEvent event) {
 				member = event.getMember();
 			}
+
+			@Override
+			public void handleRemoveMember(MemberDiscoveredEvent event) {
+				//ignore
+			}
 		});
 		listener.setDiscoveredMemberProvider(new Provider() {
 			@Override

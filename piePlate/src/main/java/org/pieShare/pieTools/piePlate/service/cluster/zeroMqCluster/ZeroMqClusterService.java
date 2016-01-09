@@ -36,7 +36,8 @@ import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdowna
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class ZeroMqClusterService extends AShutdownableService implements IClusterService, IMemberDiscoveredListener, IEndpointCallback {
+public class ZeroMqClusterService extends AShutdownableService implements IClusterService,
+		IMemberDiscoveredListener, IEndpointCallback {
 
 	private IPieDealer dealer;
 	private IPieRouter router;
@@ -52,16 +53,16 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private Semaphore sendLimit;
 	private AtomicBoolean removeEndpoints;
 	private AtomicBoolean connected;
-	
+
 	private final int maxDealers = 100;
 
 	public ZeroMqClusterService() {
 		this.outgoingChannels = new HashMap<>();
 		this.members = new ArrayList<>();
 		this.brokenEndpoints = new ArrayList<>();
-		
+
 		sendLimit = new Semaphore(maxDealers, true);
-		
+
 		removeEndpoints = new AtomicBoolean(false);
 		connected = new AtomicBoolean(false);
 	}
@@ -89,17 +90,17 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void setPieDealer(IPieDealer dealer) {
 		this.dealer = dealer;
 	}
-	
-	private void discover(String clusterName, int port) throws ClusterServiceException{
-		try{
+
+	private void discover(String clusterName, int port) throws ClusterServiceException {
+		try {
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, port);
 			members = this.discovery.list();
-			
+
 			for (DiscoveredMember m : members) {
 				this.connectMemberToCluster(m);
 			}
-		} catch (DiscoveryException ex){
+		} catch (DiscoveryException ex) {
 			throw new ClusterServiceException(ex);
 		}
 	}
@@ -129,7 +130,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void setClustername(String clusterName) {
 		this.clustername = clusterName;
 	}
-	
+
 	@Override
 	public void reconnect() throws ClusterServiceException {
 		disconnect();
@@ -140,18 +141,18 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	@Override
 	public void disconnect() throws ClusterServiceException {
 		connected.set(false);
-		try{
+		try {
 			sendLimit.acquire(maxDealers);
 			members.clear();
 			sendLimit.release(maxDealers);
-		}catch(InterruptedException e){
+		} catch (InterruptedException e) {
 			PieLogger.warn(this.getClass(), "Disconnect interrupted {}", e);
 		}
 	}
 
 	@Override
 	public void sendMessage(IClusterMessage msg) throws ClusterServiceException {
-		if(connected.get()){
+		if (connected.get()) {
 			IPieAddress address = msg.getAddress();
 
 			if (!this.outgoingChannels.containsKey(address.getChannelId())) {
@@ -212,7 +213,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
 			return;
 		}
-		
+
 		PieLogger.trace(this.getClass(), "Member {} registered", member);
 		members.add(member);
 	}
@@ -226,16 +227,16 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void nonRespondingEndpoint(List<DiscoveredMember> members) {
 		synchronized (brokenEndpoints) {
 			for (DiscoveredMember member : members) {
-				if(!brokenEndpoints.contains(member)){
+				if (!brokenEndpoints.contains(member)) {
 					brokenEndpoints.add(member);
 				}
 			}
 		}
-		
-		if(removeEndpoints.compareAndSet(false, true)){
-			try{
-				sendLimit.acquire(maxDealers-1);
-			}catch(InterruptedException e) {
+
+		if (removeEndpoints.compareAndSet(false, true)) {
+			try {
+				sendLimit.acquire(maxDealers - 1);
+			} catch (InterruptedException e) {
 				PieLogger.warn(this.getClass(), "Non responding endpoint semaphore acquisation failed {}", e);
 				return;
 			}
@@ -243,16 +244,25 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			removeBrokenEndpoints();
 
 			removeEndpoints.set(false);
-			sendLimit.release(maxDealers-1);
+			sendLimit.release(maxDealers - 1);
 		}
 	}
-	
-	private void removeBrokenEndpoints(){
+
+	private void removeBrokenEndpoints() {
 		synchronized (brokenEndpoints) {
 			synchronized (members) {
 				members.removeAll(brokenEndpoints);
 			}
 			brokenEndpoints.clear();
+		}
+	}
+
+	@Override
+	public void handleRemoveMember(MemberDiscoveredEvent event) {
+		synchronized (this.members) {
+			if (this.members.contains(event.getMember())) {
+				this.members.remove(event.getMember());
+			}
 		}
 	}
 }
