@@ -59,7 +59,7 @@ public class EventFoldingTimerTask extends TimerTask {
 				Map.Entry<String, LocalFileEvent> entry = iterator.next();
 
 				if ((currentTime - entry.getValue().getTimestamp()) > 2000) {
-					ALocalFileEventTask task = null;
+					ALocalEventTask task = null;
 					
 					boolean dir = false;
 					File file = entry.getValue().getFile();
@@ -149,5 +149,17 @@ public class EventFoldingTimerTask extends TimerTask {
 
 	public void setLocalFileDeletedProvider(Provider<LocalFileDeletedTask> localFileDeletedProvider) {
 		this.localFileDeletedProvider = localFileDeletedProvider;
+	}
+
+	public void setHistoryService(IHistoryService historyService) {
+		this.historyService = historyService;
+	}
+
+	public void setLocalFolderCreatedProvider(Provider<LocalFolderCreatedTask> localFolderCreatedProvider) {
+		this.localFolderCreatedProvider = localFolderCreatedProvider;
+	}
+
+	public void setLocalFolderDeletedProvider(Provider<LocalFolderDeletedTask> localFolderDeletedProvider) {
+		this.localFolderDeletedProvider = localFolderDeletedProvider;
 	}
 }

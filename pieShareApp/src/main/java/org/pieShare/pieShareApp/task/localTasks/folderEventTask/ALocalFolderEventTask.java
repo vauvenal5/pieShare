@@ -18,11 +18,7 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
 
     protected IFolderService folderService;
 
-    public ALocalFolderEventTask() {
-    }
-
     public void setFolderService(IFolderService folderService) {
-        PieLogger.info(this.getClass(), "Setting FolderService!");
         this.folderService = folderService;
     }
 
@@ -31,16 +27,11 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
             return null;
         }
 
-        if (this.file.isFile()) {
-            PieLogger.error(this.getClass(), "It's a file! Why is it here? - Should be FileEventTask");
-            return null;
-        }
-
         PieLogger.info(this.getClass(), "It's a Folder!");
 
         PieFolder pieFolder = new PieFolder();
         pieFolder.setName(this.file.getName());
-        pieFolder.setRelativePath(filderService.relativizeFilePath(this.file));
+        pieFolder.setRelativePath(folderService.relativizeFilePath(this.file));
         return pieFolder;
     }
 

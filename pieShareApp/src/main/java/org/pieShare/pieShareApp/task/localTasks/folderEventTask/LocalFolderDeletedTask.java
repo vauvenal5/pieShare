@@ -15,20 +15,16 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author daniela
  */
 public class LocalFolderDeletedTask extends ALocalFolderEventTask {
-
-    private MessageFactoryService msgService;
-    private PieFolder pieFolder;
-
     @Override
     public void run() {
-        pieFolder = this.prepareWork();
+        PieFolder pieFolder = this.prepareWork();
         
         if (pieFolder == null || this.file == null) {
             PieLogger.info(this.getClass(), "Skipping delete folder: null");
             return;
         }
 
-        FolderDeleteMessage msg = msgService.getFolderDeletedMessage();
+        FolderDeleteMessage msg = this.messageFactoryService.getFolderDeletedMessage();
         PieLogger.info(this.getClass(), "It's a Folder to be deleted!");
 
         //TODO: add history service when ready.
