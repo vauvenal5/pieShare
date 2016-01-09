@@ -6,10 +6,8 @@
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
-import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -21,42 +19,23 @@ public class LocalFileDeletedTask extends ALocalFileEventTask {
     @Override
     public void run() {
         try {
-            //TODO Delete Folder
 
-            /*	PieFile pieFile = (PieFile)this.prepareWork();
-             if(pieFile == null) {
-             return;
-             }
-			
-             pieFile = this.historyService.syncDeleteToHistory(pieFile);
-             IFileDeletedMessage msg = this.messageFactoryService.getFileDeletedMessage();
-             super.doWork(msg, pieFile);
-             */
-            this.isFolder = true;
-            PieFilder pieFilder = this.prepareWork();
-            IFilderMessageBase msg = null;
+            PieFile pieFile = this.prepareWork();
 
-            if (pieFilder == null || this.file == null) {
-                PieLogger.info(this.getClass(), "Skipping delete folder: null");
+            if (pieFile == null || this.file == null) {
+                PieLogger.info(this.getClass(), "Skipping delete file: null");
                 return;
             }
-            if(this.file.isDirectory() || this.isFolder) {
-                msg = this.messageFactoryService.getFolderDeletedMessage();
-                PieLogger.info(this.getClass(), "It's a Folder to be deleted!");
-                //TODO: History Service for Folder
-            } else if (this.file.isFile()) {
-                msg = this.messageFactoryService.getFileDeletedMessage();
-                pieFilder = this.historyService.syncDeleteToHistory((PieFile)pieFilder);
-                //super.doWork(msg, pieFile);
-                //return;
-            } else {
-                PieLogger.info(this.getClass(), "Skipping delete: unknown type (neither file nor folder)");
-            }
 
-            super.doWork(msg, pieFilder);
-            
+            FileDeletedMessage msg = this.messageFactoryService.getFileDeletedMessage();
+            pieFile = this.historyService.syncDeleteToHistory(pieFile);
+
+            super.doWork(msg, pieFile);
+
         } catch (IOException ex) {
             //todo: do something here
+            PieLogger.error(this.getClass(), "Something went wrong while sending a FileDeleteMessage: {}", ex);
+
         }
     }
 
