@@ -5,7 +5,6 @@
  */
 package org.pieShare.pieTools.piePlate.service.cluster.discovery.event;
 
-import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventListener;
 
 /**
@@ -13,5 +12,5 @@ import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventListener;
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
 public interface IMemberDiscoveredListener extends IEventListener<MemberDiscoveredEvent> {
-	
+	void handleRemoveMember(MemberDiscoveredEvent event);
 }

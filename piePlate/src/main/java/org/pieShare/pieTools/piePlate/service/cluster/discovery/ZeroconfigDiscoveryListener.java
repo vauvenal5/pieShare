@@ -75,6 +75,17 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 	@Override
 	public void serviceRemoved(ServiceEvent event) {
 		PieLogger.trace(this.getClass(), "New Service Removed-Event with name {}.", event.getName());
+		
+		if(!this.checkEvent(event.getInfo())) {
+			return;
+		}
+
+		for (InetAddress ad : event.getInfo().getInetAddresses()) {
+			DiscoveredMember member = this.convert(ad, event.getInfo());
+			PieLogger.trace(this.getClass(), "Triggering delete event for {} {}", member.getInetAdresses().getHostAddress(), member.getPort());
+			//todo: DI think about how we could properly inject prototyped objects which need constructor parameters
+			memberDiscoveredEventBase.fireEvent(new MemberDiscoveredEvent(this, member));
+		}
 	}
 
 	@Override
@@ -83,11 +94,11 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 
 		discovered(event.getInfo());
 	}
-
-	private void discovered(ServiceInfo info) {		
+	
+	private boolean checkEvent(ServiceInfo info) {
 		if (myself.equals(info.getName())) {
 			PieLogger.trace(this.getClass(), "Discarding myself! {}", info.getName());
-			return;
+			return false;
 		}
 
 		//todo: this really needs to be added otherwise all pieShare instances 
@@ -97,17 +108,29 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 //			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
 //			return;
 //		}
-
-		if(!info.getName().startsWith(this.cloudName)) {
+		if (!info.getName().startsWith(this.cloudName)) {
 			PieLogger.trace(this.getClass(), "Discarding instance from other cloud! {}", info.getSubtype());
-			return;
+			return false;
 		}
 		
+		return true;
+	}
+
+	private DiscoveredMember convert(InetAddress ad, ServiceInfo info) {
+		DiscoveredMember member = this.discoveredMemberProvider.get();
+		member.setInetAdresses(ad);
+		member.setPort(info.getPort());
+		member.setName(info.getName());
+		return member;
+	}
+
+	private void discovered(ServiceInfo info) {
+		if(!this.checkEvent(info)) {
+			return;
+		}
+
 		for (InetAddress ad : info.getInetAddresses()) {
-			DiscoveredMember member = this.discoveredMemberProvider.get();
-			member.setInetAdresses(ad);
-			member.setPort(info.getPort());
-			member.setName(info.getName());
+			DiscoveredMember member = this.convert(ad, info);
 			PieLogger.trace(this.getClass(), "Triggering event for {} {}", member.getInetAdresses().getHostAddress(), member.getPort());
 			//todo: DI think about how we could properly inject prototyped objects which need constructor parameters
 			memberDiscoveredEventBase.fireEvent(new MemberDiscoveredEvent(this, member));
