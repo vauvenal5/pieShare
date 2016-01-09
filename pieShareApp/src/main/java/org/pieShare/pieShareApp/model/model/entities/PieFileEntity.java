@@ -4,21 +4,16 @@
  * and open the template in the editor.
  */
 
-package org.pieshare.piespring.service.model.entities;
+package org.pieShare.pieShareApp.model.model.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
 
 /**
  *
  * @author Svetoslav
  */
-@Entity
 public class PieFileEntity implements IPieFileEntity{
 	private byte[] md5;
-	@Id
-	private String absoluteWorkingPath;
 	private String relativeFilePath;
 	private String fileName;
 	private long lastModified;
@@ -37,16 +32,6 @@ public class PieFileEntity implements IPieFileEntity{
         @Override
 	public void setSynched(boolean synched) {
 		this.synched = synched;
-	}
-	
-        @Override
-	public String getAbsoluteWorkingPath() {
-		return absoluteWorkingPath;
-	}
-
-        @Override
-	public void setAbsoluteWorkingPath(String absoluteWorkingPath) {
-		this.absoluteWorkingPath = absoluteWorkingPath;
 	}
 	
         @Override
