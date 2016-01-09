@@ -15,7 +15,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author Richard
  */
 public class LocalFileCreatedTask extends ALocalFileEventTask {
-
     @Override
     public void run() {
         try {
@@ -27,7 +26,7 @@ public class LocalFileCreatedTask extends ALocalFileEventTask {
             }
 
             FileCreatedMessage msg = this.messageFactoryService.getNewFileMessage();
-            this.historyService.syncPieFileWithDb((pieFile));
+            this.historyService.syncPieFileWithDb(pieFile);
 
             super.doWork(msg, pieFile);
 

@@ -12,9 +12,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 
 public class LocalFileChangedTask extends ALocalFileEventTask {
-	
-	
-
 	@Override
 	public void run() {
 		try {
