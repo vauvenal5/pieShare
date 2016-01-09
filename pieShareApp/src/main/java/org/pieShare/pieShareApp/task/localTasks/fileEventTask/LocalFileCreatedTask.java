@@ -6,10 +6,8 @@
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
-import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
-import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -18,35 +16,25 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class LocalFileCreatedTask extends ALocalFileEventTask {
 
-	@Override
-	public void run() {
-		try {
-			PieFilder pieFilder = this.prepareWork();
-			IFilderMessageBase msg = null;
+    @Override
+    public void run() {
+        try {
+            PieFile pieFile = this.prepareWork();
 
-			if(pieFilder == null || this.file == null) {
-				PieLogger.info(this.getClass(), "Skipping new file: null");
-				return;
-			}
+            if (pieFile == null || this.file == null) {
+                PieLogger.info(this.getClass(), "Skipping new file: null");
+                return;
+            }
 
-			if (this.file.isDirectory()) {
-                            msg = this.messageFactoryService.getNewFolderMessage();  
-                            //TODO History Service for folder!
-				PieLogger.info(this.getClass(), "It's a Folder!");
+            FileCreatedMessage msg = this.messageFactoryService.getNewFileMessage();
+            this.historyService.syncPieFileWithDb((pieFile));
 
-			} else if (this.file.isFile()) {
-				msg = this.messageFactoryService.getNewFileMessage();
-                            this.historyService.syncPieFileWithDb(((PieFile)pieFilder));
-				PieLogger.info(this.getClass(), "It's a File!");
-				//TODO: History Service for folder?
-			} else {
-				PieLogger.info(this.getClass(), "Skipping new file: unknown type (neither file nor folder)");
-			}
+            super.doWork(msg, pieFile);
 
-			super.doWork(msg, pieFilder);
+        } catch (IOException ex) {
+            //todo: ex handling
+            PieLogger.error(this.getClass(), "Something went wrong while sending a FileDeleteMessage: {}", ex);
 
-		} catch (IOException ex) {
-			//todo: ex handling
-		}
-	}
+        }
+    }
 }
