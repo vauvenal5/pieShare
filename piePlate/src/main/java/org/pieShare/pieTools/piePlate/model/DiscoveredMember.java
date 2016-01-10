@@ -64,9 +64,9 @@ public class DiscoveredMember {
 		if (this.port != other.port) {
 			return false;
 		}
-		if (!Objects.equals(this.inetAdresses, other.inetAdresses)) {
-			return false;
+		if (Objects.equals(this.inetAdresses, other.inetAdresses)) {
+			return true;
 		}
-		return true;
+		return false;
 	}
 }
