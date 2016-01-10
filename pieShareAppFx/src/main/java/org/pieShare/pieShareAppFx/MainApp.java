@@ -38,8 +38,8 @@ public class MainApp extends Application {
 				context.register(ProviderConfiguration.class);
                 context.refresh();
 		context.registerShutdownHook();
-		NetworkService service = context.getBean(NetworkService.class);
-		service.setNicDisplayName("wlp3s0");
+		//NetworkService service = context.getBean(NetworkService.class);
+		//service.setNicDisplayName("wlp3s0");
 		FXMLController controller = context.getBean(FXMLController.class);
 		controller.setMainStage(stage);
 	}
