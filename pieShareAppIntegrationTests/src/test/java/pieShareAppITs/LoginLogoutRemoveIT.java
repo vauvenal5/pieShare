@@ -6,6 +6,7 @@
 package pieShareAppITs;
 
 import java.io.IOException;
+import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
@@ -56,7 +57,7 @@ public class LoginLogoutRemoveIT {
 	@Test
 	public void loginLogoutReset() throws Exception {
 
-		String userName = "testUser";
+		String userName =  UUID.randomUUID().toString();;
 
 		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
@@ -64,7 +65,7 @@ public class LoginLogoutRemoveIT {
 
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".getBytes();
+		pwd.password =  UUID.randomUUID().toString().getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(userName);
 
@@ -130,7 +131,7 @@ public class LoginLogoutRemoveIT {
 	@Test
 	public void logonLogoutLogin() throws Exception {
 
-		String userName = "testUser";
+		String userName =  UUID.randomUUID().toString();;
 
 		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
@@ -138,7 +139,7 @@ public class LoginLogoutRemoveIT {
 
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password = "test".getBytes();
+		pwd.password =  UUID.randomUUID().toString().getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(userName);
 
@@ -196,7 +197,7 @@ public class LoginLogoutRemoveIT {
 
 		command = new LoginCommand();
 		pwd = new PlainTextPassword();
-		pwd.password = "test".getBytes();
+		pwd.password =  UUID.randomUUID().toString().getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(userName);
 
@@ -229,7 +230,7 @@ public class LoginLogoutRemoveIT {
 
 	@Test
 	public void resetPwdFile() {
-		String userName = "testUser";
+		String userName =  UUID.randomUUID().toString();;
 
 		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
