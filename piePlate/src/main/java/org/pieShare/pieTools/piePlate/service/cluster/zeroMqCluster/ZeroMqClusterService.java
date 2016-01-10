@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -212,13 +214,22 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	}
 
 	private void connectMemberToCluster(DiscoveredMember member) {
-		if (this.members.contains(member)) {
-			PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
-			return;
+		try {
+			//before manipulating the list we need to make sure that no dealers
+			//are iterating over it anymore!
+			sendLimit.acquire(maxDealers);
+			if (this.members.contains(member)) {
+				PieLogger.trace(this.getClass(), "Member {} allready registered!", member.getName());
+				sendLimit.release(maxDealers);
+				return;
+			}
+			
+			PieLogger.trace(this.getClass(), "Member {} registered", member);
+			members.add(member);
+			sendLimit.release(maxDealers);
+		} catch (InterruptedException ex) {
+			PieLogger.warn(this.getClass(), "Could not acquire/release semaphore!", ex);
 		}
-
-		PieLogger.trace(this.getClass(), "Member {} registered", member);
-		members.add(member);
 	}
 
 	@Override
@@ -262,10 +273,17 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 
 	@Override
 	public void handleRemoveMember(MemberDiscoveredEvent event) {
-		synchronized (this.members) {
+		try {
+			//before manipulating the list we need to make sure that no dealers
+			//are iterating over it anymore!
+			sendLimit.acquire(maxDealers);
 			if (this.members.contains(event.getMember())) {
 				this.members.remove(event.getMember());
 			}
+			sendLimit.release(maxDealers);
+		} catch (InterruptedException ex) {
+			PieLogger.warn(this.getClass(), "Could not acquire/release semaphore!", ex);
 		}
+		
 	}
 }
