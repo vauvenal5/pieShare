@@ -8,6 +8,7 @@ package org.pieShare.pieTools.piePlate.service.cluster.discovery;
 import javax.jmdns.ServiceListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberEvent;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
@@ -18,5 +19,5 @@ public interface IJmdnsDiscoveryListener extends ServiceListener{
 	void setDiscoveryService(ZeroconfigDiscoveryService discoveryService);
 	void setMyself(String myself);
 	void setCloudName(String cloudName);
-	IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase();
+	IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase();
 }
