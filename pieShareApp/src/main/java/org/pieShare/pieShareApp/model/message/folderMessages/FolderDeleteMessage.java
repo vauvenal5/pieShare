@@ -5,12 +5,13 @@
  */
 package org.pieShare.pieShareApp.model.message.folderMessages;
 
-import org.pieShare.pieShareApp.model.message.api.IFolderDeletedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
  *
  * @author daniela
  */
-public class FolderDeleteMessage extends FolderMessageBase implements IFolderDeletedMessage{
+public class FolderDeleteMessage extends FolderMessageBase implements IFilderMessageBase<PieFolder> {
     
 }

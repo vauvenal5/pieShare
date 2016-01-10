@@ -6,42 +6,18 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
-import java.nio.file.Path;
-import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfiguration;
-import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  * @author daniela
  */
-public class FolderService implements IFolderService {
-
-    //TODO: refactor to utility functions
-    protected IPieShareConfiguration configuration;
-    protected IUserService userService;
-
-    public void setUserService(IUserService userService) {
-        this.userService = userService;
-    }
-
-	//todo: redundant code!!! use fileService
-    public String getAbsolutePath(PieFolder pieFolder) {
-        if(configuration == null) {
-            PieUser user = userService.getUser();
-            this.configuration = user.getPieShareConfiguration();
-        }
-        File localFolder = new File(configuration.getWorkingDir(), pieFolder.getRelativePath());
-        return localFolder.getPath();
-    }
-
+public class FolderService extends FilderServiceBase implements IFolderService {
+    
+        
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
-        File newFolder = new File(getAbsolutePath(pieFolder));
-		if(newFolder.exists()) {
-			return;
-		}
+        File newFolder = getAbsolutePath(pieFolder);
         createLocalFolder(newFolder);
     }
 
@@ -64,29 +40,13 @@ public class FolderService implements IFolderService {
     }
 
     @Override
-    public void deleteFolder(String path) throws FolderServiceException {
-        File folderToDelete = new File(path);
-        deleteLocalFolder(folderToDelete);
-       
+    public void deleteFolder(PieFolder pieFolder) throws FolderServiceException {
+        deleteRecursive(pieFolder);
     }
 
     @Override
-    public void deleteFolder(PieFolder pieFolder) throws FolderServiceException {
-        File foldertoDelete = new File(getAbsolutePath(pieFolder).toString());
-        deleteLocalFolder(foldertoDelete);
-    }
-
-    private void deleteLocalFolder(File folderToDelete) {
-        boolean deleted = false;
-        
-        if (folderToDelete.exists()) {
-            deleted = folderToDelete.delete();
-            PieLogger.trace(this.getClass(), "Folder deleted! " + folderToDelete.getPath());
-        }
-        
-        if (!deleted) {
-            PieLogger.debug(this.getClass(), "Folder couldn't be deleted: " + folderToDelete.getPath());
-        }
+    public void deleteFolder(File file) throws FolderServiceException {
+        deleteRecursive(file);
     }
 
 }

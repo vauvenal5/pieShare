@@ -5,39 +5,30 @@
  */
 package org.pieShare.pieShareApp.task.localTasks.folderEventTask;
 
-import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.task.localTasks.fileEventTask.ALocalFileEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
  *
  * @author daniela
  */
-public class LocalFolderCreatedTask extends ALocalFileEventTask{
-    PieFolder pieFolder;
-    private Provider<FolderCreateMessage> msgProvider;
-    
+public class LocalFolderCreatedTask extends ALocalFolderEventTask {
+
     @Override
     public void run() {
-        if(pieFolder == null) {
-            PieLogger.info(this.getClass(), "No Folder set, pieFolder:", pieFolder);
+        PieFolder pieFolder = this.prepareWork();
+
+        if (pieFolder == null || this.file == null) {
+            PieLogger.info(this.getClass(), "Skipping new folder: null");
             return;
         }
-                    
-        //this.clusterManagementService.sendMessage(msgProvider.get());
-        FolderCreateMessage msg = msgProvider.get();
-            
+
+        FolderCreateMessage msg = messageFactoryService.getNewFolderMessage();
+
         //TODO: add history service when ready.
         
         super.doWork(msg, pieFolder);
     }
 
-    //should be called by OS Listener
-    public void setPieFolder(PieFolder pieFolder) {
-        this.pieFolder = pieFolder;
-    }
-    
-    
 }

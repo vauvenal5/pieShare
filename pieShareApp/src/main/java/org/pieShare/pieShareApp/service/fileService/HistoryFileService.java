@@ -7,7 +7,6 @@
 package org.pieShare.pieShareApp.service.fileService;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
@@ -35,7 +34,7 @@ public class HistoryFileService extends FileServiceBase {
 	public PieFile getPieFile(File file) throws IOException {
 		PieFile pieFile = new PieFile();
 		pieFile.setName(file.getName());
-		pieFile.setRelativePath(this.relitivizeFilePath(file).toString());
+		pieFile.setRelativePath(this.relativizeFilePath(file));
 		PieFile foundFile = this.databaseService.findPieFile(pieFile);
 		return foundFile;
 	}
