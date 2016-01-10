@@ -6,6 +6,7 @@
 package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket;
 
 import java.net.InetAddress;
+import java.nio.channels.ClosedSelectorException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Provider;
@@ -107,7 +108,7 @@ public class PieRouter implements IPieRouter {
 		while (!shutdown) {
 			try {
 				msg = this.receive();
-			} catch (ZMQException e) {
+			} catch (ZMQException | AssertionError | ClosedSelectorException e) {
 				//todo: can this really only happen when shutding down or 
 				//also in other scenarios?
 				PieLogger.warn(this.getClass(), "Exception in PieRouter! Shuting router down!", e);
