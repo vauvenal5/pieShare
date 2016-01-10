@@ -21,7 +21,6 @@ import org.pieShare.pieShareApp.service.database.DAOs.PieFolderDAO;
 import org.pieShare.pieShareApp.service.database.DAOs.PieUserDAO;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
-import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -32,7 +31,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DatabaseService implements IDatabaseService {
 
     private IModelEntityConverterService modelEntityConverterService;
-    private IPieDatabaseManagerFactory pieDatabaseManagerFactory;
 
     private PieUserDAO pieUserDAO;
     private FileFilterDAO fileFilterDAO;
@@ -56,10 +54,6 @@ public class DatabaseService implements IDatabaseService {
     }
 
     public DatabaseService() {
-    }
-
-    public void setPieDatabaseManagerFactory(IPieDatabaseManagerFactory factory) {
-        this.pieDatabaseManagerFactory = factory;
     }
 
     @Override
