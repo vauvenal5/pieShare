@@ -12,6 +12,8 @@ import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api.IPieDealer;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 import org.zeromq.ZMQException;
@@ -21,10 +23,12 @@ import zmq.ZError;
  *
  * @author Paul
  */
-public class PieDealer implements IPieDealer {
+public class PieDealer extends AShutdownableService implements IPieDealer {
 	private ZeroMQUtilsService utils;
+	private volatile boolean shutdown;
 
 	public PieDealer() {
+		this.shutdown = false;
 	}
 
 	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
@@ -39,8 +43,19 @@ public class PieDealer implements IPieDealer {
 		int endpoints = 0;
 		List<DiscoveredMember> brokenMembers = new ArrayList<>();
 
+		//todo-part1: this actually does not work!!! the socket does not throw an
+		//exception when he can not connect to the endpoint
+		//this is most likely due to zeroMQs reconnection logic
 		for (DiscoveredMember member : members) {
-			try{
+			//important: do never change this flag from inside this function!!!
+				//this function is used by many threads we would have to change
+				//the boolean to an atomic boolean
+			if(this.shutdown) {
+				sock.close();
+				return;
+			}
+			
+			try {
 				sock.connect(utils.buildConnectionString(member.getInetAdresses(), member.getPort()));
 				endpoints++;
 			} catch(ZMQException e){
@@ -59,7 +74,7 @@ public class PieDealer implements IPieDealer {
 		}
 						
 		PieLogger.trace(this.getClass(), "Sending msg to endpoints.");
-		for (int i = 0; i < endpoints; i++) {
+		for (int i = 0; (i < endpoints) && !shutdown; i++) {
 			try {
 				sock.send(message, ZMQ.NOBLOCK);
 			} catch (ZMQException e) {
@@ -68,6 +83,17 @@ public class PieDealer implements IPieDealer {
 		}
 		
 		sock.close();
-		callback.nonRespondingEndpoint(brokenMembers);
+		
+		//todo-part2: due to the fact that we are not able to recognize the
+			//the broken endpoints as intendet it is not nesseccary to make
+			//this call at all would only make things more difficult.
+//		if(brokenMembers.size() > 0 && !shutdown) {
+//			callback.nonRespondingEndpoint(brokenMembers);
+//		}
+	}
+
+	@Override
+	public void shutdown() {
+		this.shutdown = true;
 	}
 }

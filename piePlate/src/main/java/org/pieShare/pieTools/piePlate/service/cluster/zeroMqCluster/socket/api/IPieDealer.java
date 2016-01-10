@@ -8,12 +8,13 @@ package org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.api;
 import java.util.List;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Paul
  */
-public interface IPieDealer { 
+public interface IPieDealer extends IShutdownableService { 
     /**
      * Send message to to all sockets this dealer is connected to.
      * If no connection is active message gets dropped.
