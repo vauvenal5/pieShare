@@ -56,28 +56,31 @@ public class DatabaseFactory extends AShutdownableService implements IPieDatabas
     @Override
     public void init() {
         try {
-            
-            if(databseConnection != null && !databseConnection.isClosed())
-            {
+
+            if (databseConnection != null && !databseConnection.isClosed()) {
                 closeDB();
             }
-            
-            File dbFolder = applicationConfigurationService.getDatabaseFolder();
-            if(dbFolder != null )
-                DB_Path = dbFolder.getCanonicalPath();
-            else
-                DB_Path = "";
-            
-            File dbFile = new File(String.format("%s%s%s", DB_Path, File.separator, DB_NAME));
 
-            boolean createFirst = false;
-            if (!dbFile.exists()) {
-                createFirst = true;
+            File dbFolder = applicationConfigurationService.getDatabaseFolder();
+            if (dbFolder != null) {
+                DB_Path = dbFolder.getCanonicalPath();
+            } else {
+                DB_Path = "";
             }
 
-            ///Class.forName("org.sqlite.JDBC");
-             Class.forName("org.hsqldb.jdbcDriver");
-            databseConnection = DriverManager.getConnection(String.format("jdbc:hsqldb:/%s/%s", DB_Path, DB_NAME));
+            File dbFile = new File(String.format("%s%s%s", DB_Path, File.separator, DB_NAME));
+
+            boolean createFirst = true;
+
+            for (File f : dbFile.getParentFile().listFiles()) {
+                if (f.getName().contains(DB_NAME)) {
+                    createFirst = false;
+                    break;
+                }
+            }
+
+            Class.forName("org.hsqldb.jdbcDriver");
+            databseConnection = DriverManager.getConnection(String.format("jdbc:hsqldb:%s", dbFile.getCanonicalPath()));
 
             if (createFirst) {
                 creator.Create(this);
