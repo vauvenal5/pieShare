@@ -6,11 +6,11 @@
 
 package org.pieShare.pieShareApp.model.message.fileHistoryMessage;
 
-import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileHistoryMessageBase;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileDeletedMessage extends FileHistoryMessageBase implements IFileDeletedMessage {
+public class FileDeletedMessage extends FileHistoryMessageBase implements IFileHistoryMessageBase {
 }

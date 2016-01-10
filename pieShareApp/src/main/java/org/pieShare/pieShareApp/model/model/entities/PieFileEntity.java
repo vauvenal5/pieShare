@@ -34,6 +34,7 @@ public class PieFileEntity implements IPieFileEntity{
 		this.synched = synched;
 	}
 	
+        /*
         @Override
 	public byte[] getMd5() {
 		return md5;

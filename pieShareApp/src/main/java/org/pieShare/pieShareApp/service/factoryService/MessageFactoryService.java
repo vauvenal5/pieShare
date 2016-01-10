@@ -10,17 +10,8 @@ import org.pieShare.pieShareApp.model.message.FileListMessage;
 import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
-import org.pieShare.pieShareApp.model.message.api.IMetaCommitMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileCreatedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFolderCreatedMessage;
-import org.pieShare.pieShareApp.model.message.api.IFolderDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
@@ -51,12 +42,12 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public IFileChangedMessage getFileChangedMessage() {
+	public FileChangedMessage getFileChangedMessage() {
 		return this.prepareMessage(new FileChangedMessage());
 	}
 
 	@Override
-	public IFileDeletedMessage getFileDeletedMessage() {
+	public FileDeletedMessage getFileDeletedMessage() {
 		return this.prepareMessage(new FileDeletedMessage());
 	}
 
@@ -66,17 +57,17 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public IFileListRequestMessage getFileListRequestMessage() {
+	public FileListRequestMessage getFileListRequestMessage() {
 		return this.prepareMessage(new FileListRequestMessage());
 	}
 
 	@Override
-	public IFileRequestMessage getFileRequestMessage() {
+	public FileRequestMessage getFileRequestMessage() {
 		return this.prepareMessage(new FileRequestMessage());
 	}
 
 	@Override
-	public IFileTransferCompleteMessage getFileTransferCompleteMessage() {
+	public FileTransferCompleteMessage getFileTransferCompleteMessage() {
 		return this.prepareMetaMessage(new FileTransferCompleteMessage());
 	}
 
@@ -86,22 +77,22 @@ public class MessageFactoryService implements IMessageFactoryService {
 	}
 
 	@Override
-	public IFileCreatedMessage getNewFileMessage() {
+	public FileCreatedMessage getNewFileMessage() {
 		return this.prepareMessage(new FileCreatedMessage());
 	}
 
 	@Override
-	public IMetaCommitMessage getMetaCommitMessage() {
+	public MetaCommitMessage getMetaCommitMessage() {
 		return this.prepareMetaMessage(new MetaCommitMessage());
 	}
 
     @Override
-    public IFolderCreatedMessage getNewFolderMessage() {
+    public FolderCreateMessage getNewFolderMessage() {
         return this.prepareMessage(new FolderCreateMessage());
     }
 
     @Override
-    public IFolderDeletedMessage getFolderDeletedMessage() {
+    public FolderDeleteMessage getFolderDeletedMessage() {
         return this.prepareMessage(new FolderDeleteMessage());
     }
 	

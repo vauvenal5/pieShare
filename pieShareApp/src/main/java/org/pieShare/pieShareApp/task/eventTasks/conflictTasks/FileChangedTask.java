@@ -6,16 +6,16 @@
 
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
-import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileChangedTask extends ARequestTask<IFileChangedMessage> {
+public class FileChangedTask extends ARequestTask<FileChangedMessage> {
 	@Override
 	public void run() {
-		this.doWork((PieFile)this.msg.getPieFolder());
+		this.doWork((PieFile)this.msg.getPieFilder());
 	}
 }

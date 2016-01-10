@@ -7,7 +7,7 @@ package org.pieShare.pieShareApp.service.requestService;
 
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
@@ -53,11 +53,11 @@ public class RequestService implements IRequestService {
 
 		//todo: who is responsible for sending the messages? the service or the task?
 		//i belive the task
-		IFileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
+		FileRequestMessage msg = this.messageFactoryService.getFileRequestMessage();
 		PieUser user = userService.getUser();
 		msg.getAddress().setClusterName(user.getCloudName());
 		msg.getAddress().setChannelId(user.getUserName());
-		msg.setPieFolder(pieFile);
+		msg.setPieFilder(pieFile);
 		try {
 			PieLogger.info(this.getClass(), "Sending message to cluster {}", user.getCloudName());
 			clusterManagementService.sendMessage(msg);

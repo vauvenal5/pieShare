@@ -6,8 +6,8 @@
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.File;
-import org.pieShare.pieShareApp.model.message.api.IFileRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
+import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.shareService.CouldNotCreateMetaDataException;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
@@ -21,7 +21,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  *
  * @author Svetoslav
  */
-public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessage> {
+public class FileRequestTask extends AMessageSendingEventTask<FileRequestMessage> {
 
 	private IShareService shareService;
 	private IBitTorrentService bitTorrentService;
@@ -41,12 +41,12 @@ public class FileRequestTask extends AMessageSendingEventTask<IFileRequestMessag
 		//todo: if i am currently receiving the file I need to forwared the MetaMessage of the sharing instance!
 		
 		try {				
-			File localTmpFile = this.shareService.prepareFile((PieFile) this.msg.getPieFolder());
+			File localTmpFile = this.shareService.prepareFile((PieFile) this.msg.getPieFilder());
 			byte[] meta = this.bitTorrentService.createMetaInformation(localTmpFile);
 
 			IMetaMessage metaMsg = this.messageFactoryService.getFileTransferMetaMessage();
 			metaMsg.setMetaInfo(meta);
-			metaMsg.setPieFolder(this.msg.getPieFolder());
+			metaMsg.setPieFilder(this.msg.getPieFilder());
 			
 			PieLogger.trace(this.getClass(), "Sending meta for {} with HashCode {} "
 					+ "including PieFile with HashCode {}.", 
