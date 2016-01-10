@@ -131,7 +131,8 @@ public class LoginLogoutRemoveIT {
 	@Test
 	public void logonLogoutLogin() throws Exception {
 
-		String userName =  UUID.randomUUID().toString();;
+		String userName = UUID.randomUUID().toString();
+		String password = UUID.randomUUID().toString();
 
 		PieUser user = context.getBean(IUserService.class).getUser();
 		PieShareConfiguration config = user.getPieShareConfiguration();
@@ -139,7 +140,7 @@ public class LoginLogoutRemoveIT {
 
 		LoginCommand command = new LoginCommand();
 		PlainTextPassword pwd = new PlainTextPassword();
-		pwd.password =  UUID.randomUUID().toString().getBytes();
+		pwd.password =  password.getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(userName);
 
@@ -197,7 +198,7 @@ public class LoginLogoutRemoveIT {
 
 		command = new LoginCommand();
 		pwd = new PlainTextPassword();
-		pwd.password =  UUID.randomUUID().toString().getBytes();
+		pwd.password =  password.getBytes();
 		command.setPlainTextPassword(pwd);
 		command.setUserName(userName);
 
