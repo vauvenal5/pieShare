@@ -45,6 +45,13 @@ public class DatabaseCreator {
             + "	MD5 BINARY"
             + ");";
 
+    private final String createPieFolder = "CREATE TABLE PieFolder ( "
+            + "	RelativeFilePath VARCHAR PRIMARY KEY,"
+            + "	FileName VARCHAR,"
+            + "	Deleted INTEGER,"
+            + "	Synched INTEGER"
+            + ");";
+
     public void Create(DatabaseFactory fac) {
         Connection connection = fac.getDatabaseConnection();
 
@@ -54,6 +61,7 @@ public class DatabaseCreator {
                 stmt.executeUpdate(createConfigurationSql);
                 stmt.executeUpdate(createFilterSql);
                 stmt.executeUpdate(createPieFile);
+                stmt.executeUpdate(createPieFolder);
             }
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error creating database!", ex);

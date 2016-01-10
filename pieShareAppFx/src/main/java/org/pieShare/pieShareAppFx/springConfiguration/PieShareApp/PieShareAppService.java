@@ -30,6 +30,7 @@ import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactor
 import org.pieShare.pieShareApp.service.database.DAOs.ConfigurationDAO;
 import org.pieShare.pieShareApp.service.database.DAOs.FileFilterDAO;
 import org.pieShare.pieShareApp.service.database.DAOs.PieFileDAO;
+import org.pieShare.pieShareApp.service.database.DAOs.PieFolderDAO;
 import org.pieShare.pieShareApp.service.database.DAOs.PieUserDAO;
 import org.pieShare.pieShareApp.service.database.DatabaseCreator;
 import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
@@ -279,13 +280,11 @@ public class PieShareAppService {
     @Lazy
     public IDatabaseService databaseService() {
         DatabaseService service = new DatabaseService();
-        //service.setBase64Service(utilities.base64Service());
-        //service.setBeanService(utilities.beanService());
         service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
-        //service.setConfigurationFactory(configurationFactory());
         service.setConverterService(modelEntityConverterService());
         service.setPieUserDAO(pieUserDAO());
         service.setPieFileDAO(pieFileDAO());
+        service.setPieFolderDAO(pieFolderDAO());
         service.setFileFilterDAO(fileFilterDAO());
         return service;
     }
@@ -327,6 +326,14 @@ public class PieShareAppService {
     @Lazy
     public PieFileDAO pieFileDAO() {
         PieFileDAO pie = new PieFileDAO();
+        pie.setDatabaseFactory(pieDatabaseManagerFactory());
+        return pie;
+    }
+    
+    @Bean
+    @Lazy
+    public PieFolderDAO pieFolderDAO() {
+        PieFolderDAO pie = new PieFolderDAO();
         pie.setDatabaseFactory(pieDatabaseManagerFactory());
         return pie;
     }

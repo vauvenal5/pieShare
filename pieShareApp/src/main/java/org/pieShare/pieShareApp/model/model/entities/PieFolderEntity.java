@@ -3,10 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieshare.piespring.service.model.entities;
+package org.pieShare.pieShareApp.model.model.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
 
 
@@ -14,12 +12,9 @@ import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
  *
  * @author daniela
  */
-@Entity
 public class PieFolderEntity implements IPieFolderEntity{
     private boolean synced;
     private boolean deleted;
-    //private String absoluteWorkingPath;
-    @Id
     private String relativeFolderPath;
     private String folderName;
     
@@ -36,18 +31,6 @@ public class PieFolderEntity implements IPieFolderEntity{
     public void setSynced(boolean synced) {
         this.synced = synced;
     }
-
-    /*
-    @Override
-    public String getAbsoluteWorkingPath() {
-        return absoluteWorkingPath;
-    }
-
-    @Override
-    public void setAbsoluteWorkingPath(String absoluteWorkingPath) {
-        this.absoluteWorkingPath = absoluteWorkingPath;
-    }
-    */
 
     @Override
     public boolean isDeleted() {
@@ -78,5 +61,4 @@ public class PieFolderEntity implements IPieFolderEntity{
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
-    
 }
