@@ -92,7 +92,9 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 
 	@Override
 	public List<DiscoveredMember> list() throws DiscoveryException {
-		
+		//todo: think about changing this to a notify structure?
+			//instead of returning a list just throw events for every
+			//discovered member to all listeners?
 		if(this.myself == null) {
 			throw new DiscoveryException("Jmdns not yet registered!!!");
 		}
