@@ -13,6 +13,7 @@ import org.pieShare.pieShareAppFx.springConfiguration.PieShareApp.PieShareAppTas
 import org.pieShare.pieShareAppFx.springConfiguration.PieUtilitiesConfiguration;
 import org.pieShare.pieShareAppFx.springConfiguration.PieShareAppFx;
 import org.pieShare.pieShareAppFx.springConfiguration.ProviderConfiguration;
+import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -37,6 +38,8 @@ public class MainApp extends Application {
 				context.register(ProviderConfiguration.class);
                 context.refresh();
 		context.registerShutdownHook();
+		NetworkService service = context.getBean(NetworkService.class);
+		service.setNicDisplayName("wlp3s0");
 		FXMLController controller = context.getBean(FXMLController.class);
 		controller.setMainStage(stage);
 	}

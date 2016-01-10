@@ -60,6 +60,9 @@ public class EventFoldingTimerTask extends TimerTask {
 				Map.Entry<String, LocalFileEvent> entry = iterator.next();
 
 				if ((currentTime - entry.getValue().getTimestamp()) > 2000) {
+					LocalFilderEvent filderEvent = new LocalFilderEvent(this, entry.getValue());
+					this.eventFoldingService.getLocalFilderEventBase().fireEvent(filderEvent);
+					
 					ALocalEventTask task = null;
 					
 					boolean dir = false;
