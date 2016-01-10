@@ -13,6 +13,8 @@ import javax.jmdns.ServiceListener;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberRemovedEvent;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -22,18 +24,18 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 
-	private IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> memberDiscoveredEventBase;
+	private IEventBase<IMemberDiscoveredListener, MemberEvent> memberDiscoveredEventBase;
 	private Provider<DiscoveredMember> discoveredMemberProvider;
 	private String myself;
 	private String cloudName;
 	private ZeroconfigDiscoveryService discoveryService;
 
 	@Override
-	public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+	public IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase() {
 		return memberDiscoveredEventBase;
 	}
 
-	public void setMemberDiscoveredEventBase(IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> memberDiscoveredEventBase) {
+	public void setMemberDiscoveredEventBase(IEventBase<IMemberDiscoveredListener, MemberEvent> memberDiscoveredEventBase) {
 		this.memberDiscoveredEventBase = memberDiscoveredEventBase;
 	}
 
@@ -84,7 +86,7 @@ public class ZeroconfigDiscoveryListener implements IJmdnsDiscoveryListener {
 			DiscoveredMember member = this.convert(ad, event.getInfo());
 			PieLogger.trace(this.getClass(), "Triggering delete event for {} {}", member.getInetAdresses().getHostAddress(), member.getPort());
 			//todo: DI think about how we could properly inject prototyped objects which need constructor parameters
-			memberDiscoveredEventBase.fireEvent(new MemberDiscoveredEvent(this, member));
+			memberDiscoveredEventBase.fireEvent(new MemberRemovedEvent(this, member));
 		}
 	}
 

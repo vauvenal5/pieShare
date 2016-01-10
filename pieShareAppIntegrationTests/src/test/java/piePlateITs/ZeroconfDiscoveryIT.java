@@ -19,6 +19,8 @@ import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.IJmdnsDiscoveryListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberRemovedEvent;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.EventBase;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.testng.annotations.AfterMethod;
@@ -69,7 +71,7 @@ public class ZeroconfDiscoveryIT {
 			}
 
 			@Override
-			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+			public IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 
@@ -109,7 +111,7 @@ public class ZeroconfDiscoveryIT {
 			}
 			
 			@Override
-			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+			public IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 
@@ -149,7 +151,7 @@ public class ZeroconfDiscoveryIT {
 			}
 			
 			@Override
-			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+			public IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 
@@ -200,12 +202,12 @@ public class ZeroconfDiscoveryIT {
 		listener.setMemberDiscoveredEventBase(new EventBase<>());
 		listener.getMemberDiscoveredEventBase().addEventListener(new IMemberDiscoveredListener() {
 			@Override
-			public void handleObject(MemberDiscoveredEvent event) {
+			public void handleObject(MemberEvent event) {
 				member = event.getMember();
 			}
 
 			@Override
-			public void handleRemoveMember(MemberDiscoveredEvent event) {
+			public void handleRemoveMember(MemberRemovedEvent event) {
 				//ignore
 			}
 		});
@@ -238,7 +240,7 @@ public class ZeroconfDiscoveryIT {
 			}
 			
 			@Override
-			public IEventBase<IMemberDiscoveredListener, MemberDiscoveredEvent> getMemberDiscoveredEventBase() {
+			public IEventBase<IMemberDiscoveredListener, MemberEvent> getMemberDiscoveredEventBase() {
 				throw new UnsupportedOperationException("Not supported yet."); //ignore
 			}
 

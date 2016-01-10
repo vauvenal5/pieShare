@@ -23,4 +23,9 @@ public interface IPieDealer extends IShutdownableService {
 	 * @param callback object for unresponsive endpoints
      */
     void send(List<DiscoveredMember> endpoints, byte[] message, IEndpointCallback callback);
+	
+	/**
+	 * Re-enables the dealer after a network reset.
+	 */
+	void reconnect();
 }

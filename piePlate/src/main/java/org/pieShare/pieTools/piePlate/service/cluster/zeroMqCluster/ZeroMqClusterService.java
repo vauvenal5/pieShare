@@ -23,6 +23,8 @@ import org.pieShare.pieTools.piePlate.service.cluster.discovery.DiscoveryExcepti
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.IDiscoveryService;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.IMemberDiscoveredListener;
 import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberDiscoveredEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberEvent;
+import org.pieShare.pieTools.piePlate.service.cluster.discovery.event.MemberRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.ClusterRemovedEvent;
 import org.pieShare.pieTools.piePlate.service.cluster.event.IClusterRemovedListener;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterServiceException;
@@ -139,6 +141,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void reconnect() throws ClusterServiceException {
 		disconnect();
 		discover(clustername, routerPort);
+		this.dealer.reconnect();
 		connected.set(true);
 	}
 
@@ -147,7 +150,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		connected.set(false);
 		discovery.shutdown();
 		this.dealer.shutdown();
-		members = new ArrayList<>();
+		
 		try {
 			shutdownLock.acquire(maxDealers);
 			members.clear();
@@ -212,7 +215,13 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	}
 
 	@Override
-	public void handleObject(MemberDiscoveredEvent event) {
+	public void handleObject(MemberEvent event) {
+		//todo-sv: this is a dirty fix!!! there is a general problem
+			//with the event structure!! we are not able to subscribe to
+			//multiple listeners!!!
+		if(event instanceof MemberRemovedEvent) {
+			this.handleRemoveMember((MemberRemovedEvent)event);
+		}
 		this.connectMemberToCluster(event.getMember());
 	}
 
@@ -275,7 +284,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	}
 
 	@Override
-	public void handleRemoveMember(MemberDiscoveredEvent event) {
+	public void handleRemoveMember(MemberRemovedEvent event) {
 		try {
 			//before manipulating the list we need to make sure that no dealers
 			//are iterating over it anymore!
