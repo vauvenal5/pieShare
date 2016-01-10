@@ -99,9 +99,9 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		try {
 			this.discovery.addMemberDiscoveredListener(this);
 			this.discovery.registerService(clusterName, port);
-			members = this.discovery.list();
+			List<DiscoveredMember> newMembers = this.discovery.list();
 
-			for (DiscoveredMember m : members) {
+			for (DiscoveredMember m : newMembers) {
 				this.connectMemberToCluster(m);
 			}
 		} catch (DiscoveryException ex) {
