@@ -147,7 +147,6 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		connected.set(false);
 		discovery.shutdown();
 		this.dealer.shutdown();
-		members = new ArrayList<>();
 		try {
 			shutdownLock.acquire(maxDealers);
 			members.clear();
