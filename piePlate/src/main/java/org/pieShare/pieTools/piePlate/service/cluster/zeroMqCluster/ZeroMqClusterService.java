@@ -51,6 +51,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	private List<DiscoveredMember> members;
 	private List<DiscoveredMember> brokenEndpoints;
 	private Semaphore sendLimit;
+	private Semaphore shutdownLock;
 	private AtomicBoolean removeEndpoints;
 	private AtomicBoolean connected;
 
@@ -62,6 +63,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		this.brokenEndpoints = new ArrayList<>();
 
 		sendLimit = new Semaphore(maxDealers, true);
+		shutdownLock = new Semaphore(maxDealers, true);
 
 		removeEndpoints = new AtomicBoolean(false);
 		connected = new AtomicBoolean(false);
@@ -142,12 +144,12 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	public void disconnect() throws ClusterServiceException {
 		connected.set(false);
 		discovery.shutdown();
+		this.dealer.shutdown();
+		members = new ArrayList<>();
 		try {
-			this.dealer.shutdown();
-			
-			sendLimit.acquire(maxDealers);
+			shutdownLock.acquire(maxDealers);
 			members.clear();
-			sendLimit.release(maxDealers);
+			shutdownLock.release(maxDealers);
 		} catch (InterruptedException e) {
 			PieLogger.warn(this.getClass(), "Disconnect interrupted {}", e);
 		}
@@ -165,11 +167,12 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 			try {
 				PieLogger.debug(this.getClass(), "Sending: {}", msg.getClass());
 				byte[] message = this.outgoingChannels.get(msg.getAddress().getChannelId()).prepareMessage(msg);
-
+				
+				shutdownLock.acquire();
 				sendLimit.acquire();
 				this.dealer.send(members, message, this);
+				shutdownLock.release();
 				sendLimit.release();
-
 			} catch (Exception e) {
 				throw new ClusterServiceException(e);
 			}
