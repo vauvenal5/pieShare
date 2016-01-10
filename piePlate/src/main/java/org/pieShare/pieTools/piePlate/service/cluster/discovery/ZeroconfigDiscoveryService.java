@@ -58,7 +58,8 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 		}
 
 		try {
-			this.jmDns = JmDNS.create(this.networkService.getLocalHost(), "testHostName");
+			this.jmDns = JmDNS.create(this.networkService.getLocalHost(),
+					this.networkService.getHostname());
 		} catch (IOException ex) {
 			throw new DiscoveryException("Init of jmdns failed!", ex);
 		}
