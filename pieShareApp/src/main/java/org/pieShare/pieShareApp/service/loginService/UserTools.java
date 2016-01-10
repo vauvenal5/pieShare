@@ -71,7 +71,11 @@ public class UserTools {
             PieLogger.trace(this.getClass(), "Creating user {}!", userService.getUser().getUserName());
             createNewPwdFile(pwd1, userService.getUser().getPieShareConfiguration().getPwdFile());
             userService.getUser().setHasPasswordFile(true);
-            databaseService.persistPieUser(userService.getUser());
+
+            //This is only for Android
+            if (userService.getUser().getUserName() != null) {
+                databaseService.persistPieUser(userService.getUser());
+            }
         } catch (Exception e) {
             PieLogger.error(this.getClass(), String.format("Error creating password file. Message: %s", e.getMessage()));
             return false;

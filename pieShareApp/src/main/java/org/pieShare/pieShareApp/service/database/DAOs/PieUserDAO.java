@@ -22,7 +22,7 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class PieUserDAO {
 
     private final String InsertIntoUser = "INSERT INTO User (ID, UserName, ConfigurationID, HasPasswordFile) VALUES (?,?,?,?);";
-    private final String UpdateUser = "UPDATE User SET UserName=?, ConfigurationID=?, HasPasswordFile=?;";
+    private final String UpdateUser = "UPDATE User SET UserName=?, ConfigurationID=?, HasPasswordFile=? WHERE ID=?;";
     private final String DeleteUser = "DELETE FROM User WHERE ID=?";
     private final String FindByID = "SELECT * FROM User WHERE ID=?;";
     private final String FindAll = "SELECT * FROM User;";
@@ -71,6 +71,7 @@ public class PieUserDAO {
                 val = 1;
             }
             insertInto.setInt(3, val);
+            insertInto.setString(4, pieUserEntity.getUserName());
             insertInto.executeUpdate();
         }
         
