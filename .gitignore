@@ -13,6 +13,9 @@ nbactions-User1.xml
 botDb
 mainDb
 pieTempTest*
+testBotKey_unsafe
 testBotKey
 testMainKey
+testMainKey_unsafe
 workingDirTest*
+%s_IV

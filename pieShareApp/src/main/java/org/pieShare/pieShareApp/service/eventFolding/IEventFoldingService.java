@@ -6,6 +6,9 @@
 package org.pieShare.pieShareApp.service.eventFolding;
 
 import org.pieShare.pieShareApp.model.LocalFileEvent;
+import org.pieShare.pieShareApp.service.eventFolding.event.ILocalFilderEventListener;
+import org.pieShare.pieShareApp.service.eventFolding.event.LocalFilderEvent;
+import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 
 /**
  *
@@ -13,4 +16,5 @@ import org.pieShare.pieShareApp.model.LocalFileEvent;
  */
 public interface IEventFoldingService {
 	public void handleLocalEvent(LocalFileEvent event);
+	public IEventBase<ILocalFilderEventListener, LocalFilderEvent> getLocalFilderEventBase();
 }

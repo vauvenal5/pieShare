@@ -17,6 +17,12 @@ public class TestFileUtils {
     {
         ProcessBuilder pb;
 		
+		File parentFile = file.getParentFile();
+		
+		if(parentFile != null) {
+			parentFile.mkdirs();
+		}
+		
         if(System.getProperty("os.name").toLowerCase().contains("win")) {
                 //this tool needs the size in byte
                 long actualSize = 1024 * 1024 * sizeInMB;
