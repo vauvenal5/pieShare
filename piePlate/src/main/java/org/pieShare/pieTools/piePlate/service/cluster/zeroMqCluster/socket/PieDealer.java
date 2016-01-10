@@ -96,4 +96,8 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 	public void shutdown() {
 		this.shutdown = true;
 	}
+	
+	public void reconnect() {
+		this.shutdown = false;
+	}
 }
