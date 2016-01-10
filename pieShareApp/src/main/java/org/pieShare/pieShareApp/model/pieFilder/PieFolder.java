@@ -8,41 +8,34 @@ package org.pieShare.pieShareApp.model.pieFilder;
 import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
- * PieFolder object
+ * PieFolder
+ *  a implementation of the general PieFilder,
+ *  represents a Folder (with special Pie attributes)
  * @author daniela
  */
-public class PieFolder implements IBaseModel {
-   
-    private String relativePath;
-    private String name;
-    private boolean deleted;
+public class PieFolder extends PieFilder implements IBaseModel{
     
     public PieFolder() {
-        this.deleted = false;
-    }
+            super();
+        }
     
-    public boolean isDeleted() {
-	return deleted;
-    }
     
-    public void setDeleted(boolean deleted) {
-        this.deleted = deleted;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public void setName (String name) {
-        this.name = name;
-    }
-    
-    public String getRelativePath() {
-        return relativePath;
-    }
-    
-    public void setRelativePath(String relativePath) {
-        this.relativePath = relativePath;
+    @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof PieFolder)) {
+            //not even a PieFolder object
+            return false;
+        }
+        
+        PieFolder f = (PieFolder)o;
+        
+        if(this.getName().equalsIgnoreCase(f.getName()) &&
+                this.getRelativePath().equalsIgnoreCase(f.getRelativePath()) &&
+                this.isDeleted() == f.isDeleted()) {
+            return true;
+        }
+        
+        return false;
     }
     
 }

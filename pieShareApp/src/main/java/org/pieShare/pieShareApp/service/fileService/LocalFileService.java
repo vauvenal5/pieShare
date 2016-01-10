@@ -3,15 +3,10 @@ package org.pieShare.pieShareApp.service.fileService;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Provider;
-import org.pieShare.pieShareApp.model.PieShareAppBeanNames;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
@@ -19,54 +14,57 @@ import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashServ
  */
 public class LocalFileService extends FileServiceBase {
 
-	private IHashService hashService;
-	private Provider<PieFile> pieFileProvider;
+    private IHashService hashService;
+    private Provider<PieFile> pieFileProvider;
 
-	public void setHashService(IHashService hashService) {
-		this.hashService = hashService;
-	}
+    public void setHashService(IHashService hashService) {
+        this.hashService = hashService;
+    }
 
-	public void setPieFileProvider(Provider<PieFile> pieFileProvider) {
-		this.pieFileProvider = pieFileProvider;
-	}
+    public void setPieFileProvider(Provider<PieFile> pieFileProvider) {
+        this.pieFileProvider = pieFileProvider;
+    }
 
-	@Override
-	public List<PieFile> getAllFiles() throws IOException {
-		//todo: try first to read DB
-		final List<PieFile> pieFiles = new ArrayList();
+    @Override
+    public PieFile getPieFile(File file) throws IOException {
+        PieFile pieFile = this.pieFileProvider.get();
 
-		//todo: maybe a own service or at least function?
-		Files.walkFileTree(configuration.getWorkingDir().toPath(), new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				File realFile = file.toFile();
+        pieFile.setRelativePath(relativizeFilePath(file));
 
-				PieFile pieFile = getPieFile(realFile);
-				pieFiles.add(pieFile);
+        pieFile.setName(file.getName());
+        pieFile.setLastModified(file.lastModified());
 
-				return FileVisitResult.CONTINUE;
-			}
-		});
+        if (file.exists()) {
+            pieFile.setMd5(hashService.hashStream(file));
+        } else {
+            pieFile.setDeleted(true);
+        }
+        return pieFile;
+    }
 
-		return pieFiles;
-	}
+    @Override
+    public List<PieFile> getAllFiles() throws IOException {
+        List<PieFile> allFiles = new ArrayList<PieFile>();
+        allFiles.addAll(getFileList(configuration.getWorkingDir()));
 
-	@Override
-	public PieFile getPieFile(File file) throws IOException {
-		PieFile pieFile = this.pieFileProvider.get();
+        return allFiles;
+    }
 
-		pieFile.setRelativePath(relitivizeFilePath(file).toString());
+    private List<PieFile> getFileList(File parentDir) {
+        List<PieFile> tempFileList = new ArrayList<PieFile>();
+        File[] files = parentDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                tempFileList.addAll(getFileList(file));
+            } else {
+                try {
+                    tempFileList.add(getPieFile(file));
+                } catch (IOException ex) {
+                    PieLogger.error(this.getClass(), "File could not be accessed: {} ", ex);
+                }
+            }
+        }
+        return tempFileList;
+    }
 
-		pieFile.setName(file.getName());
-		pieFile.setLastModified(file.lastModified());
-
-		if (file.exists()) {
-			pieFile.setMd5(hashService.hashStream(file));
-		}
-		else {
-			pieFile.setDeleted(true);
-		}
-
-		return pieFile;
-	}
 }

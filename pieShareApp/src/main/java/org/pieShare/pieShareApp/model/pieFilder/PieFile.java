@@ -15,7 +15,7 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  *
  * @author richy
  */
-public class PieFile extends PieFolder implements IBaseModel, Comparable<Object> {
+public class PieFile extends PieFilder implements IBaseModel, Comparable<Object> {
 
 	private byte[] md5;
 	private long lastModified;

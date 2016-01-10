@@ -25,7 +25,7 @@ public class FolderCreateTask extends PieEventTaskBase<FolderCreateMessage> {
     @Override
     public void run() {
         try {
-            folderService.createFolder(this.msg.getPieFolder());
+            folderService.createFolder(this.msg.getPieFilder());
             
         } catch (FolderServiceException ex) {
             PieLogger.debug(this.getClass(), "Folder couldn't be created from task. {}" + ex);

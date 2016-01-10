@@ -11,8 +11,8 @@ import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
-import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
@@ -138,7 +138,7 @@ public class LoginTask implements ILoginTask {
             this.clusterManagementService.sendMessage(fileList);
 
             //send file list request message to cluster
-            IFileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
+            FileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
             msg.getAddress().setClusterName(userService.getUser().getCloudName());
             msg.getAddress().setChannelId(userService.getUser().getUserName());
             this.clusterManagementService.sendMessage(msg);

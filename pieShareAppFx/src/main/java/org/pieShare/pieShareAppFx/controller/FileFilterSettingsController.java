@@ -203,7 +203,7 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 			return;
 		}
 
-		String relative = fileService.relitivizeFilePath(choosenFile);
+		String relative = fileService.relativizeFilePath(choosenFile);
 
 		patternTextField.setText(String.format("%s/%s", relative, ".*"));
 	}
@@ -219,7 +219,7 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 			return;
 		}
 
-		String relative = fileService.relitivizeFilePath(choosenFile);
+		String relative = fileService.relativizeFilePath(choosenFile);
 
 		patternTextField.setText(relative);
 	}

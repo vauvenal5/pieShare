@@ -11,7 +11,6 @@ import java.io.File;
 import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
-import org.pieShare.pieShareApp.model.message.api.IFileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;

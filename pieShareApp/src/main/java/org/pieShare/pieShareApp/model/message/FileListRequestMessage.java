@@ -6,14 +6,12 @@
 
 package org.pieShare.pieShareApp.model.message;
 
-import org.pieShare.pieShareApp.model.message.api.IFileListRequestMessage;
 import org.pieShare.pieTools.piePlate.model.message.AClusterMessage;
-import org.pieShare.pieTools.piePlate.model.message.HeaderMessage;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
  *
  * @author Svetoslav
  */
-public class FileListRequestMessage extends AClusterMessage implements IFileListRequestMessage {
+public class FileListRequestMessage extends AClusterMessage implements IEncryptedMessage {
 }

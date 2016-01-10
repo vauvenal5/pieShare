@@ -6,11 +6,12 @@
 
 package org.pieShare.pieShareApp.model.message.fileHistoryMessage;
 
-import org.pieShare.pieShareApp.model.message.api.IFileChangedMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileHistoryMessageBase;
+
 
 /**
  *
  * @author Svetoslav
  */
-public class FileChangedMessage extends FileHistoryMessageBase implements IFileChangedMessage {
+public class FileChangedMessage extends FileHistoryMessageBase implements IFileHistoryMessageBase {
 }
