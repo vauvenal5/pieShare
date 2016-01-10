@@ -141,14 +141,16 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 	@Override
 	public void disconnect() throws ClusterServiceException {
 		connected.set(false);
+		discovery.shutdown();
 		try {
+			this.dealer.shutdown();
+			
 			sendLimit.acquire(maxDealers);
 			members.clear();
 			sendLimit.release(maxDealers);
 		} catch (InterruptedException e) {
 			PieLogger.warn(this.getClass(), "Disconnect interrupted {}", e);
 		}
-		discovery.shutdown();
 	}
 
 	@Override
