@@ -280,7 +280,6 @@ public class PieShareAppService {
     @Lazy
     public IDatabaseService databaseService() {
         DatabaseService service = new DatabaseService();
-        service.setPieDatabaseManagerFactory(pieDatabaseManagerFactory());
         service.setConverterService(modelEntityConverterService());
         service.setPieUserDAO(pieUserDAO());
         service.setPieFileDAO(pieFileDAO());
