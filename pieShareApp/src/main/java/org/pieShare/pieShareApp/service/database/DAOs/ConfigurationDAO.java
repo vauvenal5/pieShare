@@ -22,7 +22,7 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class ConfigurationDAO {
 
     private final String InsertIntoConfigutration = "INSERT INTO Configuration (ID, WorkingDir, TempDir, PwdFile) VALUES (?,?,?,?);";
-    private final String UpdateConfigutration = "UPDATE Configuration SET WorkingDir=?, TempDir=?, PwdFile=?;";
+    private final String UpdateConfigutration = "UPDATE Configuration SET WorkingDir=?, TempDir=?, PwdFile=? WHERE ID=?;";
     private final String DeleteConfigutration = "DELETE FROM Configuration WHERE ID=?";
     private final String FindByID = "SELECT * FROM Configuration WHERE ID=?;";
 
@@ -51,6 +51,7 @@ public class ConfigurationDAO {
             updateQuery.setString(1, configurationEntity.getWorkingDir());
             updateQuery.setString(2, configurationEntity.getTmpDir());
             updateQuery.setString(3, configurationEntity.getPwdFile());
+            updateQuery.setString(4, configurationEntity.getUser());
             updateQuery.executeUpdate();
         }
     }

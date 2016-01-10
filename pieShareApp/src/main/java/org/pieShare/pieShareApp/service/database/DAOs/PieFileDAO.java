@@ -28,12 +28,12 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class PieFileDAO {
 
     //private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
-      private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched, MD5) VALUES (?,?,?,?,?,?);";
+    private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched, MD5) VALUES (?,?,?,?,?,?);";
     private final String SetAllSyncedTrue = "UPDATE PieFile SET Synched=1 WHERE Synched=0;";
     private final String FindAll = "SELECT * FROM PieFile;";
     private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=1;";
     private final String FindByID = "SELECT * FROM PieFile WHERE RelativeFilePath=?;";
-    private final String UpdatePieFile = "UPDATE PieFile SET RelativeFilePath=?, FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=?;";
+    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=? WHERE RelativeFilePath=?;";
 
     //private final String DeletePieFile = "DELETE FROM PieFile WHERE AbsoluteWorkingPath=?";
     private IPieDatabaseManagerFactory databaseFactory;
@@ -75,24 +75,26 @@ public class PieFileDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (PreparedStatement updateQuery = con.prepareStatement(UpdatePieFile)) {
-            updateQuery.setString(1, pieFileEntity.getRelativeFilePath());
-            updateQuery.setString(2, pieFileEntity.getFileName());
+            //updateQuery.setString(1, pieFileEntity.getRelativeFilePath());
+            updateQuery.setString(1, pieFileEntity.getFileName());
 
-            updateQuery.setLong(3, pieFileEntity.getLastModified());
+            updateQuery.setLong(2, pieFileEntity.getLastModified());
 
             int val = 0;
             if (pieFileEntity.isDeleted()) {
                 val = 1;
             }
-            updateQuery.setInt(4, val);
+            updateQuery.setInt(3, val);
 
             val = 0;
             if (pieFileEntity.isSynched()) {
                 val = 1;
             }
-            updateQuery.setInt(5, val);
+            updateQuery.setInt(4, val);
 
-            updateQuery.setBytes(6, pieFileEntity.getMd5());
+            updateQuery.setBytes(5, pieFileEntity.getMd5());
+
+            updateQuery.setString(6, pieFileEntity.getRelativeFilePath());
             updateQuery.executeUpdate();
         }
     }
@@ -152,7 +154,7 @@ public class PieFileDAO {
             entity.setLastModified(results.getLong("LastModified"));
             entity.setDeleted(results.getInt("Deleted") != 0);
             entity.setSynched(results.getInt("Synched") != 0);
-            entity.setMd5( results.getBytes("MD5"));
+            entity.setMd5(results.getBytes("MD5"));
             entities.add(entity);
         }
 
