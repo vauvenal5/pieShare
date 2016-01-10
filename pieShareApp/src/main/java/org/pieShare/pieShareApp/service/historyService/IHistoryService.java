@@ -14,7 +14,6 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 /**
  *
  * @author Svetoslav
- * todo: add folders (filders?) to history service
  */
 public interface IHistoryService {
 	void syncPieFileWithDb(PieFile pieFile);
@@ -22,18 +21,20 @@ public interface IHistoryService {
 	List<PieFile> syncLocalPieFilesWithHistory();
         
         /**
-         * @param pieFolder 
+         * Sync PieFolder to DB.
+         * @param pieFolder Folder to sync.
          */
         void syncPieFolderWithDb(PieFolder pieFolder);
         
         /**
-         * @param pieFolder
-         * @return 
+         * Sync the delete from a folder to DB.
+         * @param pieFolder deleted folder.
+         * @return deleted PieFolder from DB
          */
         PieFolder syncDeletePieFolderToHistory(PieFolder pieFolder);
         
         /**
-         * 
+         * TODO! Not supported yet!
          * @return 
          */
         List<PieFolder> syncLocalPieFolderWithHistory();
