@@ -34,7 +34,6 @@ public class PieFileEntity implements IPieFileEntity{
 		this.synched = synched;
 	}
 	
-        /*
         @Override
 	public byte[] getMd5() {
 		return md5;
@@ -84,6 +83,4 @@ public class PieFileEntity implements IPieFileEntity{
 	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
 	}
-	
-	
 }

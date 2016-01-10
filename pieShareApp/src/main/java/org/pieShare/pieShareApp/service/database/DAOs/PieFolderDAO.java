@@ -5,9 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.database.DAOs;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,91 +12,78 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.rowset.serial.SerialBlob;
-import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.model.entities.PieFolderEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**
  *
  * @author RicLeo00
  */
-public class PieFileDAO {
+public class PieFolderDAO {
 
-    //private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
-    private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched, MD5) VALUES (?,?,?,?,?,?);";
-    private final String SetAllSyncedTrue = "UPDATE PieFile SET Synched=1 WHERE Synched=0;";
-    private final String FindAll = "SELECT * FROM PieFile;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=1;";
-    private final String FindByID = "SELECT * FROM PieFile WHERE RelativeFilePath=?;";
-    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=? WHERE RelativeFilePath=?;";
+    private final String InsertPieFolder = "INSERT INTO PieFolder (RelativeFilePath, FileName, Deleted, Synched) VALUES (?,?,?,?);";
+    private final String SetAllSyncedTrue = "UPDATE PieFolder SET Synched=1 WHERE Synched=0;";
+    private final String FindAll = "SELECT * FROM PieFolder;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=1;";
+    private final String FindByID = "SELECT * FROM PieFolder WHERE RelativeFilePath=?;";
+    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=? WHERE RelativeFilePath=?;";
+    private final String DeletePieFile = "DELETE FROM PieFolder WHERE RelativeFilePath=?";
 
-    //private final String DeletePieFile = "DELETE FROM PieFile WHERE AbsoluteWorkingPath=?";
     private IPieDatabaseManagerFactory databaseFactory;
 
     public void setDatabaseFactory(IPieDatabaseManagerFactory databaseFactory) {
         this.databaseFactory = databaseFactory;
     }
 
-    public void savePieFile(PieFileEntity pieFileEntity) throws SQLException {
+    public void savePiePieFolder(PieFolderEntity pieFolderEntity) throws SQLException {
 
         Connection con = databaseFactory.getDatabaseConnection();
 
-        try (PreparedStatement insertInto = con.prepareStatement(InsertPieFile)) {
-            insertInto.setString(1, pieFileEntity.getRelativeFilePath());
-            insertInto.setString(2, pieFileEntity.getFileName());
-
-            insertInto.setLong(3, pieFileEntity.getLastModified());
+        try (PreparedStatement insertInto = con.prepareStatement(InsertPieFolder)) {
+            insertInto.setString(1, pieFolderEntity.getRelativeFolderPath());
+            insertInto.setString(2, pieFolderEntity.getFolderName());
 
             int val = 0;
-            if (pieFileEntity.isDeleted()) {
+            if (pieFolderEntity.isDeleted()) {
+                val = 1;
+            }
+            insertInto.setInt(3, val);
+
+            val = 0;
+            if (pieFolderEntity.isSynced()) {
                 val = 1;
             }
             insertInto.setInt(4, val);
-
-            val = 0;
-            if (pieFileEntity.isSynched()) {
-                val = 1;
-            }
-            insertInto.setInt(5, val);
-            insertInto.setBytes(6, pieFileEntity.getMd5());
-
-            // insertInto.setBlob(6, new SerialBlob(pieFileEntity.getMd5()));
             insertInto.executeUpdate();
         }
     }
 
-    public void updatePieFile(PieFileEntity pieFileEntity) throws SQLException {
+    public void updatePieFolder(PieFolderEntity pieFolderEntity) throws SQLException {
 
         Connection con = databaseFactory.getDatabaseConnection();
 
-        try (PreparedStatement updateQuery = con.prepareStatement(UpdatePieFile)) {
-            //updateQuery.setString(1, pieFileEntity.getRelativeFilePath());
-            updateQuery.setString(1, pieFileEntity.getFileName());
-
-            updateQuery.setLong(2, pieFileEntity.getLastModified());
+        try (PreparedStatement updateQuery = con.prepareStatement(UpdatePieFolder)) {
+            updateQuery.setString(1, pieFolderEntity.getFolderName());
 
             int val = 0;
-            if (pieFileEntity.isDeleted()) {
+            if (pieFolderEntity.isDeleted()) {
+                val = 1;
+            }
+            updateQuery.setInt(2, val);
+
+            val = 0;
+            if (pieFolderEntity.isSynced()) {
                 val = 1;
             }
             updateQuery.setInt(3, val);
 
-            val = 0;
-            if (pieFileEntity.isSynched()) {
-                val = 1;
-            }
-            updateQuery.setInt(4, val);
-
-            updateQuery.setBytes(5, pieFileEntity.getMd5());
-
-            updateQuery.setString(6, pieFileEntity.getRelativeFilePath());
+            updateQuery.setString(4, pieFolderEntity.getRelativeFolderPath());
             updateQuery.executeUpdate();
         }
     }
 
-    public void resetAllPieFileSynchedFlags() throws SQLException {
+    public void resetAllPieFolderSynchedFlags() throws SQLException {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (Statement stmt = con.createStatement()) {
@@ -107,10 +91,19 @@ public class PieFileDAO {
         }
     }
 
-    public PieFileEntity findPieFileById(String relativeFilePath) throws SQLException {
+    public void deletePieFolder(String relativeFilePath) throws SQLException {
+        Connection con = databaseFactory.getDatabaseConnection();
+
+        try (PreparedStatement updateQuery = con.prepareStatement(DeletePieFile)) {
+            updateQuery.setString(1, relativeFilePath);
+            updateQuery.executeUpdate();
+        }
+    }
+
+    public PieFolderEntity findPieFolderById(String relativeFilePath) throws SQLException {
 
         Connection con = databaseFactory.getDatabaseConnection();
-        List<PieFileEntity> entities;
+        List<PieFolderEntity> entities;
 
         try (PreparedStatement findById = con.prepareStatement(FindByID)) {
             findById.setString(1, relativeFilePath);
@@ -124,17 +117,17 @@ public class PieFileDAO {
         return entities.get(0);
     }
 
-    public List<PieFileEntity> findAllUnsyncedPieFiles() throws SQLException {
+    public List<PieFolderEntity> findAllUnsyncedPieFolders() throws SQLException {
         return findAllSQL(FindAllUnsyched);
     }
 
-    public List<PieFileEntity> findAllPieFiles() throws SQLException {
+    public List<PieFolderEntity> findAllPieFolders() throws SQLException {
         return findAllSQL(FindAll);
     }
 
-    private List<PieFileEntity> findAllSQL(String sql) throws SQLException {
+    private List<PieFolderEntity> findAllSQL(String sql) throws SQLException {
         Connection con = databaseFactory.getDatabaseConnection();
-        List<PieFileEntity> entities;
+        List<PieFolderEntity> entities;
 
         try (PreparedStatement findAllQuery = con.prepareStatement(sql)) {
             ResultSet results = findAllQuery.executeQuery();
@@ -143,18 +136,16 @@ public class PieFileDAO {
         return entities;
     }
 
-    private List<PieFileEntity> createFromResult(ResultSet results) throws SQLException {
-        List<PieFileEntity> entities;
+    private List<PieFolderEntity> createFromResult(ResultSet results) throws SQLException {
+        List<PieFolderEntity> entities;
         entities = new ArrayList<>();
 
         while (results.next()) {
-            PieFileEntity entity = new PieFileEntity();
-            entity.setRelativeFilePath(results.getString("RelativeFilePath"));
-            entity.setFileName(results.getString("FileName"));
-            entity.setLastModified(results.getLong("LastModified"));
+            PieFolderEntity entity = new PieFolderEntity();
+            entity.setRelativeFolderPath(results.getString("RelativeFilePath"));
+            entity.setFolderName(results.getString("FileName"));
             entity.setDeleted(results.getInt("Deleted") != 0);
-            entity.setSynched(results.getInt("Synched") != 0);
-            entity.setMd5(results.getBytes("MD5"));
+            entity.setSynced(results.getInt("Synched") != 0);
             entities.add(entity);
         }
 
