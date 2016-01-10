@@ -200,6 +200,7 @@ public class PieShareAppService {
         EventFoldingService service = new EventFoldingService();
         service.setEventFoldingTimerTaskProvider(this.providers.eventFoldingTimerTaskProvider);
         service.setFileService(this.localFileService());
+		service.setLocalFilderEventBase(this.utilities.eventBase());
         service.init();
         return service;
     }

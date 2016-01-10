@@ -82,6 +82,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 		try {
 			boolean seeder = this.torrent.isSeeder();
 			File destDir = this.fileService.getAbsoluteTmpPath(this.fileMeta.getFile()).getParentFile();
+			destDir.mkdirs();
 
 			//todo: ther is a bug when triing to share 0 byte files
 			//start a tracker for each file seperately
