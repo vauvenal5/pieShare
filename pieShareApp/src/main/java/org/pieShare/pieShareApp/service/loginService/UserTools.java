@@ -173,6 +173,8 @@ public class UserTools {
 
     public boolean logout() {
         PieUser user = userService.getUser();
+        user.setPassword(null);
+        user.setIsLoggedIn(false);
         try {
             File unencryptedFile = new File(String.format(unsafeFile, user.getPieShareConfiguration().getPwdFile().getCanonicalPath()));
             unencryptedFile.delete();
@@ -181,9 +183,6 @@ public class UserTools {
             if (ivF.exists()) {
                 ivF.delete();
             }
-
-            user.setPassword(null);
-            user.setIsLoggedIn(false);
 
             this.clusterManagementService.disconnect(user.getCloudName());
 

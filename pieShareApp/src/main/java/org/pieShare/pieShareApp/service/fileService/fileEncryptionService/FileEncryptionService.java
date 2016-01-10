@@ -71,6 +71,7 @@ public class FileEncryptionService implements IFileEncryptionService {
 		
 		try {
 			FileInputStream stream = new FileInputStream(source);
+			target.getParentFile().mkdirs();
 			FileOutputStream fileStream = new FileOutputStream(target, append);
 			CipherOutputStream outputStream = new CipherOutputStream(fileStream, this.getCipher(Cipher.ENCRYPT_MODE));		
 			//Base64OutputStream base64OutStream = new Base64OutputStream(fileStream);
@@ -92,6 +93,7 @@ public class FileEncryptionService implements IFileEncryptionService {
 			CipherInputStream stream = new CipherInputStream(fileStream, this.getCipher(Cipher.DECRYPT_MODE));
 			//Base64InputStream base64Input = new Base64InputStream(fileStream);
 			//FileOutputStream outputStream = new FileOutputStream(this.fileService.getAbsolutePath(workingFile).toFile());
+			target.getParentFile().mkdirs();
 			FileOutputStream outputStream = new FileOutputStream(target, append);
 			this.rewriteFile(stream, outputStream);
 		} catch (FileNotFoundException ex) {
