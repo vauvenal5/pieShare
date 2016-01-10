@@ -43,7 +43,7 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 		int endpoints = 0;
 		List<DiscoveredMember> brokenMembers = new ArrayList<>();
 
-		//todo: this actually does not work!!! the socket does not throw an
+		//todo-part1: this actually does not work!!! the socket does not throw an
 		//exception when he can not connect to the endpoint
 		//this is most likely due to zeroMQs reconnection logic
 		for (DiscoveredMember member : members) {
@@ -84,9 +84,12 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 		
 		sock.close();
 		
-		if(brokenMembers.size() > 0 && !shutdown) {
-			callback.nonRespondingEndpoint(brokenMembers);
-		}
+		//todo-part2: due to the fact that we are not able to recognize the
+			//the broken endpoints as intendet it is not nesseccary to make
+			//this call at all would only make things more difficult.
+//		if(brokenMembers.size() > 0 && !shutdown) {
+//			callback.nonRespondingEndpoint(brokenMembers);
+//		}
 	}
 
 	@Override
