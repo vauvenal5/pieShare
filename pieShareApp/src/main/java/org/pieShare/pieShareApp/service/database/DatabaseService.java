@@ -112,7 +112,11 @@ public class DatabaseService implements IDatabaseService {
         PieUserEntity entity;
         entity = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
         try {
-            pieUserDAO.updatePieUser(entity);
+            if (pieUserDAO.findPieUserById(user.getCloudName()) != null) {
+                pieUserDAO.updatePieUser(entity);
+            } else {
+                pieUserDAO.savePieUser(entity);
+            }
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Merging PieUser", ex);
         }
@@ -309,7 +313,7 @@ public class DatabaseService implements IDatabaseService {
         try {
             pieFolderDAO.resetAllPieFolderSynchedFlags();
         } catch (SQLException ex) {
-             PieLogger.error(this.getClass(), "Error resetAllPieFolderSyncedFlags!", ex);
+            PieLogger.error(this.getClass(), "Error resetAllPieFolderSyncedFlags!", ex);
         }
     }
 
@@ -319,7 +323,7 @@ public class DatabaseService implements IDatabaseService {
         try {
             pieFolderDAO.deletePieFolder(entity.getRelativeFolderPath());
         } catch (SQLException ex) {
-             PieLogger.error(this.getClass(), "Error delete pieFolder!", ex);
+            PieLogger.error(this.getClass(), "Error delete pieFolder!", ex);
         }
     }
 }
