@@ -16,9 +16,11 @@ public interface IClusterService {
 
 	void connect(String clusterName) throws ClusterServiceException;
 	
-	String getId();
+	String getClustername();
 	
-	void setId(String id);
+	void setClustername(String id);
+	
+	void reconnect() throws ClusterServiceException;
 	
 	void disconnect() throws ClusterServiceException;
 

@@ -12,16 +12,11 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.nio.channels.ServerSocketChannel;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -125,8 +120,8 @@ public class NetworkService implements INetworkService {
 		if (this.useFixedNic()) {
 			return ad;
 		} else {
-			
-			try(Socket s = new Socket()) {
+
+			try (Socket s = new Socket()) {
 				s.setSoTimeout(5000);
 				s.connect(new InetSocketAddress("www.google.com", 80));
 				s.getOutputStream();
@@ -137,7 +132,7 @@ public class NetworkService implements INetworkService {
 			} catch (IOException ex) {
 				PieLogger.info(this.getClass(), "No internet here!", ex);
 			}
-			
+
 			//test internet connection
 //			try (ServerSocketChannel socket = ServerSocketChannel.open()) {
 //				socket.socket().setSoTimeout(5000);
@@ -212,7 +207,7 @@ public class NetworkService implements INetworkService {
 							return ads.get(0);
 						}
 					}
-				} else if (!nic.isLoopback() && !nic.isVirtual() 
+				} else if (!nic.isLoopback() && !nic.isVirtual()
 						&& nic.isUp() && !nic.getName().contains("vbox")) {
 					List<InetAddress> ads = this.checkAddresses(nic);
 					if (ads.size() == 1) {
@@ -266,5 +261,25 @@ public class NetworkService implements INetworkService {
 	public synchronized void freeReservedPort(int port) throws IOException {
 		ServerSocket socket = this.reservedSockets.get(port);
 		socket.close();
+	}
+
+	@Override
+	public String getHostname() {		
+		if (System.getProperty("os.name").startsWith("Windows")) {
+			// Windows will always set the 'COMPUTERNAME' variable
+			return System.getenv("COMPUTERNAME");
+		} else {
+			// If it is not Windows then it is most likely a Unix-like operating system
+			// such as Solaris, AIX, HP-UX, Linux or MacOS.
+
+			// Most modern shells (such as Bash or derivatives) sets the 
+			// HOSTNAME variable so lets try that first.
+			String hostname = System.getenv("HOSTNAME");
+			if (hostname != null) {
+				return hostname;
+			} 
+		}
+		
+		return String.format("Pie-On-%s", System.getProperty("os.name"));
 	}
 }

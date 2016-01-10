@@ -29,4 +29,6 @@ public interface INetworkService {
 	int reserveAvailablePortStartingFrom(int port) throws IOException;
 	
 	void freeReservedPort(int port) throws IOException;
+	
+	String getHostname();
 }
