@@ -118,6 +118,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 			//todo: errorState discovery is just a dirty fix for bug in ttorrent library!!
 			boolean loopDone = false;
 			long lastAmount = 0;
+			int peerCount = 0;
 			int errorSeconds = 0;
 			int sleepTime = 1000;
 			int errorThreshold = 30000 / sleepTime;
@@ -165,12 +166,14 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 
 				if (!Client.ClientState.VALIDATING.equals(client.getState())) {
 					long currentState = sharedTorrent.getDownloaded();
+					int currentPeers = client.getPeers().size();
 
 					if (seeder) {
 						currentState = sharedTorrent.getUploaded();
 					}
 
-					if (currentState == lastAmount) {
+					if (currentState == lastAmount
+							&& currentPeers == peerCount) {
 						errorSeconds++;
 					} else {
 						errorSeconds = 0;
@@ -182,6 +185,7 @@ public class TorrentTask extends AMessageSendingTask implements IShutdownableSer
 					}
 
 					lastAmount = currentState;
+					peerCount = currentPeers;
 				}
 			}
 
