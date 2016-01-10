@@ -12,59 +12,39 @@ import org.pieShare.pieShareApp.service.configurationService.api.IPieShareConfig
  *
  * @author Richard
  */
-public class PieShareConfiguration implements IPieShareConfiguration {
+public class PieShareConfiguration implements IPieShareConfiguration{
 
-    private File workingDir;
-    private File tmpDir;
-    private File pwdFile;
+	private File workingDir;
+	private File tmpDir;
+	private File pwdFile;
+	
+	@Override
+	public File getWorkingDir() {
+		return workingDir;
+	}
 
-    @Override
-    public File getWorkingDir() {
-        return getAndCreateFirst(workingDir);
-    }
+	@Override
+	public void setWorkingDir(File workingDir) {
+		this.workingDir = workingDir;
+	}
 
-    @Override
-    public void setWorkingDir(File workingDir) {
-        this.workingDir = workingDir;
-    }
+	@Override
+	public File getTmpDir() {
+		return tmpDir;
+	}
 
-    @Override
-    public File getTmpDir() {
-        return getAndCreateFirst(tmpDir);
-    }
+	@Override
+	public void setTmpDir(File tmpDir) {
+		this.tmpDir = tmpDir;
+	}
 
-    @Override
-    public void setTmpDir(File tmpDir) {
-        this.tmpDir = tmpDir;
-    }
+	@Override
+	public File getPwdFile() {
+		return pwdFile;
+	}
 
-    @Override
-    public File getPwdFile() {
-        return getAndCreateFirst(pwdFile);
-    }
-
-    @Override
-    public void setPwdFile(File pwdFile) {
-        this.pwdFile = pwdFile;
-    }
-
-	//TODO remove again because it is not needed anymore and didn't work as intended anyways
-    private File getAndCreateFirst(File file) {
-		if(file == null) {
-			return file;
-		}
-		
-        if (file.isDirectory()) {
-            if (!file.exists()) {
-                file.mkdirs();
-            }
-        }
-		else {
-			File parentFile = file.getParentFile();
-			if(parentFile != null && !parentFile.exists()) {
-				parentFile.mkdirs();
-			}
-		}
-        return file;
-    }
+	@Override
+	public void setPwdFile(File pwdFile) {
+		this.pwdFile = pwdFile;
+	}
 }
