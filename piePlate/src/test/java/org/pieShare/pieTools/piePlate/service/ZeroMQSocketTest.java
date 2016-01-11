@@ -15,6 +15,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCal
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class ZeroMQSocketTest {
 	
@@ -41,6 +42,7 @@ public class ZeroMQSocketTest {
 
 	@Test
 	public void testSendRecv() {
+		PieLogger.info(this.getClass(), "Starting testSendRecv!{}");
 		Thread n = new Thread(new Runnable() {
 			@Override
 			public void run() {
