@@ -24,19 +24,21 @@ public interface IFileFilterService {
 	void removeFilter(IFilter filer);
 
 	/**
-         * Check if a PieFile sync is not blocked by a filter
-         * @param file to check
-         * @return true if sync is allowed, false otherwise
-         */
-        boolean checkFile(PieFile file);
-	
-        /**
-         * Check if a file sync is not blocked by a filter
-         * @param file to check
-         * @return true if sync is allowed, false otherwise
-         */
+	 * Check if a PieFile sync is not blocked by a filter
+	 *
+	 * @param file to check
+	 * @return true if sync is allowed, false otherwise
+	 */
+	boolean checkFile(PieFile file);
+
+	/**
+	 * Check if a file sync is not blocked by a filter
+	 *
+	 * @param file to check
+	 * @return true if sync is allowed, false otherwise
+	 */
 	boolean checkFile(File file);
-	
+
 	ArrayList<IFilter> getAllFilters();
 
 }

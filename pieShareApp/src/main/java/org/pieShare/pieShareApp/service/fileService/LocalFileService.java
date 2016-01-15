@@ -33,6 +33,7 @@ public class LocalFileService extends FileServiceBase {
 
         pieFile.setName(file.getName());
         pieFile.setLastModified(file.lastModified());
+		pieFile.setSize(file.length());
 
         if (file.exists()) {
             pieFile.setMd5(hashService.hashStream(file));
