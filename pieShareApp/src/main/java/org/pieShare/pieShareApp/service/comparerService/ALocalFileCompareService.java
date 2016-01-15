@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.comparerService;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -16,62 +17,23 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public abstract class ALocalFileCompareService implements ILocalFileCompareService{
 	
-	private ALocalFileCompareService wrappedCompareService;
-
-	public void setWrappedCompareService(ALocalFileCompareService wrappedCompareService) {
-		this.wrappedCompareService = wrappedCompareService;
-	}
-	
-	protected abstract PieFile getLocalPieFile(PieFile remoteFile) throws NullPointerException, IOException;
-	
-	protected boolean equalsWithLocal(PieFile remoteFile) throws NullPointerException, IOException {
-		try {
-			if(this.wrappedCompareService != null) {
-				return this.wrappedCompareService.equalsWithLocal(remoteFile);
-			}
-		}
-		catch(NullPointerException ex) {
-			//do nothing
-		}
-		
-		PieFile local = this.getLocalPieFile(remoteFile);
-		return local.equals(remoteFile);
-	}
+	protected abstract PieFile getPieFile(PieFile file);
 	
 	@Override
 	public boolean equalsWithLocalPieFile(PieFile remoteFile) {
-		try {
-			return this.equalsWithLocal(remoteFile);
-		}
-		catch(NullPointerException | IOException ex) {
-			//do nothing
-		}
-		
-		return false;
-	}
-	
-	protected int compareToLocal(PieFile remoteFile) throws NullPointerException, IOException {
-		try {
-			if(this.wrappedCompareService != null) {
-				return this.wrappedCompareService.compareToLocal(remoteFile);
-			}
-		}
-		catch(NullPointerException ex) {
-			//do nothing
-		}
-		
-		PieFile local= this.getLocalPieFile(remoteFile);
-		return local.compareTo(remoteFile);
+		PieFile local = this.getPieFile(remoteFile);
+		return local != null && local.equals(remoteFile);
 	}
 	
 	@Override
 	public int compareToLocalPieFile(PieFile remoteFile) {
-		try {
-			return this.compareToLocal(remoteFile);
-		}
-		catch(NullPointerException | IOException ex) {
+		PieFile local = this.getPieFile(remoteFile);
+		
+		if(local == null) {
 			return -1;
 		}
+		
+		return local.compareTo(remoteFile);
 	}
 	
 	@Override

@@ -112,5 +112,15 @@ public class HistoryService implements IHistoryService {
 		searchFolder.setRelativePath(this.fileService.relativizeFilePath(file));
 		return this.databaseService.findPieFolder(searchFolder);
 	}
+
+	@Override
+	public PieFile getPieFileFromHistory(PieFile file) {
+		return this.databaseService.findPieFile(file);
+	}
+
+	@Override
+	public List<PieFile> getPieFiles() {
+		return this.databaseService.findAllPieFiles();
+	}
 	
 }

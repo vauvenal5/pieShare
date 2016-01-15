@@ -165,21 +165,14 @@ public class PieShareAppService {
     public ILocalFileCompareService fileCompareService() {
         FileCompareService service = new FileCompareService();
         service.setFileService(this.localFileService());
-        service.setWrappedCompareService(this.historyCompareServicePrivate());
         return service;
     }
 
     @Bean
     @Lazy
     public ILocalFileCompareService historyCompareService() {
-        return this.historyCompareServicePrivate();
-    }
-
-    @Bean
-    @Lazy
-    protected ALocalFileCompareService historyCompareServicePrivate() {
         FileHistoryCompareService historyService = new FileHistoryCompareService();
-        historyService.setHistoryService(this.historyFileService());
+        historyService.setHistoryService(this.historyService());
         return historyService;
     }
 
@@ -229,15 +222,6 @@ public class PieShareAppService {
         this.fileServiceBase(service);
         service.setPieFileProvider(this.providers.pieFileProvider);
         service.setHashService(this.utilities.md5Service());
-        return service;
-    }
-
-    @Bean
-    @Lazy
-    public HistoryFileService historyFileService() {
-        HistoryFileService service = new HistoryFileService();
-        this.fileServiceBase(service);
-        service.setDatabaseService(this.databaseService());
         return service;
     }
 

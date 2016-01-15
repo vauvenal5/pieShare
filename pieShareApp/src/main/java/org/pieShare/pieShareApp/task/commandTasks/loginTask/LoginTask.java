@@ -134,7 +134,7 @@ public class LoginTask implements ILoginTask {
             IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
             fileList.getAddress().setClusterName(userService.getUser().getCloudName());
             fileList.getAddress().setChannelId(userService.getUser().getUserName());
-            fileList.setFileList(this.fileService.getAllFiles());
+            fileList.setFileList(this.historyService.getPieFiles());
             this.clusterManagementService.sendMessage(fileList);
 
             //send file list request message to cluster

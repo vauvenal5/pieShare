@@ -7,6 +7,8 @@
 package org.pieShare.pieShareApp.service.comparerService;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
@@ -25,7 +27,11 @@ public class FileCompareService extends ALocalFileCompareService implements ILoc
 	}
 
 	@Override
-	protected PieFile getLocalPieFile(PieFile remoteFile) throws NullPointerException, IOException {
-		return this.fileService.getPieFile(remoteFile.getRelativePath());
+	protected PieFile getPieFile(PieFile remoteFile) {
+		try {
+			return this.fileService.getPieFile(remoteFile.getRelativePath());
+		} catch (IOException ex) {
+			return null;
+		}
 	}
 }
