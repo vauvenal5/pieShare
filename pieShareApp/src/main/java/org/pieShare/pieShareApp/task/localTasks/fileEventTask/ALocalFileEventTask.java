@@ -22,7 +22,6 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
     protected IFileService fileService;
     protected IHistoryService historyService;
     protected IFileWatcherService fileWatcherService;
-    protected IFileService historyFileService;
 
     public ALocalFileEventTask() {
     }
@@ -40,10 +39,6 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
         this.fileService = fileService;
     }
 
-    public void setHistoryFileService(IFileService historyFileService) {
-        this.historyFileService = historyFileService;
-    }
-
     protected PieFile prepareWork() throws IOException {
         if (!syncAllowed()) {
             return null;
@@ -55,7 +50,7 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
 
         PieFile pieFile = this.fileService.getPieFile(file);
 
-        PieFile oldPieFile = this.historyFileService.getPieFile(this.file);
+        PieFile oldPieFile = this.historyService.getPieFileFromHistory(file);
 
         if (oldPieFile != null && oldPieFile.equals(pieFile)) {
             return null;

@@ -36,8 +36,8 @@ public interface IFileService extends IFilderService {
 	
 	void setCorrectModificationDateOnTmpFile(PieFile file);
 	
-        PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException;
+        //PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException;
         
-        PieFile getWorkingPieFile(PieFile file) throws FileNotFoundException, IOException;
+        //PieFile getWorkingPieFile(PieFile file) throws FileNotFoundException, IOException;
 
 }

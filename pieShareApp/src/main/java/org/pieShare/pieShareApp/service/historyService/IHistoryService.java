@@ -41,4 +41,8 @@ public interface IHistoryService {
 		
 	PieFile getPieFileFromHistory(File file);
 	PieFolder getPieFolderFromHistory(File file);
+	
+	PieFile getPieFileFromHistory(PieFile file);
+	
+	List<PieFile> getPieFiles();
 }
