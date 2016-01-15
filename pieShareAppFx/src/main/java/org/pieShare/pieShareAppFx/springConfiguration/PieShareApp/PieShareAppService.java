@@ -147,6 +147,7 @@ public class PieShareAppService {
         service.setClusterManagementService(this.plate.clusterManagementService());
         service.setMessageFactoryService(this.messageFactoryService());
         service.setUserService(userService());
+		service.setFilterService(this.fileFilterService());
         return service;
     }
 
