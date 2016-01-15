@@ -11,20 +11,21 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 
 /**
  *
  * @author Svetoslav
  */
 public class FileHistoryCompareService extends ALocalFileCompareService implements ILocalFileCompareService {
-	private IFileService historyService;
+	private IHistoryService historyService;
 
-	public void setHistoryService(IFileService historyService) {
+	public void setHistoryService(IHistoryService historyService) {
 		this.historyService = historyService;
 	}
 
 	@Override
-	protected PieFile getLocalPieFile(PieFile remoteFile) throws NullPointerException, IOException {
-		return this.historyService.getWorkingPieFile(remoteFile);
+	protected PieFile getPieFile(PieFile remoteFile) {
+		return this.historyService.getPieFileFromHistory(remoteFile);
 	}
 }
