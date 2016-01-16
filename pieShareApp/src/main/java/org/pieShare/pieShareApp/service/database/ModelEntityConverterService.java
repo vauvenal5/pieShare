@@ -11,16 +11,11 @@ import java.io.IOException;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
-import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
-import org.pieShare.pieShareApp.model.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFolderEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
+import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
+import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
@@ -40,18 +35,18 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public IPieFileEntity convertToEntity(PieFile file) {
-        IPieFileEntity entity = new PieFileEntity();
+    public PieFileEntity convertToEntity(PieFile file) {
+        PieFileEntity entity = new PieFileEntity();
         entity.setMd5(file.getMd5());
         entity.setLastModified(file.getLastModified());
         entity.setFileName(file.getName());
-        entity.setRelativeFilePath(file.getRelativePath());
         entity.setDeleted(file.isDeleted());
+        entity.setId(file.getId());
         return entity;
     }
 
     @Override
-    public PieFile convertFromEntity(IPieFileEntity entity) {
+    public PieFile convertFromEntity(PieFileEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -60,14 +55,14 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         file.setName(entity.getFileName());
         file.setLastModified(entity.getLastModified());
         file.setMd5(entity.getMd5());
-        file.setRelativePath(entity.getRelativeFilePath());
+        file.setId(entity.getId());
         file.setDeleted(entity.isDeleted());
         return file;
     }
 
     @Override
-    public IPieUserEntity convertToEntity(PieUser user) {
-        IPieUserEntity entity = new PieUserEntity();
+    public PieUserEntity convertToEntity(PieUser user) {
+        PieUserEntity entity = new PieUserEntity();
         entity.setHasPasswordFile(user.hasPasswordFile());
         entity.setUserName(user.getUserName());
         entity.setConfigurationEntity(this.convertToEntity(user.getPieShareConfiguration(), user));
@@ -76,7 +71,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public PieUser convertFromEntity(IPieUserEntity entity) {
+    public PieUser convertFromEntity(PieUserEntity entity) {
         PieUser user = userService.getUser();
         user.setHasPasswordFile(entity.isHasPasswordFile());
         user.setUserName(entity.getUserName());
@@ -86,7 +81,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public PieShareConfiguration convertFromEntity(IConfigurationEntity entity) {
+    public PieShareConfiguration convertFromEntity(ConfigurationEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -98,7 +93,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public IConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user) {
+    public ConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user) {
         ConfigurationEntity entity = new ConfigurationEntity();
         try {
             entity.setPwdFile(conf.getPwdFile().getCanonicalPath());
@@ -113,7 +108,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public IFileFilterEntity convertToEntity(IFilter filter) {
+    public FilterEntity convertToEntity(IFilter filter) {
         //ToDo: Spring
         FilterEntity en = new FilterEntity();
         en.setPattern(filter.getPattern());
@@ -121,24 +116,24 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     }
 
     @Override
-    public RegexFileFilter convertFromEntity(IFileFilterEntity entity) {
+    public RegexFileFilter convertFromEntity(FilterEntity entity) {
         RegexFileFilter filter = new RegexFileFilter();
         filter.setPattern(entity.getPattern());
         return filter;
     }
 
     @Override
-    public IPieFolderEntity convertToEntity(PieFolder folder) {
-        IPieFolderEntity entity = new PieFolderEntity();
+    public PieFolderEntity convertToEntity(PieFolder folder) {
+        PieFolderEntity entity = new PieFolderEntity();
         entity.setDeleted(folder.isDeleted());
         entity.setFolderName(folder.getName());
-        entity.setRelativeFolderPath(folder.getRelativePath());
+        entity.setId(folder.getId());
 
         return entity;
     }
 
     @Override
-    public PieFolder convertFromEntity(IPieFolderEntity entity) {
+    public PieFolder convertFromEntity(PieFolderEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -146,7 +141,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         PieFolder folder = new PieFolder();
         folder.setDeleted(entity.isDeleted());
         folder.setName(entity.getFolderName());
-        folder.setRelativePath(entity.getRelativeFolderPath());
+        folder.setId(entity.getId());
         return folder;
     }
 }

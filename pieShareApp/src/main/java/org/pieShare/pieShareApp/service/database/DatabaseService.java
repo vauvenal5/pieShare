@@ -5,14 +5,19 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieUser;
-import org.pieShare.pieShareApp.model.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFolderEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
+import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
+import org.pieShare.pieShareApp.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.database.DAOs.FileFilterDAO;
@@ -22,6 +27,7 @@ import org.pieShare.pieShareApp.service.database.DAOs.PieUserDAO;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
+import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -31,6 +37,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DatabaseService implements IDatabaseService {
 
     private IModelEntityConverterService modelEntityConverterService;
+    private UserService userService;
 
     private PieUserDAO pieUserDAO;
     private FileFilterDAO fileFilterDAO;
@@ -64,7 +71,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void persistPieUser(PieUser model) {
         try {
-            pieUserDAO.savePieUser((PieUserEntity) modelEntityConverterService.convertToEntity(model));
+            pieUserDAO.savePieUser(modelEntityConverterService.convertToEntity(model));
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieUser", ex);
         }
@@ -93,7 +100,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void removePieUser(PieUser user) {
         PieUserEntity ent;
-        ent = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
+        ent = modelEntityConverterService.convertToEntity(user);
         try {
             pieUserDAO.deletePieUser(ent);
         } catch (SQLException ex) {
@@ -104,7 +111,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void mergePieUser(PieUser user) {
         PieUserEntity entity;
-        entity = (PieUserEntity) modelEntityConverterService.convertToEntity(user);
+        entity = modelEntityConverterService.convertToEntity(user);
         try {
             if (pieUserDAO.findPieUserById(user.getCloudName()) != null) {
                 pieUserDAO.updatePieUser(entity);
@@ -163,7 +170,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void mergePieFile(PieFile file) {
         try {
-            PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
+            PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
 
             if (pieFileDAO.findPieFileById(file.getRelativePath()) != null) {
                 pieFileDAO.updatePieFile(entity);
@@ -178,7 +185,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void persistPieFile(PieFile file) {
         PieFileEntity entity;
-        entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
+        entity = this.modelEntityConverterService.convertToEntity(file);
         try {
             pieFileDAO.savePieFile(entity);
         } catch (SQLException ex) {
@@ -239,7 +246,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void persistPieFolder(PieFolder folder) {
-        PieFolderEntity entity = (PieFolderEntity) this.modelEntityConverterService.convertToEntity(folder);
+        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         try {
             pieFolderDAO.savePiePieFolder(entity);
         } catch (SQLException ex) {
@@ -249,7 +256,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFolder(PieFolder folder) {
-        PieFolderEntity entity = (PieFolderEntity) this.modelEntityConverterService.convertToEntity(folder);
+        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         if (findPieFolder(folder) != null) {
             try {
                 pieFolderDAO.updatePieFolder(entity);
@@ -313,7 +320,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void removePieFolder(PieFolder folder) {
-        PieFolderEntity entity = (PieFolderEntity) this.modelEntityConverterService.convertToEntity(folder);
+        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         try {
             pieFolderDAO.deletePieFolder(entity.getRelativeFolderPath());
         } catch (SQLException ex) {
