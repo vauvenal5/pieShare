@@ -46,5 +46,5 @@ public interface IFolderService extends IFilderService{
      */
     void deleteFolder(PieFolder pieFolder) throws FolderServiceException;
         
-
+	PieFolder getPieFolder(File file);
 }

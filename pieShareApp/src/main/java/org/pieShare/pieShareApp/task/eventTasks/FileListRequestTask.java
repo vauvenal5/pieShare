@@ -37,6 +37,7 @@ public class FileListRequestTask extends AMessageSendingEventTask<FileListReques
 		IFileListMessage reply = this.messageFactoryService.getFileListMessage();
 		reply.setFileList(pieFiles);
 		reply.setAddress(this.msg.getAddress());
+		reply.setFolderList(this.historyService.getPieFolders());
 
 		this.setDefaultAdresse(reply);
 

@@ -44,7 +44,7 @@ import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
-import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
+import org.pieShare.pieShareApp.service.fileService.FileUtilitiesService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.folderService.FolderService;
@@ -231,6 +231,8 @@ public class PieShareAppService {
         HistoryService service = new HistoryService();
         service.setDatabaseService(this.databaseService());
         service.setFileService(this.localFileService());
+		service.setFileUtilitiesService(this.fileUtilitiesService());
+		service.setUserService(this.userService());
         return service;
     }
 
@@ -392,4 +394,13 @@ public class PieShareAppService {
         userTools.setUserService(userService());
         return userTools;
     }
+	
+	@Bean
+	@Lazy
+	public FileUtilitiesService fileUtilitiesService() {
+		FileUtilitiesService service = new FileUtilitiesService();
+		service.setFileService(this.localFileService());
+		service.setFolderService(this.folderService());
+		return service;
+	}
 }

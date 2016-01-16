@@ -18,7 +18,6 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 public interface IHistoryService {
 	void syncPieFileWithDb(PieFile pieFile);
 	PieFile syncDeleteToHistory(PieFile file);
-	List<PieFile> syncLocalPieFilesWithHistory();
         
         /**
          * Sync PieFolder to DB.
@@ -32,12 +31,6 @@ public interface IHistoryService {
          * @return deleted PieFolder from DB
          */
         PieFolder syncDeletePieFolderToHistory(PieFolder pieFolder);
-        
-        /**
-         * TODO! Not supported yet!
-         * @return 
-         */
-        List<PieFolder> syncLocalPieFolderWithHistory();
 		
 	PieFile getPieFileFromHistory(File file);
 	PieFolder getPieFolderFromHistory(File file);
@@ -45,4 +38,14 @@ public interface IHistoryService {
 	PieFile getPieFileFromHistory(PieFile file);
 	
 	List<PieFile> getPieFiles();
+	
+	void syncLocalFilders();
+	
+	/**
+	 * This function will return all {@link PieFolder} from the DB 
+	 * including the deleted or an empty list.
+	 * 
+	 * @return list of {@link PieFolder} or an empty list
+	 */
+	List<PieFolder> getPieFolders();
 }
