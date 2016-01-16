@@ -26,6 +26,6 @@ public class FileHistoryCompareService extends ALocalFileCompareService implemen
 
 	@Override
 	protected PieFile getPieFile(PieFile remoteFile) {
-		return this.historyService.getPieFileFromHistory(remoteFile);
+		return this.historyService.getPieFile(remoteFile.getRelativePath());
 	}
 }

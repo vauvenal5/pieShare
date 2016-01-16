@@ -183,7 +183,7 @@ public class DataBaseIT {
         dbService.persistPieFile(file1);
         dbService.persistPieFile(file2);
 
-        List<PieFile> filesFromDB = dbService.findPieFileByHash(file);
+        List<PieFile> filesFromDB = dbService.findPieFileByHash(file.getMd5());
 
         Assert.assertEquals(filesFromDB.size(), 2);
         Assert.assertEquals(filesFromDB.get(0).getMd5(), "test".getBytes());
