@@ -13,8 +13,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author daniela
  */
 public class FolderService extends FilderServiceBase implements IFolderService {
-    
-        
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         File newFolder = getAbsolutePath(pieFolder);
@@ -48,5 +46,13 @@ public class FolderService extends FilderServiceBase implements IFolderService {
     public void deleteFolder(File file) throws FolderServiceException {
         deleteRecursive(file);
     }
+
+	@Override
+	public PieFolder getPieFolder(File file) {
+		PieFolder folder = new PieFolder();
+		folder.setName(file.getName());
+		folder.setRelativePath(this.relativizeFilePath(file));
+		return folder;
+	}
 
 }
