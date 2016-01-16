@@ -13,8 +13,15 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  * @author daniela
  */
 public class FolderService extends FilderServiceBase implements IFolderService {
-    
-        
+
+    @Override
+    public PieFolder generatePieFolder(File file) {
+        PieFolder pieFolder = new PieFolder();
+        pieFolder.setName(file.getName());
+        pieFolder.setRelativePath(this.relativizeFilePath(file));
+        return pieFolder;
+    }
+
     @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         File newFolder = getAbsolutePath(pieFolder);

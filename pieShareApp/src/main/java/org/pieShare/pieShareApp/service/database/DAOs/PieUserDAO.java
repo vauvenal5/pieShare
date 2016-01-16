@@ -11,8 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**

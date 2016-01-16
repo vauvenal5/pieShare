@@ -6,7 +6,7 @@
 package org.pieShare.pieShareApp.model.pieFilder;
 
 import org.pieShare.pieShareApp.model.api.IBaseModel;
-
+import java.util.UUID;
 /**
  * Abstract PieFilder object
  * used by PieFile and PieFolder
@@ -14,12 +14,22 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  */
 public abstract class PieFilder implements IBaseModel {
    
+    private String id; 
     private String relativePath;
     private String name;
     private boolean deleted;
     
     public PieFilder() {
         this.deleted = false;
+        id = UUID.randomUUID().toString();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
     
     public boolean isDeleted() {
@@ -46,5 +56,4 @@ public abstract class PieFilder implements IBaseModel {
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
     }
-    
 }

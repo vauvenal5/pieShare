@@ -12,8 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFolderEntity;
+import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**
@@ -22,13 +21,15 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
  */
 public class PieFolderDAO {
 
-    private final String InsertPieFolder = "INSERT INTO PieFolder (RelativeFilePath, FileName, Deleted, Synched) VALUES (?,?,?,?);";
+    private final String InsertPieFolder = "INSERT INTO PieFolder (ID, FileName, Deleted, Synched, Parent, IsRoot) VALUES (?,?,?,?,?,?);";
     private final String SetAllSyncedTrue = "UPDATE PieFolder SET Synched=1 WHERE Synched=0;";
     private final String FindAll = "SELECT * FROM PieFolder;";
     private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=1;";
-    private final String FindByID = "SELECT * FROM PieFolder WHERE RelativeFilePath=?;";
-    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=? WHERE RelativeFilePath=?;";
-    private final String DeletePieFile = "DELETE FROM PieFolder WHERE RelativeFilePath=?";
+    private final String FindByID = "SELECT * FROM PieFolder WHERE ID=?;";
+    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=?, Parent=?, IsRoot=? WHERE ID=?;";
+    private final String DeletePieFile = "DELETE FROM PieFolder WHERE ID=?";
+
+    private final String GetFolderWhereRootAndParent = "SELECT * FROM PieFolder WHERE IsRoot=? AND FileName=? AND Parent=?";
 
     private IPieDatabaseManagerFactory databaseFactory;
 
@@ -41,7 +42,7 @@ public class PieFolderDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (PreparedStatement insertInto = con.prepareStatement(InsertPieFolder)) {
-            insertInto.setString(1, pieFolderEntity.getRelativeFolderPath());
+            insertInto.setString(1, pieFolderEntity.getId());
             insertInto.setString(2, pieFolderEntity.getFolderName());
 
             int val = 0;
@@ -55,6 +56,8 @@ public class PieFolderDAO {
                 val = 1;
             }
             insertInto.setInt(4, val);
+            insertInto.setString(5, pieFolderEntity.getParent());
+            insertInto.setBoolean(6, pieFolderEntity.isIsRoot());
             insertInto.executeUpdate();
         }
     }
@@ -78,7 +81,10 @@ public class PieFolderDAO {
             }
             updateQuery.setInt(3, val);
 
-            updateQuery.setString(4, pieFolderEntity.getRelativeFolderPath());
+            updateQuery.setString(4, pieFolderEntity.getParent());
+            updateQuery.setBoolean(5, pieFolderEntity.isIsRoot());
+
+            updateQuery.setString(6, pieFolderEntity.getId());
             updateQuery.executeUpdate();
         }
     }
@@ -91,11 +97,11 @@ public class PieFolderDAO {
         }
     }
 
-    public void deletePieFolder(String relativeFilePath) throws SQLException {
+    public void deletePieFolder(String ID) throws SQLException {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (PreparedStatement updateQuery = con.prepareStatement(DeletePieFile)) {
-            updateQuery.setString(1, relativeFilePath);
+            updateQuery.setString(1, ID);
             updateQuery.executeUpdate();
         }
     }
@@ -125,6 +131,24 @@ public class PieFolderDAO {
         return findAllSQL(FindAll);
     }
 
+    public PieFolderEntity findFolderWhereNameANDIsRoot(String name, boolean isRoot, String parent) throws SQLException {
+        Connection con = databaseFactory.getDatabaseConnection();
+        List<PieFolderEntity> entities;
+
+        try (PreparedStatement findAllQuery = con.prepareStatement(GetFolderWhereRootAndParent)) {
+            findAllQuery.setBoolean(1, isRoot);
+            findAllQuery.setString(2, name);
+            findAllQuery.setString(3, parent);
+            ResultSet results = findAllQuery.executeQuery();
+            entities = createFromResult(results);
+        }
+        
+        if(entities.isEmpty())
+            return null;
+        
+        return entities.get(0);
+    }
+
     private List<PieFolderEntity> findAllSQL(String sql) throws SQLException {
         Connection con = databaseFactory.getDatabaseConnection();
         List<PieFolderEntity> entities;
@@ -142,10 +166,12 @@ public class PieFolderDAO {
 
         while (results.next()) {
             PieFolderEntity entity = new PieFolderEntity();
-            entity.setRelativeFolderPath(results.getString("RelativeFilePath"));
+            entity.setId(results.getString("ID"));
             entity.setFolderName(results.getString("FileName"));
             entity.setDeleted(results.getInt("Deleted") != 0);
             entity.setSynced(results.getInt("Synched") != 0);
+            entity.setParent(results.getString("Parent"));
+            entity.setIsRoot(results.getBoolean("IsRoot"));
             entities.add(entity);
         }
 

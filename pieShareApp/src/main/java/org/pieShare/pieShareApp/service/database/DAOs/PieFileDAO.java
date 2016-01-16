@@ -5,9 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.database.DAOs;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,10 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.rowset.serial.SerialBlob;
-import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**
@@ -28,13 +22,15 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class PieFileDAO {
 
     //private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
-    private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched, MD5) VALUES (?,?,?,?,?,?);";
+    private final String InsertPieFile = "INSERT INTO PieFile (ID, FileName, LastModified, Deleted, Synched, MD5, Parent) VALUES (?,?,?,?,?,?,?);";
     private final String SetAllSyncedTrue = "UPDATE PieFile SET Synched=1 WHERE Synched=0;";
     private final String FindAll = "SELECT * FROM PieFile;";
     private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=1;";
-    private final String FindByID = "SELECT * FROM PieFile WHERE RelativeFilePath=?;";
-    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=? WHERE RelativeFilePath=?;";
+    private final String FindByID = "SELECT * FROM PieFile WHERE ID=?;";
+    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=?, Parent=? WHERE ID=?;";
 
+    private final String FindAllWhereNameAndParent = "SELCET * FROM PieFile WHERE Name=? AND Parent=?";
+    
     //private final String DeletePieFile = "DELETE FROM PieFile WHERE AbsoluteWorkingPath=?";
     private IPieDatabaseManagerFactory databaseFactory;
 
@@ -47,7 +43,7 @@ public class PieFileDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (PreparedStatement insertInto = con.prepareStatement(InsertPieFile)) {
-            insertInto.setString(1, pieFileEntity.getRelativeFilePath());
+            insertInto.setString(1, pieFileEntity.getId());
             insertInto.setString(2, pieFileEntity.getFileName());
 
             insertInto.setLong(3, pieFileEntity.getLastModified());
@@ -64,8 +60,8 @@ public class PieFileDAO {
             }
             insertInto.setInt(5, val);
             insertInto.setBytes(6, pieFileEntity.getMd5());
+            insertInto.setString(7, pieFileEntity.getParent());
 
-            // insertInto.setBlob(6, new SerialBlob(pieFileEntity.getMd5()));
             insertInto.executeUpdate();
         }
     }
@@ -93,8 +89,8 @@ public class PieFileDAO {
             updateQuery.setInt(4, val);
 
             updateQuery.setBytes(5, pieFileEntity.getMd5());
-
-            updateQuery.setString(6, pieFileEntity.getRelativeFilePath());
+            updateQuery.setString(6, pieFileEntity.getParent());
+            updateQuery.setString(7, pieFileEntity.getId());
             updateQuery.executeUpdate();
         }
     }
@@ -124,6 +120,26 @@ public class PieFileDAO {
         return entities.get(0);
     }
 
+    
+    public PieFileEntity findAllWhereNameAndParent(String name, String parent) throws SQLException {
+
+        Connection con = databaseFactory.getDatabaseConnection();
+        List<PieFileEntity> entities;
+
+        try (PreparedStatement findById = con.prepareStatement(FindAllWhereNameAndParent)) {
+            findById.setString(1, name);
+            findById.setString(2, parent);
+            ResultSet results = findById.executeQuery();
+            entities = createFromResult(results);
+        }
+        if (entities.isEmpty()) {
+            return null;
+        }
+
+        return entities.get(0);
+    }
+
+    
     public List<PieFileEntity> findAllUnsyncedPieFiles() throws SQLException {
         return findAllSQL(FindAllUnsyched);
     }
@@ -149,12 +165,13 @@ public class PieFileDAO {
 
         while (results.next()) {
             PieFileEntity entity = new PieFileEntity();
-            entity.setRelativeFilePath(results.getString("RelativeFilePath"));
+            entity.setId(results.getString("ID"));
             entity.setFileName(results.getString("FileName"));
             entity.setLastModified(results.getLong("LastModified"));
             entity.setDeleted(results.getInt("Deleted") != 0);
             entity.setSynched(results.getInt("Synched") != 0);
             entity.setMd5(results.getBytes("MD5"));
+            entity.setParent(results.getString("Parent"));
             entities.add(entity);
         }
 

@@ -37,4 +37,10 @@ public class PieFolder extends PieFilder implements IBaseModel {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        int hash = this.getId().hashCode() + this.getName().hashCode() + this.getRelativePath().hashCode();
+        return hash;
+    }
+
 }

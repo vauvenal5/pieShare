@@ -3,16 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.model.entities;
-
-import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
+package org.pieShare.pieShareApp.model.entities;
 
 /**
  *
  * @author Richy
  */
-public class PieUserEntity implements IPieUserEntity {
+public class PieUserEntity {
 
     private String userName;
 
@@ -20,44 +17,27 @@ public class PieUserEntity implements IPieUserEntity {
 
     private boolean hasPasswordFile;
 
-    @Override
     public boolean isHasPasswordFile() {
         return hasPasswordFile;
     }
 
-    @Override
-    public IConfigurationEntity getConfigurationEntity() {
+    public ConfigurationEntity getConfigurationEntity() {
         return configurationEntity;
     }
 
-    @Override
-    public void setConfigurationEntity(IConfigurationEntity configurationEntity) {
+    public void setConfigurationEntity(ConfigurationEntity configurationEntity) {
         this.configurationEntity = (ConfigurationEntity)configurationEntity;
     }
 
-    @Override
     public void setHasPasswordFile(boolean hasPasswordFile) {
         this.hasPasswordFile = hasPasswordFile;
     }
 
-    @Override
     public String getUserName() {
         return userName;
     }
 
-    @Override
     public void setUserName(String userName) {
         this.userName = userName;
-        
-        
-    String sql = "CREATE TABLE Person ( "
-                + "	PersonID int,"
-                + "	LastName varchar(255),"
-                + "	FirstName varchar(255),"
-                + "	Address varchar(255),"
-                + "	City varchar(255)"
-                + ");";
-        
-        
     }
 }

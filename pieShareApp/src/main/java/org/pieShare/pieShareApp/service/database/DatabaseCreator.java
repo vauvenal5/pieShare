@@ -8,8 +8,6 @@ package org.pieShare.pieShareApp.service.database;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -37,19 +35,22 @@ public class DatabaseCreator {
             + ");";
 
     private final String createPieFile = "CREATE TABLE PieFile ( "
-            + "	RelativeFilePath VARCHAR PRIMARY KEY,"
+            + "	ID VARCHAR PRIMARY KEY,"
             + "	FileName VARCHAR,"
             + "	LastModified REAL,"
             + "	Deleted INTEGER,"
             + "	Synched INTEGER,"
-            + "	MD5 BINARY"
+            + "	MD5 BINARY,"
+            + "	Parent VARCHAR"
             + ");";
 
     private final String createPieFolder = "CREATE TABLE PieFolder ( "
-            + "	RelativeFilePath VARCHAR PRIMARY KEY,"
+            + "	ID VARCHAR PRIMARY KEY,"
             + "	FileName VARCHAR,"
             + "	Deleted INTEGER,"
-            + "	Synched INTEGER"
+            + "	Synched INTEGER,"
+            + "	Parent VARCHAR,"
+            + "	IsRoot BOOLEAN"
             + ");";
 
     public void Create(DatabaseFactory fac) {
