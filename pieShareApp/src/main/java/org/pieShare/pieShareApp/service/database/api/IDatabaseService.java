@@ -30,8 +30,9 @@ public interface IDatabaseService {
 
 	void persistFileFilter(IFilter filter);
 
-//	void persist(PieFile file);
-	void removeFileFilter(IFilter filter);
+        List<PieFile> findPieFileByHash(byte[] md5);
+        
+        void removeFileFilter(IFilter filter);
 
 	List<IFilter> findAllFilters();
 	
