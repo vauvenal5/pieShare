@@ -13,7 +13,10 @@ import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.fileService.api.IFilderIterationCallback;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileUtilitiesService;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 
 /**
  *
@@ -23,6 +26,8 @@ public class HistoryService implements IHistoryService {
 	
 	private IDatabaseService databaseService;
 	private IFileService fileService;
+	private IFileUtilitiesService fileUtilitiesService;
+	private IUserService userService;
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -30,6 +35,14 @@ public class HistoryService implements IHistoryService {
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
+	}
+
+	public void setFileUtilitiesService(IFileUtilitiesService fileUtilitiesService) {
+		this.fileUtilitiesService = fileUtilitiesService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
 	}
 
 	@Override
@@ -46,39 +59,45 @@ public class HistoryService implements IHistoryService {
 	}
 	
 	@Override
-	public List<PieFile> syncLocalPieFilesWithHistory() {
+	public void syncLocalFilders() {
+		//todo: is it possible to merge this two to one?
 		this.databaseService.resetAllPieFileSynchedFlags();
-		List<PieFile> filesToSend = new ArrayList<PieFile>();
+		this.databaseService.resetAllPieFolderSyncedFlags();
 		
-		try {
-			List<PieFile> files = this.fileService.getAllFiles();
-			
-			for(PieFile file: files) {
-				PieFile historyFile = this.databaseService.findPieFile(file);
-				
-				this.databaseService.mergePieFile(file);
-				
-				//in this case there is a new file
-				if(historyFile == null) {
-					filesToSend.add(file);
-				} 
-				else 
-				{
-					//in this case a file has changed
-					if(!file.equals(historyFile)){
-						filesToSend.add(file);
-					}
-				}
+		//here we sync the current HDD state with our history
+		File parent = this.userService.getUser().getPieShareConfiguration().getWorkingDir();
+		this.fileUtilitiesService.walkFilderTree(parent, new IFilderIterationCallback() {
+			@Override
+			public void handleFile(PieFile file) {
+				//todo-mr3: save synced flag for file
+				databaseService.mergePieFile(file);
 			}
-			
-			//get all deleted files
-			List<PieFile> deletedFiles = this.databaseService.findAllUnsyncedPieFiles();
-			filesToSend.addAll(deletedFiles);
-		} catch (IOException ex) {
-			//todo-history: what has to be done here?
+
+			@Override
+			public void handleFolder(PieFolder folder) {
+				//todo-mr3: save synced flag for folder
+				databaseService.mergePieFolder(folder);
+			}
+		});
+		
+		//here we now assume that all files that are in our history but not
+		//on our HDD have been deleted while we where offline
+		//todo-mr3: only load unsynced and not deleted files
+		List<PieFile> pieFiles = databaseService.findAllUnsyncedPieFiles();
+		for(PieFile file: pieFiles) {
+			file.setDeleted(true);
+			databaseService.mergePieFile(file);
 		}
 		
-		return filesToSend;
+		List<PieFolder> pieFolders = databaseService.findAllUnsyncedPieFolders();
+		for(PieFolder folder: pieFolders) {
+			folder.setDeleted(true);
+			databaseService.mergePieFolder(folder);
+		}
+		
+		//todo-mr3: check all files and folders that are new against the unsyced ones
+			//how do you propagate offline moves?!
+		//todo-mr3: all unsynced files and folders (after the moved check) have to be marked deleted
 	}
 
     @Override
@@ -92,11 +111,6 @@ public class HistoryService implements IHistoryService {
         historyFolder.setDeleted(true);
         databaseService.mergePieFolder(historyFolder);
         return historyFolder;
-    }
-
-    @Override
-    public List<PieFolder> syncLocalPieFolderWithHistory() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 	@Override
@@ -121,6 +135,11 @@ public class HistoryService implements IHistoryService {
 	@Override
 	public List<PieFile> getPieFiles() {
 		return this.databaseService.findAllPieFiles();
+	}
+
+	@Override
+	public List<PieFolder> getPieFolders() {
+		return this.databaseService.findAllPieFolders();
 	}
 	
 }

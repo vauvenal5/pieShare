@@ -26,7 +26,7 @@ public interface IFileService extends IFilderService {
 			//return null
 			//throw Exception
 			//pieFile.exists()
-        List<PieFile> getAllFiles() throws IOException;	
+        //List<PieFile> getAllFiles() throws IOException;	
         
         PieFile getPieFile(File file) throws FileNotFoundException, IOException;
         

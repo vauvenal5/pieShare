@@ -47,7 +47,6 @@ public class LoginTask implements ILoginTask {
     private IHistoryService historyService;
     private IFileWatcherService fileWatcherService;
     private IMessageFactoryService messageFactoryService;
-    private IFileService fileService;
     private IUserService userService;
     private Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
     private UserTools userTools;
@@ -55,10 +54,6 @@ public class LoginTask implements ILoginTask {
 
     public LoginTask() {
         this.FILE_TEXT = "FILE_TEXT".getBytes();
-    }
-
-    public void setFileService(IFileService fileService) {
-        this.fileService = fileService;
     }
 
     public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
@@ -122,7 +117,8 @@ public class LoginTask implements ILoginTask {
             throw new WrongPasswordException("Login Error");
         }
 
-        this.historyService.syncLocalPieFilesWithHistory();
+        this.historyService.syncLocalFilders();
+		//todo-mr3: now we have to send a list with everything
 
         try {
 
@@ -130,11 +126,13 @@ public class LoginTask implements ILoginTask {
             this.fileWatcherService.watchDir(userService.getUser().getPieShareConfiguration().getWorkingDir());
 
             //todo: change this maybe in future to different aproach
+				//should probably be coupled with network chang detection!
             //this is needed to recognize local changes on this node
             IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
             fileList.getAddress().setClusterName(userService.getUser().getCloudName());
             fileList.getAddress().setChannelId(userService.getUser().getUserName());
             fileList.setFileList(this.historyService.getPieFiles());
+			fileList.setFolderList(this.historyService.getPieFolders());
             this.clusterManagementService.sendMessage(fileList);
 
             //send file list request message to cluster

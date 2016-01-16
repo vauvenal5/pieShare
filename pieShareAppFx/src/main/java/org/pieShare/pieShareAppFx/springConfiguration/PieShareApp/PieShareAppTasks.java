@@ -172,6 +172,8 @@ public class PieShareAppTasks {
         FileListTask task = new FileListTask();
         task.setComparerService(this.services.historyCompareService());
         task.setRequestService(this.services.requestService());
+		task.setFileService(this.services.localFileService());
+		task.setFolderService(this.services.folderService());
         return task;
     }
 
@@ -207,7 +209,6 @@ public class PieShareAppTasks {
         service.setHistoryService(services.historyService());
         service.setFileWatcherService(this.services.apacheFileWatcherService());
         service.setMessageFactoryService(this.services.messageFactoryService());
-        service.setFileService(this.services.localFileService());
         service.setUserService(services.userService());
         service.setUserTools(services.userToolsService());
         return service;
