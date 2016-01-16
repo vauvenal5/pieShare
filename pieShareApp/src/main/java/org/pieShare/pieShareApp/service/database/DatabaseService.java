@@ -161,6 +161,21 @@ public class DatabaseService implements IDatabaseService {
     }
 
     @Override
+    public List<PieFile> findPieFileByHash(PieFile pieFile) {
+        List<PieFile> files = new ArrayList<>();
+
+        try {
+            for (PieFileEntity entity : pieFileDAO.findByMd5(pieFile.getMd5())) {
+                files.add(this.modelEntityConverterService.convertFromEntity(entity));
+            }
+        } catch (SQLException ex) {
+            PieLogger.error(this.getClass(), "Error finding all PieFiles by MD5!", ex);
+
+        }
+        return files;
+    }
+
+    @Override
     public void mergePieFile(PieFile file) {
         try {
             PieFileEntity entity = (PieFileEntity) this.modelEntityConverterService.convertToEntity(file);
