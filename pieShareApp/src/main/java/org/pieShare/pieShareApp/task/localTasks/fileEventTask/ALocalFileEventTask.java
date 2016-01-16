@@ -50,7 +50,7 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
 
         PieFile pieFile = this.fileService.getPieFile(file);
 
-        PieFile oldPieFile = this.historyService.getPieFileFromHistory(file);
+        PieFile oldPieFile = this.historyService.getPieFile(this.fileService.relativizeFilePath(file));
 
         if (oldPieFile != null && oldPieFile.equals(pieFile)) {
             return null;
