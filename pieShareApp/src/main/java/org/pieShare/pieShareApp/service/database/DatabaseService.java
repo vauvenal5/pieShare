@@ -161,11 +161,11 @@ public class DatabaseService implements IDatabaseService {
     }
 
     @Override
-    public List<PieFile> findPieFileByHash(PieFile pieFile) {
+    public List<PieFile> findPieFileByHash(byte[] hash) {
         List<PieFile> files = new ArrayList<>();
 
         try {
-            for (PieFileEntity entity : pieFileDAO.findByMd5(pieFile.getMd5())) {
+            for (PieFileEntity entity : pieFileDAO.findByMd5(hash)) {
                 files.add(this.modelEntityConverterService.convertFromEntity(entity));
             }
         } catch (SQLException ex) {

@@ -46,16 +46,8 @@ public class HistoryService implements IHistoryService {
 	}
 
 	@Override
-	public void syncPieFileWithDb(PieFile pieFile) {
+	public void syncPieFile(PieFile pieFile) {
 		databaseService.mergePieFile(pieFile);
-	}
-	
-	@Override
-	public PieFile syncDeleteToHistory(PieFile file) {
-		PieFile historyFile = this.databaseService.findPieFile(file);
-		historyFile.setDeleted(true);
-		this.databaseService.mergePieFile(historyFile);
-		return historyFile;
 	}
 	
 	@Override
@@ -70,13 +62,13 @@ public class HistoryService implements IHistoryService {
 			@Override
 			public void handleFile(PieFile file) {
 				//todo-mr3: save synced flag for file
-				databaseService.mergePieFile(file);
+				syncPieFile(file);
 			}
 
 			@Override
 			public void handleFolder(PieFolder folder) {
 				//todo-mr3: save synced flag for folder
-				databaseService.mergePieFolder(folder);
+				syncPieFolder(folder);
 			}
 		});
 		
@@ -100,20 +92,8 @@ public class HistoryService implements IHistoryService {
 		//todo-mr3: all unsynced files and folders (after the moved check) have to be marked deleted
 	}
 
-    @Override
-    public void syncPieFolderWithDb(PieFolder pieFolder) {
-        databaseService.mergePieFolder(pieFolder);
-    }
-
-    @Override
-    public PieFolder syncDeletePieFolderToHistory(PieFolder pieFolder) {
-        PieFolder historyFolder = databaseService.findPieFolder(pieFolder);
-        historyFolder.setDeleted(true);
-        databaseService.mergePieFolder(historyFolder);
-        return historyFolder;
-    }
-
 	@Override
+	@Deprecated
 	public PieFile getPieFileFromHistory(File file) {
 		PieFile searchFile = new PieFile();
 		searchFile.setRelativePath(this.fileService.relativizeFilePath(file));
@@ -121,15 +101,11 @@ public class HistoryService implements IHistoryService {
 	}
 
 	@Override
+	@Deprecated
 	public PieFolder getPieFolderFromHistory(File file) {
 		PieFolder searchFolder = new PieFolder();
 		searchFolder.setRelativePath(this.fileService.relativizeFilePath(file));
 		return this.databaseService.findPieFolder(searchFolder);
-	}
-
-	@Override
-	public PieFile getPieFileFromHistory(PieFile file) {
-		return this.databaseService.findPieFile(file);
 	}
 
 	@Override
@@ -140,6 +116,33 @@ public class HistoryService implements IHistoryService {
 	@Override
 	public List<PieFolder> getPieFolders() {
 		return this.databaseService.findAllPieFolders();
+	}
+
+	@Override
+	public PieFile getPieFile(String relativePath) {
+		//todo-mr3: this has to be refactored!!! 
+			//the file is being searched by relative 
+			//path and this has to be visible somehow
+		PieFile searchFile = new PieFile();
+		searchFile.setRelativePath(relativePath);
+		return this.databaseService.findPieFile(searchFile);
+	}
+
+	@Override
+	public List<PieFile> getPieFiles(byte[] hash) {
+		return this.databaseService.findPieFileByHash(hash);
+	}
+
+	@Override
+	public void syncPieFolder(PieFolder pieFolder) {
+		this.databaseService.mergePieFolder(pieFolder);
+	}
+
+	@Override
+	public PieFolder getPieFolder(String relativePath) {
+		PieFolder folder = new PieFolder();
+		folder.setRelativePath(relativePath);
+		return this.databaseService.findPieFolder(folder);
 	}
 	
 }
