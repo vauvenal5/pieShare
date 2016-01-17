@@ -44,9 +44,7 @@ public class LoginTask implements ILoginTask {
     private IDatabaseService databaseService;
     private IClusterManagementService clusterManagementService;
     private IConfigurationFactory configurationFactory;
-    private IHistoryService historyService;
     private IFileWatcherService fileWatcherService;
-    private IMessageFactoryService messageFactoryService;
     private IUserService userService;
     private Provider<SymmetricEncryptedChannel> symmetricEncryptedChannelProvider;
     private UserTools userTools;
@@ -56,16 +54,8 @@ public class LoginTask implements ILoginTask {
         this.FILE_TEXT = "FILE_TEXT".getBytes();
     }
 
-    public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
-        this.messageFactoryService = messageFactoryService;
-    }
-
     public void setFileWatcherService(IFileWatcherService fileWatcherService) {
         this.fileWatcherService = fileWatcherService;
-    }
-
-    public void setHistoryService(IHistoryService historyService) {
-        this.historyService = historyService;
     }
 
     public void setConfigurationFactory(IConfigurationFactory configurationFactory) {
@@ -117,32 +107,8 @@ public class LoginTask implements ILoginTask {
             throw new WrongPasswordException("Login Error");
         }
 
-        this.historyService.syncLocalFilders();
-		//todo-mr3: now we have to send a list with everything
-
-        try {
-
-            //listen to working dir
-            this.fileWatcherService.watchDir(userService.getUser().getPieShareConfiguration().getWorkingDir());
-
-            //todo: change this maybe in future to different aproach
-				//should probably be coupled with network chang detection!
-            //this is needed to recognize local changes on this node
-            IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
-            fileList.getAddress().setClusterName(userService.getUser().getCloudName());
-            fileList.getAddress().setChannelId(userService.getUser().getUserName());
-            fileList.setFileList(this.historyService.getPieFiles());
-			fileList.setFolderList(this.historyService.getPieFolders());
-            this.clusterManagementService.sendMessage(fileList);
-
-            //send file list request message to cluster
-            FileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
-            msg.getAddress().setClusterName(userService.getUser().getCloudName());
-            msg.getAddress().setChannelId(userService.getUser().getUserName());
-            this.clusterManagementService.sendMessage(msg);
-        } catch (ClusterManagmentServiceException ex) {
-            PieLogger.error(this.getClass(), "Connect failed!", ex);
-        }
+        //listen to working dir
+		this.fileWatcherService.watchDir(userService.getUser().getPieShareConfiguration().getWorkingDir());
     }
 
     @Override
