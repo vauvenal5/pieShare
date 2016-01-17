@@ -212,7 +212,6 @@ public class PieShareAppService {
     private void fileServiceBase(FileServiceBase base) {
         base.setFileWatcherService(this.apacheFileWatcherService());
         base.setUserService(userService());
-        base.init();
     }
 
     @Bean
@@ -378,7 +377,6 @@ public class PieShareAppService {
     public IFolderService folderService() {
         FolderService folderService = new FolderService();
         folderService.setUserService(userService());
-            folderService.init();
         return folderService;
     }
 
@@ -392,6 +390,8 @@ public class PieShareAppService {
         userTools.setPasswordEncryptionService(utilities.passwordEncryptionService());
         userTools.setSymmetricEncryptedChannelProvider(providers.symmetricEncryptedChannelProvider);
         userTools.setUserService(userService());
+		userTools.setHistoryService(this.historyService());
+		userTools.setMessageFactoryService(this.messageFactoryService());
         return userTools;
     }
 	

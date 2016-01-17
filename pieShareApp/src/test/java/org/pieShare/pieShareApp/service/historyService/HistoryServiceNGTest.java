@@ -114,11 +114,9 @@ public class HistoryServiceNGTest {
 				return new PieFile();
 			}
 		});
-		fileService.init();
 
 		folderService = new FolderService();
 		folderService.setUserService(userService);
-		folderService.init();
 
 		FileUtilitiesService fileUtilitiesService = new FileUtilitiesService();
 		fileUtilitiesService.setFileService(fileService);
