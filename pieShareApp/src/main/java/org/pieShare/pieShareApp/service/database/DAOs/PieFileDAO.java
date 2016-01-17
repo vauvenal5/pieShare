@@ -5,9 +5,6 @@
  */
 package org.pieShare.pieShareApp.service.database.DAOs;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,10 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import javax.sql.rowset.serial.SerialBlob;
-import org.pieShare.pieShareApp.model.model.entities.ConfigurationEntity;
 import org.pieShare.pieShareApp.model.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
 /**
@@ -30,9 +24,9 @@ public class PieFileDAO {
     //private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
     private final String FindByHash = "SELECT * FROM PieFile WHERE MD5=?";
     private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched, MD5) VALUES (?,?,?,?,?,?);";
-    private final String SetAllSyncedTrue = "UPDATE PieFile SET Synched=1 WHERE Synched=0;";
+    private final String SetAllSyncedFalse = "UPDATE PieFile SET Synched=0 WHERE Synched=1;";
     private final String FindAll = "SELECT * FROM PieFile;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=1 AND Deletetd=0;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=0 AND Deleted=0;";
     private final String FindByID = "SELECT * FROM PieFile WHERE RelativeFilePath=?;";
     private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=? WHERE RelativeFilePath=?;";
 
@@ -104,7 +98,7 @@ public class PieFileDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (Statement stmt = con.createStatement()) {
-            stmt.executeUpdate(SetAllSyncedTrue);
+            stmt.executeUpdate(SetAllSyncedFalse);
         }
     }
 
