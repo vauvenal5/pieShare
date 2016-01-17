@@ -206,9 +206,7 @@ public class PieShareAppTasks {
         service.setEncodeService(utilities.encodeService());
         service.setDatabaseService(services.databaseService());
         service.setClusterManagementService(plate.clusterManagementService());
-        service.setHistoryService(services.historyService());
         service.setFileWatcherService(this.services.apacheFileWatcherService());
-        service.setMessageFactoryService(this.services.messageFactoryService());
         service.setUserService(services.userService());
         service.setUserTools(services.userToolsService());
         return service;
