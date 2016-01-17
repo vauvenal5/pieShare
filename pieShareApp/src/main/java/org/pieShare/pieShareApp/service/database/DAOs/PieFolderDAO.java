@@ -23,9 +23,9 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class PieFolderDAO {
 
     private final String InsertPieFolder = "INSERT INTO PieFolder (RelativeFilePath, FileName, Deleted, Synched) VALUES (?,?,?,?);";
-    private final String SetAllSyncedTrue = "UPDATE PieFolder SET Synched=1 WHERE Synched=0;";
+    private final String SetAllSyncedFalse = "UPDATE PieFolder SET Synched=0 WHERE Synched=1;";
     private final String FindAll = "SELECT * FROM PieFolder;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=1;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=0;";
     private final String FindByID = "SELECT * FROM PieFolder WHERE RelativeFilePath=?;";
     private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=? WHERE RelativeFilePath=?;";
     private final String DeletePieFile = "DELETE FROM PieFolder WHERE RelativeFilePath=?";
@@ -87,7 +87,7 @@ public class PieFolderDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (Statement stmt = con.createStatement()) {
-            stmt.executeUpdate(SetAllSyncedTrue);
+            stmt.executeUpdate(SetAllSyncedFalse);
         }
     }
 
