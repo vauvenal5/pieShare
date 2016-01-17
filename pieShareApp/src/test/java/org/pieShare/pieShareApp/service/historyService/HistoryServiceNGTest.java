@@ -5,23 +5,13 @@
  */
 package org.pieShare.pieShareApp.service.historyService;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
-import org.hsqldb.DatabaseScript;
-import org.jgroups.util.MockTimeScheduler;
 import org.mockito.Mockito;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
@@ -41,7 +31,6 @@ import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieTools.pieUtilities.service.security.BouncyCastleProviderService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.MD5Service;
 import org.testng.Assert;
-import static org.testng.Assert.*;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -60,6 +49,7 @@ public class HistoryServiceNGTest {
 	File testWorkingDir;
 	LocalFileService fileService;
 	FolderService folderService;
+	DatabaseFactory fac;
 
 	public HistoryServiceNGTest() {
 	}
@@ -67,6 +57,11 @@ public class HistoryServiceNGTest {
 	@BeforeMethod
 	public void setUpMethod() throws Exception {
 		testRoot = new File("test");
+		
+		if(testRoot.exists()) {
+			FileUtils.deleteDirectory(testRoot);
+		}
+		
 		testRoot.mkdirs();
 		testWorkingDir = new File(testRoot, "workingDir");
 		testWorkingDir.mkdirs();
@@ -74,7 +69,8 @@ public class HistoryServiceNGTest {
 		IApplicationConfigurationService applicationConfigurationService = Mockito.mock(IApplicationConfigurationService.class);
 		Mockito.when(applicationConfigurationService.getDatabaseFolder()).thenReturn(testRoot);
 
-		DatabaseFactory fac = new DatabaseFactory();
+		//todo: would be cool if we can set the type from outside so that we can have a pure in memory DB for the tests
+		fac = new DatabaseFactory();
 		fac.setApplicationConfigurationService(applicationConfigurationService);
 		fac.setCreator(new DatabaseCreator());
 		fac.init();
@@ -137,6 +133,9 @@ public class HistoryServiceNGTest {
 
 	@AfterMethod
 	public void tearDownMethod() throws Exception {
+		Statement statement = fac.getDatabaseConnection().createStatement();
+		statement.executeQuery("DROP SCHEMA PUBLIC CASCADE");
+		fac.closeDB();
 		FileUtils.deleteDirectory(testRoot);
 	}
 
@@ -208,6 +207,7 @@ public class HistoryServiceNGTest {
 
 		this.historyService.syncLocalFilders();
 		
+		//todo: for some reason the deleted flag is true after the persist
 		List<PieFile> pieFiles = this.historyService.getPieFiles(pieFileA.getMd5());
 		Assert.assertEquals(pieFiles.size(), 1);
 		Assert.assertTrue(pieFiles.contains(pieFileA));
@@ -225,6 +225,8 @@ public class HistoryServiceNGTest {
 		FileUtils.deleteDirectory(new File(testWorkingDir, "A"));
 		pieFileA.setDeleted(true);
 		pieFolderA.setDeleted(true);
+		
+		this.historyService.syncLocalFilders();
 		
 		pieFiles = this.historyService.getPieFiles(pieFileA.getMd5());
 		Assert.assertEquals(pieFiles.size(), 1);
