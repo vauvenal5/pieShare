@@ -5,29 +5,19 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
-import org.pieShare.pieShareApp.model.entities.PieFileEntity;
-import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
-import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.database.DAOs.FileFilterDAO;
-import org.pieShare.pieShareApp.service.database.DAOs.PieFileDAO;
-import org.pieShare.pieShareApp.service.database.DAOs.PieFolderDAO;
 import org.pieShare.pieShareApp.service.database.DAOs.PieUserDAO;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -37,12 +27,10 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class DatabaseService implements IDatabaseService {
 
     private IModelEntityConverterService modelEntityConverterService;
-    private UserService userService;
+    private PieFilderDBService pieFilderDBService;
 
     private PieUserDAO pieUserDAO;
     private FileFilterDAO fileFilterDAO;
-    private PieFileDAO pieFileDAO;
-    private PieFolderDAO pieFolderDAO;
 
     public void setPieUserDAO(PieUserDAO pieUserDAO) {
         this.pieUserDAO = pieUserDAO;
@@ -52,15 +40,11 @@ public class DatabaseService implements IDatabaseService {
         this.fileFilterDAO = fileFilterDAO;
     }
 
-    public void setPieFolderDAO(PieFolderDAO pieFolderDAO) {
-        this.pieFolderDAO = pieFolderDAO;
-    }
-
-    public void setPieFileDAO(PieFileDAO pieFileDAO) {
-        this.pieFileDAO = pieFileDAO;
-    }
-
     public DatabaseService() {
+    }
+
+    public void setPieFilderDBService(PieFilderDBService pieFilderDBService) {
+        this.pieFilderDBService = pieFilderDBService;
     }
 
     @Override
@@ -160,7 +144,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public PieFile findPieFile(PieFile file) {
         try {
-            return this.modelEntityConverterService.convertFromEntity(pieFileDAO.findPieFileById(file.getRelativePath()));
+            return this.pieFilderDBService.findFile(file.getId());
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Finding one PieFile", ex);
         }
@@ -169,7 +153,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFile(PieFile file) {
-        try {
+        /*try {
             PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
 
             if (pieFileDAO.findPieFileById(file.getRelativePath()) != null) {
@@ -179,15 +163,14 @@ public class DatabaseService implements IDatabaseService {
             }
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Updating PieFile", ex);
-        }
+        }*/
+
     }
 
     @Override
     public void persistPieFile(PieFile file) {
-        PieFileEntity entity;
-        entity = this.modelEntityConverterService.convertToEntity(file);
         try {
-            pieFileDAO.savePieFile(entity);
+            pieFilderDBService.persistFilder(file);
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFile", ex);
         }
@@ -195,7 +178,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public List<PieFile> findAllUnsyncedPieFiles() {
-        // EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
+        /* // EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
         //  String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched=TRUE", PieFileEntity.class.getSimpleName());
         // TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
 
@@ -214,41 +197,36 @@ public class DatabaseService implements IDatabaseService {
             files.add(this.modelEntityConverterService.convertFromEntity(entity));
         }
 
-        return files;
+        return files;*/
+        return null;
     }
 
     @Override
     public void resetAllPieFileSynchedFlags() {
-        try {
+        /*try {
             // EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
             ///  String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFileEntity.class.getSimpleName());
 
             pieFileDAO.resetAllPieFileSynchedFlags();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error reseting all Synched Flags", ex);
-        }
+        }*/
     }
 
     @Override
     public List<PieFile> findAllPieFiles() {
-        ArrayList<PieFile> files = new ArrayList<>();
-
         try {
-            for (PieFileEntity entity : pieFileDAO.findAllPieFiles()) {
-                files.add(this.modelEntityConverterService.convertFromEntity(entity));
-            }
+            return pieFilderDBService.findAllPieFiles();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error finding all PieFiles!", ex);
-
         }
-        return files;
+        return new ArrayList<>();
     }
 
     @Override
     public void persistPieFolder(PieFolder folder) {
-        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         try {
-            pieFolderDAO.savePiePieFolder(entity);
+            pieFilderDBService.persistFilder(folder);
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFolder!", ex);
         }
@@ -256,7 +234,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFolder(PieFolder folder) {
-        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
+        /* PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         if (findPieFolder(folder) != null) {
             try {
                 pieFolderDAO.updatePieFolder(entity);
@@ -265,15 +243,13 @@ public class DatabaseService implements IDatabaseService {
             }
         } else {
             persistPieFolder(folder);
-        }
+        }*/
     }
 
     @Override
     public PieFolder findPieFolder(PieFolder folder) {
-        PieFolderEntity historyFolderEntity;
         try {
-            historyFolderEntity = pieFolderDAO.findPieFolderById(folder.getRelativePath());
-            return this.modelEntityConverterService.convertFromEntity(historyFolderEntity);
+            return pieFilderDBService.findFolder(folder.getId());
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Finding PieFolder!", ex);
         }
@@ -282,7 +258,7 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public List<PieFolder> findAllUnsyncedPieFolders() {
-        ArrayList<PieFolder> folders = new ArrayList<>();
+        /* ArrayList<PieFolder> folders = new ArrayList<>();
 
         try {
             for (PieFolderEntity entity : pieFolderDAO.findAllUnsyncedPieFolders()) {
@@ -292,37 +268,34 @@ public class DatabaseService implements IDatabaseService {
             PieLogger.error(this.getClass(), "Error findAllUnsynced PieFolders!", ex);
         }
 
-        return folders;
+        return folders;*/
+        return null;
     }
 
     @Override
     public List<PieFolder> findAllPieFolders() {
 
-        ArrayList<PieFolder> folders = new ArrayList<>();
         try {
-            for (PieFolderEntity entity : pieFolderDAO.findAllPieFolders()) {
-                folders.add(this.modelEntityConverterService.convertFromEntity(entity));
-            }
+            return pieFilderDBService.findAllPieFolders();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error find all PieFolders!", ex);
         }
-        return folders;
+        return new ArrayList<>();
     }
 
     @Override
     public void resetAllPieFolderSyncedFlags() {
-        try {
+        /*  try {
             pieFolderDAO.resetAllPieFolderSynchedFlags();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error resetAllPieFolderSyncedFlags!", ex);
-        }
+        }*/
     }
 
     @Override
     public void removePieFolder(PieFolder folder) {
-        PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
         try {
-            pieFolderDAO.deletePieFolder(entity.getRelativeFolderPath());
+            pieFilderDBService.removePieFolder(folder);
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error delete pieFolder!", ex);
         }
