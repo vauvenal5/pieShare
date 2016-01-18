@@ -5,8 +5,10 @@
  */
 package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
@@ -35,8 +37,15 @@ public class FileListTask extends ARequestTask<IFileListMessage> {
 	@Override
 	public void run() {
 
+		//todo-after-ase: this is not entirely correct and only a temporary solution
+			//we need to perform all relevant local checks to ensure that a
+			//folder/file is allowed to be delete otherwise race conditions are possible
+			//+ a folder needs a last modified so that when we know which event has priority
 		for (PieFile file : this.msg.getFileList()) {
 			if (file.isDeleted()) {
+				//todo: can not simply delete file!
+					//we need to ask for the history so that we can determin
+					//if we have a conflict or not
 				fileService.deleteRecursive(file);
 			} else {
 				//in future consider starting an own task for requesting files because we don't 
@@ -50,7 +59,9 @@ public class FileListTask extends ARequestTask<IFileListMessage> {
 				if (folder.isDeleted()) {
 					this.folderService.deleteFolder(folder);
 				} else {
-					this.folderService.createFolder(folder);
+					if(!this.folderService.getAbsolutePath(folder).exists()) {
+						this.folderService.createFolder(folder);
+					}
 				}
 			} catch (FolderServiceException ex) {
 				PieLogger.warn(this.getClass(), "An unexpected exception was thrown!", ex);
