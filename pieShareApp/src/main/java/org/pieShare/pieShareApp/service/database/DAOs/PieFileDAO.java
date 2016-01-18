@@ -103,13 +103,13 @@ public class PieFileDAO {
         }
     }
 
-    public PieFileEntity findPieFileById(String relativeFilePath) throws SQLException {
+    public PieFileEntity findPieFileById(String id) throws SQLException {
 
         Connection con = databaseFactory.getDatabaseConnection();
         List<PieFileEntity> entities;
 
         try (PreparedStatement findById = con.prepareStatement(FindByID)) {
-            findById.setString(1, relativeFilePath);
+            findById.setString(1, id);
             ResultSet results = findById.executeQuery();
             entities = createFromResult(results);
         }
