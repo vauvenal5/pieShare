@@ -37,6 +37,7 @@ import org.pieShare.pieShareApp.service.eventFolding.EventFoldingService;
 import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.DatabaseFactory;
+import org.pieShare.pieShareApp.service.database.PieFilderDBService;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterService;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
@@ -282,10 +283,23 @@ public class PieShareAppService {
         DatabaseService service = new DatabaseService();
         service.setConverterService(modelEntityConverterService());
         service.setPieUserDAO(pieUserDAO());
-        service.setPieFileDAO(pieFileDAO());
-        service.setPieFolderDAO(pieFolderDAO());
         service.setFileFilterDAO(fileFilterDAO());
+        service.setPieFilderDBService(pieFilderDBService());
         return service;
+    }
+    
+    @Bean
+    @Lazy
+    public PieFilderDBService pieFilderDBService()
+    {
+        PieFilderDBService dd = new PieFilderDBService();
+        dd.setConverterService(modelEntityConverterService());
+        dd.setFileService(localFileService());
+        dd.setFolderService(folderService());
+        dd.setPieFileDAO(pieFileDAO());
+        dd.setPieFolderDAO(pieFolderDAO());
+        dd.setUserService(userService());
+        return dd;
     }
 
     public IModelEntityConverterService modelEntityConverterService() {
