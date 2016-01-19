@@ -179,6 +179,7 @@ public class DataBaseIT {
         file2.setMd5("testNotSameHash".getBytes());
         file2.setRelativePath("testFolder3");
 
+		//todo-mr3-richy: this statement throws an exception; test works due to luck
         dbService.persistPieFile(file);
         dbService.persistPieFile(file1);
         dbService.persistPieFile(file2);
