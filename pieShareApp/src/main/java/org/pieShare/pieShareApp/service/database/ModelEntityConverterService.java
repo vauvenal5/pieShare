@@ -133,7 +133,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         entity.setDeleted(folder.isDeleted());
         entity.setFolderName(folder.getName());
         entity.setRelativeFolderPath(folder.getRelativePath());
-
+		entity.setLastModified(folder.getLastModified());
         return entity;
     }
 
@@ -147,6 +147,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         folder.setDeleted(entity.isDeleted());
         folder.setName(entity.getFolderName());
         folder.setRelativePath(entity.getRelativeFolderPath());
+		folder.setLastModified(entity.getLastModified());
         return folder;
     }
 }

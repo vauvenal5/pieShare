@@ -17,6 +17,7 @@ public class PieFolderEntity implements IPieFolderEntity{
     private boolean deleted;
     private String relativeFolderPath;
     private String folderName;
+	private long lastModified;
     
     public PieFolderEntity() {
         this.synced = true;
@@ -61,4 +62,14 @@ public class PieFolderEntity implements IPieFolderEntity{
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
+
+	@Override
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	@Override
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
 }

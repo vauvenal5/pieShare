@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
+import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -52,7 +53,17 @@ public class FolderService extends FilderServiceBase implements IFolderService {
 		PieFolder folder = new PieFolder();
 		folder.setName(file.getName());
 		folder.setRelativePath(this.relativizeFilePath(file));
+		folder.setLastModified(file.lastModified());
+		if(!file.exists()) {
+			folder.setDeleted(true);
+		}
 		return folder;
+	}
+
+	@Override
+	public PieFolder getPieFolder(String path) {
+		PieUser user = this.userService.getUser();
+		return this.getPieFolder(new File(user.getPieShareConfiguration().getWorkingDir(), path));
 	}
 
 }
