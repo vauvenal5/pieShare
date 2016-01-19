@@ -21,10 +21,9 @@ import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMe
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
-import org.pieShare.pieShareApp.service.comparerService.FileCompareService;
-import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareService;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieShareApp.service.comparerService.ACompareService;
+import org.pieShare.pieShareApp.service.comparerService.LocalCompareService;
+import org.pieShare.pieShareApp.service.comparerService.HistoryCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DAOs.ConfigurationDAO;
@@ -67,6 +66,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -162,8 +162,8 @@ public class PieShareAppService {
 
     @Bean
     @Lazy
-    public ILocalFileCompareService fileCompareService() {
-        FileCompareService service = new FileCompareService();
+    public ICompareService fileCompareService() {
+        LocalCompareService service = new LocalCompareService();
         service.setFileService(this.localFileService());
 		service.setFolderService(this.folderService());
         return service;
@@ -171,8 +171,8 @@ public class PieShareAppService {
 
     @Bean
     @Lazy
-    public ILocalFileCompareService historyCompareService() {
-        FileHistoryCompareService historyService = new FileHistoryCompareService();
+    public ICompareService historyCompareService() {
+        HistoryCompareService historyService = new HistoryCompareService();
         historyService.setHistoryService(this.historyService());
         return historyService;
     }

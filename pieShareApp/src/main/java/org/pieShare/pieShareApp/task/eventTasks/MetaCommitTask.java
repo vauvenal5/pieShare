@@ -8,7 +8,6 @@ package org.pieShare.pieShareApp.task.eventTasks;
 
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
 import org.pieShare.pieShareApp.service.shareService.IBitTorrentService;
 import org.pieShare.pieShareApp.service.shareService.IShareService;
@@ -16,6 +15,7 @@ import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementServ
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -25,7 +25,7 @@ public class MetaCommitTask extends PieEventTaskBase<MetaCommitMessage> {
 	
 	private IShareService shareService;
 	private IBitTorrentService bitTorrentService;
-	private ILocalFileCompareService compareService;
+	private ICompareService compareService;
 	private IRequestService requestService;
 	private IClusterManagementService clusterManagementService;
 
@@ -37,7 +37,7 @@ public class MetaCommitTask extends PieEventTaskBase<MetaCommitMessage> {
 		this.shareService = shareService;
 	}
 
-	public void setCompareService(ILocalFileCompareService compareService) {
+	public void setCompareService(ICompareService compareService) {
 		this.compareService = compareService;
 	}
 

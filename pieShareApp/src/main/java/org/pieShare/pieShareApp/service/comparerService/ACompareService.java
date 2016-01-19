@@ -8,15 +8,15 @@ package org.pieShare.pieShareApp.service.comparerService;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
  * @author Richard
  */
-public abstract class ALocalFileCompareService implements ILocalFileCompareService{
+public abstract class ACompareService implements ICompareService{
 	
 	protected abstract PieFile getPieFile(PieFile file);
 	protected abstract PieFolder getPieFolder(PieFolder folder);
