@@ -16,7 +16,7 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
  * @author Svetoslav
  * todo make general for Filder?
  */
-public interface ILocalFileCompareService {
+public interface ICompareService {
 	
 	boolean equalsWithLocalPieFile(PieFile remoteFile);
 	
