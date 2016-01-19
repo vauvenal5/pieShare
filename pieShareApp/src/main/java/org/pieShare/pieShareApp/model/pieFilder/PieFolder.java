@@ -13,7 +13,7 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  *
  * @author daniela
  */
-public class PieFolder extends PieFilder implements IBaseModel {
+public class PieFolder extends PieFilder implements IBaseModel, Comparable<Object> {
 
     public PieFolder() {
         super();
@@ -26,15 +26,11 @@ public class PieFolder extends PieFilder implements IBaseModel {
             return false;
         }
 
-        PieFolder f = (PieFolder) o;
-
-        if (this.getName().equalsIgnoreCase(f.getName())
-                && this.getRelativePath().equalsIgnoreCase(f.getRelativePath())
-                && this.isDeleted() == f.isDeleted()) {
-            return true;
-        }
-
-        return false;
+		return super.equals(o);
     }
 
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 }

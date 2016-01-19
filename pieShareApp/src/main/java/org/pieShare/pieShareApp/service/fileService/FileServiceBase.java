@@ -31,6 +31,10 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	
 	@Override
 	public void waitUntilCopyFinished(File file) {
+		if(!file.exists()) {
+			return;
+		}
+		
 		FileInputStream st;
 		boolean isCopying = true;
 

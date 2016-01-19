@@ -48,6 +48,7 @@ public class DatabaseCreator {
     private final String createPieFolder = "CREATE TABLE PieFolder ( "
             + "	RelativeFilePath VARCHAR PRIMARY KEY,"
             + "	FileName VARCHAR,"
+			+ "	LastModified REAL,"
             + "	Deleted INTEGER,"
             + "	Synched INTEGER"
             + ");";
