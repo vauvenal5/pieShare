@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.comparerService;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -27,5 +28,10 @@ public class FileHistoryCompareService extends ALocalFileCompareService implemen
 	@Override
 	protected PieFile getPieFile(PieFile remoteFile) {
 		return this.historyService.getPieFile(remoteFile.getRelativePath());
+	}
+
+	@Override
+	protected PieFolder getPieFolder(PieFolder folder) {
+		return this.historyService.getPieFolder(folder.getRelativePath());
 	}
 }

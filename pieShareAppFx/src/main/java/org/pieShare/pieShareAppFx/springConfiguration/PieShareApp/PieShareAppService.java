@@ -165,6 +165,7 @@ public class PieShareAppService {
     public ILocalFileCompareService fileCompareService() {
         FileCompareService service = new FileCompareService();
         service.setFileService(this.localFileService());
+		service.setFolderService(this.folderService());
         return service;
     }
 
@@ -195,6 +196,7 @@ public class PieShareAppService {
         service.setEventFoldingTimerTaskProvider(this.providers.eventFoldingTimerTaskProvider);
         service.setFileService(this.localFileService());
 		service.setLocalFilderEventBase(this.utilities.eventBase());
+		service.setShutdownService(this.utilities.shutdownService());
         service.init();
         return service;
     }

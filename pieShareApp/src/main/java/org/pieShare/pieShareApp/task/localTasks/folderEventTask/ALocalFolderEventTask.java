@@ -28,11 +28,8 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
         }
 
         PieLogger.info(this.getClass(), "It's a Folder!");
-
-        PieFolder pieFolder = new PieFolder();
-        pieFolder.setName(this.file.getName());
-        pieFolder.setRelativePath(folderService.relativizeFilePath(this.file));
-        return pieFolder;
+		
+		return this.folderService.getPieFolder(file);
     }
 
 }

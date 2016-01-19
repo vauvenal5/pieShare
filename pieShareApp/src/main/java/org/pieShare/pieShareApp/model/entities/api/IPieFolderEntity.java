@@ -73,6 +73,8 @@ public interface IPieFolderEntity extends IBaseEntity{
     void setFolderName (String folderName);
     
     
+	long getLastModified();
 
+	void setLastModified(long lastModified);
     
 }
