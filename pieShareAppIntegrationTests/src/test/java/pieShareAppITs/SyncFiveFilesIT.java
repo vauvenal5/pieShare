@@ -61,7 +61,7 @@ public class SyncFiveFilesIT {
         ITUtil.performTearDown(context);
     }
 
-    @Test(timeOut = 240000)
+    @Test(timeOut = 300000)
     public void syncFiveFilesTest() throws Exception {
         PieLogger.info(this.getClass(), "IPv4Prop: {}", System.getProperty("java.net.preferIPv4Stack", "false"));
         ITTasksCounter counter = context.getBean(ITTasksCounter.class);
