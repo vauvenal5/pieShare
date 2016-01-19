@@ -8,7 +8,7 @@ package loadTest.loadTestLib.helper;
 import java.util.ArrayList;
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -17,12 +17,12 @@ import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareSer
 public class LFileComparer {
 
     private boolean result = true;
-    private ILocalFileCompareService fileCompareService;
+    private ICompareService fileCompareService;
 
     public LFileComparer() {
     }
 
-    public void setFileCompareService(ILocalFileCompareService fileCompareService) {
+    public void setFileCompareService(ICompareService fileCompareService) {
         this.fileCompareService = fileCompareService;
     }
 
