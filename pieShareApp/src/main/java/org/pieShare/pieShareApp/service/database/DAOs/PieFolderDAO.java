@@ -29,7 +29,8 @@ public class PieFolderDAO {
     private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=?, Parent=?, IsRoot=? WHERE ID=?;";
     private final String DeletePieFile = "DELETE FROM PieFolder WHERE ID=?";
 
-    private final String GetFolderWhereRootAndParent = "SELECT * FROM PieFolder WHERE IsRoot=? AND FileName=? AND Parent=?";
+    private final String RenameFolder =  "UPDATE PieFolder SET FileName=? WHERE ID=?;";
+    private final String GetFolderWhereRootAndParent = "SELECT * FROM PieFolder WHERE IsRoot=? AND FileName=? AND Parent=?;";
 
     private IPieDatabaseManagerFactory databaseFactory;
 
@@ -130,6 +131,16 @@ public class PieFolderDAO {
     public List<PieFolderEntity> findAllPieFolders() throws SQLException {
         return findAllSQL(FindAll);
     }
+    
+   public void renameFolder(String ID, String newName) throws SQLException {
+        Connection con = databaseFactory.getDatabaseConnection();
+        
+        try (PreparedStatement renameQuery = con.prepareStatement(GetFolderWhereRootAndParent)) {
+            renameQuery.setString(1, newName);
+            renameQuery.setString(2, ID);
+            renameQuery.executeUpdate();
+        }
+   }
 
     public PieFolderEntity findFolderWhereNameANDIsRoot(String name, boolean isRoot, String parent) throws SQLException {
         Connection con = databaseFactory.getDatabaseConnection();
