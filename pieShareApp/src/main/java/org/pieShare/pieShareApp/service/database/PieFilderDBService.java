@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
 import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
@@ -23,7 +21,6 @@ import org.pieShare.pieShareApp.service.database.api.IModelEntityConverterServic
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.folderService.IFolderService;
 import org.pieShare.pieShareApp.service.userService.IUserService;
-import org.pieShare.pieShareApp.service.userService.UserService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -63,62 +60,82 @@ public class PieFilderDBService {
         this.folderService = folderService;
     }
 
-    public void persistFilder(PieFilder filder) throws SQLException {
-        String parent = recusriveFilePersister(new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), filder.getRelativePath()));
+    public void persistFilder(PieFilder filder) throws SQLException, IOException {
+        File file = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), filder.getRelativePath());
+        String parent = recusriveFilePersister(file.getParentFile(), filder);
 
         if (filder instanceof PieFile) {
-            PieFileEntity pieFileEntity = converterService.convertToEntity((PieFile) filder);
-            pieFileEntity.setParent(parent);
-            pieFileDAO.updatePieFile(pieFileEntity);
+            mergePieFile((PieFile) filder, parent);
+        } else {
+            checkOrSaveFolder((PieFolder) filder, parent);
         }
     }
 
-    private String recusriveFilePersister(File file) {
-
+    private String recusriveFilePersister(File file, PieFilder filder) {
         String parentID = null;
 
         try {
-            if (!file.getCanonicalPath().equals(userService.getUser().getPieShareConfiguration().getWorkingDir().getCanonicalPath())) {
-                parentID = recusriveFilePersister(file.getParentFile());
+            if (file.getParentFile() == null) {
+                return null;
             }
+            if (!file.getParentFile().getCanonicalPath().equals(userService.getUser().getPieShareConfiguration().getWorkingDir().getCanonicalPath())) {
+                parentID = recusriveFilePersister(file.getParentFile(), filder);
+            }
+            /*if (file.getParentFile() != null) {//!file.getCanonicalPath().equals(userService.getUser().getPieShareConfiguration().getWorkingDir().getCanonicalPath())) {
+                parentID = recusriveFilePersister(file.getParentFile());
+            }*/
 
             //Parent ID == null means it is the root folder!
-            if (parentID == null) {
+            /* if (parentID == null) {
                 return checkOrSaveFolder(file, true, null);
-            }
-
+            }*/
             //Check if Dir or file and persist it to DB
             if (file.isDirectory()) {
-                return checkOrSaveFolder(file, false, parentID);
-            } else {
-                return parentID; //checkOrSaveFile(file, parentID);
+                return checkOrSaveFolder(folderService.generatePieFolder(file), parentID);
             }
+            /*else {
+                return mergePieFile(file, parentID);//return parentID; //checkOrSaveFile(file, parentID);
+            }*/
 
-        } catch (SQLException ex) {
-            PieLogger.error(this.getClass(), "Error pesisting Filder", ex);
-        } catch (IOException ex) {
+        } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error pesisting Filder", ex);
         }
-        return null;
+        return parentID;
     }
 
-    private String checkOrSaveFolder(File file, boolean isRoot, String parent) throws SQLException {
+    private String checkOrSaveFolder(PieFolder file, String parent) throws SQLException {
+        boolean isRoot = false;
+        if (parent == null) {
+            parent = "root";
+            isRoot = true;
+        }
         PieFolderEntity rootEntity = pieFolderDAO.findFolderWhereNameANDIsRoot(file.getName(), isRoot, parent);
 
         if (rootEntity == null) {
-            rootEntity = converterService.convertToEntity(folderService.generatePieFolder(file));
+            rootEntity = converterService.convertToEntity(file);
+            rootEntity.setParent(parent);
+            rootEntity.setIsRoot(isRoot);
             pieFolderDAO.savePiePieFolder(rootEntity);
         }
         return rootEntity.getId();
     }
 
-    private String checkOrSaveFile(File file, String parent) throws SQLException, IOException {
+    private String mergePieFile(PieFile file, String parent) throws SQLException, IOException {
+
+        if (parent == null) {
+            parent = "root";
+        }
+
         PieFileEntity fileEntity = pieFileDAO.findAllWhereNameAndParent(file.getName(), parent);
 
         if (fileEntity == null) {
-            fileEntity = converterService.convertToEntity(fileService.getPieFile(file));
+            fileEntity = converterService.convertToEntity(file);
+            fileEntity.setParent(parent);
             pieFileDAO.savePieFile(fileEntity);
         }
+
+        pieFileDAO.updatePieFile(fileEntity);
+
         return fileEntity.getId();
     }
 
@@ -137,6 +154,12 @@ public class PieFilderDBService {
 
         if (file == null) {
             return null;
+        }
+
+        if (file.getParent().equals("root")) {
+            PieFile pieFile = converterService.convertFromEntity(file);
+            pieFile.setRelativePath(String.format("%s%s", File.separator, file.getFileName()));
+            return pieFile;
         }
 
         PieFolder folder = findFolder(file.getParent());
@@ -169,18 +192,18 @@ public class PieFilderDBService {
         PieFolder pieFolder = converterService.convertFromEntity(folder);
 
         if (folder.isIsRoot()) {
-            pieFolder.setRelativePath(File.pathSeparator);
+            pieFolder.setRelativePath(String.format("%s%s%s", File.separator, folder.getFolderName(), File.separator));
             return pieFolder;
         }
 
         PieFolder parent = findFolder(folder.getParent());
-        relativePath = String.format("%s%s%s", parent.getRelativePath(), parent.getName(), File.pathSeparator);
+        relativePath = String.format("%s%s%s", parent.getRelativePath(), pieFolder.getName(), File.separator);
         pieFolder.setRelativePath(relativePath);
         return pieFolder;
     }
 
     public void removePieFolder(PieFolder folder) throws SQLException {
         PieFolderEntity entity = this.converterService.convertToEntity(folder);
-            pieFolderDAO.deletePieFolder(entity.getId());
+        pieFolderDAO.deletePieFolder(entity.getId());
     }
 }

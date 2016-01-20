@@ -5,9 +5,12 @@
  */
 package org.pieShare.pieShareApp.service.database;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.entities.FilterEntity;
 import org.pieShare.pieShareApp.model.entities.PieUserEntity;
@@ -171,7 +174,7 @@ public class DatabaseService implements IDatabaseService {
     public void persistPieFile(PieFile file) {
         try {
             pieFilderDBService.persistFilder(file);
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFile", ex);
         }
     }
@@ -227,7 +230,7 @@ public class DatabaseService implements IDatabaseService {
     public void persistPieFolder(PieFolder folder) {
         try {
             pieFilderDBService.persistFilder(folder);
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFolder!", ex);
         }
     }

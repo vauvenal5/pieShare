@@ -172,7 +172,7 @@ public class DataBaseIT {
         }
 
         PieFile pieFile3 = null;
-        File file3 = new File(testWorkingDir, "file3");
+        File file3 = new File(dir2, "file3");
         try {
             FileUtils.writeByteArrayToFile(file3, "TestContent".getBytes());
             pieFile3 = fileService.getPieFile(file3);
@@ -180,23 +180,115 @@ public class DataBaseIT {
             Assert.fail("Could not create file");
         }
 
+        PieFile pieFile4 = null;
+        File file4 = new File(testWorkingDir, "file4");
+        try {
+            FileUtils.writeByteArrayToFile(file4, "TestContent".getBytes());
+            pieFile4 = fileService.getPieFile(file4);
+        } catch (IOException ex) {
+            Assert.fail("Could not create file");
+        }
+
         dbService.persistPieFile(pieFile1);
         dbService.persistPieFolder(pieFolder1);
+        dbService.persistPieFile(pieFile3);
+        dbService.persistPieFile(pieFile4);
 
         PieFile pieFile1FromDB = dbService.findPieFile(pieFile1);
-        Assert.assertEquals(pieFile1.getRelativePath(), pieFile1FromDB.getRelativePath());
-        Assert.assertEquals(pieFile1.getName(), pieFile1FromDB.getName());        
-        /*
+        PieFile pieFile3FromDB = dbService.findPieFile(pieFile3);
+        PieFile pieFile4FromDB = dbService.findPieFile(pieFile4);
+
+        File fileFromDB = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile1FromDB.getRelativePath());
+        File file3FromDB = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile3FromDB.getRelativePath());
+        File file4FromDB = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile4FromDB.getRelativePath());
+
+        try {
+            String canFromDb = fileFromDB.getCanonicalPath();
+            String canFile1 = file1.getCanonicalPath();
+            Assert.assertEquals(canFile1, canFromDb);
+
+            Assert.assertEquals(file3.getCanonicalPath(), file3FromDB.getCanonicalPath());
+            Assert.assertEquals(file4.getCanonicalPath(), file4FromDB.getCanonicalPath());
+
+        } catch (IOException ex) {
+            Assert.fail(ex.getMessage());
+        }
+        Assert.assertEquals(pieFile1.getName(), pieFile1FromDB.getName());
+        Assert.assertEquals(pieFile3.getName(), pieFile3FromDB.getName());
+        Assert.assertEquals(pieFile4.getName(), pieFile4FromDB.getName());
+    }
+
+    /**
+     * Different PieFolders and pieFiles are persisted in the DB and read back
+     * from the DB at Once.
+     */
+    @Test
+    public void TestPersisFilesAndFolder_LoadAllFilesAndFolderAtOnce() {
+        DatabaseService dbService = this.context.getBean(DatabaseService.class);
+        IUserService userService = this.context.getBean(IUserService.class);
+        IFileService fileService = this.context.getBean(LocalFileService.class);
+        IFolderService folderService = this.context.getBean(IFolderService.class);
+
+        File testWorkingDir = userService.getUser().getPieShareConfiguration().getWorkingDir();
+
+        File dir1 = new File(testWorkingDir, "dir1");
+        if (!dir1.mkdirs()) {
+            Assert.fail("Could not create directories");
+        }
+
+        PieFolder pieFolder1 = folderService.generatePieFolder(dir1);
+
+        PieFile pieFile1 = null;
+        File file1 = new File(dir1, "file1");
+        try {
+            FileUtils.writeByteArrayToFile(file1, "TestContent".getBytes());
+            pieFile1 = fileService.getPieFile(file1);
+        } catch (IOException ex) {
+            Assert.fail("Could not create file");
+        }
+
+        File dir2 = new File(dir1, "dir2");
+        if (!dir2.mkdirs()) {
+            Assert.fail("Could not create directories");
+        }
+        PieFolder pieFolder2 = folderService.generatePieFolder(dir2);
+
+        PieFile pieFile2 = null;
+        File file2 = new File(dir1, "file2");
+        try {
+            FileUtils.writeByteArrayToFile(file2, "TestContent".getBytes());
+            pieFile2 = fileService.getPieFile(file2);
+        } catch (IOException ex) {
+            Assert.fail("Could not create file");
+        }
+
+        PieFile pieFile3 = null;
+        File file3 = new File(dir2, "file3");
+        try {
+            FileUtils.writeByteArrayToFile(file3, "TestContent".getBytes());
+            pieFile3 = fileService.getPieFile(file3);
+        } catch (IOException ex) {
+            Assert.fail("Could not create file");
+        }
+
+        PieFile pieFile4 = null;
+        File file4 = new File(testWorkingDir, "file4");
+        try {
+            FileUtils.writeByteArrayToFile(file4, "TestContent".getBytes());
+            pieFile4 = fileService.getPieFile(file4);
+        } catch (IOException ex) {
+            Assert.fail("Could not create file");
+        }
+
+        dbService.persistPieFile(pieFile1);
+        dbService.persistPieFolder(pieFolder1);
+        dbService.persistPieFile(pieFile3);
+        dbService.persistPieFile(pieFile4);
+        
+        List<PieFile> allFiles = dbService.findAllPieFiles();
         List<PieFolder> folders = dbService.findAllPieFolders();
-
-        Assert.assertTrue(folders.contains(folder1));
-        Assert.assertTrue(folders.contains(folder2));
-        Assert.assertTrue(folders.contains(folder3));
-
-        Assert.assertTrue(folders.size() == 3);
-
-        for (PieFolder f : folders) {
-            dbService.removePieFolder(f);
-        }*/
+        
+        Assert.assertEquals(3, allFiles.size());
+        Assert.assertEquals(2, folders.size());
     }
 }

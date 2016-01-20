@@ -29,7 +29,7 @@ public class PieFileDAO {
     private final String FindByID = "SELECT * FROM PieFile WHERE ID=?;";
     private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=?, Parent=? WHERE ID=?;";
 
-    private final String FindAllWhereNameAndParent = "SELCET * FROM PieFile WHERE Name=? AND Parent=?";
+    private final String FindAllWhereNameAndParent = "SELECT * FROM PieFile WHERE FileName=? AND Parent=?;";
     
     //private final String DeletePieFile = "DELETE FROM PieFile WHERE AbsoluteWorkingPath=?";
     private IPieDatabaseManagerFactory databaseFactory;
