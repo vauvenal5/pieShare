@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model;
+package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 /**
  *
- * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
+ * @author Chris
  */
-public enum LocalFileEventType {
-	CREATED, MODIFIED, DELETED, RENAMED, MOVED
+public class LocalFileMovedTask {
+    
 }

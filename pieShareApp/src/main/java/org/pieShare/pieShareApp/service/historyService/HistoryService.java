@@ -44,6 +44,14 @@ public class HistoryService implements IHistoryService {
 		this.databaseService.mergePieFile(historyFile);
 		return historyFile;
 	}
+        
+        @Override
+	public PieFile syncRenameToHistory(PieFile file) {
+		PieFile historyFile = this.databaseService.findPieFile(file);
+		//TODO: @MR3 historyFile.setRenamed(); 
+		this.databaseService.mergePieFile(historyFile);
+		return historyFile;
+	}
 	
 	@Override
 	public List<PieFile> syncLocalPieFilesWithHistory() {

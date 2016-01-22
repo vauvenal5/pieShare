@@ -31,6 +31,7 @@ import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileRenamedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
@@ -132,6 +133,8 @@ public class ProviderConfiguration {
 	public Provider<LocalFileChangedTask> localFileChangedProvider;
 	@Autowired
 	public Provider<LocalFileDeletedTask> localFileDeletedProvider;
+        @Autowired
+	public Provider<LocalFileRenamedTask> localFileRenamedProvider;
 	@Autowired
 	public Provider<LocalFolderCreatedTask> localFolderCreatedProvider;
 	@Autowired

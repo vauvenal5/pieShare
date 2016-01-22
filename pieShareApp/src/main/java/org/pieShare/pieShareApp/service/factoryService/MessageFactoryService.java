@@ -14,6 +14,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileRenamedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
@@ -84,6 +85,11 @@ public class MessageFactoryService implements IMessageFactoryService {
 	@Override
 	public MetaCommitMessage getMetaCommitMessage() {
 		return this.prepareMetaMessage(new MetaCommitMessage());
+	}
+        
+        @Override
+	public FileRenamedMessage getFileRenamedMessage() {
+		return this.prepareMessage(new FileRenamedMessage());
 	}
 
     @Override

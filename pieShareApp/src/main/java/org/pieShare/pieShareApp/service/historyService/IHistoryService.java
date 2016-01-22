@@ -20,6 +20,8 @@ public interface IHistoryService {
 	PieFile syncDeleteToHistory(PieFile file);
 	List<PieFile> syncLocalPieFilesWithHistory();
         
+        PieFile syncRenameToHistory(PieFile file);
+        
         /**
          * Sync PieFolder to DB.
          * @param pieFolder Folder to sync.

@@ -11,6 +11,7 @@ import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileRenamedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
@@ -42,6 +43,7 @@ public interface IMessageFactoryService {
 	
 	MetaCommitMessage getMetaCommitMessage();
         
+        FileRenamedMessage getFileRenamedMessage();
         //Folder
     FolderCreateMessage getNewFolderMessage();
         

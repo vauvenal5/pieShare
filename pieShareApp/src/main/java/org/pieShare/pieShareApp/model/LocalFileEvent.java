@@ -15,6 +15,9 @@ public class LocalFileEvent {
 	private LocalFileEventType type;
 	private File file;
 	private long timestamp;
+        private File oldFile;
+        private File newFile;
+        private byte [] MD5;
 
 	public LocalFileEventType getType() {
 		return type;
@@ -39,4 +42,32 @@ public class LocalFileEvent {
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
 	}
+
+        public File getOldFile() {
+            return oldFile;
+        }
+
+        public File getNewFile() {
+            return newFile;
+        }
+
+        public void setOldFile(File oldFile) {
+            this.oldFile = oldFile;
+        }
+
+        public void setNewFile(File newFile) {
+            this.newFile = newFile;
+        }
+
+        public byte[] getMD5() {
+            return MD5;
+        }
+
+        public void setMD5(byte[] MD5) {
+            this.MD5 = MD5;
+        }
+        
+        
+        
+        
 }
