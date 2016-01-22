@@ -9,7 +9,9 @@ package org.pieShare.pieShareApp.service.historyService;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
@@ -28,6 +30,7 @@ public class HistoryService implements IHistoryService {
 	private IFileService fileService;
 	private IFileUtilitiesService fileUtilitiesService;
 	private IUserService userService;
+	private Provider<Date> dateProvider;
 
 	public void setDatabaseService(IDatabaseService databaseService) {
 		this.databaseService = databaseService;
@@ -43,6 +46,10 @@ public class HistoryService implements IHistoryService {
 
 	public void setUserService(IUserService userService) {
 		this.userService = userService;
+	}
+
+	public void setDateProvider(Provider<Date> dateProvider) {
+		this.dateProvider = dateProvider;
 	}
 
 	@Override
@@ -78,12 +85,14 @@ public class HistoryService implements IHistoryService {
 		List<PieFile> pieFiles = databaseService.findAllUnsyncedPieFiles();
 		for(PieFile file: pieFiles) {
 			file.setDeleted(true);
+			file.setLastModified(this.dateProvider.get().getTime());
 			databaseService.mergePieFile(file);
 		}
 		
 		List<PieFolder> pieFolders = databaseService.findAllUnsyncedPieFolders();
 		for(PieFolder folder: pieFolders) {
 			folder.setDeleted(true);
+			folder.setLastModified(this.dateProvider.get().getTime());
 			databaseService.mergePieFolder(folder);
 		}
 		

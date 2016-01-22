@@ -24,7 +24,7 @@ public class PieFolderDAO {
     private final String InsertPieFolder = "INSERT INTO PieFolder (ID, FileName, LastModified, Deleted, Synched, Parent, IsRoot) VALUES (?,?,?,?,?,?,?);";
     private final String SetAllSyncedFalse = "UPDATE PieFolder SET Synched=0 WHERE Synched=1;";
     private final String FindAll = "SELECT * FROM PieFolder;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=0;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=0 AND Deleted=0;";
     private final String FindByID = "SELECT * FROM PieFolder WHERE ID=?;";
     private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, LastModified=?, Deleted=?, Synched=? WHERE ID=?;";
     private final String DeletePieFile = "DELETE FROM PieFolder WHERE ID=?";

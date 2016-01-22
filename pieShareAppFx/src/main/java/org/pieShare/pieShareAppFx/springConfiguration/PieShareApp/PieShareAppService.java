@@ -167,6 +167,7 @@ public class PieShareAppService {
         LocalCompareService service = new LocalCompareService();
         service.setFileService(this.localFileService());
 		service.setFolderService(this.folderService());
+		service.setDecoratedCompareService(this.historyCompareService());
         return service;
     }
 
@@ -235,6 +236,7 @@ public class PieShareAppService {
         service.setFileService(this.localFileService());
 		service.setFileUtilitiesService(this.fileUtilitiesService());
 		service.setUserService(this.userService());
+		service.setDateProvider(this.providers.dateProvider);
         return service;
     }
 

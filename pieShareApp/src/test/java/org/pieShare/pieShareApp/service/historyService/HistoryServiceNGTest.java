@@ -215,6 +215,13 @@ public class HistoryServiceNGTest {
 		PieFile pieFileB = this.fileService.getPieFile(new File(dirB, "file"));
 		PieFolder pieFolderA = this.folderService.getPieFolder(dirA);
 		PieFolder pieFolderB = this.folderService.getPieFolder(dirB);
+		
+		this.historyService.setDateProvider(new Provider<Date>() {
+			@Override
+			public Date get() {
+				return new Date();
+			}
+		});
 
 		this.historyService.syncLocalFilders();
 		
@@ -234,8 +241,19 @@ public class HistoryServiceNGTest {
 		Assert.assertTrue(pieFolders.contains(pieFolderB));
 		
 		FileUtils.deleteDirectory(new File(testWorkingDir, "A"));
+		
+		final Date dateDelete = new Date();
+		this.historyService.setDateProvider(new Provider<Date>() {
+			@Override
+			public Date get() {
+				return dateDelete;
+			}
+		});
+		
 		pieFileA.setDeleted(true);
+		pieFileA.setLastModified(dateDelete.getTime());
 		pieFolderA.setDeleted(true);
+		pieFolderA.setLastModified(dateDelete.getTime());
 		
 		this.historyService.syncLocalFilders();
 		
