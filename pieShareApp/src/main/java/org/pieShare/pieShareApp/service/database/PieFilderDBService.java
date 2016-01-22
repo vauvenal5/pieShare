@@ -70,7 +70,6 @@ public class PieFilderDBService {
             checkOrSaveFolder((PieFolder) filder, parent, true);
         }
     }*/
-
     public void persistPieFile(PieFile pieFile) throws SQLException, IOException {
         File file = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile.getRelativePath());
         String parent = recusrivePieFolderPersister(file.getParentFile(), true);
@@ -164,14 +163,16 @@ public class PieFilderDBService {
 
         if (file.getParent().equals("root")) {
             PieFile pieFile = converterService.convertFromEntity(file);
-            pieFile.setRelativePath(String.format("%s%s", File.separator, file.getFileName()));
+            pieFile.setRelativePath(String.format("%s",file.getFileName()));
             return pieFile;
         }
 
         PieFolder folder = findFolder(file.getParent());
 
         PieFile pieFile = converterService.convertFromEntity(file);
-        pieFile.setRelativePath(String.format("%s%s", folder.getRelativePath(), file.getFileName()));
+        File f = new File(folder.getRelativePath(), file.getFileName());
+        pieFile.setRelativePath(f.getPath());
+       //pieFile.setRelativePath(String.format("%s%s", folder.getRelativePath(), file.getFileName()));
         return pieFile;
     }
 
@@ -188,12 +189,13 @@ public class PieFilderDBService {
         PieFolder pieFolder = converterService.convertFromEntity(folder);
 
         if (folder.isIsRoot()) {
-            pieFolder.setRelativePath(String.format("%s%s", folder.getFolderName(), File.separator));
+            pieFolder.setRelativePath(String.format("%s", folder.getFolderName()));
             return pieFolder;
         }
 
         PieFolder parent = findFolder(folder.getParent());
-        relativePath = String.format("%s%s%s", parent.getRelativePath(), pieFolder.getName(), File.separator);
+        File f = new File(parent.getRelativePath(), pieFolder.getName());
+        relativePath = f.getPath(); //String.format("%s%s%s", parent.getRelativePath(), pieFolder.getName(), File.separator);
         pieFolder.setRelativePath(relativePath);
         return pieFolder;
     }
