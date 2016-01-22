@@ -29,7 +29,7 @@ public class PieFileDAO {
     private final String FindAll = "SELECT * FROM PieFile;";
     private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=0 AND Deleted=0;";
     private final String FindByID = "SELECT * FROM PieFile WHERE ID=?;";
-    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=?, Parent=? WHERE ID=?;";
+    private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=? WHERE ID=?;";
 
     private final String FindAllWhereNameAndParent = "SELECT * FROM PieFile WHERE FileName=? AND Parent=?;";
     
@@ -91,8 +91,7 @@ public class PieFileDAO {
             updateQuery.setInt(4, val);
 
             updateQuery.setBytes(5, pieFileEntity.getMd5());
-            updateQuery.setString(6, pieFileEntity.getParent());
-            updateQuery.setString(7, pieFileEntity.getId());
+            updateQuery.setString(6, pieFileEntity.getId());
             updateQuery.executeUpdate();
         }
     }

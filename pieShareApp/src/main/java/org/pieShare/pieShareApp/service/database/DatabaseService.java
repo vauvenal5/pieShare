@@ -167,7 +167,7 @@ public class DatabaseService implements IDatabaseService {
     public void mergePieFile(PieFile file) {
         try {
             pieFilderDBService.mergePieFile(file);
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error Updating PieFile", ex);
         }
     }
@@ -175,7 +175,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void persistPieFile(PieFile file) {
         try {
-            pieFilderDBService.persistFilder(file);
+            pieFilderDBService.persistPieFile(file);
         } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFile", ex);
         }
@@ -213,7 +213,7 @@ public class DatabaseService implements IDatabaseService {
     @Override
     public void persistPieFolder(PieFolder folder) {
         try {
-            pieFilderDBService.persistFilder(folder);
+            pieFilderDBService.persistPieFolder(folder);
         } catch (SQLException | IOException ex) {
             PieLogger.error(this.getClass(), "Error Persisting PieFolder!", ex);
         }
