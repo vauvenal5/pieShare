@@ -46,110 +46,112 @@ import org.springframework.context.annotation.Scope;
 @Lazy
 @Configuration
 public class PieShareAppTasks {
-
-    @Autowired
-    private PieShareAppService services;
-    @Autowired
-    private PiePlateConfiguration plate;
-    @Autowired
-    private PieUtilitiesConfiguration utilities;
-    @Autowired
-    private ProviderConfiguration providers;
-
-    private void aMessageSendingTask(AMessageSendingTask task) {
-        task.setClusterManagementService(this.plate.clusterManagementService());
-        task.setMessageFactoryService(this.services.messageFactoryService());
-        task.setUserService(services.userService());
-    }
+	
+	@Autowired
+	private PieShareAppService services;
+	@Autowired
+	private PiePlateConfiguration plate;
+	@Autowired
+	private PieUtilitiesConfiguration utilities;
+	@Autowired
+	private ProviderConfiguration providers;
+	
+	private void aMessageSendingTask(AMessageSendingTask task) {
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		task.setMessageFactoryService(this.services.messageFactoryService());
+		task.setUserService(services.userService());
+	}
 	
 	private void aLocalEventTask(ALocalEventTask task) {
 		this.aMessageSendingTask(task);
 		task.setFileFilterService(this.services.fileFilterService());
 	}
-
-    private void aLocalFileEventTask(ALocalFileEventTask task) {
-        this.aLocalEventTask(task);
-        task.setHistoryService(services.historyService());
-        task.setFileWatcherService(this.services.apacheFileWatcherService());
-        task.setHistoryFileService(this.services.historyFileService());
+	
+	private void aLocalFileEventTask(ALocalFileEventTask task) {
+		this.aLocalEventTask(task);
+		task.setHistoryService(services.historyService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
+		task.setHistoryFileService(this.services.historyFileService());
 		task.setFileService(this.services.localFileService());
-    }
+	}
 	
 	private void aLocalFolderEventTask(ALocalFolderEventTask task) {
 		this.aLocalEventTask(task);
 		task.setFolderService(this.services.folderService());
 	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileMetaTask fileMetaTask() {
+		FileMetaTask task = new FileMetaTask();
+		aMessageSendingTask(task);
+		task.setRequestService(this.services.requestService());
+		task.setBitTorrentService(this.services.bitTorrentService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileRequestTask fileRequestTask() {
+		FileRequestTask task = new FileRequestTask();
+		aMessageSendingTask(task);
+		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setShareService(this.services.shareService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileTransferCompleteTask fileTransferCompleteTask() {
+		FileTransferCompleteTask task = new FileTransferCompleteTask();
+		task.setBitTorentService(this.services.bitTorrentService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public NewFileTask newFileTask() {
+		NewFileTask task = new NewFileTask();
+		task.setRequestService(this.services.requestService());
+		task.setComparerService(this.services.fileCompareService());
+		task.setFilterService(this.services.fileFilterService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileChangedTask fileChangedTask() {
+		FileChangedTask task = new FileChangedTask();
+		task.setRequestService(this.services.requestService());
+		task.setComparerService(this.services.fileCompareService());
+		task.setFilterService(this.services.fileFilterService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileCreatedTask localFileCreatedTask() {
+		LocalFileCreatedTask task = new LocalFileCreatedTask();
+		this.aLocalFileEventTask(task);
+		return task;
+	}
+	//TODO: Folder Service needed in more methods?
 
-    @Bean
-    @Scope(value = "prototype")
-    public FileMetaTask fileMetaTask() {
-        FileMetaTask task = new FileMetaTask();
-        aMessageSendingTask(task);
-        task.setRequestService(this.services.requestService());
-        task.setBitTorrentService(this.services.bitTorrentService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileRequestTask fileRequestTask() {
-        FileRequestTask task = new FileRequestTask();
-        aMessageSendingTask(task);
-        task.setBitTorrentService(this.services.bitTorrentService());
-        task.setShareService(this.services.shareService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileTransferCompleteTask fileTransferCompleteTask() {
-        FileTransferCompleteTask task = new FileTransferCompleteTask();
-        task.setBitTorentService(this.services.bitTorrentService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public NewFileTask newFileTask() {
-        NewFileTask task = new NewFileTask();
-        task.setRequestService(services.requestService());
-        task.setComparerService(services.fileCompareService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileChangedTask fileChangedTask() {
-        FileChangedTask task = new FileChangedTask();
-        task.setRequestService(this.services.requestService());
-        task.setComparerService(this.services.fileCompareService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public LocalFileCreatedTask localFileCreatedTask() {
-        LocalFileCreatedTask task = new LocalFileCreatedTask();
-        this.aLocalFileEventTask(task);
-        return task;
-    }
-    //TODO: Folder Service needed in more methods?
-
-    @Bean
-    @Scope(value = "prototype")
-    public LocalFileChangedTask localFileChangedTask() {
-        LocalFileChangedTask task = new LocalFileChangedTask();
-        this.aLocalFileEventTask(task);
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public LocalFileDeletedTask localFileDeletedTask() {
-        LocalFileDeletedTask task = new LocalFileDeletedTask();
-        this.aLocalFileEventTask(task);
-        return task;
-    }
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileChangedTask localFileChangedTask() {
+		LocalFileChangedTask task = new LocalFileChangedTask();
+		this.aLocalFileEventTask(task);
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public LocalFileDeletedTask localFileDeletedTask() {
+		LocalFileDeletedTask task = new LocalFileDeletedTask();
+		this.aLocalFileEventTask(task);
+		return task;
+	}
 	
 	@Bean
 	@Scope(value = "prototype")
@@ -166,122 +168,124 @@ public class PieShareAppTasks {
 		this.aLocalFolderEventTask(task);
 		return task;
 	}
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileListTask fileListTask() {
-        FileListTask task = new FileListTask();
-        task.setComparerService(this.services.fileCompareService());
-        task.setRequestService(this.services.requestService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileListRequestTask fileListRequestTask() {
-        FileListRequestTask task = new FileListRequestTask();
-        this.aMessageSendingTask(task);
-        task.setFileService(this.services.historyFileService());
-        return task;
-    }
-
-    @Bean
-    @Scope(value = "prototype")
-    public FileDeletedTask fileDeletedTask() {
-        FileDeletedTask task = new FileDeletedTask();
-        task.setFileService(this.services.historyFileService());
-        task.setComparerService(this.services.fileCompareService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public LoginTask loginTask() {
-        LoginTask service = new LoginTask();
-        service.setSymmetricEncryptedChannelProvider(this.providers.symmetricEncryptedChannelProvider);
-        service.setPasswordEncryptionService(utilities.passwordEncryptionService());
-        service.setConfigurationFactory(services.configurationFactory());
-        service.setEncodeService(utilities.encodeService());
-        service.setDatabaseService(services.databaseService());
-        service.setClusterManagementService(plate.clusterManagementService());
-        service.setHistoryService(services.historyService());
-        service.setFileWatcherService(this.services.apacheFileWatcherService());
-        service.setMessageFactoryService(this.services.messageFactoryService());
-        service.setFileService(this.services.historyFileService());
-        service.setUserService(services.userService());
-        service.setUserTools(services.userToolsService());
-        return service;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public LogoutTask logoutTask() {
-        LogoutTask task = new LogoutTask();
-        task.setClusterManagementService(plate.clusterManagementService());
-        task.setUserService(services.userService());
-        task.setUserTools(services.userToolsService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public ResetPwdTask resetPwdTask() {
-        ResetPwdTask task = new ResetPwdTask();
-        task.setDatabaseService(services.databaseService());
-        task.setUserService(services.userService());
-        task.setUserTools(services.userToolsService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public TorrentTask torrentTask() {
-        TorrentTask task = new TorrentTask();
-        this.aMessageSendingTask(task);
-        task.setNetworkService(this.utilities.networkService());
-        task.setShareService(this.services.shareService());
-        task.setShutdownService(this.utilities.shutdownService());
-        task.setBitTorrentService(this.services.bitTorrentService());
-        task.setFileService(this.services.historyFileService());
-        task.setRequestService(this.services.requestService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public MetaCommitTask metaCommitTask() {
-        MetaCommitTask task = new MetaCommitTask();
-        task.setBitTorrentService(this.services.bitTorrentService());
-        task.setShareService(this.services.shareService());
-        task.setCompareService(this.services.fileCompareService());
-        task.setRequestService(this.services.requestService());
-        task.setClusterManagementService(this.plate.clusterManagementService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public FolderCreateTask createFolderTask() {
-        FolderCreateTask task = new FolderCreateTask();
-        task.setFolderService(this.services.folderService());
-        return task;
-    }
-
-    @Bean
-    @Lazy
-    @Scope(value = "prototype")
-    public FolderDeleteTask deleteFolderTask() {
-        FolderDeleteTask task = new FolderDeleteTask();
-        task.setFolderService(this.services.folderService());
-        return task;
-    }
-		
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileListTask fileListTask() {
+		FileListTask task = new FileListTask();
+		task.setComparerService(this.services.fileCompareService());
+		task.setRequestService(this.services.requestService());
+		task.setFilterService(this.services.fileFilterService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileListRequestTask fileListRequestTask() {
+		FileListRequestTask task = new FileListRequestTask();
+		this.aMessageSendingTask(task);
+		task.setFileService(this.services.historyFileService());
+		return task;
+	}
+	
+	@Bean
+	@Scope(value = "prototype")
+	public FileDeletedTask fileDeletedTask() {
+		FileDeletedTask task = new FileDeletedTask();
+		task.setFileService(this.services.historyFileService());
+		task.setComparerService(this.services.fileCompareService());
+		task.setFilterService(this.services.fileFilterService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public LoginTask loginTask() {
+		LoginTask service = new LoginTask();
+		service.setSymmetricEncryptedChannelProvider(this.providers.symmetricEncryptedChannelProvider);
+		service.setPasswordEncryptionService(utilities.passwordEncryptionService());
+		service.setConfigurationFactory(services.configurationFactory());
+		service.setEncodeService(utilities.encodeService());
+		service.setDatabaseService(services.databaseService());
+		service.setClusterManagementService(plate.clusterManagementService());
+		service.setHistoryService(services.historyService());
+		service.setFileWatcherService(this.services.apacheFileWatcherService());
+		service.setMessageFactoryService(this.services.messageFactoryService());
+		service.setFileService(this.services.historyFileService());
+		service.setUserService(services.userService());
+		service.setUserTools(services.userToolsService());
+		return service;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public LogoutTask logoutTask() {
+		LogoutTask task = new LogoutTask();
+		task.setClusterManagementService(plate.clusterManagementService());
+		task.setUserService(services.userService());
+		task.setUserTools(services.userToolsService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public ResetPwdTask resetPwdTask() {
+		ResetPwdTask task = new ResetPwdTask();
+		task.setDatabaseService(services.databaseService());
+		task.setUserService(services.userService());
+		task.setUserTools(services.userToolsService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public TorrentTask torrentTask() {
+		TorrentTask task = new TorrentTask();
+		this.aMessageSendingTask(task);
+		task.setNetworkService(this.utilities.networkService());
+		task.setShareService(this.services.shareService());
+		task.setShutdownService(this.utilities.shutdownService());
+		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setFileService(this.services.historyFileService());
+		task.setRequestService(this.services.requestService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public MetaCommitTask metaCommitTask() {
+		MetaCommitTask task = new MetaCommitTask();
+		task.setBitTorrentService(this.services.bitTorrentService());
+		task.setShareService(this.services.shareService());
+		task.setCompareService(this.services.fileCompareService());
+		task.setRequestService(this.services.requestService());
+		task.setClusterManagementService(this.plate.clusterManagementService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public FolderCreateTask createFolderTask() {
+		FolderCreateTask task = new FolderCreateTask();
+		task.setFolderService(this.services.folderService());
+		return task;
+	}
+	
+	@Bean
+	@Lazy
+	@Scope(value = "prototype")
+	public FolderDeleteTask deleteFolderTask() {
+		FolderDeleteTask task = new FolderDeleteTask();
+		task.setFolderService(this.services.folderService());
+		return task;
+	}
+	
 	@Bean
 	@Lazy
 	@Scope(value = "prototype")

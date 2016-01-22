@@ -5,6 +5,8 @@
  */
 package org.pieShare.pieShareApp.service.fileFilterService.filters;
 
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
 import org.pieShare.pieTools.pieUtilities.service.regexService.IRegexService;
 
@@ -21,19 +23,22 @@ public class RegexFileFilter implements IFilter {
 		this.regexService = regexService;
 	}
 
-	@Override
 	public void setPattern(String pattern) {
 		this.patternText = pattern;
 		regexService.setPattern(patternText);
 	}
 
-	@Override
 	public String getPattern() {
 		return patternText;
 	}
+	
+	@Override
+	public boolean matches(PieFile file) {
+		return regexService.matches(file.getRelativePath());
+	}
 
 	@Override
-	public boolean matches(String text) {
-		return regexService.matches(text);
+	public boolean matches(PieFolder folder) {
+		return regexService.matches(folder.getRelativePath());
 	}
 }
