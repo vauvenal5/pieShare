@@ -24,6 +24,7 @@ import org.pieShare.pieShareApp.service.database.DatabaseCreator;
 import org.pieShare.pieShareApp.service.database.DatabaseFactory;
 import org.pieShare.pieShareApp.service.database.DatabaseService;
 import org.pieShare.pieShareApp.service.database.ModelEntityConverterService;
+import org.pieShare.pieShareApp.service.database.PieFilderDBService;
 import org.pieShare.pieShareApp.service.fileService.FileUtilitiesService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.folderService.FolderService;
@@ -43,6 +44,7 @@ public class HistoryServiceNGTest {
 
 	HistoryService historyService;
 	DatabaseService databaseService;
+        PieFilderDBService pieFilderDBService;
 	UserService userService;
 	PieUser user;
 	File testRoot;
@@ -97,15 +99,11 @@ public class HistoryServiceNGTest {
 		PieFolderDAO folderDao = new PieFolderDAO();
 		folderDao.setDatabaseFactory(fac);
 
-		this.databaseService = new DatabaseService();
-		this.databaseService.setConverterService(converterService);
-		this.databaseService.setPieFileDAO(fileDao);
-		this.databaseService.setPieFolderDAO(folderDao);
-		
-		MD5Service hashService = new MD5Service();
+                MD5Service hashService = new MD5Service();
 		hashService.setProviderService(new BouncyCastleProviderService());
 
-		fileService = new LocalFileService();
+                
+                fileService = new LocalFileService();
 		fileService.setUserService(userService);
 		fileService.setHashService(hashService);
 		fileService.setPieFileProvider(new Provider<PieFile>() {
@@ -117,7 +115,19 @@ public class HistoryServiceNGTest {
 
 		folderService = new FolderService();
 		folderService.setUserService(userService);
-
+                
+                this.pieFilderDBService = new PieFilderDBService();
+                this.pieFilderDBService.setConverterService(converterService);
+                this.pieFilderDBService.setFileService(fileService);
+                this.pieFilderDBService.setFolderService(folderService);
+                this.pieFilderDBService.setPieFileDAO(fileDao);
+                this.pieFilderDBService.setPieFolderDAO(folderDao);
+                this.pieFilderDBService.setUserService(userService);
+                
+		this.databaseService = new DatabaseService();
+		this.databaseService.setConverterService(converterService);
+		this.databaseService.setPieFilderDBService(pieFilderDBService);
+		
 		FileUtilitiesService fileUtilitiesService = new FileUtilitiesService();
 		fileUtilitiesService.setFileService(fileService);
 		fileUtilitiesService.setFolderService(folderService);
