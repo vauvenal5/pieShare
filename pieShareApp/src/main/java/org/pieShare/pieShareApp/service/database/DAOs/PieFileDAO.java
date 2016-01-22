@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.rowset.serial.SerialBlob;
 import org.pieShare.pieShareApp.model.entities.PieFileEntity;
 import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 
@@ -23,9 +24,10 @@ public class PieFileDAO {
 
     //private final String InsertPieFile = "INSERT INTO PieFile (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
     private final String InsertPieFile = "INSERT INTO PieFile (ID, FileName, LastModified, Deleted, Synched, MD5, Parent) VALUES (?,?,?,?,?,?,?);";
-    private final String SetAllSyncedTrue = "UPDATE PieFile SET Synched=1 WHERE Synched=0;";
+    private final String FindByHash = "SELECT * FROM PieFile WHERE MD5=?";
+    private final String SetAllSyncedFalse = "UPDATE PieFile SET Synched=0 WHERE Synched=1;";
     private final String FindAll = "SELECT * FROM PieFile;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=1;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFile WHERE Synched=0 AND Deleted=0;";
     private final String FindByID = "SELECT * FROM PieFile WHERE ID=?;";
     private final String UpdatePieFile = "UPDATE PieFile SET FileName=?, LastModified=?, Deleted=?, Synched=?, MD5=?, Parent=? WHERE ID=?;";
 
@@ -99,7 +101,7 @@ public class PieFileDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (Statement stmt = con.createStatement()) {
-            stmt.executeUpdate(SetAllSyncedTrue);
+            stmt.executeUpdate(SetAllSyncedFalse);
         }
     }
 
@@ -118,6 +120,19 @@ public class PieFileDAO {
         }
 
         return entities.get(0);
+    }
+    
+     public List<PieFileEntity> findByMd5(byte[] md5) throws SQLException {
+
+        Connection con = databaseFactory.getDatabaseConnection();
+        List<PieFileEntity> entities;
+
+        try (PreparedStatement findById = con.prepareStatement(FindByHash)) {
+            findById.setBytes(1, md5);
+            ResultSet results = findById.executeQuery();
+            entities = createFromResult(results);
+        }
+        return entities;
     }
 
     

@@ -16,6 +16,7 @@ public class PieFolderEntity {
     private boolean deleted;
     private String folderName;
     private String parent;
+	private long lastModified;
     private boolean isRoot;
 
     public PieFolderEntity() {
@@ -69,4 +70,14 @@ public class PieFolderEntity {
     public void setFolderName(String folderName) {
         this.folderName = folderName;
     }
+
+	@Override
+	public long getLastModified() {
+		return lastModified;
+	}
+
+	@Override
+	public void setLastModified(long lastModified) {
+		this.lastModified = lastModified;
+	}
 }

@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.service.comparerService.api;
 
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 
 /**
@@ -15,7 +16,10 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
  * @author Svetoslav
  * todo make general for Filder?
  */
-public interface ILocalFileCompareService {
+public interface ICompareService {
+	
+	boolean equalsWithLocalPieFile(PieFile remoteFile);
+	
 	/**
 	 * Compares a given pieFile with the corresponding local pieFile.
 	 * Returns 0 if equal, 1 if the given file is newer, -1 if the given file is older.
@@ -26,7 +30,9 @@ public interface ILocalFileCompareService {
 	 */
 	int compareToLocalPieFile(PieFile remoteFile);
 	
-	boolean equalsWithLocalPieFile(PieFile remoteFile);
-	
 	boolean isConflictedOrNotNeeded(PieFile file);
+	
+	int compareToLocalPieFolder(PieFolder remoteFolder);
+	
+	boolean isConflictedOrNotNeeded(PieFolder folder);
 }

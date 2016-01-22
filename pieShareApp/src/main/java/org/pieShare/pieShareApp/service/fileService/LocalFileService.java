@@ -5,7 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.inject.Provider;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.service.fileService.api.IFilderIterationCallback;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
@@ -42,29 +46,25 @@ public class LocalFileService extends FileServiceBase {
         return pieFile;
     }
 
-    @Override
-    public List<PieFile> getAllFiles() throws IOException {
-        List<PieFile> allFiles = new ArrayList<PieFile>();
-        allFiles.addAll(getFileList(configuration.getWorkingDir()));
+//    @Override
+//    public List<PieFile> getAllFiles() throws IOException {
+//        final List<PieFile> allFiles = new ArrayList<PieFile>();
+//		
+//		this.walkFilderTree(configuration.getWorkingDir(), new IFilderIterationCallback() {
+//			@Override
+//			public void handleFile(PieFile file) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
+//
+//			@Override
+//			public void handleFolder(PieFolder folder) {
+//				throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//			}
+//		});
+//
+//        return allFiles;
+//    }
 
-        return allFiles;
-    }
-
-    private List<PieFile> getFileList(File parentDir) {
-        List<PieFile> tempFileList = new ArrayList<PieFile>();
-        File[] files = parentDir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                tempFileList.addAll(getFileList(file));
-            } else {
-                try {
-                    tempFileList.add(getPieFile(file));
-                } catch (IOException ex) {
-                    PieLogger.error(this.getClass(), "File could not be accessed: {} ", ex);
-                }
-            }
-        }
-        return tempFileList;
-    }
+    
 
 }

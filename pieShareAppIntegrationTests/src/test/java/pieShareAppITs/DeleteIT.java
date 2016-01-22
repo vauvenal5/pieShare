@@ -98,8 +98,8 @@ public class DeleteIT {
 		ITUtil.performTearDown(context);
 	}
 	
-        //Todo: Enable when FolderHistory works
-	//@Test(timeOut = 60000)
+	//todo-mr3: this test can reproduce the delete bug we have right now!! see ticket
+	@Test(timeOut = 60000)
 	public void deleteOneFile() throws Exception {
 		ITUtil.waitForProcessToStartup(this.process);
 		
