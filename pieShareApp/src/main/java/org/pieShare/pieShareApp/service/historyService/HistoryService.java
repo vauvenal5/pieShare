@@ -39,7 +39,7 @@ public class HistoryService implements IHistoryService {
 	
 	@Override
 	public PieFile syncDeleteToHistory(PieFile file) {
-		PieFile historyFile = this.databaseService.findPieFile(file);
+		PieFile historyFile = this.databaseService.findPieFileByRelativeFilePath(file);
 		historyFile.setDeleted(true);
 		this.databaseService.mergePieFile(historyFile);
 		return historyFile;
@@ -54,7 +54,7 @@ public class HistoryService implements IHistoryService {
 			List<PieFile> files = this.fileService.getAllFiles();
 			
 			for(PieFile file: files) {
-				PieFile historyFile = this.databaseService.findPieFile(file);
+				PieFile historyFile = this.databaseService.findPieFileByRelativeFilePath(file);
 				
 				this.databaseService.mergePieFile(file);
 				
@@ -88,7 +88,7 @@ public class HistoryService implements IHistoryService {
 
     @Override
     public PieFolder syncDeletePieFolderToHistory(PieFolder pieFolder) {
-        PieFolder historyFolder = databaseService.findPieFolder(pieFolder);
+        PieFolder historyFolder = databaseService.findPieFolderByRelativeFilePath(pieFolder);
         historyFolder.setDeleted(true);
         databaseService.mergePieFolder(historyFolder);
         return historyFolder;
@@ -103,14 +103,14 @@ public class HistoryService implements IHistoryService {
 	public PieFile getPieFileFromHistory(File file) {
 		PieFile searchFile = new PieFile();
 		searchFile.setRelativePath(this.fileService.relativizeFilePath(file));
-		return this.databaseService.findPieFile(searchFile);
+		return this.databaseService.findPieFileByRelativeFilePath(searchFile);
 	}
 
 	@Override
 	public PieFolder getPieFolderFromHistory(File file) {
 		PieFolder searchFolder = new PieFolder();
 		searchFolder.setRelativePath(this.fileService.relativizeFilePath(file));
-		return this.databaseService.findPieFolder(searchFolder);
+		return this.databaseService.findPieFolderByRelativeFilePath(searchFolder);
 	}
 	
 }

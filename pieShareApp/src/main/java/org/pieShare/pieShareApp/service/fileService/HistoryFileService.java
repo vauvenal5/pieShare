@@ -35,7 +35,7 @@ public class HistoryFileService extends FileServiceBase {
 		PieFile pieFile = new PieFile();
 		pieFile.setName(file.getName());
 		pieFile.setRelativePath(this.relativizeFilePath(file));
-		PieFile foundFile = this.databaseService.findPieFile(pieFile);
+		PieFile foundFile = this.databaseService.findPieFileByRelativeFilePath(pieFile);
 		return foundFile;
 	}
 }

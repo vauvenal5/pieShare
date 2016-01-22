@@ -73,7 +73,7 @@ public class DataBaseIT {
         file.setName("testFile2");
         dbService.mergePieFile(file);
 
-        PieFile fileFromDB = dbService.findPieFile(file);
+        PieFile fileFromDB = dbService.findPieFileByRelativeFilePath(file);
 
         Assert.assertEquals(file, fileFromDB);
     }
@@ -91,13 +91,13 @@ public class DataBaseIT {
         folder.setRelativePath("testFolder");
         dbService.persistPieFolder(folder);
 
-        PieFolder folderFromDB = dbService.findPieFolder(folder);
+        PieFolder folderFromDB = dbService.findPieFolderByRelativeFilePath(folder);
 
         Assert.assertEquals(folder.getRelativePath(), folderFromDB.getRelativePath());
 
         dbService.removePieFolder(folder);
 
-        Assert.assertNull(dbService.findPieFolder(folder));
+        Assert.assertNull(dbService.findPieFolderByRelativeFilePath(folder));
     }
 
     /**
@@ -118,13 +118,13 @@ public class DataBaseIT {
         folder.setRelativePath("newFolder");
         dbService.mergePieFolder(folder);
 
-        PieFolder folderFromDB = dbService.findPieFolder(folder);
+        PieFolder folderFromDB = dbService.findPieFolderByRelativeFilePath(folder);
 
         Assert.assertEquals(folder.getRelativePath(), folderFromDB.getRelativePath());
 
         dbService.removePieFolder(folder);
 
-        Assert.assertNull(dbService.findPieFolder(folder));
+        Assert.assertNull(dbService.findPieFolderByRelativeFilePath(folder));
     }
 
     /**
@@ -194,9 +194,9 @@ public class DataBaseIT {
         dbService.persistPieFile(pieFile3);
         dbService.persistPieFile(pieFile4);
 
-        PieFile pieFile1FromDB = dbService.findPieFile(pieFile1);
-        PieFile pieFile3FromDB = dbService.findPieFile(pieFile3);
-        PieFile pieFile4FromDB = dbService.findPieFile(pieFile4);
+        PieFile pieFile1FromDB = dbService.findPieFileByRelativeFilePath(pieFile1);
+        PieFile pieFile3FromDB = dbService.findPieFileByRelativeFilePath(pieFile3);
+        PieFile pieFile4FromDB = dbService.findPieFileByRelativeFilePath(pieFile4);
 
         File fileFromDB = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile1FromDB.getRelativePath());
         File file3FromDB = new File(userService.getUser().getPieShareConfiguration().getWorkingDir(), pieFile3FromDB.getRelativePath());

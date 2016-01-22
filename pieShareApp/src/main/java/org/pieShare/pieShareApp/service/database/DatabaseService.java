@@ -145,9 +145,9 @@ public class DatabaseService implements IDatabaseService {
     }
 
     @Override
-    public PieFile findPieFile(PieFile file) {
+    public PieFile findPieFileByRelativeFilePath(PieFile file) {
         try {
-            return this.pieFilderDBService.findFile(file.getId());
+            return this.pieFilderDBService.findFileByRelativePath(file.getRelativePath());
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Finding one PieFile", ex);
         }
@@ -156,18 +156,11 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFile(PieFile file) {
-        /*try {
-            PieFileEntity entity = this.modelEntityConverterService.convertToEntity(file);
-
-            if (pieFileDAO.findPieFileById(file.getRelativePath()) != null) {
-                pieFileDAO.updatePieFile(entity);
-            } else {
-                pieFileDAO.savePieFile(entity);
-            }
+        try {
+            pieFilderDBService.mergePieFile(file);
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Updating PieFile", ex);
-        }*/
-
+        }
     }
 
     @Override
@@ -181,39 +174,21 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public List<PieFile> findAllUnsyncedPieFiles() {
-        /* // EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-        //  String sqlQuery = String.format("SELECT f FROM %s f WHERE f.synched=TRUE", PieFileEntity.class.getSimpleName());
-        // TypedQuery<PieFileEntity> query = em.createQuery(sqlQuery, PieFileEntity.class);
-
-        List<PieFileEntity> qq;
         try {
-            qq = pieFileDAO.findAllUnsyncedPieFiles();
+            return pieFilderDBService.findAllUnsyncedPieFiles();
         } catch (SQLException ex) {
-            PieLogger.error(this.getClass(), "Error finding all unsynched PieFiles", ex);
-            return null;
+            PieLogger.error(this.getClass(), "Error findAllUnsyncedPieFiles", ex);
         }
-
-        ArrayList<PieFile> files = new ArrayList<>();
-
-        // List<PieFileEntity> entities = query.getResultList();
-        for (PieFileEntity entity : qq) {
-            files.add(this.modelEntityConverterService.convertFromEntity(entity));
-        }
-
-        return files;*/
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
     public void resetAllPieFileSynchedFlags() {
-        /*try {
-            // EntityManager em = pieDatabaseManagerFactory.getEntityManger(PieFileEntity.class);
-            ///  String sqlQuery = String.format("UPDATE %s SET synched=TRUE", PieFileEntity.class.getSimpleName());
-
-            pieFileDAO.resetAllPieFileSynchedFlags();
+        try {
+            pieFilderDBService.resetAllPieFileSynchedFlags();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error reseting all Synched Flags", ex);
-        }*/
+        }
     }
 
     @Override
@@ -237,22 +212,17 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void mergePieFolder(PieFolder folder) {
-        /* PieFolderEntity entity = this.modelEntityConverterService.convertToEntity(folder);
-        if (findPieFolder(folder) != null) {
-            try {
-                pieFolderDAO.updatePieFolder(entity);
-            } catch (SQLException ex) {
-                PieLogger.error(this.getClass(), "Error Merging PieFolder!", ex);
-            }
-        } else {
-            persistPieFolder(folder);
-        }*/
+        try {
+            pieFilderDBService.mergePieFolder(folder);
+        } catch (SQLException | IOException ex) {
+            PieLogger.error(this.getClass(), "Error Merging PieFolder!", ex);
+        }
     }
 
     @Override
-    public PieFolder findPieFolder(PieFolder folder) {
+    public PieFolder findPieFolderByRelativeFilePath(PieFolder folder) {
         try {
-            return pieFilderDBService.findFolder(folder.getId());
+            return pieFilderDBService.findFolderByRelativePath(folder.getRelativePath());
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error Finding PieFolder!", ex);
         }
@@ -261,18 +231,12 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public List<PieFolder> findAllUnsyncedPieFolders() {
-        /* ArrayList<PieFolder> folders = new ArrayList<>();
-
         try {
-            for (PieFolderEntity entity : pieFolderDAO.findAllUnsyncedPieFolders()) {
-                folders.add(this.modelEntityConverterService.convertFromEntity(entity));
-            }
+            return pieFilderDBService.findAllUnsyncedPieFolders();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error findAllUnsynced PieFolders!", ex);
         }
-
-        return folders;*/
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
@@ -288,11 +252,11 @@ public class DatabaseService implements IDatabaseService {
 
     @Override
     public void resetAllPieFolderSyncedFlags() {
-        /*  try {
-            pieFolderDAO.resetAllPieFolderSynchedFlags();
+        try {
+            pieFilderDBService.resetAllPieFolderSyncedFlags();
         } catch (SQLException ex) {
             PieLogger.error(this.getClass(), "Error resetAllPieFolderSyncedFlags!", ex);
-        }*/
+        }
     }
 
     @Override
