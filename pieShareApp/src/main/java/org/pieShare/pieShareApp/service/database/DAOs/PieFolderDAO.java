@@ -26,12 +26,12 @@ public class PieFolderDAO {
     private final String FindAll = "SELECT * FROM PieFolder;";
     private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=0;";
     private final String FindByID = "SELECT * FROM PieFolder WHERE ID=?;";
-    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, LastModified=?, Deleted=?, Synched=?, Parent=?, IsRoot=? WHERE ID=?;";
+    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, LastModified=?, Deleted=?, Synched=? WHERE ID=?;";
     private final String DeletePieFile = "DELETE FROM PieFolder WHERE ID=?";
 
     private final String RenameFolder =  "UPDATE PieFolder SET FileName=? WHERE ID=?;";
     private final String GetFolderWhereRootAndParent = "SELECT * FROM PieFolder WHERE IsRoot=? AND FileName=? AND Parent=?;";
-     private final String GetFolderWhereNameAndParent = "SELECT * FROM PieFolder WHERE AND FileName=? AND Parent=?;";
+     private final String GetFolderWhereNameAndParent = "SELECT * FROM PieFolder WHERE FileName=? AND Parent=?;";
 
     private IPieDatabaseManagerFactory databaseFactory;
 
@@ -86,10 +86,7 @@ public class PieFolderDAO {
             }
             updateQuery.setInt(4, val);
 
-            updateQuery.setString(5, pieFolderEntity.getParent());
-            updateQuery.setBoolean(6, pieFolderEntity.isIsRoot());
-
-            updateQuery.setString(7, pieFolderEntity.getId());
+            updateQuery.setString(5, pieFolderEntity.getId());
             updateQuery.executeUpdate();
         }
     }
@@ -168,7 +165,7 @@ public class PieFolderDAO {
         Connection con = databaseFactory.getDatabaseConnection();
         List<PieFolderEntity> entities;
 
-        try (PreparedStatement findAllQuery = con.prepareStatement(GetFolderWhereRootAndParent)) {
+        try (PreparedStatement findAllQuery = con.prepareStatement(GetFolderWhereNameAndParent)) {
             findAllQuery.setString(1, name);
             findAllQuery.setString(2, parent);
             ResultSet results = findAllQuery.executeQuery();
