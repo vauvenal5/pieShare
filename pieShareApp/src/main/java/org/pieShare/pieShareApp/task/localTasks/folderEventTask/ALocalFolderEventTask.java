@@ -7,6 +7,7 @@ package org.pieShare.pieShareApp.task.localTasks.folderEventTask;
 
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.folderService.IFolderService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.localTasks.ALocalEventTask;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
@@ -29,7 +30,9 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
 
         PieLogger.info(this.getClass(), "It's a Folder!");
 		
-		return this.folderService.getPieFolder(file);
+		PieFolder folder = this.folderService.getPieFolder(file);
+		this.historyService.syncPieFolder(folder);
+		return folder;
     }
 
 }
