@@ -19,6 +19,7 @@ public class FolderService extends FilderServiceBase implements IFolderService {
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         File newFolder = getAbsolutePath(pieFolder);
         createLocalFolder(newFolder);
+		newFolder.setLastModified(pieFolder.getLastModified());
     }
 
     @Override
@@ -65,7 +66,11 @@ public class FolderService extends FilderServiceBase implements IFolderService {
 	@Override
 	public PieFolder getPieFolder(String path) {
 		PieUser user = this.userService.getUser();
-		return this.getPieFolder(new File(user.getPieShareConfiguration().getWorkingDir(), path));
+		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), path);
+		if(!localFile.exists()) {
+			return null;
+		}
+		return this.getPieFolder(localFile);
 	}
 
 }

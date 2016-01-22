@@ -25,8 +25,6 @@ public class LocalFolderCreatedTask extends ALocalFolderEventTask {
         }
 
         FolderCreateMessage msg = messageFactoryService.getNewFolderMessage();
-
-        //TODO: add history service when ready.
         
         super.doWork(msg, pieFolder);
     }
