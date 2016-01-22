@@ -144,7 +144,10 @@ public class HistoryServiceNGTest {
 		Statement statement = fac.getDatabaseConnection().createStatement();
 		statement.executeQuery("DROP SCHEMA PUBLIC CASCADE");
 		fac.closeDB();
-		FileUtils.deleteDirectory(testRoot);
+                fac = null; 
+                databaseService = null; 
+                pieFilderDBService = null;
+		//FileUtils.deleteDirectory(testRoot);
 	}
 
 	@Test
