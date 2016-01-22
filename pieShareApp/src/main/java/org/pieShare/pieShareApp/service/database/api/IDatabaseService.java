@@ -35,7 +35,7 @@ public interface IDatabaseService {
 
 	List<IFilter> findAllFilters();
 	
-	PieFile findPieFile(PieFile file);
+	PieFile findPieFileByRelativeFilePath(PieFile file);
 	
 	List<PieFile> findAllUnsyncedPieFiles();
 	
@@ -65,7 +65,7 @@ public interface IDatabaseService {
          * @param folder to search for
          * @return one PieFolder if found, else null
          */
-        PieFolder findPieFolder(PieFolder folder);
+        PieFolder findPieFolderByRelativeFilePath(PieFolder folder);
         
         /**
          * Retrieves all PieFolders with the flag "unsynced" from the DB
