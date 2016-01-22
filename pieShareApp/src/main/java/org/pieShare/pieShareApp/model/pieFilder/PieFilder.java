@@ -67,10 +67,6 @@ public abstract class PieFilder implements IBaseModel, Comparable<Object> {
 			return false;
 		}
 
-		if (deleted != f.isDeleted()) {
-			return false;
-		}
-
 		return true;
 	}
 
@@ -81,6 +77,10 @@ public abstract class PieFilder implements IBaseModel, Comparable<Object> {
 		}
 
 		PieFilder f = (PieFilder) o;
+		
+		if (deleted != f.isDeleted()) {
+			return false;
+		}
 
 		if (this.lastModified != f.lastModified) {
 			return false;

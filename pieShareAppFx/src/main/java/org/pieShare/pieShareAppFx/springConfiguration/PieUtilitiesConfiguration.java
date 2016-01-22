@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -164,5 +165,11 @@ public class PieUtilitiesConfiguration {
 	@Lazy
 	public NetworkService networkService() {
 		return new NetworkService();
+	}
+	
+	@Bean
+	@Lazy
+	public Date date() {
+		return new Date();
 	}
 }
