@@ -18,8 +18,19 @@ import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
  */
 public abstract class ACompareService implements ICompareService{
 	
+	//this is a decorater pattern because of the following scenario
+	//the local state should always win because we can not guarantee that
+	//the DB will be already consistent with the local state at time of event
+	//however if the local state returns null we should also check with the DB 
+	//if an event is needed or not
+	protected ICompareService decoratedCompareService;
+	
 	protected abstract PieFile getPieFile(PieFile file);
 	protected abstract PieFolder getPieFolder(PieFolder folder);
+
+	public void setDecoratedCompareService(ICompareService decoratedCompareService) {
+		this.decoratedCompareService = decoratedCompareService;
+	}
 	
 	@Override
 	public boolean equalsWithLocalPieFile(PieFile remoteFile) {
@@ -32,7 +43,11 @@ public abstract class ACompareService implements ICompareService{
 		PieFile local = this.getPieFile(remoteFile);
 		
 		if(local == null) {
-			return -1;
+			if(this.decoratedCompareService == null) {
+				return -1;
+			}
+			
+			return this.decoratedCompareService.compareToLocalPieFile(remoteFile);
 		}
 		
 		return local.compareTo(remoteFile);
@@ -55,7 +70,11 @@ public abstract class ACompareService implements ICompareService{
 		PieFolder local = this.getPieFolder(remoteFolder);
 		
 		if(local == null) {
-			return -1;
+			if(this.decoratedCompareService == null) {
+				return -1;
+			}
+			
+			return this.decoratedCompareService.compareToLocalPieFolder(remoteFolder);
 		}
 		
 		return local.compareTo(remoteFolder);

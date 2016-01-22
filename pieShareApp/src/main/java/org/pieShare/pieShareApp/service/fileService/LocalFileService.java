@@ -3,14 +3,8 @@ package org.pieShare.pieShareApp.service.fileService;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Date;
 import javax.inject.Provider;
-import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.fileService.api.IFilderIterationCallback;
-import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
 /**
@@ -42,6 +36,7 @@ public class LocalFileService extends FileServiceBase {
             pieFile.setMd5(hashService.hashStream(file));
         } else {
             pieFile.setDeleted(true);
+			pieFile.setLastModified(new Date().getTime());
         }
         return pieFile;
     }

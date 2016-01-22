@@ -26,7 +26,6 @@ public class FileListTask extends ARequestTask<IFileListMessage> {
 
 	private IFileService fileService;
 	private IFolderService folderService;
-//	private IHistoryService historyService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
@@ -57,6 +56,10 @@ public class FileListTask extends ARequestTask<IFileListMessage> {
 				if (!this.comparerService.isConflictedOrNotNeeded(folder)) {
 					if (folder.isDeleted()) {
 						this.folderService.deleteFolder(folder);
+						//todo-mr3: we need to save the pieFolder object 
+						//we received to the history here because over the 
+						//hdd feedback we would save a wrong date
+						//same applies to the file
 					} else if (!this.folderService.getAbsolutePath(folder).exists()) {
 						this.folderService.createFolder(folder);
 					}
