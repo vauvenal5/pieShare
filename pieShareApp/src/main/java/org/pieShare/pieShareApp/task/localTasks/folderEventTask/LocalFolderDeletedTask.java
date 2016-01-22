@@ -7,7 +7,6 @@ package org.pieShare.pieShareApp.task.localTasks.folderEventTask;
 
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -22,14 +21,11 @@ public class LocalFolderDeletedTask extends ALocalFolderEventTask {
         if (pieFolder == null || this.file == null) {
             PieLogger.info(this.getClass(), "Skipping delete folder: null");
             return;
-        }
-		
-		//todo-mr3: sync with historyService that folder was deleted!!!
+        }		
 
         FolderDeleteMessage msg = this.messageFactoryService.getFolderDeletedMessage();
         PieLogger.info(this.getClass(), "It's a Folder to be deleted!");
 
-        //TODO: add history service when ready.
         super.doWork(msg, pieFolder);
     }
 }
