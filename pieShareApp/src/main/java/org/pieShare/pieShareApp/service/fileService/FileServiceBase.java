@@ -108,6 +108,9 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	public PieFile getPieFile(String relativeFilePath) throws IOException {
 		PieUser user = userService.getUser();
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
+		if(!localFile.exists()) {
+			return null;
+		}
 		return this.getPieFile(localFile);
 	}
 
