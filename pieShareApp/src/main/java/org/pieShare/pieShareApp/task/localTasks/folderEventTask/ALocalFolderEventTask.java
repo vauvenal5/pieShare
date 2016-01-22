@@ -23,15 +23,16 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
     }
 
     protected PieFolder prepareWork() {
-        if (!syncAllowed()) {
-            return null;
-        }
-
         PieLogger.info(this.getClass(), "It's a Folder!");
 
         PieFolder pieFolder = new PieFolder();
         pieFolder.setName(this.file.getName());
         pieFolder.setRelativePath(folderService.relativizeFilePath(this.file));
+		
+		if(fileFilterService.checkFile(pieFolder)){
+			return null;
+		}
+		
         return pieFolder;
     }
 

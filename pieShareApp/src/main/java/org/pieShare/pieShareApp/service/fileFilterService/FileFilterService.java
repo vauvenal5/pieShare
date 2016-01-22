@@ -6,12 +6,13 @@
 package org.pieShare.pieShareApp.service.fileFilterService;
 
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import java.io.File;
 import java.util.ArrayList;
 import javax.annotation.PostConstruct;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.*;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 
 /**
  *
@@ -25,7 +26,7 @@ public class FileFilterService implements IFileFilterService {
 	public FileFilterService() {
 		filters = new ArrayList<>();
 	}
-
+	
 	@PostConstruct
 	public void init() {
 		refreshFilterList();
@@ -51,17 +52,17 @@ public class FileFilterService implements IFileFilterService {
 	@Override
 	public synchronized boolean checkFile(PieFile file) {
 		for (IFilter f : filters) {
-			if (f.matches(file.getRelativePath())) {
+			if (f.matches(file)) {
 				return false;
 			}
 		}
 		return true;
 	}
-
+	
 	@Override
-	public synchronized boolean checkFile(File file) {
+	public synchronized boolean checkFile(PieFolder file) {
 		for (IFilter f : filters) {
-			if (f.matches(file.toPath().toString())) {
+			if (f.matches(file)) {
 				return false;
 			}
 		}

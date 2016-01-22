@@ -6,6 +6,8 @@
 package org.pieShare.pieShareApp.service.fileFilterService.filters.api;
 
 import org.pieShare.pieShareApp.model.api.IBaseModel;
+import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 
 /**
  *
@@ -13,9 +15,21 @@ import org.pieShare.pieShareApp.model.api.IBaseModel;
  */
 public interface IFilter extends IBaseModel {
 
-	void setPattern(String pattern);
+	//void setPattern(String pattern);
 
-	String getPattern();
+	//String getPattern();
 
-	boolean matches(String text);
+	/**
+	 * Checks filter on given PieFile.
+	 * @param file
+	 * @return true if the filter matches, else false
+	 */
+	boolean matches(PieFile file);
+	
+	/**
+	 * Checks filter on given PieFolder.
+	 * @param folder
+	 * @return true if the filter matches, else false
+	 */
+	boolean matches(PieFolder folder);
 }

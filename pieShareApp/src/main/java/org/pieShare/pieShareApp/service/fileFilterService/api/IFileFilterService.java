@@ -6,10 +6,11 @@
 package org.pieShare.pieShareApp.service.fileFilterService.api;
 
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
-import java.io.File;
 import java.util.ArrayList;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.service.userService.IUserService;
 
 /**
  *
@@ -18,7 +19,7 @@ import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 public interface IFileFilterService {
 
 	void setDatabaseService(IDatabaseService databaseService);
-
+	
 	void addFilter(IFilter filer);
 
 	void removeFilter(IFilter filer);
@@ -30,14 +31,14 @@ public interface IFileFilterService {
 	 * @return true if sync is allowed, false otherwise
 	 */
 	boolean checkFile(PieFile file);
-
+	
 	/**
-	 * Check if a file sync is not blocked by a filter
+	 * Check if a PieFolder sync is not blocked by a filter
 	 *
 	 * @param file to check
 	 * @return true if sync is allowed, false otherwise
 	 */
-	boolean checkFile(File file);
+	boolean checkFile(PieFolder file);
 
 	ArrayList<IFilter> getAllFilters();
 

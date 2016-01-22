@@ -116,7 +116,8 @@ public class ModelEntityConverterService implements IModelEntityConverterService
     public IFileFilterEntity convertToEntity(IFilter filter) {
         //ToDo: Spring
         FilterEntity en = new FilterEntity();
-        en.setPattern(filter.getPattern());
+		//TODO FILTER
+        //en.setPattern(filter.getPattern());
         return en;
     }
 

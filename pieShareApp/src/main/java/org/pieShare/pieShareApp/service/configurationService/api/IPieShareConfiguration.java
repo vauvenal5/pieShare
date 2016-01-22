@@ -24,4 +24,8 @@ public interface IPieShareConfiguration {
 	public File getPwdFile();
 
 	public void setPwdFile(File pwdFile);
+	
+	public long getMaxFileSize();
+	
+	public void setMaxFileSize(long maxFileSize);
 }

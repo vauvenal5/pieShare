@@ -17,6 +17,7 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	private File workingDir;
 	private File tmpDir;
 	private File pwdFile;
+	private long maxFileSize;
 	
 	@Override
 	public File getWorkingDir() {
@@ -46,5 +47,15 @@ public class PieShareConfiguration implements IPieShareConfiguration{
 	@Override
 	public void setPwdFile(File pwdFile) {
 		this.pwdFile = pwdFile;
+	}
+
+	@Override
+	public long getMaxFileSize() {
+		return this.maxFileSize;
+	}
+
+	@Override
+	public void setMaxFileSize(long maxFileSize) {
+		this.maxFileSize = maxFileSize;
 	}
 }
