@@ -14,7 +14,6 @@ import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictE
 /**
  * 
  * @author Svetoslav
- * todo make general for Filder?
  */
 public interface ICompareService {
 	
