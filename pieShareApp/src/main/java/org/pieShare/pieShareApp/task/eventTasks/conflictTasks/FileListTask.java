@@ -26,7 +26,6 @@ public class FileListTask extends ARequestTask<IFileListMessage> {
 
 	private IFileService fileService;
 	private IFolderService folderService;
-//	private IHistoryService historyService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
