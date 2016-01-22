@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
+import java.io.File;
 import java.io.IOException;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
@@ -40,7 +41,7 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
         
         PieLogger.info(this.getClass(), "It's a File!");
 
-        this.fileService.waitUntilCopyFinished(this.file);
+        this.fileService.waitUntilCopyFinished(file);
 
         PieFile pieFile = this.fileService.getPieFile(file);
 

@@ -82,7 +82,7 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 		//this is no more neccessary due to the event folding service
 		//this.fileWatcherService.addPieFileToModifiedList(file);
 		if (setCorrectModificationDate(file, targetFile)) {
-			this.fileWatcherService.removePieFileFromModifiedList(file);
+			//this.fileWatcherService.removePieFileFromModifiedList(file);
 		}
 	}
 
