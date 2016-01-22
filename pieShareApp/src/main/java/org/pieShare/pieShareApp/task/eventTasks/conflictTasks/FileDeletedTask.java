@@ -25,6 +25,9 @@ public class FileDeletedTask extends ACheckConflictTask<FileDeletedMessage>{
 
 	@Override
 	public void run() {
+		//todo-mr3: delete has to compare with the previous file!!!
+		//todo-mr3: modified by us?
+		//todo-mr3: sync to DB here or over the local file event?
             PieLogger.trace(this.getClass(),"Deleting file: {}", this.msg.getPieFilder());
 		if(!this.isConflictedOrNotNeeded((PieFile)this.msg.getPieFilder())) {
 			this.fileService.deleteRecursive((PieFile) this.msg.getPieFilder());

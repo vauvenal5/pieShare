@@ -18,7 +18,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import javax.inject.Provider;
+import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
+import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.service.database.api.IDatabaseService;
+import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 
 /**
  * Created by richy on 18.11.2015.
@@ -36,6 +40,8 @@ public class UserTools {
     private IDatabaseService databaseService;
     private boolean useIv;
     private boolean activateAutoLogin;
+	private IHistoryService historyService;
+	private IMessageFactoryService messageFactoryService;
 
     public void setUserService(IUserService userService) {
         this.userService = userService;
@@ -60,6 +66,14 @@ public class UserTools {
     public void setClusterManagementService(IClusterManagementService clusterManagementService) {
         this.clusterManagementService = clusterManagementService;
     }
+
+	public void setHistoryService(IHistoryService historyService) {
+		this.historyService = historyService;
+	}
+
+	public void setMessageFactoryService(IMessageFactoryService messageFactoryService) {
+		this.messageFactoryService = messageFactoryService;
+	}
 
     public UserTools() {
     }
@@ -168,6 +182,32 @@ public class UserTools {
         }
 
         PieLogger.info(this.getClass(), "Login Successful");
+		
+		this.historyService.syncLocalFilders();
+		//todo-mr3: now we have to send a list with everything
+
+		//todo-after-ase: ultimatively instead of making an initial sync we have to perform a list request when ever
+			//the cluster state changes
+        try {
+            //todo: change this maybe in future to different aproach
+				//should probably be coupled with network chang detection!
+            //this is needed to recognize local changes on this node
+            IFileListMessage fileList = this.messageFactoryService.getFileListMessage();
+            fileList.getAddress().setClusterName(userService.getUser().getCloudName());
+            fileList.getAddress().setChannelId(userService.getUser().getUserName());
+            fileList.setFileList(this.historyService.getPieFiles());
+			fileList.setFolderList(this.historyService.getPieFolders());
+            this.clusterManagementService.sendMessage(fileList);
+
+            //send file list request message to cluster
+            FileListRequestMessage msg = this.messageFactoryService.getFileListRequestMessage();
+            msg.getAddress().setClusterName(userService.getUser().getCloudName());
+            msg.getAddress().setChannelId(userService.getUser().getUserName());
+            this.clusterManagementService.sendMessage(msg);
+        } catch (ClusterManagmentServiceException ex) {
+            PieLogger.error(this.getClass(), "Connect failed!", ex);
+        }
+		
         return true;
     }
 

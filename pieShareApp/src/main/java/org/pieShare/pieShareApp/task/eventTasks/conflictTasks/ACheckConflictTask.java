@@ -9,12 +9,12 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.comparerService.exceptions.FileConflictException;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.event.IPieEvent;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -22,9 +22,9 @@ import org.pieShare.pieTools.pieUtilities.task.PieEventTaskBase;
  */
 public abstract class ACheckConflictTask<T extends IClusterMessage> extends PieEventTaskBase<T> {
 	
-	protected ILocalFileCompareService comparerService;
+	protected ICompareService comparerService;
 	
-	public void setComparerService(ILocalFileCompareService comparerService) {
+	public void setComparerService(ICompareService comparerService) {
 		this.comparerService = comparerService;
 	}
 	

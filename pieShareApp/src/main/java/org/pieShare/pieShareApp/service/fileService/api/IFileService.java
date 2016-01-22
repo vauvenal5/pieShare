@@ -26,7 +26,7 @@ public interface IFileService extends IFilderService {
 			//return null
 			//throw Exception
 			//pieFile.exists()
-        List<PieFile> getAllFiles() throws IOException;	
+        //List<PieFile> getAllFiles() throws IOException;	
         
         PieFile getPieFile(File file) throws FileNotFoundException, IOException;
         
@@ -36,8 +36,8 @@ public interface IFileService extends IFilderService {
 	
 	void setCorrectModificationDateOnTmpFile(PieFile file);
 	
-        PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException;
+        //PieFile getTmpPieFile(PieFile file) throws FileNotFoundException, IOException;
         
-        PieFile getWorkingPieFile(PieFile file) throws FileNotFoundException, IOException;
+        //PieFile getWorkingPieFile(PieFile file) throws FileNotFoundException, IOException;
 
 }

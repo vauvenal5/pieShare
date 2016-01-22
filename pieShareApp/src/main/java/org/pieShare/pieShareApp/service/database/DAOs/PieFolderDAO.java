@@ -22,11 +22,13 @@ import org.pieShare.pieShareApp.service.database.api.IPieDatabaseManagerFactory;
 public class PieFolderDAO {
 
     private final String InsertPieFolder = "INSERT INTO PieFolder (ID, FileName, Deleted, Synched, Parent, IsRoot) VALUES (?,?,?,?,?,?);";
-    private final String SetAllSyncedTrue = "UPDATE PieFolder SET Synched=1 WHERE Synched=0;";
+    private final String InsertPieFolder = "INSERT INTO PieFolder (RelativeFilePath, FileName, LastModified, Deleted, Synched) VALUES (?,?,?,?,?);";
+    private final String SetAllSyncedFalse = "UPDATE PieFolder SET Synched=0 WHERE Synched=1;";
     private final String FindAll = "SELECT * FROM PieFolder;";
-    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=1;";
+    private final String FindAllUnsyched = "SELECT * FROM PieFolder WHERE Synched=0;";
     private final String FindByID = "SELECT * FROM PieFolder WHERE ID=?;";
     private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, Deleted=?, Synched=?, Parent=?, IsRoot=? WHERE ID=?;";
+    private final String UpdatePieFolder = "UPDATE PieFolder SET FileName=?, LastModified=?, Deleted=?, Synched=? WHERE RelativeFilePath=?;";
     private final String DeletePieFile = "DELETE FROM PieFolder WHERE ID=?";
 
     private final String RenameFolder =  "UPDATE PieFolder SET FileName=? WHERE ID=?;";
@@ -46,18 +48,20 @@ public class PieFolderDAO {
         try (PreparedStatement insertInto = con.prepareStatement(InsertPieFolder)) {
             insertInto.setString(1, pieFolderEntity.getId());
             insertInto.setString(2, pieFolderEntity.getFolderName());
+			
+			insertInto.setLong(3, pieFolderEntity.getLastModified());
 
             int val = 0;
             if (pieFolderEntity.isDeleted()) {
                 val = 1;
             }
-            insertInto.setInt(3, val);
+            insertInto.setInt(4, val);
 
             val = 0;
             if (pieFolderEntity.isSynced()) {
                 val = 1;
             }
-            insertInto.setInt(4, val);
+            insertInto.setInt(5, val);
             insertInto.setString(5, pieFolderEntity.getParent());
             insertInto.setBoolean(6, pieFolderEntity.isIsRoot());
             insertInto.executeUpdate();
@@ -70,20 +74,23 @@ public class PieFolderDAO {
 
         try (PreparedStatement updateQuery = con.prepareStatement(UpdatePieFolder)) {
             updateQuery.setString(1, pieFolderEntity.getFolderName());
+			
+			updateQuery.setLong(2, pieFolderEntity.getLastModified());
 
             int val = 0;
             if (pieFolderEntity.isDeleted()) {
                 val = 1;
             }
-            updateQuery.setInt(2, val);
+            updateQuery.setInt(3, val);
 
             val = 0;
             if (pieFolderEntity.isSynced()) {
                 val = 1;
             }
-            updateQuery.setInt(3, val);
+            updateQuery.setInt(4, val);
 
             updateQuery.setString(4, pieFolderEntity.getParent());
+            updateQuery.setString(5, pieFolderEntity.getRelativeFolderPath());
             updateQuery.setBoolean(5, pieFolderEntity.isIsRoot());
 
             updateQuery.setString(6, pieFolderEntity.getId());
@@ -95,7 +102,7 @@ public class PieFolderDAO {
         Connection con = databaseFactory.getDatabaseConnection();
 
         try (Statement stmt = con.createStatement()) {
-            stmt.executeUpdate(SetAllSyncedTrue);
+            stmt.executeUpdate(SetAllSyncedFalse);
         }
     }
 
@@ -197,6 +204,7 @@ public class PieFolderDAO {
             PieFolderEntity entity = new PieFolderEntity();
             entity.setId(results.getString("ID"));
             entity.setFolderName(results.getString("FileName"));
+			entity.setLastModified(results.getLong("LastModified"));
             entity.setDeleted(results.getInt("Deleted") != 0);
             entity.setSynced(results.getInt("Synched") != 0);
             entity.setParent(results.getString("Parent"));

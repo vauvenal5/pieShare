@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.pieShare.pieShareApp.task.eventTasks;
 
 import java.io.IOException;
@@ -12,6 +11,7 @@ import org.pieShare.pieShareApp.model.message.FileListRequestMessage;
 import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.AMessageSendingEventTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -22,35 +22,30 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class FileListRequestTask extends AMessageSendingEventTask<FileListRequestMessage> {
 
-	private IFileService fileService;
+	private IHistoryService historyService;
 
-	public void setFileService(IFileService fileService) {
-		this.fileService = fileService;
+	public void setHistoryService(IHistoryService historyService) {
+		this.historyService = historyService;
 	}
 
 	@Override
 	public void run() {
 		List<PieFile> pieFiles;
-		try {
-			pieFiles = this.fileService.getAllFiles();
-		
-			//todo: use bean service instead
-			IFileListMessage reply = this.messageFactoryService.getFileListMessage();
-            reply.setFileList(pieFiles);
-			reply.setAddress(this.msg.getAddress());
-			
-			this.setDefaultAdresse(reply);
+		pieFiles = this.historyService.getPieFiles();
 
-			try {
-				this.clusterManagementService.sendMessage(reply);
-			}
-			catch(ClusterManagmentServiceException ex) {
-				//todo: error handling
-			}
-		
-		} catch (IOException ex) {
-			PieLogger.error(this.getClass(), "RequestTask failed!", ex);
+		//todo: use bean service instead
+		IFileListMessage reply = this.messageFactoryService.getFileListMessage();
+		reply.setFileList(pieFiles);
+		reply.setAddress(this.msg.getAddress());
+		reply.setFolderList(this.historyService.getPieFolders());
+
+		this.setDefaultAdresse(reply);
+
+		try {
+			this.clusterManagementService.sendMessage(reply);
+		} catch (ClusterManagmentServiceException ex) {
+			//todo: error handling
 		}
 	}
-	
+
 }
