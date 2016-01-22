@@ -26,17 +26,12 @@ public class PieFolder extends PieFilder implements IBaseModel, Comparable<Objec
             return false;
         }
 
-		return super.equals(o);
+        return super.equals(o);
     }
 
-	@Override
-	public int hashCode() {
-		return super.hashCode();
-	}
     @Override
     public int hashCode() {
-        int hash = this.getId().hashCode() + this.getName().hashCode() + this.getRelativePath().hashCode();
-        return hash;
+        return super.hashCode();
     }
 
 }

@@ -16,14 +16,6 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class FolderService extends FilderServiceBase implements IFolderService {
 
     @Override
-    public PieFolder generatePieFolder(File file) {
-        PieFolder pieFolder = new PieFolder();
-        pieFolder.setName(file.getName());
-        pieFolder.setRelativePath(this.relativizeFilePath(file));
-        return pieFolder;
-    }
-
-    @Override
     public void createFolder(PieFolder pieFolder) throws FolderServiceException {
         File newFolder = getAbsolutePath(pieFolder);
         createLocalFolder(newFolder);
@@ -57,22 +49,22 @@ public class FolderService extends FilderServiceBase implements IFolderService {
         deleteRecursive(file);
     }
 
-	@Override
-	public PieFolder getPieFolder(File file) {
-		PieFolder folder = new PieFolder();
-		folder.setName(file.getName());
-		folder.setRelativePath(this.relativizeFilePath(file));
-		folder.setLastModified(file.lastModified());
-		if(!file.exists()) {
-			folder.setDeleted(true);
-		}
-		return folder;
-	}
+    @Override
+    public PieFolder getPieFolder(File file) {
+        PieFolder folder = new PieFolder();
+        folder.setName(file.getName());
+        folder.setRelativePath(this.relativizeFilePath(file));
+        folder.setLastModified(file.lastModified());
+        if (!file.exists()) {
+            folder.setDeleted(true);
+        }
+        return folder;
+    }
 
-	@Override
-	public PieFolder getPieFolder(String path) {
-		PieUser user = this.userService.getUser();
-		return this.getPieFolder(new File(user.getPieShareConfiguration().getWorkingDir(), path));
-	}
+    @Override
+    public PieFolder getPieFolder(String path) {
+        PieUser user = this.userService.getUser();
+        return this.getPieFolder(new File(user.getPieShareConfiguration().getWorkingDir(), path));
+    }
 
 }
