@@ -97,7 +97,7 @@ public class HistoryService implements IHistoryService {
 	public PieFile getPieFileFromHistory(File file) {
 		PieFile searchFile = new PieFile();
 		searchFile.setRelativePath(this.fileService.relativizeFilePath(file));
-		return this.databaseService.findPieFile(searchFile);
+		return this.databaseService.findPieFileByRelativeFilePath(searchFile);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class HistoryService implements IHistoryService {
 	public PieFolder getPieFolderFromHistory(File file) {
 		PieFolder searchFolder = new PieFolder();
 		searchFolder.setRelativePath(this.fileService.relativizeFilePath(file));
-		return this.databaseService.findPieFolder(searchFolder);
+		return this.databaseService.findPieFolderByRelativeFilePath(searchFolder);
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class HistoryService implements IHistoryService {
 	public PieFolder getPieFolder(String relativePath) {
 		PieFolder folder = new PieFolder();
 		folder.setRelativePath(relativePath);
-		return this.databaseService.findPieFolder(folder);
+		return this.databaseService.findPieFolderByRelativeFilePath(folder);
 	}
 	
 }
