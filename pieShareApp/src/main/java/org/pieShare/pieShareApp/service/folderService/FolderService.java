@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
+import java.util.Date;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -56,6 +57,7 @@ public class FolderService extends FilderServiceBase implements IFolderService {
 		folder.setLastModified(file.lastModified());
 		if(!file.exists()) {
 			folder.setDeleted(true);
+			folder.setLastModified(new Date().getTime());
 		}
 		return folder;
 	}

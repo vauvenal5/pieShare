@@ -65,11 +65,11 @@ public class PieShareAppTasks {
 	private void aLocalEventTask(ALocalEventTask task) {
 		this.aMessageSendingTask(task);
 		task.setFileFilterService(this.services.fileFilterService());
+		task.setHistoryService(services.historyService());
 	}
 
     private void aLocalFileEventTask(ALocalFileEventTask task) {
         this.aLocalEventTask(task);
-        task.setHistoryService(services.historyService());
         task.setFileWatcherService(this.services.apacheFileWatcherService());
 		task.setFileService(this.services.localFileService());
     }
