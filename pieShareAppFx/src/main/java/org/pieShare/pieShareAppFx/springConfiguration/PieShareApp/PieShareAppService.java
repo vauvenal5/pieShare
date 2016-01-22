@@ -21,10 +21,9 @@ import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMe
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaCommitMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.MetaMessage;
 import org.pieShare.pieShareApp.service.PieShareService;
-import org.pieShare.pieShareApp.service.comparerService.ALocalFileCompareService;
-import org.pieShare.pieShareApp.service.comparerService.FileCompareService;
-import org.pieShare.pieShareApp.service.comparerService.FileHistoryCompareService;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
+import org.pieShare.pieShareApp.service.comparerService.ACompareService;
+import org.pieShare.pieShareApp.service.comparerService.LocalCompareService;
+import org.pieShare.pieShareApp.service.comparerService.HistoryCompareService;
 import org.pieshare.piespring.service.ApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.ConfigurationFactory;
 import org.pieShare.pieShareApp.service.database.DAOs.ConfigurationDAO;
@@ -45,7 +44,7 @@ import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.FileFilterService;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileService.FileServiceBase;
-import org.pieShare.pieShareApp.service.fileService.HistoryFileService;
+import org.pieShare.pieShareApp.service.fileService.FileUtilitiesService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.FileEncryptionService;
 import org.pieShare.pieShareApp.service.folderService.FolderService;
@@ -68,6 +67,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -163,24 +163,18 @@ public class PieShareAppService {
 
     @Bean
     @Lazy
-    public ILocalFileCompareService fileCompareService() {
-        FileCompareService service = new FileCompareService();
+    public ICompareService fileCompareService() {
+        LocalCompareService service = new LocalCompareService();
         service.setFileService(this.localFileService());
-        service.setWrappedCompareService(this.historyCompareServicePrivate());
+		service.setFolderService(this.folderService());
         return service;
     }
 
     @Bean
     @Lazy
-    public ILocalFileCompareService historyCompareService() {
-        return this.historyCompareServicePrivate();
-    }
-
-    @Bean
-    @Lazy
-    protected ALocalFileCompareService historyCompareServicePrivate() {
-        FileHistoryCompareService historyService = new FileHistoryCompareService();
-        historyService.setHistoryService(this.historyFileService());
+    public ICompareService historyCompareService() {
+        HistoryCompareService historyService = new HistoryCompareService();
+        historyService.setHistoryService(this.historyService());
         return historyService;
     }
 
@@ -203,6 +197,7 @@ public class PieShareAppService {
         service.setEventFoldingTimerTaskProvider(this.providers.eventFoldingTimerTaskProvider);
         service.setFileService(this.localFileService());
 		service.setLocalFilderEventBase(this.utilities.eventBase());
+		service.setShutdownService(this.utilities.shutdownService());
         service.init();
         return service;
     }
@@ -220,7 +215,6 @@ public class PieShareAppService {
     private void fileServiceBase(FileServiceBase base) {
         base.setFileWatcherService(this.apacheFileWatcherService());
         base.setUserService(userService());
-        base.init();
     }
 
     @Bean
@@ -235,19 +229,12 @@ public class PieShareAppService {
 
     @Bean
     @Lazy
-    public HistoryFileService historyFileService() {
-        HistoryFileService service = new HistoryFileService();
-        this.fileServiceBase(service);
-        service.setDatabaseService(this.databaseService());
-        return service;
-    }
-
-    @Bean
-    @Lazy
     public HistoryService historyService() {
         HistoryService service = new HistoryService();
         service.setDatabaseService(this.databaseService());
         service.setFileService(this.localFileService());
+		service.setFileUtilitiesService(this.fileUtilitiesService());
+		service.setUserService(this.userService());
         return service;
     }
 
@@ -406,7 +393,6 @@ public class PieShareAppService {
     public IFolderService folderService() {
         FolderService folderService = new FolderService();
         folderService.setUserService(userService());
-            folderService.init();
         return folderService;
     }
 
@@ -420,6 +406,17 @@ public class PieShareAppService {
         userTools.setPasswordEncryptionService(utilities.passwordEncryptionService());
         userTools.setSymmetricEncryptedChannelProvider(providers.symmetricEncryptedChannelProvider);
         userTools.setUserService(userService());
+		userTools.setHistoryService(this.historyService());
+		userTools.setMessageFactoryService(this.messageFactoryService());
         return userTools;
     }
+	
+	@Bean
+	@Lazy
+	public FileUtilitiesService fileUtilitiesService() {
+		FileUtilitiesService service = new FileUtilitiesService();
+		service.setFileService(this.localFileService());
+		service.setFolderService(this.folderService());
+		return service;
+	}
 }

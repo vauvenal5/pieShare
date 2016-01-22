@@ -14,27 +14,21 @@ import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.task.IP
  * @author Paul
  */
 public interface IPieRouter extends IPieTask {
-    /**
-     * Bind socket to address.
-     * @param port 
-     * @return true if router was bound else false.
-     */
-    boolean bind(int port);
     
     /**
      * Close socket.
      */
     void close();
-    
-    /**
-     * Receive messages from connected sockets.
-     * @return byte[]
-     */
-    byte[] receive();
 
 	/**
 	 * Register incoming channel.
 	 * @param channel
 	 */
 	public void registerIncomingChannel(IIncomingChannel channel);
+	
+	/**
+	 * Set the port on which the router task will bind later on.
+	 * @param port 
+	 */
+	public void setPort(int port);
 }

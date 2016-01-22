@@ -31,6 +31,10 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	
 	@Override
 	public void waitUntilCopyFinished(File file) {
+		if(!file.exists()) {
+			return;
+		}
+		
 		FileInputStream st;
 		boolean isCopying = true;
 
@@ -107,14 +111,15 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 		return this.getPieFile(localFile);
 	}
 
-	@Override
-	public PieFile getTmpPieFile(PieFile file) throws IOException {
-		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativePath());
-		return this.getPieFile(tmpFile);
-	}
+//	//todo: apparently unused
+//	@Override
+//	public PieFile getTmpPieFile(PieFile file) throws IOException {
+//		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativePath());
+//		return this.getPieFile(tmpFile);
+//	}
 
-	@Override
-	public PieFile getWorkingPieFile(PieFile file) throws IOException {
-		return this.getPieFile(file.getRelativePath());
-	}
+//	@Override
+//	public PieFile getWorkingPieFile(PieFile file) throws IOException {
+//		return this.getPieFile(file.getRelativePath());
+//	}
 }

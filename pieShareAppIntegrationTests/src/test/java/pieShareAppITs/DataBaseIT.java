@@ -128,8 +128,8 @@ public class DataBaseIT {
     }
 
     /**
-     * Different PieFolders and pieFiles are persisted in the DB. All Folders
-     * and Files should be returned.
+     * Different PieFolders are persisted in the DB. All Folders should be
+     * returned with the method findAllPieFolders and equal the persisted ones.
      */
     @Test
     public void Should_FindAllPieFoldersInDB_When_FoldersPersistedInDB_SameWithFiles() {
@@ -290,5 +290,41 @@ public class DataBaseIT {
         
         Assert.assertEquals(3, allFiles.size());
         Assert.assertEquals(2, folders.size());
+    }
+
+    @Test
+    public void testFindAllFilesByHash() {
+        DatabaseService dbService = this.context.getBean(DatabaseService.class);
+
+        PieFile file = new PieFile();
+        file.setDeleted(false);
+        file.setName("testFile");
+        file.setLastModified(0);
+        file.setMd5("test".getBytes());
+        file.setRelativePath("testFolder");
+
+        PieFile file1 = new PieFile();
+        file1.setDeleted(false);
+        file1.setName("testFile2");
+        file1.setLastModified(10);
+        file1.setMd5("test".getBytes());
+        file1.setRelativePath("testFolder2");
+
+        PieFile file2 = new PieFile();
+        file2.setDeleted(false);
+        file2.setName("testFile3");
+        file2.setLastModified(0);
+        file2.setMd5("testNotSameHash".getBytes());
+        file2.setRelativePath("testFolder3");
+
+		//todo-mr3-richy: this statement throws an exception; test works due to luck
+        dbService.persistPieFile(file);
+        dbService.persistPieFile(file1);
+        dbService.persistPieFile(file2);
+
+        List<PieFile> filesFromDB = dbService.findPieFileByHash(file.getMd5());
+
+        Assert.assertEquals(filesFromDB.size(), 2);
+        Assert.assertEquals(filesFromDB.get(0).getMd5(), "test".getBytes());
     }
 }

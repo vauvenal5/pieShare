@@ -52,11 +52,13 @@ public interface IFolderService extends IFilderService {
     void deleteFolder(PieFolder pieFolder) throws FolderServiceException;
 
     /**
+	PieFolder getPieFolder(File file);
      * Generate a PieFolder out of a File.
      *
      * @param file the file to convert to a PieFolder
      * @return A new PieFolder.
      */
     PieFolder generatePieFolder(File file);
-
+	
+	PieFolder getPieFolder(String path);
 }

@@ -12,11 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieShareApp.service.fileService.fileEncryptionService.IFileEncryptionService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
  */
 public class ShareService implements IShareService{
 	
-	private ILocalFileCompareService comparerService;
+	private ICompareService comparerService;
 	private IFileService fileService;
 	private IFileEncryptionService fileEncryptionService;
 	private IFileWatcherService fileWatcherService;
@@ -47,7 +47,7 @@ public class ShareService implements IShareService{
 		this.fileService = fileService;
 	}
 
-	public void setComparerService(ILocalFileCompareService comparerService) {
+	public void setComparerService(ICompareService comparerService) {
 		this.comparerService = comparerService;
 	}
 	

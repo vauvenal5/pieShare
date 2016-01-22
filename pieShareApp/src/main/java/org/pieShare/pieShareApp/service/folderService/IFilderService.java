@@ -7,6 +7,7 @@ package org.pieShare.pieShareApp.service.folderService;
 
 import java.io.File;
 import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
+import org.pieShare.pieShareApp.service.fileService.api.IFilderIterationCallback;
 
 /**
  *
@@ -48,6 +49,4 @@ public interface IFilderService {
      * @param file to delete
      */
     void deleteRecursive(File file);
-    
-    
 }

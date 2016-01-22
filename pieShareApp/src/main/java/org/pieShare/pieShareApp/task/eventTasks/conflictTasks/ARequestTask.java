@@ -15,7 +15,7 @@ import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
  */
 public abstract class ARequestTask<T extends IClusterMessage> extends ACheckConflictTask<T> {
 	
-	private IRequestService requestService;
+	protected IRequestService requestService;
 
     public void setRequestService(IRequestService requestService) {
         this.requestService = requestService;

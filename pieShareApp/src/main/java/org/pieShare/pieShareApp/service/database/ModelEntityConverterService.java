@@ -128,7 +128,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         entity.setDeleted(folder.isDeleted());
         entity.setFolderName(folder.getName());
         entity.setId(folder.getId());
-
+		entity.setLastModified(folder.getLastModified());
         return entity;
     }
 
@@ -142,6 +142,7 @@ public class ModelEntityConverterService implements IModelEntityConverterService
         folder.setDeleted(entity.isDeleted());
         folder.setName(entity.getFolderName());
         folder.setId(entity.getId());
+		folder.setLastModified(entity.getLastModified());
         return folder;
     }
 }
