@@ -34,15 +34,6 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
         this.fileFilterService = fileFilterService;
     }
 
-    protected boolean syncAllowed() {
-		//todo: dani is unhappy with the name checkFile so 
-			//she wrapped it into this one.. think about renaming the function
-        if (this.fileFilterService.checkFile(this.file)) {
-            return true;
-        }
-        return false;
-    }
-
     protected <T extends PieFilder> void doWork(IFilderMessageBase<T> msg, T filder) {
         try {
             msg.setPieFilder(filder);

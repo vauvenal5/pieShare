@@ -150,7 +150,8 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 			@Override
 			public void handle(MouseEvent arg0) {
 				if (listViewFilters.getSelectionModel().getSelectedItems() != null) {
-					patternTextField.setText(((IFilter) listViewFilters.getSelectionModel().getSelectedItem().getObject()).getPattern());
+					//TODO FILTER
+					//patternTextField.setText(((IFilter) listViewFilters.getSelectionModel().getSelectedItem().getObject()).getPattern());
 				}
 			}
 		});
@@ -188,7 +189,8 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 	private void handleAddAction(ActionEvent event) {
 		String text = patternTextField.getText();
 		IFilter fil = beanService.getBean(RegexFileFilter.class);
-		fil.setPattern(text);
+		//TODO FILTER
+		//fil.setPattern(text);
 		fileFilterService.addFilter(fil);
 		refreshList();
 	}
@@ -250,7 +252,9 @@ public class FileFilterSettingsController implements IController, ITwoColumnList
 
 				@Override
 				public Label getSecondColumn() {
-					Label label = new Label(filter.getPattern());
+					//TODO FILTER
+					Label label = new Label();
+					//Label label = new Label(filter.getPattern());
 					return label;
 				}
 

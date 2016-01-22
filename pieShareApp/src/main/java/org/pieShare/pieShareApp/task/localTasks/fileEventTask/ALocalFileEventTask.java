@@ -44,11 +44,7 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
         this.historyFileService = historyFileService;
     }
 
-    protected PieFile prepareWork() throws IOException {
-        if (!syncAllowed()) {
-            return null;
-        }
-        
+    protected PieFile prepareWork() throws IOException {        
         PieLogger.info(this.getClass(), "It's a File!");
 
         this.fileService.waitUntilCopyFinished(this.file);
@@ -65,6 +61,10 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
             this.fileWatcherService.removePieFileFromModifiedList(pieFile);
             return null;
         }
+		
+		if(fileFilterService.checkFile(pieFile))  {
+			return null;
+		}
 
         return pieFile;
     }
