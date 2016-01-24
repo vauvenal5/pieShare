@@ -23,6 +23,7 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
 import org.pieShare.pieShareApp.task.localTasks.ALocalEventTask;
+import org.pieShare.pieShareApp.task.localTasks.EventFoldingServiceTask;
 import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
@@ -287,12 +288,29 @@ public class PieShareAppTasks {
 		EventFoldingTimerTask task = new EventFoldingTimerTask();
 		task.setExecutorService(this.utilities.pieExecutorService());
 		task.setHistoryService(this.services.historyService());
+                task.setFileService(this.services.localFileService());
+                task.setHashService(this.utilities.md5Service());
 		
 		task.setLocalFileChangedProvider(this.providers.localFileChangedProvider);
 		task.setLocalFileCreatedProvider(this.providers.localFileCreateProvider);
 		task.setLocalFileDeletedProvider(this.providers.localFileDeletedProvider);
+                task.setLocalFileRenamedProvider(this.providers.localFileRenamedProvider);
+                task.setLocalFileMovedProvider(this.providers.localFileMovedProvider);
 		task.setLocalFolderCreatedProvider(this.providers.localFolderCreatedProvider);
 		task.setLocalFolderDeletedProvider(this.providers.localFolderDeletedProvider);
+                task.setLocalFolderRenamedProvider(this.providers.localFolderRenamedProvider);
+                task.setLocalFolderMovedProvider(this.providers.localFolderMovedProvider);
 		return task;
 	}
+        
+    @Bean
+    @Lazy
+    @Scope(value = "prototype")
+    public EventFoldingServiceTask eventFoldingServiceTask() {
+        EventFoldingServiceTask task = new EventFoldingServiceTask();
+        task.setEventFoldingService(this.services.eventFoldingService());
+        task.setLocalFileEventProvider(this.providers.localFileEventProvider);
+        return task;
+    }
+        
 }

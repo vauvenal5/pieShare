@@ -7,6 +7,7 @@ package org.pieShare.pieShareApp.task.localTasks;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,8 +32,6 @@ import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderMoved
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderRenamedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
-import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
@@ -59,7 +58,7 @@ public class EventFoldingTimerTask extends TimerTask {
 
 	@Override
 	public void run() {
-		Map<byte [], LocalFileEvent> localEvents = this.eventFoldingService.getLocalEvents();
+		Map<Integer, LocalFileEvent> localEvents = this.eventFoldingService.getLocalEvents();
                 ArrayList<LocalFileEvent> consumedDeletes = new ArrayList<>();
 		
 		synchronized (localEvents) {
@@ -69,10 +68,10 @@ public class EventFoldingTimerTask extends TimerTask {
 
 			long currentTime = new Date().getTime();
 
-			Iterator<Map.Entry<byte [], LocalFileEvent>> iterator = localEvents.entrySet().iterator();
+			Iterator<Map.Entry<Integer, LocalFileEvent>> iterator = localEvents.entrySet().iterator();
 
 			while (iterator.hasNext()) {
-				Map.Entry<byte [], LocalFileEvent> entry = iterator.next();
+				Map.Entry<Integer, LocalFileEvent> entry = iterator.next();
 
 				if ((currentTime - entry.getValue().getTimestamp()) > 2000) {
 					LocalFilderEvent filderEvent = new LocalFilderEvent(this, entry.getValue());
@@ -86,13 +85,12 @@ public class EventFoldingTimerTask extends TimerTask {
 					if(file.exists()) {
 						dir = file.isDirectory();
 					} else {
-						PieFile res = this.historyService.getPieFileFromHistory(file);
+						PieFile res = this.historyService.getPieFile(fileService.relativizeFilePath(file));
 						if(res == null) {
 							dir = true;
 						}
 					}
 					
-                                        //TODO: add rename and move to switch
 					switch (entry.getValue().getType()) {
 						case CREATED:
 							if(dir) {
@@ -118,6 +116,8 @@ public class EventFoldingTimerTask extends TimerTask {
 							}
                                                     
                                                         task = localFileRenamedProvider.get();
+                                                        task.setOldFile(entry.getValue().getOldFile());
+                                                        
                                                         break;
                                                 case MOVED:
                                                         if(dir) {
@@ -126,6 +126,8 @@ public class EventFoldingTimerTask extends TimerTask {
 							}
                                                     
                                                         task = localFileMovedProvider.get();
+                                                        task.setOldFile(entry.getValue().getOldFile());
+                                                        
                                                         break;
 						default:
 							if(dir) {
@@ -150,9 +152,9 @@ public class EventFoldingTimerTask extends TimerTask {
                             
                                 byte [] firstMD5 = ev.getMD5();
                                 byte[] removeBase = concatByteArray(firstMD5, hashService.hash(LocalFileEventType.DELETED.name().getBytes()));
-                                byte[] removeRename = hashService.hash(concatByteArray(removeBase, path));
-                                byte[] removeMove = hashService.hash(concatByteArray(removeBase, name));
-                                if(localEvents.containsKey(path)) {
+                                Integer removeRename = Arrays.hashCode(hashService.hash(concatByteArray(removeBase, path)));
+                                Integer removeMove = Arrays.hashCode(hashService.hash(concatByteArray(removeBase, name)));
+                                if(localEvents.containsKey(Arrays.hashCode(hashService.hash(fileService.relativizeFilePath(ev.getFile()).getBytes())))) {
                                     localEvents.remove(removeMove);
                                     localEvents.remove(removeRename);
                                 }

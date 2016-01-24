@@ -16,7 +16,6 @@ public class LocalFileEvent {
 	private File file;
 	private long timestamp;
         private File oldFile;
-        private File newFile;
         private byte [] MD5;
 
 	public LocalFileEventType getType() {
@@ -47,17 +46,10 @@ public class LocalFileEvent {
             return oldFile;
         }
 
-        public File getNewFile() {
-            return newFile;
-        }
-
         public void setOldFile(File oldFile) {
             this.oldFile = oldFile;
         }
 
-        public void setNewFile(File newFile) {
-            this.newFile = newFile;
-        }
 
         public byte[] getMD5() {
             return MD5;

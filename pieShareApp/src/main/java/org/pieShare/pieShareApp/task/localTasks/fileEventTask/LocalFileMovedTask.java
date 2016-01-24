@@ -21,15 +21,18 @@ public class LocalFileMovedTask extends ALocalFileEventTask  {
         try {
 
             PieFile pieFile = this.prepareWork();
+            PieFile oldFile = this.prepareOldFile();
 
             if (pieFile == null || this.file == null) {
                 PieLogger.info(this.getClass(), "Skipping rename file: null");
                 return;
             }
 
+            
+            //this.historyService.
             FileMovedMessage msg = this.messageFactoryService.getFileMovedMessage();
-            //TODO: @MR3 choose right method to execute on historyService
-            pieFile = this.historyService.syncDeleteToHistory(pieFile);
+            msg.setPreviousFile(oldFile);
+            this.historyService.syncPieFile(pieFile);
 
             super.doWork(msg, pieFile);
 

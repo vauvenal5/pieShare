@@ -6,6 +6,7 @@
 package org.pieShare.pieShareApp.task.localTasks.fileEventTask;
 
 import java.io.IOException;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileMovedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileRenamedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -28,8 +29,9 @@ public class LocalFileRenamedTask extends ALocalFileEventTask {
             }
 
             FileRenamedMessage msg = this.messageFactoryService.getFileRenamedMessage();
-            //TODO: @MR3 choose right method to execute on historyService
-            //pieFile = this.historyService.syncPieFileWithDb(pieFile);
+            PieFile oldFile = this.prepareOldFile();
+            msg.setPreviousFile(oldFile);
+            this.historyService.syncPieFile(pieFile);
 
             super.doWork(msg, pieFile);
 

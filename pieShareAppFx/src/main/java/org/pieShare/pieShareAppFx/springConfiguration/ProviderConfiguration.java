@@ -27,14 +27,18 @@ import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.FileListTask;
 import org.pieShare.pieShareApp.task.eventTasks.conflictTasks.NewFileTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderCreateTask;
 import org.pieShare.pieShareApp.task.eventTasks.folderTasks.FolderDeleteTask;
+import org.pieShare.pieShareApp.task.localTasks.EventFoldingServiceTask;
 import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieShareApp.task.localTasks.TorrentTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileChangedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileMovedTask;
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileRenamedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderMovedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderRenamedTask;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleAckMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHoleCompleteMessage;
 import org.pieShare.pieTools.piePlate.model.message.loopHoleMessages.LoopHolePunchMessage;
@@ -136,12 +140,20 @@ public class ProviderConfiguration {
 	public Provider<LocalFileDeletedTask> localFileDeletedProvider;
         @Autowired
 	public Provider<LocalFileRenamedTask> localFileRenamedProvider;
+        @Autowired
+	public Provider<LocalFileMovedTask> localFileMovedProvider;
 	@Autowired
 	public Provider<LocalFolderCreatedTask> localFolderCreatedProvider;
 	@Autowired
 	public Provider<LocalFolderDeletedTask> localFolderDeletedProvider;
+        @Autowired
+	public Provider<LocalFolderRenamedTask> localFolderRenamedProvider;
+        @Autowired
+	public Provider<LocalFolderMovedTask> localFolderMovedProvider;
 	@Autowired
 	public Provider<EventFoldingTimerTask> eventFoldingTimerTaskProvider;
 	@Autowired
 	public Provider<Date> dateProvider;
+        @Autowired
+	public Provider<EventFoldingServiceTask> eventFoldingServiceTaskProvider;
 }

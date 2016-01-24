@@ -26,6 +26,7 @@ public class LocalFileCreatedTask extends ALocalFileEventTask {
             }
 
             FileCreatedMessage msg = this.messageFactoryService.getNewFileMessage();
+            
             this.historyService.syncPieFile(pieFile);
 
             super.doWork(msg, pieFile);

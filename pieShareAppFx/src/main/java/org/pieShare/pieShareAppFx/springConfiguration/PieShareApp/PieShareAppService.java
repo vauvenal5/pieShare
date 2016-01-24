@@ -185,9 +185,10 @@ public class PieShareAppService {
     public ApacheDefaultFileListener fileListenerService() {
         ApacheDefaultFileListener listener = new ApacheDefaultFileListener();
 //		listener.setBeanService(this.utilities.beanService());
-//		listener.setExecutorService(this.utilities.pieExecutorService());
-        listener.setEventFoldingService(this.eventFoldingService());
-        listener.setLocalFileEventProvider(this.providers.localFileEventProvider);
+		listener.setExecutorService(this.utilities.pieExecutorService());
+                listener.setEventFoldingServiceTask(this.providers.eventFoldingServiceTaskProvider);
+       // listener.setEventFoldingService(this.eventFoldingService());
+        //listener.setLocalFileEventProvider(this.providers.localFileEventProvider);
         return listener;
     }
 
@@ -199,6 +200,8 @@ public class PieShareAppService {
         service.setFileService(this.localFileService());
 		service.setLocalFilderEventBase(this.utilities.eventBase());
 		service.setShutdownService(this.utilities.shutdownService());
+                service.setHashService(this.utilities.md5Service());
+                service.setHistoryService(this.historyService());
         service.init();
         return service;
     }

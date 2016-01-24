@@ -58,5 +58,30 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
 
         return pieFile;
     }
+    
+    protected PieFile prepareOldFile() throws IOException {
+        if (!syncAllowed()) {
+            return null;
+        }
+        
+        PieLogger.info(this.getClass(), "It's a File!");
+
+        this.fileService.waitUntilCopyFinished(oldFile);
+
+        PieFile pieFile = this.fileService.getPieFile(oldFile);
+
+        PieFile oldPieFile = this.historyService.getPieFile(this.fileService.relativizeFilePath(oldFile));
+
+        if (oldPieFile != null && oldPieFile.equals(pieFile)) {
+            return null;
+        }
+
+        if (this.fileWatcherService.isPieFileModifiedByUs(pieFile)) {
+            this.fileWatcherService.removePieFileFromModifiedList(pieFile);
+            return null;
+        }
+
+        return pieFile;
+    }
 
 }

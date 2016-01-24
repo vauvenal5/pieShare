@@ -22,9 +22,10 @@ public class LocalFileChangedTask extends ALocalFileEventTask {
 				return;
 			}
 			
+                        PieFile prev = this.historyService.getPieFile(file.getRelativePath());
+                        FileChangedMessage msg = this.messageFactoryService.getFileChangedMessage();
+                        msg.setPreviousFile(prev);
 			this.historyService.syncPieFile(file);
-			
-			FileChangedMessage msg = this.messageFactoryService.getFileChangedMessage();
 			
 			super.doWork(msg, file);
 		} catch (IOException ex) {

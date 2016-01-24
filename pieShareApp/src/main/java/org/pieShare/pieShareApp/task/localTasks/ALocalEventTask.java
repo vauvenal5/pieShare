@@ -21,6 +21,7 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public abstract class ALocalEventTask extends AMessageSendingTask {
 
     protected File file;
+    protected File oldFile;
     protected IFileFilterService fileFilterService;
 	protected IHistoryService historyService;
 
@@ -29,6 +30,10 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
 
     public void setFile(File file) {
         this.file = file;
+    }
+    
+    public void setOldFile(File oldFile) {
+        this.oldFile = oldFile;
     }
 
     public void setFileFilterService(IFileFilterService fileFilterService) {
