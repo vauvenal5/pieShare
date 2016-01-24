@@ -9,6 +9,7 @@ package org.pieShare.pieShareApp.task.eventTasks.conflictTasks;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.service.fileService.api.IFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**
@@ -18,9 +19,14 @@ import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 public class FileDeletedTask extends ACheckConflictTask<FileDeletedMessage>{
 	
 	private IFileService fileService;
+	private IFileWatcherService fileWatcherService;
 
 	public void setFileService(IFileService fileService) {
 		this.fileService = fileService;
+	}
+
+	public void setFileWatcherService(IFileWatcherService fileWatcherService) {
+		this.fileWatcherService = fileWatcherService;
 	}
 
 	@Override
@@ -30,6 +36,7 @@ public class FileDeletedTask extends ACheckConflictTask<FileDeletedMessage>{
 		//todo-mr3: sync to DB here or over the local file event?
             PieLogger.trace(this.getClass(),"Deleting file: {}", this.msg.getPieFilder());
 		if(!this.isConflictedOrNotNeeded((PieFile)this.msg.getPieFilder())) {
+			this.fileWatcherService.addPieFileToModifiedList(this.msg.getPieFilder());
 			this.fileService.deleteRecursive((PieFile) this.msg.getPieFilder());
 		}
 	}

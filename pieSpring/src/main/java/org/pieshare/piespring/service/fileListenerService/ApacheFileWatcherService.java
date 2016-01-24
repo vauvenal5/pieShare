@@ -14,7 +14,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
 import org.apache.commons.vfs2.impl.DefaultFileMonitor;
-import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.service.fileService.api.IFileWatcherService;
 import org.pieshare.piespring.service.beanService.IBeanService;
 import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
@@ -31,7 +31,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	//todo: does the part with modified files belong in here or maybe even into the listener?
 		//if into the listener: how will changes be propageted to the right listener?
 	//todo-bug: concurrent manipulation of this list!!! handle this!
-	private List<PieFile> modifiedFiles;
+	private List<PieFilder> modifiedFiles;
 
 	public void setBeanService(IBeanService beanService) {
 		this.beanService = beanService;
@@ -39,16 +39,16 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	
 	public void init() {
 		this.fileMonitors = new ArrayList();
-		this.modifiedFiles = Collections.synchronizedList(new ArrayList<PieFile>());
+		this.modifiedFiles = Collections.synchronizedList(new ArrayList<PieFilder>());
 	}
 	
 	@Override
-	public void addPieFileToModifiedList(PieFile pieFile) {
+	public void addPieFileToModifiedList(PieFilder pieFile) {
 		this.modifiedFiles.add(pieFile);
 	}
 	
 	@Override
-	public boolean removePieFileFromModifiedList(PieFile file) {
+	public boolean removePieFileFromModifiedList(PieFilder file) {
 		return this.modifiedFiles.remove(file);
 	}
 
@@ -79,7 +79,7 @@ public class ApacheFileWatcherService extends AShutdownableService implements IF
 	}
 
 	@Override
-	public boolean isPieFileModifiedByUs(PieFile file) {
+	public boolean isPieFileModifiedByUs(PieFilder file) {
 		return this.modifiedFiles.contains(file);
 	}
 
