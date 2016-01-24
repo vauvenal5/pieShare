@@ -7,7 +7,6 @@ package org.pieShare.pieShareApp.task.localTasks.folderEventTask;
 
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
-import org.pieShare.pieShareApp.service.factoryService.MessageFactoryService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 /**

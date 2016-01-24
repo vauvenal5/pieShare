@@ -26,6 +26,8 @@ import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileMovedTask
 import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileRenamedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderMovedTask;
+import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderRenamedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
 
@@ -49,6 +51,8 @@ public class EventFoldingTimerTask extends TimerTask {
 	
 	private Provider<LocalFolderCreatedTask> localFolderCreatedProvider;
 	private Provider<LocalFolderDeletedTask> localFolderDeletedProvider;
+        private Provider<LocalFolderMovedTask> localFolderMovedProvider;
+	private Provider<LocalFolderRenamedTask> localFolderRenamedProvider;
 
 	@Override
 	public void run() {
@@ -104,6 +108,22 @@ public class EventFoldingTimerTask extends TimerTask {
 							
 							task = localFileDeletedProvider.get();
 							break;
+                                                case RENAMED:
+                                                        if(dir) {
+								task = localFolderRenamedProvider.get();
+								break;
+							}
+                                                    
+                                                        task = localFileRenamedProvider.get();
+                                                        break;
+                                                case MOVED:
+                                                        if(dir) {
+								task = localFolderMovedProvider.get();
+								break;
+							}
+                                                    
+                                                        task = localFileMovedProvider.get();
+                                                        break;
 						default:
 							if(dir) {
 								//not yet implemented
@@ -199,6 +219,14 @@ public class EventFoldingTimerTask extends TimerTask {
 
 	public void setLocalFolderDeletedProvider(Provider<LocalFolderDeletedTask> localFolderDeletedProvider) {
 		this.localFolderDeletedProvider = localFolderDeletedProvider;
+	}
+        
+        public void setLocalFolderMovedProvider(Provider<LocalFolderMovedTask> localFolderMovedProvider) {
+		this.localFolderMovedProvider = localFolderMovedProvider;
+	}
+
+	public void setLocalFolderRenamedProvider(Provider<LocalFolderRenamedTask> localFolderRenamedProvider) {
+		this.localFolderRenamedProvider = localFolderRenamedProvider;
 	}
         
         public void setLocalFileRenamedProvider(Provider<LocalFileRenamedTask> localFileRenamedProvider) {

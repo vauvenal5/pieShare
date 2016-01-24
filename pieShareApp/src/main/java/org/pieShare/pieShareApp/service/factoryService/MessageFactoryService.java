@@ -14,12 +14,15 @@ import org.pieShare.pieShareApp.model.message.api.IFileListMessage;
 import org.pieShare.pieShareApp.model.message.api.IMetaMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileChangedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileDeletedMessage;
+import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileMovedMessage;
 import org.pieShare.pieShareApp.model.message.fileHistoryMessage.FileRenamedMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileCreatedMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderCreateMessage;
 import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderMovedMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderRenamedMessage;
 import org.pieShare.pieShareApp.model.pieFilder.FileMeta;
 import org.pieShare.pieTools.piePlate.model.IPieAddress;
 import org.pieShare.pieTools.piePlate.model.message.api.IClusterMessage;
@@ -91,15 +94,30 @@ public class MessageFactoryService implements IMessageFactoryService {
 	public FileRenamedMessage getFileRenamedMessage() {
 		return this.prepareMessage(new FileRenamedMessage());
 	}
+        
+        @Override
+	public FileMovedMessage getFileMovedMessage() {
+		return this.prepareMessage(new FileMovedMessage());
+	}
 
-    @Override
-    public FolderCreateMessage getNewFolderMessage() {
-        return this.prepareMessage(new FolderCreateMessage());
-    }
+        @Override
+        public FolderCreateMessage getNewFolderMessage() {
+            return this.prepareMessage(new FolderCreateMessage());
+        }
 
-    @Override
-    public FolderDeleteMessage getFolderDeletedMessage() {
-        return this.prepareMessage(new FolderDeleteMessage());
-    }
+        @Override
+        public FolderDeleteMessage getFolderDeletedMessage() {
+            return this.prepareMessage(new FolderDeleteMessage());
+        }
+
+        @Override
+        public FolderMovedMessage getFolderMovedMessage() {
+            return this.prepareMessage(new FolderMovedMessage());
+        }
+
+        @Override
+        public FolderRenamedMessage getFolderRenamedMessage() {
+            return this.prepareMessage(new FolderRenamedMessage());
+        }
 	
 }

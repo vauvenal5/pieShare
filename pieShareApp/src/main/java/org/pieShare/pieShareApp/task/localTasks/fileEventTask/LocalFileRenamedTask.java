@@ -29,7 +29,7 @@ public class LocalFileRenamedTask extends ALocalFileEventTask {
 
             FileRenamedMessage msg = this.messageFactoryService.getFileRenamedMessage();
             //TODO: @MR3 choose right method to execute on historyService
-            pieFile = this.historyService.syncDeleteToHistory(pieFile);
+            //pieFile = this.historyService.syncPieFileWithDb(pieFile);
 
             super.doWork(msg, pieFile);
 

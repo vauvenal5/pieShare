@@ -5,10 +5,31 @@
  */
 package org.pieShare.pieShareApp.task.localTasks.folderEventTask;
 
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderDeleteMessage;
+import org.pieShare.pieShareApp.model.message.folderMessages.FolderRenamedMessage;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+
 /**
  *
  * @author Chris
  */
-public class LocalFolderRenamedTask {
+public class LocalFolderRenamedTask extends ALocalFolderEventTask {
+
+    @Override
+    public void run() {
+        PieFolder pieFolder = this.prepareWork();
+        
+        if (pieFolder == null || this.file == null) {
+            PieLogger.info(this.getClass(), "Skipping delete folder: null");
+            return;
+        }
+
+        FolderRenamedMessage msg = this.messageFactoryService.getFolderRenamedMessage();
+        PieLogger.info(this.getClass(), "It's a Folder to be renamed!");
+
+        //TODO: add history service when ready.
+        super.doWork(msg, pieFolder);
+    }
     
 }
