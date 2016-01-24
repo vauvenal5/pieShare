@@ -93,6 +93,7 @@ public class ZeroMQSocketTest {
 		Thread routerThread = this.getRouterThread(router, routerPort, task);
 		
 		routerThread.start();
+		Thread.sleep(1000);
 		n.start();
 		
 		this.waitForThread(n);
@@ -131,7 +132,8 @@ public class ZeroMQSocketTest {
 		Thread routerThread = this.getRouterThread(router, routerPort, task);
 		
 		routerThread.start();
-		
+		Thread.sleep(1000);
+
 		Thread[] threads = new Thread[5];
 
 		for (int i = 0; i < 5; i++) {
@@ -186,6 +188,7 @@ public class ZeroMQSocketTest {
 
 		routerThread.start();
 		routerThread2.start();
+		Thread.sleep(1000);
 
 		n.start();
 		
