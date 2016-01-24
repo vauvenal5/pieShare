@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -38,7 +39,9 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(1, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+		PieExecutorService service = new PieExecutorService(10, 10, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		service.allowCoreThreadTimeOut(true);
+		return service;
 	}
 
 	private IPieExecutorTaskFactory executorFactory;
