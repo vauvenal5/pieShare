@@ -26,9 +26,11 @@ import zmq.ZError;
 public class PieDealer extends AShutdownableService implements IPieDealer {
 	private ZeroMQUtilsService utils;
 	private volatile boolean shutdown;
+	private ZMQ.Context ctx;
 
 	public PieDealer() {
 		this.shutdown = false;
+		ctx = ZMQ.context(1);
 	}
 
 	public void setZeroMQUtilsService(ZeroMQUtilsService service) {
@@ -37,7 +39,6 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 	
 	@Override
 	public void send(List<DiscoveredMember> members, byte[] message, IEndpointCallback callback) {
-		ZMQ.Context ctx = ZMQ.context(1);
         ZMQ.Socket sock = ctx.socket(ZMQ.DEALER);
 		
 		int endpoints = 0;
@@ -84,7 +85,6 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 		}
 		
 		sock.close();
-		ctx.close();
 		
 		//todo-part2: due to the fact that we are not able to recognize the
 			//the broken endpoints as intendet it is not nesseccary to make
