@@ -52,6 +52,7 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 				//the boolean to an atomic boolean
 			if(this.shutdown) {
 				sock.close();
+				ctx.close();
 				return;
 			}
 			
@@ -83,6 +84,7 @@ public class PieDealer extends AShutdownableService implements IPieDealer {
 		}
 		
 		sock.close();
+		ctx.close();
 		
 		//todo-part2: due to the fact that we are not able to recognize the
 			//the broken endpoints as intendet it is not nesseccary to make
