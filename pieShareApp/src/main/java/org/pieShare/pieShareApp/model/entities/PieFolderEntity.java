@@ -3,62 +3,79 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.pieShare.pieShareApp.model.model.entities;
-
-import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
-
+package org.pieShare.pieShareApp.model.entities;
 
 /**
  *
  * @author daniela
  */
-public class PieFolderEntity implements IPieFolderEntity{
+public class PieFolderEntity {
+
+    private String id;
     private boolean synced;
     private boolean deleted;
-    private String relativeFolderPath;
     private String folderName;
-    
+    private String parent;
+    private long lastModified;
+    private boolean isRoot;
+
     public PieFolderEntity() {
         this.synced = true;
     }
-    
-    @Override
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
+    }
+
+    public boolean isIsRoot() {
+        return isRoot;
+    }
+
+    public void setIsRoot(boolean isRoot) {
+        this.isRoot = isRoot;
+    }
+
     public boolean isSynced() {
         return synced;
     }
 
-    @Override
     public void setSynced(boolean synced) {
         this.synced = synced;
     }
 
-    @Override
     public boolean isDeleted() {
         return deleted;
     }
 
-    @Override
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
 
-    @Override
-    public String getRelativeFolderPath() {
-        return relativeFolderPath;
-    }
-
-    @Override
-    public void setRelativeFolderPath(String relativeFolderPath) {
-        this.relativeFolderPath = relativeFolderPath;
-    }
-
-    @Override
     public String getFolderName() {
         return folderName;
     }
 
-    @Override
     public void setFolderName(String folderName) {
         this.folderName = folderName;
+    }
+
+    public long getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(long lastModified) {
+        this.lastModified = lastModified;
     }
 }

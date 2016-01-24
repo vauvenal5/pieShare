@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.LocalFileEventType;
@@ -30,6 +31,8 @@ import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderMoved
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderRenamedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *

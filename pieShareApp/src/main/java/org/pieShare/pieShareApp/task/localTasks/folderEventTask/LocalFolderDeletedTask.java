@@ -21,12 +21,11 @@ public class LocalFolderDeletedTask extends ALocalFolderEventTask {
         if (pieFolder == null || this.file == null) {
             PieLogger.info(this.getClass(), "Skipping delete folder: null");
             return;
-        }
+        }		
 
         FolderDeleteMessage msg = this.messageFactoryService.getFolderDeletedMessage();
         PieLogger.info(this.getClass(), "It's a Folder to be deleted!");
 
-        //TODO: add history service when ready.
         super.doWork(msg, pieFolder);
     }
 }

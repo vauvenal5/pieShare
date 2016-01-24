@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
@@ -21,18 +21,21 @@ import org.pieShare.pieShareApp.service.fileService.api.IFileService;
 import org.pieShare.pieShareApp.task.localTasks.EventFoldingTimerTask;
 import org.pieShare.pieTools.pieUtilities.service.eventBase.IEventBase;
 import org.pieShare.pieTools.pieUtilities.service.security.hashService.IHashService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.AShutdownableService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *
  * @author Svetoslav Videnov <s.videnov@dsg.tuwien.ac.at>
  */
-public class EventFoldingService implements IEventFoldingService {
+public class EventFoldingService extends AShutdownableService implements IEventFoldingService, IShutdownableService {
 	
 	private IEventBase<ILocalFilderEventListener, LocalFilderEvent> localFilderEventBase;
 	private ConcurrentHashMap<byte [], LocalFileEvent> localEvents;
 	private IFileService fileService;
 	private Timer timer;
         private IHashService hashService;
+	private AtomicBoolean shutdown;
         
 	
 	private Provider<EventFoldingTimerTask> eventFoldingTimerTaskProvider;
@@ -40,10 +43,15 @@ public class EventFoldingService implements IEventFoldingService {
 	public void init() {
 		this.localEvents = new ConcurrentHashMap<byte [], LocalFileEvent>();
 		this.timer = new Timer(true);
+		this.shutdown = new AtomicBoolean(false);
 	}
 
 	@Override
 	public void handleLocalEvent(LocalFileEvent event) {
+		if(this.shutdown.get()) {
+			return;
+		}
+		
 		String relativePath = fileService.relativizeFilePath(event.getFile());
 		long currentTime = (new Date()).getTime();
                 LocalFileEventType type = event.getType();
@@ -236,6 +244,10 @@ public class EventFoldingService implements IEventFoldingService {
 	}
 
 	public void reschedule() {
+		if(this.shutdown.get()) {
+			return;
+		}
+		
 		EventFoldingTimerTask task = this.eventFoldingTimerTaskProvider.get();
 		task.setEventFoldingService(this);
 		this.timer.schedule(task, 2000);
@@ -255,6 +267,12 @@ public class EventFoldingService implements IEventFoldingService {
 
 	public void setLocalFilderEventBase(IEventBase<ILocalFilderEventListener, LocalFilderEvent> localFilderEventBase) {
 		this.localFilderEventBase = localFilderEventBase;
+	}
+
+	@Override
+	public void shutdown() {
+		this.shutdown.set(true);
+		this.timer.cancel();
 	}
 
         public void setHashService(IHashService hashService) {

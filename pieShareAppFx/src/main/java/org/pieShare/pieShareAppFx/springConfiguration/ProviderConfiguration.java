@@ -5,6 +5,7 @@
  */
 package org.pieShare.pieShareAppFx.springConfiguration;
 
+import java.util.Date;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
@@ -141,4 +142,6 @@ public class ProviderConfiguration {
 	public Provider<LocalFolderDeletedTask> localFolderDeletedProvider;
 	@Autowired
 	public Provider<EventFoldingTimerTask> eventFoldingTimerTaskProvider;
+	@Autowired
+	public Provider<Date> dateProvider;
 }
