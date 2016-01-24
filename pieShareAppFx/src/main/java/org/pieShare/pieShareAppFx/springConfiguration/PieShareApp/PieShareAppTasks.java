@@ -77,6 +77,7 @@ public class PieShareAppTasks {
 	private void aLocalFolderEventTask(ALocalFolderEventTask task) {
 		this.aLocalEventTask(task);
 		task.setFolderService(this.services.folderService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
 	}
 
     @Bean
@@ -192,6 +193,7 @@ public class PieShareAppTasks {
         FileDeletedTask task = new FileDeletedTask();
         task.setFileService(this.services.localFileService());
         task.setComparerService(this.services.historyCompareService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
         return task;
     }
 
@@ -268,6 +270,7 @@ public class PieShareAppTasks {
     public FolderCreateTask createFolderTask() {
         FolderCreateTask task = new FolderCreateTask();
         task.setFolderService(this.services.folderService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
         return task;
     }
 
@@ -277,6 +280,7 @@ public class PieShareAppTasks {
     public FolderDeleteTask deleteFolderTask() {
         FolderDeleteTask task = new FolderDeleteTask();
         task.setFolderService(this.services.folderService());
+		task.setFileWatcherService(this.services.apacheFileWatcherService());
         return task;
     }
 		
