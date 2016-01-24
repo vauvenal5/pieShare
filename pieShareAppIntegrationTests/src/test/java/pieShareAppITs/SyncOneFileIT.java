@@ -7,12 +7,14 @@ package pieShareAppITs;
 
 import commonTestTools.TestFileUtils;
 import java.io.File;
+import java.util.Date;
 import java.util.UUID;
 import javax.inject.Provider;
 import org.apache.commons.io.FileUtils;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.metaMessage.FileTransferCompleteMessage;
+import org.pieShare.pieShareApp.service.fileService.LocalFileService;
 import org.pieShare.pieShareApp.task.eventTasks.FileTransferCompleteTask;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterService;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.PieExecutorTaskFactory;
@@ -65,6 +67,7 @@ public class SyncOneFileIT {
 		PieUser user = context.getBean("pieUser", PieUser.class);
 		PieShareConfiguration config = user.getPieShareConfiguration();
 		IPieExecutorTaskFactory executorFactory = context.getBean("pieExecutorTaskFactory", PieExecutorTaskFactory.class);
+		LocalFileService fileService = context.getBean("localFileService", LocalFileService.class);
 
 		executorFactory.removeTaskRegistration(FileTransferCompleteMessage.class);
 		executorFactory.registerTaskProvider(FileTransferCompleteMessage.class, new Provider<TestTask>() {
@@ -113,9 +116,12 @@ public class SyncOneFileIT {
 			Thread.sleep(5000);
 		}
 		System.out.println("Recived transfer complete!");
+		
+		//Wait for file to copy from temp dir to be finished and wait an extra second just to be safe
+		fileService.waitUntilCopyFinished(fileBot);
+		Thread.sleep(1000);
 
 		if (counter.getCount(FileTransferCompleteTask.class) == 1) {
-			
 			boolean filesAreEqual = FileUtils.contentEquals(fileMain, fileBot);
 
 			assertTrue(filesAreEqual);
