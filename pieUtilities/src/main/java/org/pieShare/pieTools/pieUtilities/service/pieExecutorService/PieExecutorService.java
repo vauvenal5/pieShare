@@ -8,7 +8,10 @@ package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
@@ -35,7 +38,7 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+		return new PieExecutorService(1, 10, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
 	}
 
 	private IPieExecutorTaskFactory executorFactory;
