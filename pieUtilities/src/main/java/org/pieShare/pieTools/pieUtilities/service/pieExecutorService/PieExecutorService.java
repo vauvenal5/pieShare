@@ -39,6 +39,10 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
+		//todo-sv: further think about good tradeoff between concurrency
+		//and to much threads (especially on android)
+		//for the time being that is a quite good value 
+		//considering our max parallel bitTorrent connections
 		PieExecutorService service = new PieExecutorService(10, 10, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 		service.allowCoreThreadTimeOut(true);
 		return service;
