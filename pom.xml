@@ -75,7 +75,12 @@
 					  <outputDirectory>${jacoco.out.path}/classes</outputDirectory>
 					  <resources>          
 						<resource>
-						  <directory>${project.build.directory}/classes</directory>
+							<directory>${project.build.directory}/classes</directory>
+							<excludes>
+								<exclude>**/pieShareAppFx/**/*</exclude>
+								<exclude>**/pieShareServer/**/*</exclude>
+								<exclude>**/piespring/**/*</exclude>
+							</excludes>
 						</resource>
 					  </resources>              
 					</configuration>            
