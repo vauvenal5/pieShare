@@ -10,6 +10,7 @@ import java.io.File;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.service.configurationService.api.IApplicationConfigurationService;
 import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationFactory;
+import org.pieShare.pieShareApp.service.configurationService.api.ICustomConfiguration;
 
 /**
  *
@@ -17,6 +18,7 @@ import org.pieShare.pieShareApp.service.configurationService.api.IConfigurationF
  */
 public class ConfigurationFactory implements IConfigurationFactory {
 
+	private ICustomConfiguration customConfigurationService;
 	private IApplicationConfigurationService configurationService;
 	private Provider<PieShareConfiguration> pieShareConfigurationProvider;
 
@@ -27,12 +29,20 @@ public class ConfigurationFactory implements IConfigurationFactory {
 	public void setApplicationConfiguration(IApplicationConfigurationService configurationService) {
 		this.configurationService = configurationService;
 	}
+	
+	public void setCustomConfigurationService(ICustomConfiguration customConfigurationService) {
+		this.customConfigurationService = customConfigurationService;
+	}
 
 	@Override
 	public PieShareConfiguration checkAndCreateConfig(PieShareConfiguration config, boolean create) {
 		if (config == null) {
 			config = this.pieShareConfigurationProvider.get();
 		}
+		if (customConfigurationService != null){
+			customConfigurationService.SetCustomSettings(config);
+		}
+		
 		checkAndCreateFolders(config, create);
 		return config;
 	}

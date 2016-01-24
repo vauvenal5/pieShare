@@ -39,13 +39,13 @@ public class FileFilterService implements IFileFilterService {
 
 	@Override
 	public synchronized void addFilter(IFilter filer) {
-		databaseService.persistFileFilter(filer);
+		//databaseService.persistFileFilter(filer);
 		refreshFilterList();
 	}
 
 	@Override
 	public synchronized void removeFilter(IFilter filer) {
-		databaseService.removeFileFilter(filer);
+		//databaseService.removeFileFilter(filer);
 		refreshFilterList();
 	}
 
@@ -78,8 +78,8 @@ public class FileFilterService implements IFileFilterService {
 	}
 
 	public synchronized void refreshFilterList() {
-		filters.clear();
-		filters.addAll(databaseService.findAllFilters());
+		//filters.clear();
+		//filters.addAll(databaseService.findAllFilters());
 	}
 
 }
