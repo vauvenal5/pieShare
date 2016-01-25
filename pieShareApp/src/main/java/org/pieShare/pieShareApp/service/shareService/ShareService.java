@@ -102,6 +102,8 @@ public class ShareService implements IShareService{
 				//this.fileService.setCorrectModificationDateOnTmpFile(file);
 				//todo: check if 2nd modified event is thrown!!
 				this.fileService.setCorrectModificationDate(file);
+
+				this.fileService.deleteRecursive(localEncTmpFile);
 				
 				//this.fileWatcherService.addPieFileToModifiedList(file);
 				//todo-android: this needs to be removed because android does not support this class
