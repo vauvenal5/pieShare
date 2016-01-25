@@ -5,10 +5,14 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.pieExecutorService;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
@@ -35,7 +39,13 @@ public class PieExecutorService extends ThreadPoolExecutor implements IExecutorS
 
 	//todo-sv: rethink the whole derive from ThreadPoolExecutor instead of just using one
 	public static PieExecutorService newCachedPieExecutorService() {
-		return new PieExecutorService(0, Integer.MAX_VALUE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
+		//todo-sv: further think about good tradeoff between concurrency
+		//and to much threads (especially on android)
+		//for the time being that is a quite good value 
+		//considering our max parallel bitTorrent connections
+		PieExecutorService service = new PieExecutorService(10, 10, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+		service.allowCoreThreadTimeOut(true);
+		return service;
 	}
 
 	private IPieExecutorTaskFactory executorFactory;
