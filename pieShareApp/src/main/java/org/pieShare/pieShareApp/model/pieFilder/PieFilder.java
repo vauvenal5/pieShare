@@ -103,10 +103,18 @@ public abstract class PieFilder implements IBaseModel, Comparable<Object> {
 		if (deleted != f.isDeleted()) {
 			return false;
 		}
+		
+		//todo-sv: for the time being I took lastModified out of the equation
+		//due to a bug in android preventing us from setting the right time
+		//https://code.google.com/p/android/issues/detail?id=18624
+		//if the bug does not get fixed we need to implement a special
+		//file service for android which will allow us to fake the
+		//lastmodified for our core logic
+		//--> could even be a good idea to work in general with our own mod time
 
-        if (this.lastModified != f.lastModified) {
+        /*if (this.lastModified != f.lastModified) {
             return false;
-        }
+        }*/
 
         return this.equalsParas(f);
     }
@@ -119,9 +127,9 @@ public abstract class PieFilder implements IBaseModel, Comparable<Object> {
             return 0;
         }
 
-        if (this.equalsParas(f) && (this.lastModified > f.lastModified)) {
-            return 1;
-        }
+//        if (this.equalsParas(f) && (this.lastModified > f.lastModified)) {
+//            return 1;
+//        }
 
         return -1;
     }
@@ -131,7 +139,7 @@ public abstract class PieFilder implements IBaseModel, Comparable<Object> {
         int hash = 3;
         hash = 79 * hash + Objects.hashCode(relativePath);
         hash = 79 * hash + Objects.hashCode(name);
-        hash = 79 * hash + (int) (this.lastModified ^ (this.lastModified >>> 32));
+        //hash = 79 * hash + (int) (this.lastModified ^ (this.lastModified >>> 32));
         hash = 79 * hash + (deleted ? 1 : 0);
         return hash;
     }
