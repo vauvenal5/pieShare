@@ -116,8 +116,7 @@ public class ZeroMqClusterService extends AShutdownableService implements IClust
 		PieLogger.debug(this.getClass(), "Connecting to cluster {}!", clusterName);
 		this.clustername = clusterName;
 		this.routerPort = this.networkService.getAvailablePort();
-
-		router.bind(routerPort);
+		router.setPort(routerPort);
 
 		//start router task
 		this.executor.execute(router);

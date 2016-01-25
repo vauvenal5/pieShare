@@ -8,6 +8,7 @@ package org.pieShare.pieShareApp.model.message.api;
 
 import java.util.List;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieTools.piePlate.model.message.api.IEncryptedMessage;
 
 /**
@@ -20,4 +21,7 @@ public interface IFileListMessage extends IEncryptedMessage {
 
 	void setFileList(List<PieFile> list);
 	
+	List<PieFolder> getFolderList();
+	
+	void setFolderList(List<PieFolder> folders);
 }

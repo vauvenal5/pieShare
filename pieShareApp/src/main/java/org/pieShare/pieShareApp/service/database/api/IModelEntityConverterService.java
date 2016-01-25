@@ -8,11 +8,11 @@ package org.pieShare.pieShareApp.service.database.api;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
 import org.pieShare.pieShareApp.model.PieShareConfiguration;
-import org.pieShare.pieShareApp.model.entities.api.IConfigurationEntity;
-import org.pieShare.pieShareApp.model.entities.api.IFileFilterEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieFileEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieFolderEntity;
-import org.pieShare.pieShareApp.model.entities.api.IPieUserEntity;
+import org.pieShare.pieShareApp.model.entities.ConfigurationEntity;
+import org.pieShare.pieShareApp.model.entities.FilterEntity;
+import org.pieShare.pieShareApp.model.entities.PieFileEntity;
+import org.pieShare.pieShareApp.model.entities.PieFolderEntity;
+import org.pieShare.pieShareApp.model.entities.PieUserEntity;
 import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.RegexFileFilter;
 import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
@@ -23,24 +23,24 @@ import org.pieShare.pieShareApp.service.fileFilterService.filters.api.IFilter;
  */
 public interface IModelEntityConverterService {
 
-	IPieFileEntity convertToEntity(PieFile file);
+    PieFileEntity convertToEntity(PieFile file);
 
-	PieFile convertFromEntity(IPieFileEntity entity);
-        
-        IPieFolderEntity convertToEntity(PieFolder folder);
-        
-        PieFolder convertFromEntity(IPieFolderEntity entity);
+    PieFile convertFromEntity(PieFileEntity entity);
 
-	IPieUserEntity convertToEntity(PieUser user);
+    PieFolderEntity convertToEntity(PieFolder folder);
 
-	PieUser convertFromEntity(IPieUserEntity entity);
+    PieFolder convertFromEntity(PieFolderEntity entity);
 
-	PieShareConfiguration convertFromEntity(IConfigurationEntity entity);
+    PieUserEntity convertToEntity(PieUser user);
 
-	IConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user);
+    PieUser convertFromEntity(PieUserEntity entity);
 
-	IFileFilterEntity convertToEntity(IFilter filter);
+    PieShareConfiguration convertFromEntity(ConfigurationEntity entity);
 
-	RegexFileFilter convertFromEntity(IFileFilterEntity entity);
+    ConfigurationEntity convertToEntity(PieShareConfiguration conf, PieUser user);
+
+    FilterEntity convertToEntity(IFilter filter);
+
+    RegexFileFilter convertFromEntity(FilterEntity entity);
 
 }

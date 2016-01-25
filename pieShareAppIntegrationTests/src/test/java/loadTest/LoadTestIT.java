@@ -8,6 +8,7 @@ package loadTest;
 import commonTestTools.TestFileUtils;
 import commonTestTools.config.PieShareAppServiceTestConfig;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.inject.Provider;
@@ -27,7 +28,10 @@ import org.pieShare.pieShareApp.model.PieShareConfiguration;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.command.LoginCommand;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
+import org.pieShare.pieShareApp.model.pieFilder.PieFolder;
+import org.pieShare.pieShareApp.service.fileService.FileUtilitiesService;
 import org.pieShare.pieShareApp.service.fileService.LocalFileService;
+import org.pieShare.pieShareApp.service.fileService.api.IFilderIterationCallback;
 import org.pieShare.pieTools.pieUtilities.service.networkService.INetworkService;
 import org.pieShare.pieTools.pieUtilities.service.networkService.NetworkService;
 import org.pieShare.pieShareApp.service.shareService.BitTorrentService;
@@ -313,7 +317,23 @@ public class LoadTestIT extends AbstractTestNGSpringContextTests {
 			AllFilesCompleteMessage message = this.applicationContext.getBean(AllFilesCompleteMessage.class);
 
 			LocalFileService fileService = this.applicationContext.getBean(LocalFileService.class);
-			message.setFiles(fileService.getAllFiles());
+			FileUtilitiesService fileUtilitiesService = this.applicationContext.getBean(FileUtilitiesService.class);
+			
+			File parent = user.getPieShareConfiguration().getWorkingDir();
+			List<PieFile> files = new ArrayList<>();
+			fileUtilitiesService.walkFilderTree(parent, new IFilderIterationCallback() {
+				@Override
+				public void handleFile(PieFile file) {
+					files.add(file);
+				}
+
+				@Override
+				public void handleFolder(PieFolder folder) {
+					//ignore for now
+				}
+			});
+			
+			message.setFiles(files);
 
 			message.getAddress().setClusterName("loadTest");
 			message.getAddress().setChannelId("loadTest");

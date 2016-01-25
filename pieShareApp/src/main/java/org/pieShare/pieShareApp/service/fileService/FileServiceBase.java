@@ -31,6 +31,10 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	
 	@Override
 	public void waitUntilCopyFinished(File file) {
+		if(!file.exists()) {
+			return;
+		}
+		
 		FileInputStream st;
 		boolean isCopying = true;
 
@@ -78,7 +82,7 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 		//this is no more neccessary due to the event folding service
 		//this.fileWatcherService.addPieFileToModifiedList(file);
 		if (setCorrectModificationDate(file, targetFile)) {
-			this.fileWatcherService.removePieFileFromModifiedList(file);
+			//this.fileWatcherService.removePieFileFromModifiedList(file);
 		}
 	}
 
@@ -104,17 +108,21 @@ public abstract class FileServiceBase extends FilderServiceBase implements IFile
 	public PieFile getPieFile(String relativeFilePath) throws IOException {
 		PieUser user = userService.getUser();
 		File localFile = new File(user.getPieShareConfiguration().getWorkingDir(), relativeFilePath);
+		if(!localFile.exists()) {
+			return null;
+		}
 		return this.getPieFile(localFile);
 	}
 
-	@Override
-	public PieFile getTmpPieFile(PieFile file) throws IOException {
-		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativePath());
-		return this.getPieFile(tmpFile);
-	}
+//	//todo: apparently unused
+//	@Override
+//	public PieFile getTmpPieFile(PieFile file) throws IOException {
+//		File tmpFile = new File(this.configuration.getTmpDir(), file.getRelativePath());
+//		return this.getPieFile(tmpFile);
+//	}
 
-	@Override
-	public PieFile getWorkingPieFile(PieFile file) throws IOException {
-		return this.getPieFile(file.getRelativePath());
-	}
+//	@Override
+//	public PieFile getWorkingPieFile(PieFile file) throws IOException {
+//		return this.getPieFile(file.getRelativePath());
+//	}
 }

@@ -22,7 +22,7 @@ public class LocalFileChangedTask extends ALocalFileEventTask {
 				return;
 			}
 			
-			this.historyService.syncPieFileWithDb(file);
+			this.historyService.syncPieFile(file);
 			
 			FileChangedMessage msg = this.messageFactoryService.getFileChangedMessage();
 			

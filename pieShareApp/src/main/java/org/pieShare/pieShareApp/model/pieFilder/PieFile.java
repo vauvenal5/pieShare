@@ -6,17 +6,16 @@
 package org.pieShare.pieShareApp.model.pieFilder;
 
 import java.util.Arrays;
-import java.util.Objects;
 import org.pieShare.pieShareApp.model.api.IBaseModel;
 
 /**
  *
  * @author richy
  */
-public class PieFile extends PieFilder implements IBaseModel, Comparable<Object> {
+public class PieFile extends PieFilder implements IBaseModel {
 
 	private byte[] md5;
-	private long lastModified;
+	
 	private long size;
 
 	public PieFile() {
@@ -29,14 +28,6 @@ public class PieFile extends PieFilder implements IBaseModel, Comparable<Object>
 
 	public void setMd5(byte[] md5) {
 		this.md5 = md5;
-	}
-
-	public long getLastModified() {
-		return lastModified;
-	}
-
-	public void setLastModified(long lastModified) {
-		this.lastModified = lastModified;
 	}
 
 	public long getSize() {
@@ -55,57 +46,18 @@ public class PieFile extends PieFilder implements IBaseModel, Comparable<Object>
 
 		PieFile f = (PieFile) o;
 
-		if (this.lastModified != f.lastModified) {
-			return false;
-		}
-
 		if (!Arrays.equals(this.md5, f.md5)) {
 			return false;
 		}
 
-		return this.equalFilePara(f);
+		return super.equals(f);
 	}
 
 	@Override
 	public int hashCode() {
-		int hash = 3;
+		int hash = super.hashCode();
 		hash = 79 * hash + Arrays.hashCode(this.md5);
-		hash = 79 * hash + Objects.hashCode(super.getRelativePath());
-		hash = 79 * hash + Objects.hashCode(super.getName());
-		hash = 79 * hash + (int) (this.lastModified ^ (this.lastModified >>> 32));
-		hash = 79 * hash + (super.isDeleted() ? 1 : 0);
 		return hash;
-	}
-
-	protected boolean equalFilePara(PieFile f) {
-		if (!super.getName().equals(f.getName())) {
-			return false;
-		}
-
-		if (!super.getRelativePath().equals(f.getRelativePath())) {
-			return false;
-		}
-
-		if (super.isDeleted() != f.isDeleted()) {
-			return false;
-		}
-
-		return true;
-	}
-
-	@Override
-	public int compareTo(Object o) {
-		PieFile f = (PieFile) o;
-
-		if (this.equals(f)) {
-			return 0;
-		}
-
-		if (this.equalFilePara(f) && (this.lastModified > f.lastModified)) {
-			return 1;
-		}
-
-		return -1;
 	}
 
 }
