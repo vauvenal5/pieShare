@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.inject.Provider;
 import org.pieShare.pieShareApp.model.LocalFileEvent;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
@@ -24,6 +25,8 @@ import org.pieShare.pieShareApp.task.localTasks.fileEventTask.LocalFileDeletedTa
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderCreatedTask;
 import org.pieShare.pieShareApp.task.localTasks.folderEventTask.LocalFolderDeletedTask;
 import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownService;
+import org.pieShare.pieTools.pieUtilities.service.shutDownService.api.IShutdownableService;
 
 /**
  *

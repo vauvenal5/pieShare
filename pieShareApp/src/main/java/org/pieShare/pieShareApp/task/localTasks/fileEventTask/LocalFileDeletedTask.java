@@ -27,7 +27,11 @@ public class LocalFileDeletedTask extends ALocalFileEventTask {
             }
 
             FileDeletedMessage msg = this.messageFactoryService.getFileDeletedMessage();
-            pieFile = this.historyService.syncDeleteToHistory(pieFile);
+			//todo-mr3: there is redundant work!
+				//first we get the file from the history because the local one is deleted (see prepare work)
+				//then we pass it to the history where we make a new get form DB --> why?!
+			pieFile.setDeleted(true);
+			this.historyService.syncPieFile(pieFile);
 
             super.doWork(msg, pieFile);
 

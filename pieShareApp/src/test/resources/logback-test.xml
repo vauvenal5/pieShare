@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- For assistance related to logback-translator or configuration  -->
+<!-- files in general, please contact the logback user mailing list -->
+<!-- at http://www.qos.ch/mailman/listinfo/logback-user             -->
+<!--                                                                -->
+<!-- For professional support please see                            -->
+<!--    http://www.qos.ch/shop/products/professionalSupport         -->
+<!--                                                                -->
+<configuration>	
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- encoders are assigned the type
+		ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+		<withJansi>true</withJansi>
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%-10thread] %cyan(%-56logger{56}) - %msg%n</pattern>
+		</encoder>
+	</appender>
+  
+	<logger name="org.springframework" level="ERROR"/>
+	<logger name="org.hibernate" level="ERROR"/>
+	<logger name="com.turn" level="ERROR"/>
+	<logger name="org.jgroups" level="ERROR"/>
+	<logger name="org.apache" level="ERROR"/>
+	<logger name="com.mchange.v2.async.ThreadPoolAsynchronousRunner" level="ERROR"/>
+  
+	<root level="TRACE">
+		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="LogbackClassic"/>
+	</root>
+</configuration>

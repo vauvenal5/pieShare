@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.pieShare.pieShareApp.model.PieUser;
 import org.pieShare.pieShareApp.model.message.fileMessageBase.FileRequestMessage;
 import org.pieShare.pieShareApp.model.pieFilder.PieFile;
-import org.pieShare.pieShareApp.service.comparerService.api.ILocalFileCompareService;
 import org.pieShare.pieShareApp.service.factoryService.IMessageFactoryService;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
 import org.pieShare.pieShareApp.service.requestService.api.IRequestService;
@@ -17,6 +16,7 @@ import org.pieShare.pieShareApp.service.userService.IUserService;
 import org.pieShare.pieTools.piePlate.service.cluster.api.IClusterManagementService;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
+import org.pieShare.pieShareApp.service.comparerService.api.ICompareService;
 
 /**
  *
@@ -27,7 +27,7 @@ public class RequestService implements IRequestService {
 	private IClusterManagementService clusterManagementService;
 	private final ConcurrentHashMap<PieFile, Boolean> requestedFiles;
 	private IMessageFactoryService messageFactoryService;
-	private ILocalFileCompareService comparerService;
+	private ICompareService comparerService;
 	private IUserService userService;
 	private IFileFilterService filterService;
 
