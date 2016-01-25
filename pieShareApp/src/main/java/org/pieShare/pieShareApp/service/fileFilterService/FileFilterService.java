@@ -40,13 +40,14 @@ public class FileFilterService implements IFileFilterService {
 	@Override
 	public synchronized void addFilter(IFilter filer) {
 		//databaseService.persistFileFilter(filer);
-		refreshFilterList();
+		filters.add(filer);
+		//refreshFilterList();
 	}
 
 	@Override
 	public synchronized void removeFilter(IFilter filer) {
 		//databaseService.removeFileFilter(filer);
-		refreshFilterList();
+		//refreshFilterList();
 	}
 
 	@Override
