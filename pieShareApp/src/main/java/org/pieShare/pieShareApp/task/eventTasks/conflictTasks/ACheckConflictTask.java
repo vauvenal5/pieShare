@@ -35,7 +35,7 @@ public abstract class ACheckConflictTask<T extends IClusterMessage> extends PieE
 	}
 	
 	protected boolean isConflictedOrNotNeeded(PieFile file) {
-		return (this.comparerService.isConflictedOrNotNeeded(file)||!filterService.checkFile(file));
+		return (this.comparerService.isConflictedOrNotNeeded(file)||!(filterService.checkFile(file)));
 	}
 	
 	/*protected boolean isConflictedOrNotNeeded(PieFile file) {

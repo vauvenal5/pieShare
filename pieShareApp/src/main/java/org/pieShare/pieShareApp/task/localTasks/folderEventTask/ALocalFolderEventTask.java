@@ -22,18 +22,13 @@ public abstract class ALocalFolderEventTask extends ALocalEventTask {
     public void setFolderService(IFolderService folderService) {
         this.folderService = folderService;
     }
-
+	
     protected PieFolder prepareWork() {
         PieLogger.info(this.getClass(), "It's a Folder!");
 		
 		PieFolder folder = this.folderService.getPieFolder(file);
 		this.historyService.syncPieFolder(folder);
 		return folder;
-		
-		if(fileFilterService.checkFile(pieFolder)){
-			return null;
-		}
-		
     }
 
 }
