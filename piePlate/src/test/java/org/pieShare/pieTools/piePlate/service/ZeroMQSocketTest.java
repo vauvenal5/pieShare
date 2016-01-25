@@ -8,22 +8,23 @@ package org.pieShare.pieTools.piePlate.service;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Provider;
+import org.jgroups.util.MockTimeScheduler;
 import static org.junit.Assert.assertArrayEquals;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.pieShare.pieTools.piePlate.model.DiscoveredMember;
+import org.pieShare.pieTools.piePlate.service.channel.api.IIncomingChannel;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.IEndpointCallback;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieDealer;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.PieRouter;
 import org.pieShare.pieTools.piePlate.service.cluster.zeroMqCluster.socket.ZeroMQUtilsService;
+import org.pieShare.pieTools.piePlate.task.ChannelTask;
+import org.pieShare.pieTools.pieUtilities.service.pieExecutorService.api.IExecutorService;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 
 public class ZeroMQSocketTest {
-	
-	protected class CallbackMock implements IEndpointCallback{
-		@Override
-		public void nonRespondingEndpoint(List<DiscoveredMember> brokenMembers) {
-		}
-	}
 	
 	private void addMember(ArrayList<DiscoveredMember> members, int port){
 		try {
@@ -39,134 +40,171 @@ public class ZeroMQSocketTest {
 		
 		//return members;
 	} 
+	
+	private void waitForThread(Thread t) throws Exception {
+		while(t.isAlive()) {
+			Thread.sleep(500);
+		}
+	}
+	
+	private Thread getRouterThread(PieRouter router, int routerPort, final ChannelTask task) {
+		router.setZeroMQUtilsService(new ZeroMQUtilsService());
+		router.setPort(routerPort);
+		
+		IExecutorService executor = Mockito.mock(IExecutorService.class);
+		router.setExecutorService(executor);
+		
+		router.setChannelTaskProvider(new Provider<ChannelTask>() {
+			@Override
+			public ChannelTask get() {
+				return task;
+			}
+		});
+		
+		router.registerIncomingChannel(Mockito.mock(IIncomingChannel.class));
+
+		return new Thread(router);
+	}
 
 	@Test
-	public void testSendRecv() {
-		PieLogger.info(this.getClass(), "Starting testSendRecv!{}");
+	public void testSendRecv() throws Exception {
+		PieLogger.info(this.getClass(), "Starting testSendRecv!");
+		final byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		final int routerPort = 9000;
 		Thread n = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				PieDealer dealer = new PieDealer();
 				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
 				
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ex) {
-				}
-				
-				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				
 				ArrayList<DiscoveredMember> members = new ArrayList<>();
-				addMember(members, 9000);
+				addMember(members, routerPort);
 
-				dealer.send(members, messageSend, new CallbackMock());
+				dealer.send(members, messageSend, Mockito.mock(IEndpointCallback.class));
 			}
 		});
 
-		byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		
 		byte[] messageRecv = null;
 
 		PieRouter router = new PieRouter();
-		router.setZeroMQUtilsService(new ZeroMQUtilsService());
-
-		router.bind(9000);
-
+		ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
+		ChannelTask task = Mockito.mock(ChannelTask.class);
+		Thread routerThread = this.getRouterThread(router, routerPort, task);
+		
+		routerThread.start();
+		Thread.sleep(1000);
 		n.start();
+		
+		this.waitForThread(n);
 
-		messageRecv = router.receive();
+		Mockito.verify(task).setMessage(captor.capture());
+		messageRecv = captor.getValue();
 
 		router.close();
+		
+		this.waitForThread(routerThread);
 
 		assertArrayEquals(messageSend, messageRecv);
 	}
 
 	@Test
-	public void testMultipleSenders() {
+	public void testMultipleSenders() throws Exception {
+		PieLogger.info(this.getClass(), "Starting testMultipleSenders!");
+		final byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		final int routerPort = 9000;
 		Runnable r = new Runnable() {
 			@Override
 			public void run() {
 				PieDealer dealer = new PieDealer();
 				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());								
 				
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ex) {
-				}
-
-				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				
 				ArrayList<DiscoveredMember> members = new ArrayList<>();
-				addMember(members, 9000);
+				addMember(members, routerPort);
 				
-				dealer.send(members, messageSend, new CallbackMock());
+				dealer.send(members, messageSend, Mockito.mock(IEndpointCallback.class));
 			}
 		};
 
-		byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-		byte[] messageRecv = null;
-
 		PieRouter router = new PieRouter();
-		router.setZeroMQUtilsService(new ZeroMQUtilsService());
+		ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
+		ChannelTask task = Mockito.mock(ChannelTask.class);
+		Thread routerThread = this.getRouterThread(router, routerPort, task);
+		
+		routerThread.start();
+		Thread.sleep(1000);
 
-		router.bind(9000);
+		Thread[] threads = new Thread[5];
 
 		for (int i = 0; i < 5; i++) {
-			Thread n = new Thread(r);
-			n.start();
+			threads[i] = new Thread(r);
+			threads[i].start();
 		}
-
-		for (int i = 0; i < 5; i++) {
-			messageRecv = router.receive();
-			assertArrayEquals(messageSend, messageRecv);
+		
+		for(int i = 0; i<5;i++) {
+			this.waitForThread(threads[i]);
 		}
-
+		
+		Mockito.verify(task, Mockito.times(5)).setMessage(captor.capture());
+		List<byte[]> res = captor.getAllValues();
+		
 		router.close();
+		
+		this.waitForThread(routerThread);
+
+		for (int i = 0; i < 5; i++) {
+			assertArrayEquals(messageSend, res.get(i));
+		}
 	}
 
 	@Test
-	public void testSendMultipleRecv() {
+	public void testSendMultipleRecv() throws Exception {
+		PieLogger.info(this.getClass(), "Starting testSendMultipleRecv!");
+		final byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+		final int routerPort = 9000;
+		final int routerPort2 = 9001;
 		Thread n = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				PieDealer dealer = new PieDealer();
 				dealer.setZeroMQUtilsService(new ZeroMQUtilsService());
 				
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ex) {
-				}
-				
-				byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-				
 				ArrayList<DiscoveredMember> members = new ArrayList<>();
-				addMember(members, 9000);
-				addMember(members, 9001);
+				addMember(members, routerPort);
+				addMember(members, routerPort2);
 				
-				dealer.send(members, messageSend, new CallbackMock());
+				dealer.send(members, messageSend, Mockito.mock(IEndpointCallback.class));
 			}
 		});
-
-		byte[] messageSend = new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-		byte[] messageRecv = null;
-
+		
 		PieRouter router = new PieRouter();
-		router.setZeroMQUtilsService(new ZeroMQUtilsService());
+		ArgumentCaptor<byte[]> captor = ArgumentCaptor.forClass(byte[].class);
+		ChannelTask task = Mockito.mock(ChannelTask.class);
+		Thread routerThread = this.getRouterThread(router, routerPort, task);
+		
 		PieRouter router2 = new PieRouter();
-		router2.setZeroMQUtilsService(new ZeroMQUtilsService());
+		ChannelTask task2 = Mockito.mock(ChannelTask.class);
+		Thread routerThread2 = this.getRouterThread(router2, routerPort2, task2);
 
-		router.bind(9000);
-		router2.bind(9001);
+		routerThread.start();
+		routerThread2.start();
+		Thread.sleep(1000);
 
 		n.start();
-
-		messageRecv = router.receive();
-		assertArrayEquals(messageSend, messageRecv);
-
-		messageRecv = router2.receive();
-		assertArrayEquals(messageSend, messageRecv);
+		
+		this.waitForThread(n);
 
 		router.close();
 		router2.close();
+		
+		this.waitForThread(routerThread);
+		this.waitForThread(routerThread2);
+		
+		Mockito.verify(task).setMessage(captor.capture());
+		assertArrayEquals(messageSend, captor.getValue());
+		
+		Mockito.verify(task2).setMessage(captor.capture());
+		assertArrayEquals(messageSend, captor.getValue());
 	}
 
 }

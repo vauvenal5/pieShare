@@ -9,7 +9,7 @@ import java.io.File;
 import org.pieShare.pieShareApp.model.message.api.IFilderMessageBase;
 import org.pieShare.pieShareApp.model.pieFilder.PieFilder;
 import org.pieShare.pieShareApp.service.fileFilterService.api.IFileFilterService;
-import org.pieShare.pieShareApp.service.folderService.IFilderService;
+import org.pieShare.pieShareApp.service.historyService.IHistoryService;
 import org.pieShare.pieShareApp.task.AMessageSendingTask;
 import org.pieShare.pieTools.piePlate.service.cluster.exception.ClusterManagmentServiceException;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
@@ -22,6 +22,7 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
 
     protected File file;
     protected IFileFilterService fileFilterService;
+	protected IHistoryService historyService;
 
     public ALocalEventTask() {
     }
@@ -32,6 +33,10 @@ public abstract class ALocalEventTask extends AMessageSendingTask {
 
     public void setFileFilterService(IFileFilterService fileFilterService) {
         this.fileFilterService = fileFilterService;
+    }
+	
+	public void setHistoryService(IHistoryService historyService) {
+        this.historyService = historyService;
     }
 
     protected <T extends PieFilder> void doWork(IFilderMessageBase<T> msg, T filder) {

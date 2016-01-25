@@ -120,8 +120,11 @@ public class DatabaseFactory extends AShutdownableService implements IPieDatabas
                 Thread.sleep(500);
                 countSemaphore.acquire();
             }
-            databseConnection.close();
-
+            if (databseConnection != null) {
+                databseConnection.commit();
+                databseConnection.close();
+                databseConnection = null;
+            }
             countSemaphore.release();
         } catch (InterruptedException ex) {
             PieLogger.error(this.getClass(), "Error with database lock.", ex);

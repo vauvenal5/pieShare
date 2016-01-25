@@ -65,13 +65,12 @@ public class PieShareAppTasks {
 	private void aLocalEventTask(ALocalEventTask task) {
 		this.aMessageSendingTask(task);
 		task.setFileFilterService(this.services.fileFilterService());
+		task.setHistoryService(services.historyService());
 	}
 	
 	private void aLocalFileEventTask(ALocalFileEventTask task) {
 		this.aLocalEventTask(task);
-		task.setHistoryService(services.historyService());
 		task.setFileWatcherService(this.services.apacheFileWatcherService());
-		task.setHistoryFileService(this.services.historyFileService());
 		task.setFileService(this.services.localFileService());
 	}
 	
@@ -113,7 +112,7 @@ public class PieShareAppTasks {
 	public NewFileTask newFileTask() {
 		NewFileTask task = new NewFileTask();
 		task.setRequestService(this.services.requestService());
-		task.setComparerService(this.services.fileCompareService());
+        task.setComparerService(services.historyCompareService());
 		task.setFilterService(this.services.fileFilterService());
 		return task;
 	}
@@ -123,7 +122,7 @@ public class PieShareAppTasks {
 	public FileChangedTask fileChangedTask() {
 		FileChangedTask task = new FileChangedTask();
 		task.setRequestService(this.services.requestService());
-		task.setComparerService(this.services.fileCompareService());
+        task.setComparerService(this.services.historyCompareService());
 		task.setFilterService(this.services.fileFilterService());
 		return task;
 	}
@@ -173,9 +172,11 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileListTask fileListTask() {
 		FileListTask task = new FileListTask();
-		task.setComparerService(this.services.fileCompareService());
+        task.setComparerService(this.services.historyCompareService());
 		task.setRequestService(this.services.requestService());
 		task.setFilterService(this.services.fileFilterService());
+		task.setFileService(this.services.localFileService());
+		task.setFolderService(this.services.folderService());
 		return task;
 	}
 	
@@ -184,7 +185,7 @@ public class PieShareAppTasks {
 	public FileListRequestTask fileListRequestTask() {
 		FileListRequestTask task = new FileListRequestTask();
 		this.aMessageSendingTask(task);
-		task.setFileService(this.services.historyFileService());
+        task.setHistoryService(this.services.historyService());
 		return task;
 	}
 	
@@ -192,8 +193,8 @@ public class PieShareAppTasks {
 	@Scope(value = "prototype")
 	public FileDeletedTask fileDeletedTask() {
 		FileDeletedTask task = new FileDeletedTask();
-		task.setFileService(this.services.historyFileService());
-		task.setComparerService(this.services.fileCompareService());
+        task.setFileService(this.services.localFileService());
+        task.setComparerService(this.services.historyCompareService());
 		task.setFilterService(this.services.fileFilterService());
 		return task;
 	}
@@ -209,10 +210,7 @@ public class PieShareAppTasks {
 		service.setEncodeService(utilities.encodeService());
 		service.setDatabaseService(services.databaseService());
 		service.setClusterManagementService(plate.clusterManagementService());
-		service.setHistoryService(services.historyService());
 		service.setFileWatcherService(this.services.apacheFileWatcherService());
-		service.setMessageFactoryService(this.services.messageFactoryService());
-		service.setFileService(this.services.historyFileService());
 		service.setUserService(services.userService());
 		service.setUserTools(services.userToolsService());
 		return service;
@@ -250,7 +248,7 @@ public class PieShareAppTasks {
 		task.setShareService(this.services.shareService());
 		task.setShutdownService(this.utilities.shutdownService());
 		task.setBitTorrentService(this.services.bitTorrentService());
-		task.setFileService(this.services.historyFileService());
+        task.setFileService(this.services.localFileService());
 		task.setRequestService(this.services.requestService());
 		return task;
 	}
@@ -262,7 +260,7 @@ public class PieShareAppTasks {
 		MetaCommitTask task = new MetaCommitTask();
 		task.setBitTorrentService(this.services.bitTorrentService());
 		task.setShareService(this.services.shareService());
-		task.setCompareService(this.services.fileCompareService());
+        task.setCompareService(this.services.historyCompareService());
 		task.setRequestService(this.services.requestService());
 		task.setClusterManagementService(this.plate.clusterManagementService());
 		return task;
