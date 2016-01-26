@@ -52,10 +52,6 @@ public abstract class ALocalFileEventTask extends ALocalEventTask {
             return null;
         }
 		
-		if(!(fileFilterService.checkFile(pieFile)))  {
-			return null;
-		}
-
         return pieFile;
     }
 
