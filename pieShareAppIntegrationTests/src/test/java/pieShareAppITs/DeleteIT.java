@@ -58,11 +58,11 @@ public class DeleteIT {
 		
 		for(int i = 0; i< 10; i++) {
 			String fileName = String.valueOf(i);
-                        File file = new File(ITUtil.getMainWorkingDir(), fileName);
+                        File file = new File(ITUtil.getBotWorkingDir(), fileName);
                         file.getParentFile().mkdirs();
                         TestFileUtils.createFile(file, 2);
 			files.add(file);
-			FileUtils.copyFile(file, new File(ITUtil.getBotWorkingDir(), fileName), true);
+			FileUtils.copyFile(file, new File(ITUtil.getMainWorkingDir(), fileName), true);
 		}
 		
 		this.cloudName = UUID.randomUUID().toString();
@@ -99,7 +99,7 @@ public class DeleteIT {
 	}
 	
 	//todo-mr3: this test can reproduce the delete bug we have right now!! see ticket
-	@Test(timeOut = 60000)
+	@Test(timeOut = 120000)
 	public void deleteOneFile() throws Exception {
 		ITUtil.waitForProcessToStartup(this.process);
 		
@@ -119,13 +119,13 @@ public class DeleteIT {
 			//todo: implement delete history for no recreating file
 		//todo: needs to handle second file deleted message correctly
 		if(counter.getCount(FileDeletedTask.class) == 1) {
-			File shouldBeDeleted = new File(ITUtil.getBotWorkingDir(), deletedFile.getName());
+			File shouldBeDeleted = new File(ITUtil.getMainWorkingDir(), deletedFile.getName());
 			Assert.assertFalse(shouldBeDeleted.exists());
 			
 			//all other files should exist
 			for(File file: files) {
 				Assert.assertTrue(file.exists());
-				Assert.assertTrue((new File(ITUtil.getBotWorkingDir(), file.getName())).exists());
+				Assert.assertTrue((new File(ITUtil.getMainWorkingDir(), file.getName())).exists());
 			}
 		}
 	}
