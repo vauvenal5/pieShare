@@ -28,7 +28,9 @@ public class FileSizeFilter implements IFilter {
 	@Override
 	public boolean matches(PieFile file) {
 		maxFileSize = userService.getUser().getPieShareConfiguration().getMaxFileSize();
-		if(maxFileSize <= 0 || file.getSize() < maxFileSize){
+		//TODO sanity check
+		long compSize = maxFileSize * 1000 * 1000;
+		if(maxFileSize <= 0 || file.getSize() < compSize){
 			return false;
 		} else {
 			return true;
