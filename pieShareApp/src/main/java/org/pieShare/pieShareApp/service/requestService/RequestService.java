@@ -53,7 +53,7 @@ public class RequestService implements IRequestService {
 
 	@Override
 	public synchronized void requestFile(PieFile pieFile) {
-		if(!this.checkFile(pieFile))
+		if(!(this.checkFile(pieFile)))
 		{
 			return;
 		}
@@ -140,7 +140,7 @@ public class RequestService implements IRequestService {
 	 * @return boolean true if sync allowed, else false
 	 */
 	private boolean checkFile(PieFile pFile){
-		if(!this.filterService.checkFile(pFile)){
+		if(!(this.filterService.checkFile(pFile))){
 			PieLogger.info(this.getClass(), "PieFile not allowed to sync {}", pFile.getName());
 			return false;
 		}
