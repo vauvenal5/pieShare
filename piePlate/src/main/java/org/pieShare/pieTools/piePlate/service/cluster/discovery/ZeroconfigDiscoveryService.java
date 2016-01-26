@@ -71,7 +71,9 @@ public class ZeroconfigDiscoveryService extends AShutdownableService implements 
 			this.cloudName = clusterName;
 			this.initJmdns();
 			String me = String.format("%s.%s", clusterName, UUID.randomUUID().toString());
+			this.type = String.format("_%s._pie.local.", clusterName.replace('.', '-'));
 			PieLogger.trace(this.getClass(), "Registering myself with id {}", me);
+			PieLogger.trace(this.getClass(), "Registering myself with type {}", this.type);
 			this.myself = ServiceInfo.create(this.type, me, port, "");
 			this.jmDns.registerService(this.myself);
 			
