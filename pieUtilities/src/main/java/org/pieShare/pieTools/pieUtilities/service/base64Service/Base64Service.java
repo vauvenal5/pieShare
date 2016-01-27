@@ -23,5 +23,4 @@ public class Base64Service implements IBase64Service {
 	public byte[] decode(byte[] in) {
 		return Base64.decodeBase64(in);
 	}
-
 }

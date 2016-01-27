@@ -144,6 +144,7 @@ public class PieUtilitiesConfiguration {
         EncodeService service = new EncodeService();
         service.setPasswordEncryptionService(passwordEncryptionService());
         service.setProviderService(providerService());
+		service.setBase64Service(base64Service());
         return service;
     }
 

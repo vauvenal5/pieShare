@@ -5,15 +5,20 @@
  */
 package org.pieShare.pieTools.pieUtilities.service.security.encodeService;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Field;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.util.Map;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
-import javax.crypto.spec.IvParameterSpec;
+import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.pieShare.pieTools.pieUtilities.model.EncryptedPassword;
-import org.pieShare.pieTools.pieUtilities.model.PlainTextPassword;
+import org.pieShare.pieTools.pieUtilities.service.base64Service.api.IBase64Service;
 import org.pieShare.pieTools.pieUtilities.service.pieLogger.PieLogger;
 import org.pieShare.pieTools.pieUtilities.service.security.IProviderService;
 import org.pieShare.pieTools.pieUtilities.service.security.encodeService.api.IEncodeService;
@@ -28,6 +33,11 @@ public class EncodeService implements IEncodeService {
 	private IProviderService providerService;
 	private IPasswordEncryptionService passwordEncryptionService;
 	private final String ivValue = "ThisIsAnTestIvVa"; //ToDo: Change this fix IV to a better value (This have to be 16 bytes long)
+	private IBase64Service base64Service;
+
+	public void setBase64Service(IBase64Service base64Service) {
+		this.base64Service = base64Service;
+	}
 
 	public void setPasswordEncryptionService(IPasswordEncryptionService passwordEncryptionService) {
 		this.passwordEncryptionService = passwordEncryptionService;
@@ -44,7 +54,7 @@ public class EncodeService implements IEncodeService {
 	//todo: rewrite encoderService not to throw general Exception
 	//todo: encoderService has to be renamed: it is a symmetric encoding
 	//we will also need asymmetric
-	@Override
+	/*@Override
 	public byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception {
 		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
 
@@ -62,28 +72,76 @@ public class EncodeService implements IEncodeService {
 			passphrase.setIv(cipher.getIV());
 		}
 
-		return cipher.doFinal(plaintext);
+		return base64Service.encode(cipher.doFinal(plaintext));
+	}*/
+	@Override
+	public byte[] encrypt(EncryptedPassword passphrase, byte[] plaintext) throws Exception {
+
+		SecretKey key = passphrase.getSecretKey();
+		//ByteArrayInputStream byteInputStream = new ByteArrayInputStream(base64Service.encode(plaintext));
+
+		ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		
+		ByteArrayInputStream byteInputStream = new ByteArrayInputStream(plaintext);
+		
+		
+		Cipher encryptCipher = providerService.getEnDeCryptCipher();
+		encryptCipher.init(Cipher.ENCRYPT_MODE, key);
+		int bb = encryptCipher.getBlockSize();
+
+		CipherInputStream cipherStream = new CipherInputStream(byteInputStream, encryptCipher);
+
+		Base64InputStream base64InputStream = new Base64InputStream(cipherStream, true);
+		
+		byte[] buffer = new byte[bb];
+		int noBytes = 0;
+		
+		while ((noBytes = base64InputStream.read(buffer)) != -1) {
+
+			byteOutputStream.write(buffer, 0, noBytes);
+		}
+		cipherStream.close();
+		byteOutputStream.close();
+		byteInputStream.close();
+
+		//byte[] result = byteOutputStream.toByteArray();
+		//byte[] base64 = base64Service.encode(result);
+		//return base64;
+		return byteOutputStream.toByteArray();
 	}
 
 	@Override
 	public byte[] decrypt(EncryptedPassword passphrase, byte[] ciphertext) throws Exception {
-		SecretKey key = passphrase.getSecretKey();// generateKey(passphrase);
+		//optionally put the IV at the beggining of the cipher file
+		//fos.write(IV, 0, IV.length);
 
-		Cipher cipher = providerService.getEnDeCryptCipher();
+		SecretKey key = passphrase.getSecretKey();
+		//ByteArrayInputStream byteInputStream = new ByteArrayInputStream(base64Service.decode(ciphertext));
+		ByteArrayInputStream byteInputStream = new ByteArrayInputStream(ciphertext);
+		
+		ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+		
+		Cipher encryptCipher = providerService.getEnDeCryptCipher();
+		encryptCipher.init(Cipher.DECRYPT_MODE, key);
+		int bb = encryptCipher.getBlockSize();
 
-		if (passphrase.getIv() != null && passphrase.isUseIv()) {
-			PieLogger.debug(this.getClass(), "Init crypto with IV in decrypt mode!");
-			cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(passphrase.getIv()));
-		} else {
-			PieLogger.debug(this.getClass(), "Init crypto without IV in decrypt mode!");
-			cipher.init(Cipher.DECRYPT_MODE, key);
+		//Base64InputStream base64Input = new Base64InputStream(byteInputStream);
+		CipherOutputStream cipherStream = new CipherOutputStream(byteOutputStream, encryptCipher);
+		Base64OutputStream base64OutputStream = new Base64OutputStream(cipherStream, false);
+		
+		byte[] buffer = new byte[bb];
+		int noBytes = 0;
+
+		while ((noBytes = byteInputStream.read(buffer)) != -1) {
+			base64OutputStream.write(buffer, 0, noBytes);
 		}
 
-		if (cipher.getIV() != null) {
-			passphrase.setIv(cipher.getIV());
-		}
-		//cipher.init(Cipher.DECRYPT_MODE, key);
-		return cipher.doFinal(ciphertext);
+		cipherStream.close();
+		byteOutputStream.close();
+		byteInputStream.close();
+
+		//return base64Service.decode(byteOutputStream.toByteArray());
+		return byteOutputStream.toByteArray();
 	}
 
 	//ToDo: Check restriction things. These 2 methods are a HACK

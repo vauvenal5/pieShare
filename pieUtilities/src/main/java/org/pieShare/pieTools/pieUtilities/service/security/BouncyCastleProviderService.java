@@ -23,7 +23,7 @@ public class BouncyCastleProviderService implements IProviderService {
 
 	private String provName;
 	private final String passwordEncryptionAlgo = "PBEWithSHAAndTwofish-CBC";
-	private final String encryptionAlgo = "AES/CBC/PKCS5Padding";
+	private final String encryptionAlgo = "AES/CFB8/NoPadding";//AES/CFB/PKCS7Padding";
 	private final String fileHashAlgo = "MD5";
 
 	public BouncyCastleProviderService() {
@@ -52,7 +52,7 @@ public class BouncyCastleProviderService implements IProviderService {
 	@Override
 	public Cipher getPasswordEncryptioCipher() {
 		try {
-			return Cipher.getInstance(this.passwordEncryptionAlgo, this.provName);//return "PBEWithSHAAndTwofish-CBC";
+			return Cipher.getInstance(this.passwordEncryptionAlgo, this.provName);
 		}
 		catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException ex) {
 			PieLogger.error(this.getClass(), "Cipher Error", ex);
@@ -64,7 +64,7 @@ public class BouncyCastleProviderService implements IProviderService {
 	@Override
 	public Cipher getEnDeCryptCipher() {
 		try {
-			return Cipher.getInstance(this.encryptionAlgo, this.provName);//return "PBEWithSHAAndTwofish-CBC";
+			return Cipher.getInstance(this.encryptionAlgo, this.provName);
 		}
 		catch (NoSuchAlgorithmException | NoSuchProviderException | NoSuchPaddingException ex) {
 			PieLogger.error(this.getClass(), "Cipher Error", ex);
