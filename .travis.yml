@@ -1,22 +1,24 @@
+sudo: false
 language: java
 jdk:
-  - oraclejdk8
-
-# whitelist
+- oraclejdk8
 branches:
   only:
-    - master
-    - development
-
+  - master
+  - development
 before_install:
-  - mvn clean
-
+- mvn clean
 script:
-  - mvn verify
-
+- mvn verify
 after_script:
-  - cat pieShareAppIntegrationTests/log.out
-
+- cat pieShareAppIntegrationTests/log.out
 after_success:
-  - mvn jacoco:report
-  - mvn coveralls:report
+- mvn jacoco:report
+- mvn coveralls:report
+deploy:
+  provider: bintray
+  file: "descriptor.json"
+  on: development
+  user: "vauvenal5"
+  key:
+    secure: E9QEElm6eaLzDPIOdOm07T9DRT6bG+ZcBW7E5Rm84qiO27z5yxVXR2mDsJavOe1ZfZwM7Dgms+05XVxbgqbj2Zs+E2NyXjhuLITx0DgN3vJ/5LQsiOf+I/NB+Z5mR1i2hjta7WpxjIRS4Xi5N+mrieziTw9dnszYA1oLrzTeCJA=
